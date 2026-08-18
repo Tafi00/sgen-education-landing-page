@@ -4,7 +4,9 @@
   color: #fff;
   background-color: var(--night);
   background-image:
-    linear-gradient(180deg, rgba(5, 2, 35, 0.1), rgba(8, 3, 44, 0.26)),
+    radial-gradient(circle at 78% 34%, rgba(130, 62, 244, 0.2), transparent 31%),
+    linear-gradient(90deg, rgba(5, 2, 35, 0.62) 0%, rgba(5, 2, 35, 0.2) 48%, rgba(8, 3, 44, 0.28) 100%),
+    linear-gradient(180deg, rgba(5, 2, 35, 0.08), rgba(8, 3, 44, 0.3)),
     var(--hero-bg);
   background-position: center top;
   background-size: cover;
@@ -14,16 +16,16 @@
 .site-header {
   position: relative;
   z-index: 20;
-  padding-top: 24px;
+  padding-top: 18px;
   transition: padding 220ms ease;
 }
 
 .site-header__inner {
-  min-height: 88px;
+  min-height: 80px;
   display: flex;
   align-items: center;
   gap: 34px;
-  padding: 14px 24px;
+  padding: 10px 22px;
   color: #1b1a35;
   background: rgba(255, 255, 255, 0.96);
   border: 1px solid rgba(255, 255, 255, 0.88);
@@ -38,7 +40,7 @@
 }
 
 .site-header__brand img {
-  width: 176px;
+  width: 164px;
   height: auto;
 }
 
@@ -98,8 +100,8 @@
   position: relative;
   z-index: 3;
   display: grid;
-  grid-template-columns: minmax(0, 1.15fr) minmax(440px, 0.85fr);
-  gap: clamp(48px, 7vw, 100px);
+  grid-template-columns: minmax(0, 1.04fr) minmax(500px, 0.96fr);
+  gap: clamp(40px, 4vw, 64px);
   align-items: center;
   padding-top: clamp(72px, 8vw, 126px);
   padding-bottom: clamp(72px, 8vw, 112px);
@@ -123,6 +125,11 @@
 .hero__content h1 span {
   display: inline-block;
   margin-top: 10px;
+  color: #d9b9ff;
+  background: linear-gradient(92deg, #ffffff 0%, #d7b2ff 48%, #f38ac8 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .hero__tagline {
@@ -139,11 +146,64 @@
   font-size: clamp(1rem, 1.65vw, 1.18rem);
 }
 
+.hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 28px;
+}
+
+.hero__action {
+  min-height: 50px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px 20px;
+  border: 1px solid transparent;
+  border-radius: 13px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease, background 180ms ease;
+}
+
+.hero__action svg {
+  width: 19px;
+  height: 19px;
+  flex: 0 0 auto;
+}
+
+.hero__action:hover {
+  transform: translateY(-2px);
+}
+
+.hero__action--primary {
+  color: #fff;
+  background: var(--gradient-cta);
+  box-shadow: 0 14px 32px rgba(81, 27, 195, 0.34);
+}
+
+.hero__action--primary:hover {
+  box-shadow: 0 18px 38px rgba(81, 27, 195, 0.46);
+}
+
+.hero__action--secondary {
+  color: #efe5ff;
+  background: rgba(18, 7, 69, 0.58);
+  border-color: rgba(208, 170, 255, 0.42);
+  backdrop-filter: blur(10px);
+}
+
+.hero__action--secondary:hover {
+  background: rgba(38, 15, 101, 0.72);
+  border-color: rgba(224, 197, 255, 0.68);
+}
+
 .hero__trust-list {
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
-  margin-top: 38px;
+  margin-top: 22px;
 }
 
 .hero__trust-item {
@@ -170,7 +230,7 @@
   background:
     radial-gradient(circle at 84% 8%, rgba(124, 61, 255, 0.28), transparent 28%),
     linear-gradient(145deg, rgba(60, 30, 124, 0.78), rgba(23, 10, 74, 0.88));
-  border: 1px solid rgba(224, 187, 255, 0.82);
+  border: 1px solid rgba(224, 187, 255, 0.7);
   border-radius: 24px;
   box-shadow: 0 24px 65px rgba(6, 2, 36, 0.5), inset 0 0 32px rgba(143, 86, 255, 0.12);
   backdrop-filter: blur(20px);
@@ -189,26 +249,64 @@
 .lookup-card__heading {
   display: flex;
   align-items: center;
-  gap: 14px;
-  margin-bottom: 22px;
+  gap: 13px;
+  margin-bottom: 0;
 }
 
-.lookup-card__heading svg {
-  color: #ddb9ff;
+.lookup-card__heading > span {
+  width: 46px;
+  height: 46px;
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  color: #fff;
+  background: linear-gradient(145deg, rgba(232, 20, 145, 0.82), rgba(90, 34, 232, 0.9));
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 13px;
+  box-shadow: 0 10px 22px rgba(73, 22, 177, 0.32);
+}
+
+.lookup-card__heading > span svg {
+  width: 23px;
+  height: 23px;
+}
+
+.lookup-card__heading small {
+  display: block;
+  margin-bottom: 3px;
+  color: #d8b9ff;
+  font-size: 0.67rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
 }
 
 .lookup-card__heading h2 {
   margin: 0;
   font-family: var(--font-display);
-  font-size: clamp(1.35rem, 2.4vw, 1.95rem);
+  font-size: clamp(1.25rem, 2vw, 1.7rem);
   line-height: 1.2;
   text-transform: uppercase;
+}
+
+.lookup-card__intro {
+  max-width: 470px;
+  margin: 13px 0 20px;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.81rem;
+  line-height: 1.55;
+}
+
+.lookup-card form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
 }
 
 .field-group {
   display: grid;
   gap: 7px;
-  margin-top: 15px;
+  margin-top: 0;
   color: rgba(255, 255, 255, 0.9);
   font-size: 0.84rem;
 }
@@ -367,9 +465,11 @@
 }
 
 .lookup-card__options {
+  grid-column: 1 / -1;
   display: grid;
-  gap: 8px;
-  margin: 17px 0;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 16px;
+  margin: 2px 0 0;
 }
 
 .lookup-card__options label {
@@ -388,6 +488,7 @@
 }
 
 .lookup-card__submit {
+  grid-column: 1 / -1;
   width: 100%;
   min-height: 56px;
   display: flex;
@@ -405,12 +506,31 @@
   transition: transform 200ms ease, box-shadow 200ms ease;
 }
 
+.lookup-card__privacy {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  margin: -3px 0 0;
+  color: rgba(229, 211, 255, 0.72);
+  font-size: 0.72rem;
+  text-align: center;
+}
+
+.lookup-card__privacy svg {
+  width: 15px;
+  height: 15px;
+  color: #d8b8ff;
+}
+
 .lookup-card__submit:hover {
   transform: translateY(-2px);
   box-shadow: 0 18px 38px rgba(77, 20, 196, 0.42);
 }
 
 .lookup-card__message {
+  grid-column: 1 / -1;
   max-height: 0;
   margin: 0;
   overflow: hidden;
@@ -437,7 +557,7 @@
 
 .hero__number {
   position: absolute;
-  color: rgba(204, 89, 255, 0.67);
+  color: rgba(204, 89, 255, 0.5);
   font-family: Georgia, serif;
   font-size: clamp(2.3rem, 4vw, 4.5rem);
   font-style: italic;
@@ -466,18 +586,18 @@
 .hero__benefits {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
-  padding-block: 38px;
+  gap: 16px;
+  padding-block: 26px;
 }
 
 .benefit-card {
   position: relative;
-  min-height: 164px;
+  min-height: 132px;
   display: grid;
   grid-template-columns: auto 1fr;
   gap: 18px;
   align-items: center;
-  padding: 22px 52px 22px 22px;
+  padding: 18px 48px 18px 18px;
   background: rgba(255, 255, 255, 0.82);
   border: 1px solid rgba(91, 53, 178, 0.13);
   border-radius: 18px;
@@ -596,10 +716,18 @@
   .hero__main { padding-top: 50px; padding-bottom: 60px; }
   .hero__content h1 { font-size: clamp(2.2rem, 11vw, 3.2rem); }
   .hero__tagline { margin-top: 23px; }
+  .hero__actions { gap: 8px; margin-top: 22px; }
+  .hero__action { min-height: 46px; padding-inline: 13px; font-size: 0.77rem; }
   .hero__trust-list { display: grid; }
   .hero__trust-item { width: fit-content; }
   .lookup-card { padding: 22px 17px; border-radius: 18px; }
   .lookup-card__heading { align-items: flex-start; }
+  .lookup-card form { grid-template-columns: 1fr; }
+  .lookup-card__options,
+  .lookup-card__submit,
+  .lookup-card__privacy,
+  .lookup-card__message { grid-column: 1; }
+  .lookup-card__options { grid-template-columns: 1fr; }
   .hero__benefits { padding-block: 24px; }
   .benefit-card {
     min-height: 0;

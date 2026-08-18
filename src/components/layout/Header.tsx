@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Menu, X } from "lucide-react";
-import logoDark from "../../../assets/brand/sgen-logo-dark.png";
+import logoDark from "../../../assets/brand/sgen-logo-dark-v2.png";
 
 const navItems = [
   { label: "Giới thiệu", href: "#gioi-thieu" },

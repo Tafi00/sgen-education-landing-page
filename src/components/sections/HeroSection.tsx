@@ -72,6 +72,16 @@ export function HeroSection() {
           <p className="hero__description">
             Khám phá tài năng, điểm mạnh và lộ trình nghề nghiệp qua Thần số học Pythagoras.
           </p>
+          <div className="hero__actions">
+            <a className="hero__action hero__action--primary" href="#tra-cuu">
+              <Search aria-hidden="true" />
+              <span>Tra cứu miễn phí</span>
+            </a>
+            <a className="hero__action hero__action--secondary" href="#cong-cu">
+              <span>Khám phá công cụ</span>
+              <ArrowRight aria-hidden="true" />
+            </a>
+          </div>
           <div className="hero__trust-list">
             {trustItems.map(({ icon: Icon, label }) => (
               <span className="hero__trust-item" key={label}>
@@ -84,9 +94,13 @@ export function HeroSection() {
 
         <Reveal className="lookup-card" direction="left" delay={120}>
           <div className="lookup-card__heading">
-            <Calculator aria-hidden="true" />
-            <h2>Tra cứu thần số học</h2>
+            <span><Calculator aria-hidden="true" /></span>
+            <div>
+              <small>Khám phá bản đồ cá nhân</small>
+              <h2>Tra cứu thần số học</h2>
+            </div>
           </div>
+          <p className="lookup-card__intro">Nhập thông tin để bắt đầu hành trình hiểu mình và chọn đúng hướng đi.</p>
 
           <form onSubmit={handleSubmit} id="tra-cuu">
             <label className="field-group">
@@ -137,6 +151,10 @@ export function HeroSection() {
               <span>Tra cứu ngay</span>
               <Search aria-hidden="true" size={19} />
             </button>
+
+            <p className="lookup-card__privacy">
+              <ShieldCheck aria-hidden="true" /> Miễn phí tra cứu · Bảo mật thông tin
+            </p>
 
             <p className={`lookup-card__message ${submitted ? "is-visible" : ""}`} role="status">
               Đã nhận thông tin — báo cáo mẫu của bạn đang được chuẩn bị.

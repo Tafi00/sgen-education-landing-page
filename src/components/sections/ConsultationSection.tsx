@@ -52,7 +52,7 @@ export function ConsultationSection() {
       <div className="container consultation-grid">
         <Reveal className="consultation-copy" direction="right">
           <SectionBadge icon={CalendarCheck}>Đăng ký tư vấn ngay hôm nay</SectionBadge>
-          <h2><span>Sẵn sàng hôm nay —</span><span>Vững bước tương lai</span></h2>
+          <h2><span>Sẵn sàng hôm nay</span><span>Vững bước tương lai</span></h2>
           <div className="consultation-copy__divider"><span><MessageSquareText /></span></div>
           <p>Liên hệ với chúng tôi để được tư vấn và hỗ trợ miễn phí.</p>
 

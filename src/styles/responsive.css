@@ -187,11 +187,19 @@
 }
 
 .lookup-card__heading {
-  margin-bottom: 16px;
+  margin-bottom: 0;
 }
 
-.field-group {
-  margin-top: 11px;
+.lookup-card__intro {
+  margin: 12px 0 18px;
+}
+
+.lookup-card form {
+  gap: 12px;
+}
+
+.lookup-card form .field-group {
+  margin-top: 0;
 }
 
 .field-control {
@@ -199,7 +207,7 @@
 }
 
 .lookup-card__options {
-  margin-block: 13px;
+  margin-block: 0;
 }
 
 .lookup-card__submit {
@@ -357,8 +365,8 @@
   }
 
   .hero {
-    min-height: min(1024px, 66.667vw);
-    background-size: 100% calc(100% - 240px);
+    min-height: 0;
+    background-size: cover;
     background-repeat: no-repeat;
   }
 
@@ -542,7 +550,7 @@
 
   .consultation-copy h2 {
     margin-top: 20px;
-    font-size: clamp(2.55rem, 3.25vw, 3.4rem);
+    font-size: clamp(2.35rem, 2.65vw, 2.85rem);
   }
 
   .consultation-copy > p {
@@ -562,7 +570,7 @@
   }
 
   .consultation-field--textarea {
-    min-height: 120px;
+    min-height: 150px;
   }
 
   .consultation-form-card__submit {
@@ -598,6 +606,29 @@
 
   .method-card {
     min-height: 390px;
+  }
+}
+
+@media (max-width: 1100px) {
+  .hero {
+    min-height: 0;
+    background-size: auto 72%;
+    background-repeat: no-repeat;
+  }
+
+  .hero__main {
+    grid-template-columns: 1fr;
+    gap: 38px;
+    align-items: center;
+  }
+
+  .hero__content {
+    width: min(100%, 760px);
+  }
+
+  .lookup-card {
+    width: min(100%, 650px);
+    margin-inline: auto;
   }
 }
 
@@ -934,7 +965,7 @@
   .lookup-card__heading {
     align-items: center;
     gap: 10px;
-    margin-bottom: 14px;
+    margin-bottom: 0;
   }
 
   .lookup-card__heading h2 {
@@ -942,7 +973,7 @@
   }
 
   .field-group {
-    margin-top: 10px;
+    margin-top: 0;
     font-size: 0.78rem;
   }
 
@@ -1349,7 +1380,7 @@
 
   .consultation-copy h2 {
     margin-top: 17px;
-    font-size: clamp(2rem, 8.4vw, 2.7rem);
+    font-size: clamp(1.8rem, 7.8vw, 2.25rem);
   }
 
   .consultation-benefits > div {

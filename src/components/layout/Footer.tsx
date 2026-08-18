@@ -1,6 +1,6 @@
 import { Building2, ChevronRight, Mail, MapPin } from "lucide-react";
 import cosmicDark from "../../../assets/backgrounds/cosmic-dark.webp";
-import logoLight from "../../../assets/brand/sgen-logo-light-footer.png";
+import logoLight from "../../../assets/brand/sgen-logo-light-footer-v2.png";
 
 const footerLinks = [
   { label: "Giới thiệu", href: "#gioi-thieu" },

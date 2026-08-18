@@ -8,35 +8,52 @@
 
 .consultation-grid {
   display: grid;
-  grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
-  gap: clamp(28px, 4vw, 64px);
-  align-items: stretch;
+  grid-template-columns: minmax(0, 0.96fr) minmax(0, 1.04fr);
+  gap: clamp(24px, 2.5vw, 36px);
+  align-items: start;
   max-width: 1220px;
 }
 
 .consultation-copy {
+  position: relative;
   display: flex;
   flex-direction: column;
   padding: clamp(28px, 3vw, 42px);
-  background: rgba(255, 255, 255, 0.58);
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.72);
   border: 1px solid rgba(86, 49, 168, 0.14);
   border-radius: 28px;
   box-shadow: 0 22px 60px rgba(49, 25, 116, 0.09);
   backdrop-filter: blur(14px);
 }
 
+.consultation-copy::before {
+  position: absolute;
+  top: 0;
+  left: 42px;
+  width: 108px;
+  height: 3px;
+  background: var(--gradient-cta);
+  border-radius: 0 0 999px 999px;
+  content: "";
+}
+
+.consultation-copy .section-badge {
+  align-self: flex-start;
+}
+
 .consultation-copy h2 {
-  margin: 22px 0 0;
+  margin: 24px 0 0;
   font-family: var(--font-display);
-  font-size: clamp(2.35rem, 3.3vw, 3.45rem);
+  font-size: clamp(2.25rem, 2.5vw, 2.85rem);
   font-weight: 800;
   letter-spacing: -0.045em;
-  line-height: 1.06;
+  line-height: 1.1;
 }
 
 .consultation-copy h2 span {
   display: block;
-  white-space: nowrap;
+  white-space: normal;
 }
 
 .consultation-copy__divider {
@@ -44,7 +61,7 @@
   align-items: center;
   gap: 14px;
   max-width: none;
-  margin: 24px 0 14px;
+  margin: 22px 0 13px;
 }
 
 .consultation-copy__divider::before,
@@ -69,15 +86,16 @@
 .consultation-benefits {
   display: grid;
   gap: 10px;
-  margin-top: 24px;
+  margin-top: 20px;
 }
 
 .consultation-benefits > div {
   display: flex;
   align-items: center;
   gap: 16px;
-  padding: 12px 14px;
-  background: rgba(255, 255, 255, 0.58);
+  min-height: 76px;
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.7);
   border: 1px solid rgba(75, 44, 149, 0.1);
   border-radius: 15px;
 }
@@ -102,8 +120,7 @@
   align-items: center;
   gap: 16px;
   justify-content: center;
-  margin-top: auto;
-  padding-top: 12px;
+  margin-top: 18px;
   padding: 5px 24px 5px 6px;
   color: var(--violet);
   background: rgba(255, 255, 255, 0.56);
@@ -122,14 +139,26 @@
 }
 
 .consultation-form-card {
-  height: auto;
-  align-self: center;
+  position: relative;
+  align-self: start;
   padding: clamp(26px, 4vw, 46px);
+  overflow: hidden;
   background: rgba(255, 255, 255, 0.78);
   border: 1px solid rgba(71, 39, 144, 0.13);
   border-radius: 24px;
   box-shadow: 0 24px 65px rgba(49, 25, 116, 0.14);
   backdrop-filter: blur(18px);
+}
+
+.consultation-form-card::before {
+  position: absolute;
+  top: 0;
+  right: 46px;
+  width: 108px;
+  height: 3px;
+  background: var(--gradient-cta);
+  border-radius: 0 0 999px 999px;
+  content: "";
 }
 
 .consultation-form-card h3 {
@@ -197,7 +226,7 @@
 .consultation-field--textarea {
   grid-column: 1 / -1;
   align-items: flex-start;
-  min-height: 120px;
+  min-height: 150px;
 }
 
 .consultation-field--textarea svg {
@@ -388,9 +417,17 @@
   transform: translateY(-3px) scale(1);
 }
 
-@media (max-width: 1000px) {
+@media (max-width: 1100px) {
   .consultation-grid { grid-template-columns: 1fr; }
-  .consultation-copy { max-width: 760px; }
+  .consultation-copy,
+  .consultation-form-card {
+    width: 100%;
+    max-width: 760px;
+    margin-inline: auto;
+  }
+}
+
+@media (max-width: 1000px) {
   .site-footer__grid { grid-template-columns: 1fr 1fr; }
   .site-footer__brand { grid-column: 1 / -1; }
   .site-footer__brand img { width: 240px; }
