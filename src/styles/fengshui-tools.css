@@ -1,0 +1,1671 @@
+.fengshui-tools {
+  width: min(100%, 1280px);
+  margin-inline: auto;
+  animation: panel-enter 360ms ease both;
+}
+
+.fengshui-loading {
+  min-height: 280px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: #7447ae;
+  font-family: var(--font-display);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.fengshui-loading span {
+  width: 22px;
+  height: 22px;
+  border: 2px solid rgba(116, 71, 174, 0.2);
+  border-top-color: #8a43dc;
+  border-radius: 50%;
+  animation: fengshui-spin 800ms linear infinite;
+}
+
+.fengshui-feature-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 22px;
+}
+
+.fengshui-feature-grid > article {
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.86);
+  border: 1px solid rgba(88, 50, 174, 0.14);
+  border-radius: 24px;
+  box-shadow: 0 18px 48px rgba(53, 30, 113, 0.13);
+  backdrop-filter: blur(16px);
+  transition: transform 240ms ease, border-color 240ms ease, box-shadow 240ms ease;
+}
+
+.fengshui-feature-grid > article:hover,
+.fengshui-feature-grid > article.is-active {
+  border-color: rgba(134, 72, 243, 0.48);
+  box-shadow: 0 25px 64px rgba(71, 32, 153, 0.21);
+  transform: translateY(-7px);
+}
+
+.fengshui-feature-card__art {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  background: #16072f;
+}
+
+.fengshui-feature-card__art::after {
+  position: absolute;
+  inset: 38% 0 0;
+  background: linear-gradient(180deg, transparent, rgba(15, 3, 36, 0.78));
+  content: "";
+}
+
+.fengshui-feature-card__art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 700ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.fengshui-feature-grid > article:hover img {
+  transform: scale(1.055);
+}
+
+.fengshui-feature-card__art > span {
+  position: absolute;
+  right: 18px;
+  bottom: 16px;
+  z-index: 1;
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  background: linear-gradient(145deg, rgba(198, 100, 255, 0.95), rgba(91, 52, 221, 0.95));
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 50%;
+  box-shadow: 0 9px 28px rgba(17, 2, 39, 0.48);
+}
+
+.fengshui-feature-card__art svg {
+  width: 22px;
+}
+
+.fengshui-feature-card__body {
+  padding: 22px 22px 24px;
+}
+
+.fengshui-feature-card__body > small,
+.fengshui-result-card__heading small,
+.fengshui-workspace > header small {
+  color: #9464d5;
+  font-size: 0.67rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.fengshui-feature-card__body h3 {
+  margin: 7px 0 8px;
+  color: #281442;
+  font-family: var(--font-display);
+  font-size: 1.16rem;
+}
+
+.fengshui-feature-card__body > p {
+  min-height: 66px;
+  margin: 0;
+  color: #6c6380;
+  font-size: 0.85rem;
+  line-height: 1.65;
+}
+
+.fengshui-feature-card__body > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin: 17px 0;
+}
+
+.fengshui-feature-card__body > div span {
+  padding: 5px 9px;
+  color: #7146ae;
+  background: #f2ebff;
+  border: 1px solid #e1d3f8;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
+.fengshui-feature-card__body button,
+.fengshui-primary-action,
+.fengshui-reset {
+  min-height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  border-radius: 12px;
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 180ms ease, box-shadow 180ms ease, opacity 180ms ease;
+}
+
+.fengshui-feature-card__body button {
+  width: 100%;
+  color: #fff;
+  background: linear-gradient(110deg, #672bd4, #963fea);
+  box-shadow: 0 12px 24px rgba(102, 43, 211, 0.23);
+}
+
+.fengshui-feature-card__body button:hover,
+.fengshui-primary-action:hover:not(:disabled) {
+  box-shadow: 0 15px 32px rgba(145, 59, 232, 0.35);
+  transform: translateY(-2px);
+}
+
+.fengshui-feature-card__body button svg,
+.fengshui-primary-action svg,
+.fengshui-reset svg {
+  width: 17px;
+}
+
+.fengshui-workspace {
+  height: 0;
+  margin-top: 0;
+  overflow: hidden;
+  color: #f8f3ff;
+  background:
+    radial-gradient(circle at 85% 5%, rgba(214, 89, 255, 0.18), transparent 31%),
+    radial-gradient(circle at 8% 92%, rgba(89, 79, 255, 0.18), transparent 34%),
+    linear-gradient(145deg, #170627 0%, #251044 48%, #140521 100%);
+  border: 0 solid rgba(214, 168, 255, 0.2);
+  border-radius: 28px;
+  box-shadow: 0 28px 72px rgba(32, 10, 70, 0.22);
+  opacity: 0;
+  scroll-margin-top: 100px;
+  transition: opacity 250ms ease, margin 250ms ease;
+}
+
+.fengshui-workspace.is-open {
+  height: auto;
+  margin-top: 30px;
+  overflow: visible;
+  border-width: 1px;
+  opacity: 1;
+}
+
+.fengshui-workspace > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 23px 27px;
+  border-bottom: 1px solid rgba(230, 196, 255, 0.14);
+}
+
+.fengshui-workspace > header h2 {
+  margin: 4px 0 0;
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: 1.45rem;
+}
+
+.fengshui-workspace > header button {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.fengshui-workspace > header button:hover {
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.fengshui-workspace > header svg {
+  width: 19px;
+}
+
+.fengshui-tool-layout {
+  display: grid;
+  grid-template-columns: minmax(280px, 0.72fr) minmax(0, 1.35fr);
+  gap: 20px;
+  padding: 24px;
+}
+
+.fengshui-form-card,
+.fengshui-result-card {
+  min-width: 0;
+  padding: 24px;
+  background: rgba(255, 255, 255, 0.055);
+  border: 1px solid rgba(227, 195, 255, 0.13);
+  border-radius: 20px;
+  backdrop-filter: blur(18px);
+}
+
+.fengshui-form-card {
+  align-self: start;
+}
+
+.fengshui-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #cb97f6;
+  font-size: 0.69rem;
+  font-weight: 800;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+.fengshui-kicker svg {
+  width: 17px;
+}
+
+.fengshui-form-card > h3 {
+  margin: 9px 0 20px;
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: 1.18rem;
+  line-height: 1.42;
+}
+
+.fengshui-form-card label {
+  display: grid;
+  gap: 7px;
+}
+
+.fengshui-form-card label > span {
+  color: #dcd1e9;
+  font-size: 0.73rem;
+  font-weight: 700;
+}
+
+.fengshui-form-card label em {
+  color: #9c8daa;
+  font-weight: 500;
+}
+
+.fengshui-form-card input,
+.fengshui-form-card select,
+.fengshui-form-card textarea {
+  width: 100%;
+  min-height: 47px;
+  padding: 11px 13px;
+  color: #fff;
+  background: rgba(10, 3, 23, 0.54);
+  border: 1px solid rgba(227, 196, 255, 0.18);
+  border-radius: 11px;
+  outline: none;
+  color-scheme: dark;
+  font: inherit;
+  font-size: 0.8rem;
+  transition: border-color 180ms ease, box-shadow 180ms ease;
+}
+
+.fengshui-form-card textarea {
+  resize: vertical;
+}
+
+.fengshui-form-card input:focus,
+.fengshui-form-card select:focus,
+.fengshui-form-card textarea:focus {
+  border-color: #a857ec;
+  box-shadow: 0 0 0 3px rgba(172, 82, 235, 0.14);
+}
+
+.fengshui-form-card input::placeholder,
+.fengshui-form-card textarea::placeholder {
+  color: #877a95;
+}
+
+.fengshui-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.fengshui-fields .is-wide {
+  grid-column: 1 / -1;
+}
+
+.fengshui-fields--single {
+  grid-template-columns: 1fr;
+}
+
+.fengshui-primary-action {
+  width: 100%;
+  margin-top: 18px;
+  color: #fff;
+  background: linear-gradient(110deg, #7c36de, #c44ce5);
+  box-shadow: 0 12px 26px rgba(137, 45, 218, 0.28);
+}
+
+.fengshui-primary-action:disabled,
+.fengshui-reset:disabled {
+  cursor: not-allowed;
+  opacity: 0.48;
+}
+
+.fengshui-reset {
+  width: 100%;
+  margin-top: 9px;
+  color: #cdbce0;
+  background: transparent;
+  border: 1px solid rgba(228, 199, 255, 0.17);
+}
+
+.fengshui-method-note,
+.fengshui-error {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 15px 0 0;
+  color: #a99bb7;
+  font-size: 0.68rem;
+  line-height: 1.55;
+}
+
+.fengshui-method-note svg,
+.fengshui-error svg {
+  width: 15px;
+  min-width: 15px;
+  margin-top: 2px;
+}
+
+.fengshui-error {
+  color: #ffaaa9;
+}
+
+.fengshui-result-card__heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 20px;
+}
+
+.fengshui-result-card__heading h3 {
+  margin: 5px 0 0;
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: 1.18rem;
+}
+
+.fengshui-result-card__heading > span {
+  padding: 6px 10px;
+  color: #ecd5ff;
+  background: rgba(184, 96, 242, 0.13);
+  border: 1px solid rgba(210, 153, 255, 0.2);
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.fengshui-empty {
+  min-height: 260px;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 10px;
+  color: #897a99;
+  text-align: center;
+}
+
+.fengshui-empty--large {
+  min-height: 410px;
+}
+
+.fengshui-empty svg {
+  width: 56px;
+  height: 56px;
+  stroke-width: 1.2;
+}
+
+.fengshui-empty h3,
+.fengshui-empty p {
+  margin: 0;
+}
+
+.fengshui-empty h3 {
+  color: #d9c9e9;
+  font-family: var(--font-display);
+}
+
+.fengshui-empty p {
+  max-width: 370px;
+  font-size: 0.8rem;
+  line-height: 1.6;
+}
+
+.coin-stage {
+  min-height: 112px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin: 17px 0 2px;
+  padding: 18px 12px;
+  background: radial-gradient(circle, rgba(179, 86, 242, 0.17), transparent 68%);
+  border: 1px dashed rgba(215, 172, 255, 0.18);
+  border-radius: 16px;
+}
+
+.coin-stage span {
+  width: 68px;
+  height: 68px;
+  display: grid;
+  place-items: center;
+  color: #2c1742;
+  background: radial-gradient(circle at 36% 30%, #fff1b4, #d4a336 57%, #8b5c13);
+  border: 4px double rgba(81, 46, 13, 0.75);
+  border-radius: 50%;
+  box-shadow: 0 8px 24px rgba(4, 1, 9, 0.42), inset 0 0 0 3px rgba(255, 242, 171, 0.38);
+  font-size: 0.6rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.coin-stage span.is-tail {
+  color: #4c2e5d;
+  background: radial-gradient(circle at 36% 30%, #e7d8ff, #a681ca 57%, #614677);
+}
+
+.coin-stage span.is-casting {
+  animation: coin-toss 540ms cubic-bezier(0.2, 0.7, 0.3, 1);
+}
+
+.coin-stage span:nth-child(2).is-casting {
+  animation-delay: 40ms;
+}
+
+.coin-stage span:nth-child(3).is-casting {
+  animation-delay: 80ms;
+}
+
+.fengshui-hex-lines {
+  display: grid;
+  gap: 8px;
+  padding: 8px 0 21px;
+}
+
+.fengshui-hex-lines > div {
+  display: grid;
+  grid-template-columns: 58px minmax(130px, 1fr) 64px;
+  align-items: center;
+  gap: 10px;
+}
+
+.fengshui-hex-lines small,
+.fengshui-hex-lines b {
+  color: #9585a7;
+  font-size: 0.65rem;
+  font-weight: 700;
+}
+
+.fengshui-hex-lines b {
+  color: #bfabd3;
+  text-align: right;
+}
+
+.fengshui-hex-lines > div > span {
+  min-height: 13px;
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.fengshui-hex-lines i {
+  height: 12px;
+  flex: 1;
+  background: linear-gradient(90deg, #ad62ec, #f2c4ff);
+  border-radius: 2px;
+  box-shadow: 0 0 18px rgba(202, 108, 255, 0.27);
+}
+
+.fengshui-hex-lines .is-moving i {
+  background: linear-gradient(90deg, #ffc365, #fff0a7);
+  box-shadow: 0 0 19px rgba(255, 200, 94, 0.31);
+}
+
+.iching-reading {
+  padding-top: 19px;
+  border-top: 1px solid rgba(226, 192, 255, 0.12);
+}
+
+.iching-reading blockquote {
+  margin: 0 0 16px;
+  padding: 12px 14px;
+  color: #d9cbe7;
+  background: rgba(255, 255, 255, 0.045);
+  border-left: 3px solid #b75bea;
+  border-radius: 0 10px 10px 0;
+  font-size: 0.76rem;
+  line-height: 1.55;
+}
+
+.iching-reading__pair {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 14px;
+}
+
+.iching-reading__pair > svg {
+  color: #b972ec;
+}
+
+.iching-reading__pair article {
+  height: 100%;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.045);
+  border: 1px solid rgba(226, 195, 255, 0.12);
+  border-radius: 14px;
+}
+
+.iching-reading__pair small,
+.bazi-support small,
+.bazi-luck small,
+.calendar-facts small,
+.calendar-pillars small {
+  color: #9d8bab;
+  font-size: 0.63rem;
+  font-weight: 700;
+}
+
+.iching-reading__pair h4,
+.bazi-analysis h4,
+.bazi-relations h4,
+.calendar-reading h4 {
+  margin: 7px 0;
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: 0.91rem;
+}
+
+.iching-reading__pair b {
+  color: #e5a8ff;
+  font-size: 0.7rem;
+}
+
+.iching-reading__pair p,
+.bazi-support p,
+.calendar-facts p {
+  margin: 7px 0 0;
+  color: #b3a4c2;
+  font-size: 0.7rem;
+  line-height: 1.55;
+}
+
+.iching-reading__rule {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 15px 0;
+  color: #d3c1e2;
+  font-size: 0.72rem;
+  line-height: 1.55;
+}
+
+.iching-reading__rule svg {
+  width: 16px;
+  min-width: 16px;
+  color: #f3bd70;
+}
+
+.moving-lines {
+  display: grid;
+  gap: 7px;
+}
+
+.moving-lines article {
+  display: flex;
+  gap: 12px;
+  padding: 10px 12px;
+  background: rgba(241, 187, 104, 0.07);
+  border: 1px solid rgba(241, 187, 104, 0.13);
+  border-radius: 10px;
+  font-size: 0.68rem;
+}
+
+.moving-lines b {
+  min-width: 92px;
+  color: #f0c77e;
+}
+
+.moving-lines span {
+  color: #bbaec6;
+  line-height: 1.5;
+}
+
+.bazi-pillars {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.bazi-pillars article {
+  display: grid;
+  gap: 7px;
+  padding: 15px 10px;
+  background: rgba(255, 255, 255, 0.045);
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  border-top: 3px solid var(--element-color, #c56ff1);
+  border-radius: 13px;
+  text-align: center;
+}
+
+.bazi-pillars .element-wood { --element-color: #70cf8e; }
+.bazi-pillars .element-fire { --element-color: #ff766d; }
+.bazi-pillars .element-earth { --element-color: #d7a45f; }
+.bazi-pillars .element-metal { --element-color: #d8d6e6; }
+.bazi-pillars .element-water { --element-color: #65a8ff; }
+
+.bazi-pillars small,
+.bazi-pillars span {
+  color: #a99ab7;
+  font-size: 0.6rem;
+  line-height: 1.4;
+}
+
+.bazi-pillars strong {
+  color: var(--element-color);
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  line-height: 1;
+}
+
+.bazi-pillars b {
+  color: #e7d8f4;
+  font-size: 0.63rem;
+}
+
+.bazi-analysis {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 12px;
+  margin-top: 13px;
+}
+
+.element-balance,
+.bazi-support,
+.bazi-relations,
+.bazi-luck,
+.calendar-facts article,
+.calendar-stars section,
+.calendar-hours,
+.calendar-prescriptions section,
+.calendar-activities,
+.calendar-compatibility {
+  padding: 15px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(225, 195, 251, 0.1);
+  border-radius: 13px;
+}
+
+.element-balance h4 {
+  margin-top: 0;
+}
+
+.element-balance > div {
+  display: grid;
+  grid-template-columns: 67px 1fr 35px;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.element-balance span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: #b9a9c6;
+  font-size: 0.66rem;
+}
+
+.element-balance svg {
+  width: 14px;
+}
+
+.element-balance i {
+  height: 5px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+}
+
+.element-balance em {
+  height: 100%;
+  display: block;
+  background: linear-gradient(90deg, #7952dd, #da65e8);
+  border-radius: inherit;
+}
+
+.element-balance b {
+  color: #d9c9e6;
+  font-size: 0.62rem;
+  text-align: right;
+}
+
+.bazi-support > div {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.bazi-support > div span {
+  padding: 9px;
+  color: #9d8baa;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 9px;
+  font-size: 0.6rem;
+}
+
+.bazi-support > div b {
+  display: block;
+  margin-top: 4px;
+  color: #ebb2ff;
+  font-size: 0.75rem;
+}
+
+.bazi-relations,
+.bazi-luck {
+  margin-top: 13px;
+}
+
+.bazi-relations > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.bazi-relations span {
+  padding: 6px 9px;
+  color: #bbaec6;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 8px;
+  font-size: 0.63rem;
+}
+
+.bazi-relations span b {
+  color: #e6b8ff;
+}
+
+.bazi-luck > div {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.bazi-luck > div b {
+  color: #fff;
+  font-size: 0.75rem;
+}
+
+.bazi-luck > div span {
+  margin-left: auto;
+  color: #cba7e1;
+  font-size: 0.62rem;
+}
+
+.bazi-luck ol {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 6px;
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.bazi-luck li {
+  display: grid;
+  gap: 4px;
+  padding: 9px 6px;
+  background: rgba(255, 255, 255, 0.045);
+  border-radius: 8px;
+  text-align: center;
+}
+
+.bazi-luck li b {
+  color: #e9c3fb;
+  font-size: 0.68rem;
+}
+
+.bazi-luck li span {
+  color: #857692;
+  font-size: 0.54rem;
+}
+
+.calendar-energy {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 14px;
+  margin-top: 17px;
+  padding: 14px;
+  background: rgba(255, 255, 255, 0.045);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+}
+
+.calendar-energy > span {
+  width: 72px;
+  height: 72px;
+  display: grid;
+  place-content: center;
+  color: #fff;
+  background:
+    radial-gradient(circle closest-side, #241139 78%, transparent 80% 99%),
+    conic-gradient(#c964ea var(--score), rgba(255, 255, 255, 0.09) 0);
+  border-radius: 50%;
+  text-align: center;
+}
+
+.calendar-energy.is-good > span { background: radial-gradient(circle closest-side, #241139 78%, transparent 80% 99%), conic-gradient(#63d89c var(--score), rgba(255, 255, 255, 0.09) 0); }
+.calendar-energy.is-caution > span { background: radial-gradient(circle closest-side, #241139 78%, transparent 80% 99%), conic-gradient(#ff847d var(--score), rgba(255, 255, 255, 0.09) 0); }
+
+.calendar-energy > span b {
+  font-size: 1.05rem;
+}
+
+.calendar-energy > span small {
+  color: #9586a2;
+  font-size: 0.54rem;
+}
+
+.calendar-energy > div small,
+.calendar-compatibility span {
+  color: #9686a3;
+  font-size: 0.61rem;
+}
+
+.calendar-energy h3 {
+  margin: 3px 0;
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: 0.92rem;
+}
+
+.calendar-energy p,
+.calendar-compatibility p {
+  margin: 0;
+  color: #b2a3bf;
+  font-size: 0.64rem;
+  line-height: 1.5;
+}
+
+.calendar-compatibility {
+  display: grid;
+  gap: 5px;
+  margin-top: 10px;
+  border-color: rgba(211, 172, 243, 0.16);
+}
+
+.calendar-compatibility b {
+  color: #e2bcf6;
+  font-size: 0.72rem;
+}
+
+.calendar-compatibility.is-good b { color: #7ce2aa; }
+.calendar-compatibility.is-caution b { color: #ffaaa4; }
+
+.calendar-pillars {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.calendar-pillars article {
+  display: grid;
+  gap: 5px;
+  padding: 11px;
+  background: rgba(165, 81, 224, 0.08);
+  border: 1px solid rgba(203, 134, 249, 0.13);
+  border-radius: 10px;
+}
+
+.calendar-pillars b {
+  color: #eed7fb;
+  font-size: 0.74rem;
+}
+
+.calendar-facts,
+.calendar-stars,
+.calendar-prescriptions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 11px;
+}
+
+.calendar-stars h4,
+.calendar-hours h4,
+.calendar-prescriptions h4,
+.calendar-activities > h4 {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 0;
+}
+
+.calendar-stars h4 svg,
+.calendar-hours h4 svg {
+  width: 16px;
+}
+
+.calendar-stars section.is-good h4 { color: #79dda5; }
+.calendar-stars section.is-bad h4 { color: #ff9993; }
+
+.calendar-stars p,
+.calendar-prescriptions p {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+}
+
+.calendar-stars span,
+.calendar-prescriptions span {
+  padding: 5px 7px;
+  color: #c7b7d3;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 7px;
+  font-size: 0.61rem;
+}
+
+.calendar-hours,
+.calendar-activities {
+  margin-top: 11px;
+}
+
+.calendar-hours > div {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.calendar-hours article {
+  display: grid;
+  gap: 4px;
+  padding: 10px 8px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 9px;
+  text-align: center;
+}
+
+.calendar-hours b,
+.calendar-hours strong {
+  color: #ead2f8;
+  font-size: 0.67rem;
+}
+
+.calendar-hours span,
+.calendar-hours small {
+  color: #8f7f9c;
+  font-size: 0.55rem;
+}
+
+.calendar-hours strong {
+  color: #e8b5ff;
+}
+
+.calendar-activities > div {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.calendar-activities article {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  background: rgba(255, 255, 255, 0.035);
+  border-radius: 8px;
+}
+
+.calendar-activities article > span {
+  width: 25px;
+  height: 25px;
+  display: grid;
+  place-items: center;
+  color: #d8bedf;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 50%;
+}
+
+.calendar-activities article.is-suitable > span { color: #78dba1; }
+.calendar-activities article.is-avoid > span { color: #ff928c; }
+
+.calendar-activities svg {
+  width: 13px;
+}
+
+.calendar-activities article div {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.calendar-activities b,
+.calendar-activities strong {
+  color: #e6d4f0;
+  font-size: 0.62rem;
+}
+
+.calendar-activities small {
+  overflow: hidden;
+  color: #8d7d99;
+  font-size: 0.54rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.calendar-activities strong {
+  color: #c993e9;
+}
+
+.calendar-directions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 11px;
+}
+
+.calendar-directions span {
+  flex: 1 1 130px;
+  padding: 8px 10px;
+  color: #9585a1;
+  background: rgba(255, 255, 255, 0.035);
+  border-radius: 8px;
+  font-size: 0.6rem;
+}
+
+.calendar-directions b {
+  display: block;
+  margin-top: 3px;
+  color: #ddc6eb;
+}
+
+.is-spinning {
+  animation: fengshui-spin 800ms linear infinite;
+}
+
+@keyframes coin-toss {
+  0% { transform: translateY(0) rotateY(0); }
+  45% { transform: translateY(-30px) rotateY(540deg) scale(1.08); }
+  100% { transform: translateY(0) rotateY(900deg); }
+}
+
+@keyframes fengshui-spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 1050px) {
+  .fengshui-tool-layout {
+    grid-template-columns: minmax(260px, 0.66fr) minmax(0, 1fr);
+    padding: 18px;
+  }
+
+  .fengshui-form-card,
+  .fengshui-result-card {
+    padding: 18px;
+  }
+
+  .bazi-pillars {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .bazi-luck ol {
+    grid-template-columns: repeat(5, minmax(65px, 1fr));
+    overflow-x: auto;
+  }
+}
+
+@media (max-width: 820px) {
+  .fengshui-feature-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .fengshui-feature-grid > article {
+    display: grid;
+    grid-template-columns: minmax(220px, 0.8fr) 1.2fr;
+  }
+
+  .fengshui-feature-card__art {
+    height: 100%;
+    aspect-ratio: auto;
+  }
+
+  .fengshui-feature-card__body > p {
+    min-height: 0;
+  }
+
+  .fengshui-tool-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .fengshui-form-card {
+    position: static;
+  }
+}
+
+@media (max-width: 620px) {
+  .fengshui-feature-grid {
+    gap: 14px;
+  }
+
+  .fengshui-feature-grid > article {
+    display: block;
+    border-radius: 18px;
+  }
+
+  .fengshui-feature-card__art {
+    height: auto;
+    aspect-ratio: 16 / 9;
+  }
+
+  .fengshui-feature-card__body {
+    padding: 18px;
+  }
+
+  .fengshui-workspace {
+    border-radius: 20px;
+  }
+
+  .fengshui-workspace > header {
+    padding: 18px;
+  }
+
+  .fengshui-workspace > header h2 {
+    font-size: 1.12rem;
+  }
+
+  .fengshui-tool-layout {
+    gap: 12px;
+    padding: 12px;
+  }
+
+  .fengshui-form-card,
+  .fengshui-result-card {
+    padding: 15px;
+    border-radius: 15px;
+  }
+
+  .fengshui-fields,
+  .bazi-analysis,
+  .iching-reading__pair,
+  .calendar-facts,
+  .calendar-stars,
+  .calendar-prescriptions,
+  .calendar-activities > div {
+    grid-template-columns: 1fr;
+  }
+
+  .iching-reading__pair > svg {
+    justify-self: center;
+    transform: rotate(90deg);
+  }
+
+  .bazi-pillars,
+  .calendar-pillars,
+  .calendar-hours > div {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .moving-lines article {
+    display: grid;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .coin-stage span.is-casting,
+  .is-spinning {
+    animation: none;
+  }
+}
+
+/* Editorial pass: quieter surfaces, fewer decorative containers. */
+.fengshui-feature-grid {
+  gap: 16px;
+}
+
+.fengshui-feature-grid > article {
+  overflow: hidden;
+  background: #fff;
+  border-color: #e1dce9;
+  border-radius: 14px;
+  box-shadow: 0 8px 24px rgba(43, 27, 73, 0.08);
+  backdrop-filter: none;
+}
+
+.fengshui-feature-grid > article:hover,
+.fengshui-feature-grid > article.is-active {
+  border-color: #9b79bd;
+  box-shadow: 0 12px 28px rgba(43, 27, 73, 0.12);
+  transform: translateY(-2px);
+}
+
+.fengshui-feature-card {
+  width: 100%;
+  display: block;
+  color: inherit;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+
+.fengshui-feature-card:focus-visible {
+  outline: 3px solid rgba(104, 56, 170, 0.25);
+  outline-offset: -3px;
+}
+
+.fengshui-feature-card__art {
+  height: 156px;
+  aspect-ratio: 3 / 1.7;
+  background: #241a31;
+}
+
+.fengshui-feature-card__art::after {
+  inset: 0;
+  background: linear-gradient(180deg, rgba(20, 12, 30, 0.06), rgba(20, 12, 30, 0.3));
+}
+
+.fengshui-feature-card__art img {
+  filter: saturate(0.72) contrast(0.96);
+}
+
+.fengshui-feature-grid > article:hover img {
+  transform: scale(1.02);
+}
+
+.fengshui-feature-card__art > span {
+  top: 14px;
+  right: auto;
+  bottom: auto;
+  left: 14px;
+  width: auto;
+  height: auto;
+  padding: 5px 7px;
+  color: rgba(255, 255, 255, 0.86);
+  background: rgba(20, 13, 29, 0.56);
+  border: 0;
+  border-radius: 4px;
+  box-shadow: none;
+  font-family: var(--font-display);
+  font-size: 0.64rem;
+  letter-spacing: 0.1em;
+}
+
+.fengshui-feature-card__body {
+  padding: 19px 20px 18px;
+}
+
+.fengshui-feature-card__body > div {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0;
+}
+
+.fengshui-feature-card__body > div span {
+  padding: 0;
+  color: #7a668c;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  font-size: 0.67rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.fengshui-feature-card__label svg {
+  width: 15px;
+  color: #755096;
+}
+
+.fengshui-feature-card__body h3 {
+  margin: 8px 0 7px;
+  font-size: 1.08rem;
+}
+
+.fengshui-feature-card__body > p {
+  min-height: 54px;
+  color: #716a79;
+  font-size: 0.79rem;
+  line-height: 1.55;
+}
+
+.fengshui-feature-card__body footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 16px;
+  padding-top: 13px;
+  color: #8c8393;
+  border-top: 1px solid #ebe7ef;
+  font-size: 0.66rem;
+}
+
+.fengshui-feature-card__body footer b {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #5f347f;
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+}
+
+.fengshui-feature-card__body footer svg {
+  width: 15px;
+}
+
+.fengshui-workspace {
+  color: #f2edf5;
+  background: #21182b;
+  border-color: #392a48;
+  border-radius: 18px;
+  box-shadow: 0 18px 44px rgba(31, 18, 48, 0.18);
+}
+
+.fengshui-workspace.is-open {
+  margin-top: 24px;
+}
+
+.fengshui-workspace > header {
+  padding: 20px 24px;
+  border-bottom-color: #3c2e49;
+}
+
+.fengshui-workspace > header small,
+.fengshui-result-card__heading small {
+  color: #a794b5;
+  letter-spacing: 0.1em;
+}
+
+.fengshui-workspace > header h2 {
+  font-size: 1.28rem;
+}
+
+.fengshui-workspace > header button {
+  width: 38px;
+  height: 38px;
+  background: transparent;
+  border-color: #4b3b57;
+  border-radius: 8px;
+}
+
+.fengshui-tool-layout {
+  gap: 0;
+  padding: 0;
+}
+
+.fengshui-form-card,
+.fengshui-result-card {
+  padding: 26px;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  backdrop-filter: none;
+}
+
+.fengshui-form-card {
+  border-right: 1px solid #3c2e49;
+}
+
+.fengshui-kicker {
+  color: #aa8dbd;
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+}
+
+.fengshui-form-card > h3 {
+  margin: 8px 0 19px;
+  font-size: 1.08rem;
+}
+
+.fengshui-form-card input,
+.fengshui-form-card select,
+.fengshui-form-card textarea {
+  min-height: 45px;
+  color: #f5f0f7;
+  background: #18111f;
+  border-color: #45374f;
+  border-radius: 7px;
+}
+
+.fengshui-form-card input:focus,
+.fengshui-form-card select:focus,
+.fengshui-form-card textarea:focus {
+  border-color: #9871b0;
+  box-shadow: 0 0 0 2px rgba(152, 113, 176, 0.15);
+}
+
+.fengshui-primary-action,
+.fengshui-reset {
+  border-radius: 7px;
+}
+
+.fengshui-primary-action {
+  background: #744690;
+  box-shadow: none;
+}
+
+.fengshui-primary-action:hover:not(:disabled) {
+  background: #8453a0;
+  box-shadow: none;
+  transform: none;
+}
+
+.fengshui-reset {
+  border-color: #4c3d57;
+}
+
+.fengshui-method-note,
+.fengshui-error {
+  color: #9b8fa2;
+}
+
+.fengshui-result-card__heading > span {
+  padding: 2px 0 2px 10px;
+  color: #c6b8cf;
+  background: transparent;
+  border: 0;
+  border-left: 1px solid #4c3b57;
+  border-radius: 0;
+  font-weight: 700;
+}
+
+.coin-stage {
+  background: transparent;
+  border-color: #45374f;
+  border-style: solid;
+  border-radius: 9px;
+}
+
+.coin-stage span {
+  color: #251c2d;
+  background: #bd944e;
+  border: 2px solid #d3ae6c;
+  box-shadow: inset 0 0 0 2px #8e6c35;
+}
+
+.coin-stage span.is-tail {
+  color: #f0eaf4;
+  background: #756482;
+  border-color: #9381a1;
+  box-shadow: inset 0 0 0 2px #594765;
+}
+
+.fengshui-hex-lines i {
+  background: #b58acb;
+  box-shadow: none;
+}
+
+.fengshui-hex-lines .is-moving i {
+  background: #d1a75f;
+  box-shadow: none;
+}
+
+.iching-reading__pair article,
+.bazi-pillars article,
+.calendar-pillars article {
+  background: #281e32;
+  border-color: #41334b;
+  border-radius: 7px;
+}
+
+.element-balance,
+.bazi-support,
+.bazi-relations,
+.bazi-luck,
+.calendar-facts article,
+.calendar-stars section,
+.calendar-hours,
+.calendar-prescriptions section,
+.calendar-activities,
+.calendar-compatibility {
+  padding: 14px 0;
+  background: transparent;
+  border: 0;
+  border-top: 1px solid #3c2e49;
+  border-radius: 0;
+}
+
+.bazi-support > div span,
+.bazi-relations span,
+.bazi-luck li,
+.calendar-hours article,
+.calendar-activities article,
+.calendar-directions span {
+  background: #281e32;
+  border-radius: 6px;
+}
+
+.element-balance em {
+  background: #9f72b5;
+}
+
+.calendar-stars span,
+.calendar-prescriptions span {
+  padding: 0;
+  background: transparent;
+  border-radius: 0;
+}
+
+.calendar-stars span:not(:last-child)::after,
+.calendar-prescriptions span:not(:last-child)::after {
+  color: #62556b;
+  content: " ·";
+}
+
+.calendar-energy {
+  background: #281e32;
+  border-color: #41334b;
+  border-radius: 8px;
+}
+
+.calendar-energy > span {
+  background:
+    radial-gradient(circle closest-side, #281e32 78%, transparent 80% 99%),
+    conic-gradient(#a979be var(--score), #45384e 0);
+}
+
+.calendar-energy.is-good > span {
+  background: radial-gradient(circle closest-side, #281e32 78%, transparent 80% 99%), conic-gradient(#63bd8b var(--score), #45384e 0);
+}
+
+.calendar-energy.is-caution > span {
+  background: radial-gradient(circle closest-side, #281e32 78%, transparent 80% 99%), conic-gradient(#d87570 var(--score), #45384e 0);
+}
+
+@media (max-width: 820px) {
+  .fengshui-feature-grid > article {
+    display: block;
+  }
+
+  .fengshui-feature-card {
+    display: grid;
+    grid-template-columns: minmax(190px, 0.72fr) 1fr;
+    height: 100%;
+  }
+
+  .fengshui-feature-card__art {
+    height: 100%;
+    aspect-ratio: auto;
+  }
+
+  .fengshui-form-card {
+    border-right: 0;
+    border-bottom: 1px solid #3c2e49;
+  }
+}
+
+@media (max-width: 620px) {
+  .fengshui-feature-grid {
+    gap: 10px;
+  }
+
+  .fengshui-feature-grid > article {
+    border-radius: 12px;
+  }
+
+  .fengshui-feature-card {
+    grid-template-columns: 116px minmax(0, 1fr);
+  }
+
+  .fengshui-feature-card__art {
+    min-height: 168px;
+  }
+
+  .fengshui-feature-card__body {
+    padding: 15px;
+  }
+
+  .fengshui-feature-card__body h3 {
+    font-size: 0.92rem;
+  }
+
+  .fengshui-feature-card__body > p {
+    min-height: 0;
+    font-size: 0.7rem;
+  }
+
+  .fengshui-feature-card__body footer {
+    margin-top: 11px;
+    padding-top: 10px;
+  }
+
+  .fengshui-feature-card__body footer > span {
+    display: none;
+  }
+
+  .fengshui-workspace {
+    border-radius: 14px;
+  }
+
+  .fengshui-tool-layout {
+    padding: 0;
+  }
+
+  .fengshui-form-card,
+  .fengshui-result-card {
+    padding: 18px;
+    border-radius: 0;
+  }
+}

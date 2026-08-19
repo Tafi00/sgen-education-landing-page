@@ -45,14 +45,14 @@ export function ProgramsSection() {
                 <span className="program-card__number">{String(index + 1).padStart(2, "0")}</span>
                 <h3>{program.title}</h3>
                 <p>{program.description}</p>
-                <a href="#tu-van">Tìm hiểu <ArrowRight aria-hidden="true" /></a>
+                <a href="/khoa-hoc">Xem khóa học <ArrowRight aria-hidden="true" /></a>
               </div>
             </Reveal>
           ))}
         </div>
 
         <Reveal className="programs-section__cta" delay={120}>
-          <SparkleButton href="#tu-van">Xem toàn bộ chương trình</SparkleButton>
+          <SparkleButton href="/khoa-hoc">Xem toàn bộ chương trình</SparkleButton>
         </Reveal>
       </div>
     </section>

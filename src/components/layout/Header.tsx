@@ -3,12 +3,12 @@ import { Menu, X } from "lucide-react";
 import logoDark from "../../../assets/brand/sgen-logo-dark-v2.webp";
 
 const navItems = [
-  { label: "Giới thiệu", href: "#gioi-thieu" },
-  { label: "Tra cứu", href: "#tra-cuu" },
-  { label: "Dịch vụ", href: "#chuong-trinh" },
-  { label: "Khóa học", href: "#chuong-trinh" },
-  { label: "Free tools", href: "#cong-cu" },
-  { label: "Blog", href: "#blog" },
+  { label: "Giới thiệu", href: "/gioi-thieu" },
+  { label: "Tra cứu", href: "/tra-cuu" },
+  { label: "Dịch vụ", href: "/dich-vu" },
+  { label: "Khóa học", href: "/khoa-hoc" },
+  { label: "Free tools", href: "/free-tools" },
+  { label: "Blog", href: "/blog" },
 ];
 
 export function Header() {
@@ -63,7 +63,7 @@ export function Header() {
   return (
     <header className={`site-header ${scrolled ? "site-header--scrolled" : ""} ${menuOpen ? "site-header--menu-open" : ""}`}>
       <div className="container site-header__inner">
-        <a className="site-header__brand" href="#top" aria-label="SGEN Education - Trang chủ">
+        <a className="site-header__brand" href="/" aria-label="SGEN Education - Trang chủ">
           <img src={logoDark} alt="SGEN Education" decoding="async" fetchPriority="high" />
         </a>
 
@@ -82,7 +82,7 @@ export function Header() {
           {navItems.map((item) => (
             <a key={item.label} href={item.href} onClick={closeMenu}>{item.label}</a>
           ))}
-          <a className="site-nav__login" href="#tu-van" onClick={closeMenu}>Đăng nhập</a>
+          <a className="site-nav__login" href="tel:0903891839" onClick={closeMenu}>Liên hệ</a>
         </nav>
 
         <span className="site-header__progress" aria-hidden="true">

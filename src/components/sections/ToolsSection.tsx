@@ -1,10 +1,9 @@
-import { useState } from "react";
+import { lazy, Suspense, useState } from "react";
 import {
   ArrowRight,
   Calculator,
   CalendarDays,
   ChartNoAxesCombined,
-  Hash,
   Heart,
   Mountain,
   Smile,
@@ -20,12 +19,14 @@ import { IconOrb } from "../ui/IconOrb";
 import { Reveal } from "../ui/Reveal";
 import { SectionHeading } from "../ui/SectionHeading";
 
-type ToolCategory = "quick" | "free" | "meaning";
+const FengShuiTools = lazy(() => import("./FengShuiTools").then((module) => ({ default: module.FengShuiTools })));
+
+type ToolCategory = "quick" | "free" | "fengshui";
 
 const tabs: { id: ToolCategory; label: string }[] = [
   { id: "quick", label: "Tính nhanh chỉ số" },
   { id: "free", label: "Công cụ miễn phí" },
-  { id: "meaning", label: "Ý nghĩa các con số" },
+  { id: "fengshui", label: "Công cụ phong thủy" },
 ];
 
 const toolGroups = {
@@ -45,16 +46,22 @@ const toolGroups = {
     { title: "Chu kỳ phát triển", icon: TrendingUp },
     { title: "Khả năng kết nối", icon: UsersRound },
   ],
-  meaning: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "11", "22"].map((number) => ({
-    title: `Thần số học số ${number}`,
-    icon: Hash,
-    number,
-  })),
 };
 
 export function ToolsSection() {
   const [activeTab, setActiveTab] = useState<ToolCategory>("quick");
-  const tools = toolGroups[activeTab];
+  const activeTools = activeTab === "fengshui" ? [] : toolGroups[activeTab];
+  const sectionCopy = activeTab === "fengshui"
+    ? {
+        eyebrow: "Công cụ phong thủy",
+        title: "Tra cứu phong thủy",
+        description: "Gieo quẻ Kinh Dịch, lập Tứ Trụ Bát Tự và xem ngày tốt theo lịch pháp Việt Nam.",
+      }
+    : {
+        eyebrow: "Tra cứu kiến thức thần số học",
+        title: "Các công cụ tính nhanh chỉ số",
+        description: "Khám phá các chỉ số quan trọng trong Thần số học Pythagoras.",
+      };
 
   return (
     <section
@@ -64,14 +71,14 @@ export function ToolsSection() {
     >
       <div className="container">
         <SectionHeading
-          eyebrow="Tra cứu kiến thức thần số học"
-          title="Các công cụ tính nhanh chỉ số"
-          description="Khám phá các chỉ số quan trọng trong Thần số học Pythagoras."
+          eyebrow={sectionCopy.eyebrow}
+          title={sectionCopy.title}
+          description={sectionCopy.description}
           icon={Calculator}
         />
 
         <Reveal className="tools-tabs" direction="none">
-          <div role="tablist" aria-label="Nhóm công cụ thần số học">
+          <div role="tablist" aria-label="Nhóm công cụ tra cứu">
             {tabs.map((tab) => (
               <button
                 key={tab.id}
@@ -89,38 +96,38 @@ export function ToolsSection() {
           </div>
         </Reveal>
 
-        <div id="tools-panel" role="tabpanel" aria-labelledby={`tool-tab-${activeTab}`} className="tools-grid" key={activeTab}>
-          {tools.map((tool, index) => {
-            const Icon = tool.icon;
-            const metric = "metric" in tool ? tool.metric as NumerologyMetricKey : undefined;
-            const target = activeTab === "meaning" ? "#y-nghia-con-so" : metric ? `#chi-so-${metric}` : "#tra-cuu";
-            return (
-              <Reveal as="article" className="tool-card" delay={(index % 4) * 70} key={tool.title}>
-                {"number" in tool ? (
-                  <span className="tool-card__number">{tool.number}</span>
-                ) : (
-                  <IconOrb icon={Icon} size="lg" />
-                )}
-                <h3>{tool.title}</h3>
-                <a
-                  href={target}
-                  onClick={(event) => {
-                    if (activeTab !== "quick" || document.querySelector(target)) return;
-                    event.preventDefault();
-                    document.querySelector("#tra-cuu")?.scrollIntoView({ behavior: "smooth", block: "center" });
-                  }}
-                >
-                  <span>{activeTab === "meaning" ? "Khám phá" : "Tính ngay"}</span>
-                  <ArrowRight aria-hidden="true" size={20} />
-                </a>
-              </Reveal>
-            );
-          })}
-        </div>
+        {activeTab === "fengshui" ? (
+          <div id="tools-panel" role="tabpanel" aria-labelledby="tool-tab-fengshui" key={activeTab}>
+            <Suspense fallback={<div className="fengshui-loading"><span />Đang mở không gian phong thủy…</div>}>
+              <FengShuiTools />
+            </Suspense>
+          </div>
+        ) : (
+          <div id="tools-panel" role="tabpanel" aria-labelledby={`tool-tab-${activeTab}`} className="tools-grid" key={activeTab}>
+            {activeTools.map((tool, index) => {
+              const Icon = tool.icon;
+              const metric = "metric" in tool ? tool.metric as NumerologyMetricKey : undefined;
+              const target = metric ? `/tra-cuu?metric=${metric}` : "/tra-cuu";
+              return (
+                <Reveal as="article" className="tool-card" delay={(index % 4) * 70} key={tool.title}>
+                  {"number" in tool ? (
+                    <span className="tool-card__number">{String(tool.number)}</span>
+                  ) : (
+                    <IconOrb icon={Icon} size="lg" />
+                  )}
+                  <h3>{tool.title}</h3>
+                  <a
+                    href={target}
+                  >
+                    <span>Tính ngay</span>
+                    <ArrowRight aria-hidden="true" size={20} />
+                  </a>
+                </Reveal>
+              );
+            })}
+          </div>
+        )}
 
-        <Reveal className="tools-section__more" delay={120}>
-          <a href="#y-nghia-con-so">Xem tất cả công cụ <ArrowRight aria-hidden="true" /></a>
-        </Reveal>
       </div>
     </section>
   );

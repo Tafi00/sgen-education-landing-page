@@ -3,13 +3,13 @@ import cosmicDark from "../../../assets/backgrounds/cosmic-dark.webp";
 import logoLight from "../../../assets/brand/sgen-logo-light-footer-v2.webp";
 
 const footerLinks = [
-  { label: "Giới thiệu", href: "#gioi-thieu" },
-  { label: "Tra cứu", href: "#tra-cuu" },
-  { label: "Dịch vụ", href: "#chuong-trinh" },
-  { label: "Khóa học", href: "#chuong-trinh" },
-  { label: "Free tools", href: "#cong-cu" },
-  { label: "Blog", href: "#blog" },
-  { label: "Liên hệ", href: "#tu-van" },
+  { label: "Giới thiệu", href: "/gioi-thieu" },
+  { label: "Tra cứu", href: "/tra-cuu" },
+  { label: "Dịch vụ", href: "/dich-vu" },
+  { label: "Khóa học", href: "/khoa-hoc" },
+  { label: "Free tools", href: "/free-tools" },
+  { label: "Blog", href: "/blog" },
+  { label: "Liên hệ", href: "/#tu-van" },
 ];
 
 export function Footer() {
@@ -17,7 +17,7 @@ export function Footer() {
     <footer className="site-footer" style={{ "--footer-bg": `url(${cosmicDark})` } as React.CSSProperties}>
       <div className="container site-footer__grid">
         <div className="site-footer__brand">
-          <img src={logoLight} alt="SGEN Education" loading="lazy" decoding="async" />
+          <img src={logoLight} alt="SGEN Education" decoding="async" />
           <p>Kiến thức chuẩn — Công nghệ mạnh —<br />Tương lai vững chắc.</p>
         </div>
 

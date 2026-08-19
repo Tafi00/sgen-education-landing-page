@@ -84,9 +84,9 @@ export function ConsultationSection() {
               <input name="name" placeholder="Họ và tên" autoComplete="name" required />
             </label>
             <label className="consultation-field">
-              <span className="sr-only">Ngày sinh trên căn cước công dân</span>
+              <span className="sr-only">Ngày sinh không bắt buộc</span>
               <CalendarDays aria-hidden="true" />
-              <input name="birthDate" type="text" placeholder="Ngày sinh trên CCCD" onFocus={(event) => { event.currentTarget.type = "date"; }} required />
+              <input name="birthDate" type="text" placeholder="Ngày sinh (không bắt buộc)" onFocus={(event) => { event.currentTarget.type = "date"; }} />
             </label>
             <label className="consultation-field">
               <span className="sr-only">Email</span>

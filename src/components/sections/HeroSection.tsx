@@ -32,16 +32,19 @@ const benefits = [
     icon: HeartHandshake,
     title: "Hiểu bản thân",
     description: "Thấu hiểu tính cách, tài năng và điểm mạnh tiềm ẩn của chính bạn.",
+    href: "/tra-cuu",
   },
   {
     icon: BriefcaseBusiness,
     title: "Chọn đúng nghề",
     description: "Khám phá ngành nghề phù hợp, phát huy tối đa năng lực cá nhân.",
+    href: "/dich-vu",
   },
   {
     icon: ChartNoAxesCombined,
     title: "Vững bước tương lai",
     description: "Xây dựng lộ trình sự nghiệp rõ ràng, tự tin chinh phục mục tiêu.",
+    href: "/khoa-hoc",
   },
 ];
 
@@ -78,11 +81,11 @@ export function HeroSection() {
             Khám phá tài năng, điểm mạnh và lộ trình nghề nghiệp qua Thần số học Pythagoras.
           </p>
           <div className="hero__actions">
-            <a className="hero__action hero__action--primary" href="#tra-cuu">
+            <a className="hero__action hero__action--primary" href="/tra-cuu">
               <Search aria-hidden="true" />
               <span>Tra cứu miễn phí</span>
             </a>
-            <a className="hero__action hero__action--secondary" href="#cong-cu">
+            <a className="hero__action hero__action--secondary" href="/free-tools">
               <span>Khám phá công cụ</span>
               <ArrowRight aria-hidden="true" />
             </a>
@@ -197,14 +200,14 @@ export function HeroSection() {
 
       <div className="hero__benefits-wrap">
         <div className="container hero__benefits">
-          {benefits.map(({ icon, title, description }, index) => (
+          {benefits.map(({ icon, title, description, href }, index) => (
             <Reveal as="article" className="benefit-card" delay={index * 90} key={title}>
               <IconOrb icon={icon} size="md" />
               <div>
                 <h3>{title}</h3>
                 <p>{description}</p>
               </div>
-              <a href="#cong-cu" aria-label={`Tìm hiểu ${title}`}><ArrowRight /></a>
+              <a href={href} aria-label={`Tìm hiểu ${title}`}><ArrowRight /></a>
             </Reveal>
           ))}
         </div>

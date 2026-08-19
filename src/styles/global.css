@@ -37,6 +37,11 @@ html {
   scroll-padding-top: 108px;
 }
 
+section[id],
+[id="ket-qua"] {
+  scroll-margin-top: 120px;
+}
+
 body {
   margin: 0;
   min-width: 320px;

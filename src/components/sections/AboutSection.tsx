@@ -36,7 +36,7 @@ export function AboutSection() {
             ))}
           </div>
 
-          <SparkleButton href="#chuong-trinh">Tìm hiểu về SGEN</SparkleButton>
+          <SparkleButton href="/gioi-thieu">Tìm hiểu về SGEN</SparkleButton>
         </Reveal>
 
         <Reveal className="pythagoras-card" direction="left" delay={100}>
