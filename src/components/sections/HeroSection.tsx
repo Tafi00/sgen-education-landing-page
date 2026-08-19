@@ -14,6 +14,7 @@ import {
   VenusAndMars,
 } from "lucide-react";
 import cosmicDark from "../../../assets/backgrounds/cosmic-dark.webp";
+import { calculateNumerologyReport, type NumerologyReport } from "../../lib/numerology";
 import { Header } from "../layout/Header";
 import { CustomSelect } from "../ui/CustomSelect";
 import { IconOrb } from "../ui/IconOrb";
@@ -47,12 +48,16 @@ const benefits = [
 const floatingNumbers = ["7", "9", "2", "5", "8", "4", "3", "6"];
 
 export function HeroSection() {
-  const [submitted, setSubmitted] = useState(false);
+  const [report, setReport] = useState<NumerologyReport | null>(null);
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!new FormData(event.currentTarget).get("gender")) return;
-    setSubmitted(true);
+    const formData = new FormData(event.currentTarget);
+    if (!formData.get("gender")) return;
+
+    const birthName = String(formData.get("birthName") ?? "");
+    const birthDate = String(formData.get("birthDate") ?? "");
+    setReport(calculateNumerologyReport(birthName, birthDate));
   };
 
   return (
@@ -156,9 +161,36 @@ export function HeroSection() {
               <ShieldCheck aria-hidden="true" /> Miễn phí tra cứu · Bảo mật thông tin
             </p>
 
-            <p className={`lookup-card__message ${submitted ? "is-visible" : ""}`} role="status">
-              Đã nhận thông tin — báo cáo mẫu của bạn đang được chuẩn bị.
-            </p>
+            {report && (
+              <div className="lookup-result" role="status" aria-live="polite">
+                <div className="lookup-result__heading">
+                  <span className="lookup-result__core">{report.metrics[0].value}</span>
+                  <div>
+                    <small>Bản đồ số học của</small>
+                    <h3>{report.displayName}</h3>
+                    <p>{report.birthDateLabel} · Đường đời {report.metrics[0].value}</p>
+                  </div>
+                </div>
+
+                <p className="lookup-result__summary">{report.metrics[0].note}</p>
+
+                <div className="lookup-result__grid">
+                  {report.metrics.map((metric) => (
+                    <article id={`chi-so-${metric.key}`} key={metric.key}>
+                      <span>{metric.value}</span>
+                      <div>
+                        <strong>{metric.label}</strong>
+                        <small>{metric.note}</small>
+                      </div>
+                    </article>
+                  ))}
+                </div>
+
+                <p className="lookup-result__source">
+                  Kết quả áp dụng hệ Pythagoras và quy tắc số vua, số nợ nghiệp của SGEN.
+                </p>
+              </div>
+            )}
           </form>
         </Reveal>
       </div>

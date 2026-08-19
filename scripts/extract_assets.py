@@ -19,7 +19,7 @@ def ensure_dirs() -> None:
     (ASSETS / "_source-crops" / "programs").mkdir(parents=True, exist_ok=True)
 
 
-def save_webp(image: Image.Image, path: Path, quality: int = 92) -> None:
+def save_webp(image: Image.Image, path: Path, quality: int = 84) -> None:
     image.convert("RGB").save(path, "WEBP", quality=quality, method=6)
 
 
@@ -199,7 +199,7 @@ def make_backgrounds_and_generated_illustrations() -> None:
     for source_name, output in generated_assets.items():
         source = GENERATED / source_name
         if output.suffix == ".webp":
-            save_webp(Image.open(source), output, quality=94)
+            save_webp(Image.open(source), output, quality=84)
         else:
             copy2(source, output)
 
@@ -209,7 +209,7 @@ def make_backgrounds_and_generated_illustrations() -> None:
     }
     for source_name, output in transparent_webp_assets.items():
         image = Image.open(GENERATED / source_name).convert("RGBA")
-        image.save(output, "WEBP", quality=91, method=6, exact=True)
+        image.save(output, "WEBP", quality=82, alpha_quality=80, method=6, exact=True)
 
 
 def make_program_assets() -> None:
@@ -256,7 +256,7 @@ def make_blog_assets() -> None:
         "blog-numerology-arrows.webp": (114, 767, 446, 927),
     }
     for name, box in crops.items():
-        save_webp(source.crop(box), ASSETS / "blog" / name, quality=93)
+        save_webp(source.crop(box), ASSETS / "blog" / name, quality=84)
 
 
 def main() -> None:

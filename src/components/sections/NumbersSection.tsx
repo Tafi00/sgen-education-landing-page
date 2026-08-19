@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Binary, Lightbulb, Orbit, Rocket, ShieldCheck, UserRound } from "lucide-react";
 import cosmicDarkClean from "../../../assets/backgrounds/cosmic-dark-clean.webp";
 import numeralOne from "../../../assets/illustrations/numeral-1-cosmic.webp";
@@ -47,12 +47,85 @@ const numberImages: Record<NumerologyNumber, string> = {
   "22": numeralTwentyTwo,
 };
 
+const imagePreloads = new Map<string, Promise<void>>();
+
+function preloadImage(source: string) {
+  const cached = imagePreloads.get(source);
+  if (cached) return cached;
+
+  const preload = new Promise<void>((resolve) => {
+    const image = new Image();
+    const finish = () => resolve();
+
+    image.onload = finish;
+    image.onerror = finish;
+    image.src = source;
+
+    if (image.decode) {
+      image.decode().then(finish, () => undefined);
+    }
+  });
+
+  imagePreloads.set(source, preload);
+  return preload;
+}
+
 export function NumbersSection() {
   const [activeNumber, setActiveNumber] = useState<NumerologyNumber>("1");
+  const [previousNumber, setPreviousNumber] = useState<NumerologyNumber | null>(null);
+  const [pendingNumber, setPendingNumber] = useState<NumerologyNumber | null>(null);
+  const sectionRef = useRef<HTMLElement>(null);
+  const activeNumberRef = useRef(activeNumber);
+  const requestRef = useRef(0);
+  const transitionTimerRef = useRef<number | undefined>(undefined);
   const current = numberData[activeNumber];
+
+  useEffect(() => {
+    const section = sectionRef.current;
+    if (!section) return;
+
+    const preloadAllImages = () => {
+      Object.values(numberImages).forEach((source) => void preloadImage(source));
+    };
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        preloadAllImages();
+        observer.disconnect();
+      },
+      { rootMargin: "600px 0px" },
+    );
+
+    observer.observe(section);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => () => window.clearTimeout(transitionTimerRef.current), []);
+
+  const selectNumber = async (number: NumerologyNumber) => {
+    if (number === activeNumberRef.current) {
+      requestRef.current += 1;
+      setPendingNumber(null);
+      return;
+    }
+
+    const request = ++requestRef.current;
+    setPendingNumber(number);
+    await preloadImage(numberImages[number]);
+    if (request !== requestRef.current) return;
+
+    window.clearTimeout(transitionTimerRef.current);
+    setPreviousNumber(activeNumberRef.current);
+    activeNumberRef.current = number;
+    setActiveNumber(number);
+    setPendingNumber(null);
+    transitionTimerRef.current = window.setTimeout(() => setPreviousNumber(null), 460);
+  };
 
   return (
     <section
+      ref={sectionRef}
       id="y-nghia-con-so"
       className="numbers-section section section--dark"
       style={{ "--dark-clean-bg": `url(${cosmicDarkClean})` } as React.CSSProperties}
@@ -75,8 +148,8 @@ export function NumbersSection() {
                 role="tab"
                 aria-selected={activeNumber === number}
                 aria-controls="number-detail"
-                className={activeNumber === number ? "is-active" : ""}
-                onClick={() => setActiveNumber(number)}
+                className={`${activeNumber === number ? "is-active" : ""} ${pendingNumber === number ? "is-loading" : ""}`}
+                onClick={() => void selectNumber(number)}
               >
                 {number}
               </button>
@@ -85,11 +158,21 @@ export function NumbersSection() {
         </Reveal>
 
         <Reveal className="number-panel" delay={80}>
-          <div className="number-art" key={`art-${activeNumber}`}>
+          <div className="number-art">
+            {previousNumber && (
+              <img
+                className="number-art__image number-art__image--outgoing"
+                src={numberImages[previousNumber]}
+                alt=""
+                aria-hidden="true"
+              />
+            )}
             <img
+              key={activeNumber}
+              className="number-art__image number-art__image--incoming"
               src={numberImages[activeNumber]}
               alt={`Minh họa năng lượng thần số học số ${activeNumber}`}
-              loading="lazy"
+              loading="eager"
               decoding="async"
             />
           </div>

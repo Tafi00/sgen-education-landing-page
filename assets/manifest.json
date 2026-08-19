@@ -5,8 +5,8 @@
     {"id": "cosmic-light", "path": "assets/backgrounds/cosmic-light.webp", "usage": "Tools, about, programs, blog, consultation"}
   ],
   "brand": [
-    {"id": "logo-dark", "path": "assets/brand/sgen-logo-dark.png", "usage": "White/light navigation", "transparent": true},
-    {"id": "logo-light", "path": "assets/brand/sgen-logo-light-footer.png", "usage": "Dark footer or dark panels", "transparent": true}
+    {"id": "logo-dark", "path": "assets/brand/sgen-logo-dark-v2.webp", "usage": "White/light navigation", "transparent": true},
+    {"id": "logo-light", "path": "assets/brand/sgen-logo-light-footer-v2.webp", "usage": "Dark footer or dark panels", "transparent": true}
   ],
   "illustrations": [
     {"id": "pythagoras-cosmic", "path": "assets/illustrations/pythagoras-cosmic.webp", "usage": "About Pythagoras panel", "transparent": true},

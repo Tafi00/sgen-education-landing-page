@@ -15,6 +15,7 @@ import {
   UsersRound,
 } from "lucide-react";
 import cosmicLight from "../../../assets/backgrounds/cosmic-light.webp";
+import type { NumerologyMetricKey } from "../../lib/numerology";
 import { IconOrb } from "../ui/IconOrb";
 import { Reveal } from "../ui/Reveal";
 import { SectionHeading } from "../ui/SectionHeading";
@@ -29,14 +30,14 @@ const tabs: { id: ToolCategory; label: string }[] = [
 
 const toolGroups = {
   quick: [
-    { title: "Chỉ số Đường Đời", icon: UserRound },
-    { title: "Chỉ số Sứ mệnh", icon: Target },
-    { title: "Chỉ số Nội Tâm", icon: Heart },
-    { title: "Chỉ số Thái độ", icon: Smile },
-    { title: "Năm cá nhân", icon: CalendarDays },
-    { title: "Giai đoạn đỉnh cao", icon: Mountain },
-    { title: "Chỉ số Tương Tác", icon: UsersRound },
-    { title: "Chỉ số trưởng thành", icon: ChartNoAxesCombined },
+    { title: "Chỉ số Đường Đời", icon: UserRound, metric: "lifePath" },
+    { title: "Chỉ số Sứ mệnh", icon: Target, metric: "destiny" },
+    { title: "Chỉ số Nội Tâm", icon: Heart, metric: "soul" },
+    { title: "Chỉ số Thái độ", icon: Smile, metric: "attitude" },
+    { title: "Năm cá nhân", icon: CalendarDays, metric: "personalYear" },
+    { title: "Giai đoạn đỉnh cao", icon: Mountain, metric: "peaks" },
+    { title: "Chỉ số Tương Tác", icon: UsersRound, metric: "interaction" },
+    { title: "Chỉ số trưởng thành", icon: ChartNoAxesCombined, metric: "maturity" },
   ],
   free: [
     { title: "Con số ngày sinh", icon: Star },
@@ -91,7 +92,8 @@ export function ToolsSection() {
         <div id="tools-panel" role="tabpanel" aria-labelledby={`tool-tab-${activeTab}`} className="tools-grid" key={activeTab}>
           {tools.map((tool, index) => {
             const Icon = tool.icon;
-            const target = activeTab === "meaning" ? "#y-nghia-con-so" : "#tra-cuu";
+            const metric = "metric" in tool ? tool.metric as NumerologyMetricKey : undefined;
+            const target = activeTab === "meaning" ? "#y-nghia-con-so" : metric ? `#chi-so-${metric}` : "#tra-cuu";
             return (
               <Reveal as="article" className="tool-card" delay={(index % 4) * 70} key={tool.title}>
                 {"number" in tool ? (
@@ -100,7 +102,14 @@ export function ToolsSection() {
                   <IconOrb icon={Icon} size="lg" />
                 )}
                 <h3>{tool.title}</h3>
-                <a href={target}>
+                <a
+                  href={target}
+                  onClick={(event) => {
+                    if (activeTab !== "quick" || document.querySelector(target)) return;
+                    event.preventDefault();
+                    document.querySelector("#tra-cuu")?.scrollIntoView({ behavior: "smooth", block: "center" });
+                  }}
+                >
                   <span>{activeTab === "meaning" ? "Khám phá" : "Tính ngay"}</span>
                   <ArrowRight aria-hidden="true" size={20} />
                 </a>
