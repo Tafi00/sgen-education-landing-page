@@ -78,6 +78,21 @@ img {
   max-width: 100%;
 }
 
+h1,
+h2 {
+  overflow-wrap: normal;
+  text-wrap: balance;
+}
+
+h3 {
+  overflow-wrap: normal;
+  text-wrap: pretty;
+}
+
+.text-keep {
+  white-space: nowrap;
+}
+
 .sr-only {
   position: absolute;
   width: 1px;

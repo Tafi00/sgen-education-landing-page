@@ -17,9 +17,9 @@ import {
   Waves,
   X,
 } from "lucide-react";
-import ichingArtwork from "../../../assets/fengshui/iching-cosmic-v1.webp";
-import baziArtwork from "../../../assets/fengshui/bazi-cosmic-v1.webp";
-import calendarArtwork from "../../../assets/fengshui/auspicious-calendar-cosmic-v1.webp";
+import ichingArtwork from "../../../assets/fengshui/iching-editorial-v2.webp";
+import baziArtwork from "../../../assets/fengshui/bazi-editorial-v2.webp";
+import calendarArtwork from "../../../assets/fengshui/auspicious-calendar-editorial-v2.webp";
 import {
   getBaziRelations,
   getBaziSupportProfile,
@@ -418,14 +418,14 @@ export function FengShuiTools() {
           <article className={activeTool === id ? "is-active" : ""} key={id}>
             <button className="fengshui-feature-card" type="button" onClick={() => openTool(id)} aria-pressed={activeTool === id}>
               <div className="fengshui-feature-card__art">
-                <img src={image} alt="" loading="lazy" />
+                <img src={image} alt="" loading="lazy" decoding="async" />
                 <span>{String(index + 1).padStart(2, "0")}</span>
               </div>
               <div className="fengshui-feature-card__body">
                 <div className="fengshui-feature-card__label"><Icon /><span>{category}</span></div>
                 <h3>{title}</h3>
                 <p>{description}</p>
-                <footer><span>{meta}</span><b>Mở <ArrowRight /></b></footer>
+                <footer><span>{meta}</span><b>Mở công cụ <ArrowRight /></b></footer>
               </div>
             </button>
           </article>

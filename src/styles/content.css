@@ -31,6 +31,7 @@
 
 .about-copy h2 span {
   color: var(--violet);
+  white-space: nowrap;
 }
 
 .about-copy > p {

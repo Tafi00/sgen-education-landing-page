@@ -1669,3 +1669,244 @@
     border-radius: 0;
   }
 }
+
+/* Feature-card v2: calm editorial artwork with a clearer interaction hierarchy. */
+.fengshui-feature-grid {
+  gap: 20px;
+}
+
+.fengshui-feature-grid > article {
+  position: relative;
+  min-width: 0;
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid rgba(64, 39, 105, 0.13);
+  border-radius: 20px;
+  box-shadow:
+    0 16px 44px rgba(35, 18, 76, 0.1),
+    0 2px 7px rgba(35, 18, 76, 0.05);
+  transition: border-color 220ms ease, box-shadow 220ms ease, transform 220ms ease;
+}
+
+.fengshui-feature-grid > article:hover,
+.fengshui-feature-grid > article.is-active {
+  border-color: rgba(104, 55, 184, 0.44);
+  box-shadow:
+    0 22px 54px rgba(47, 24, 94, 0.15),
+    0 0 0 1px rgba(121, 70, 207, 0.06);
+  transform: translateY(-4px);
+}
+
+.fengshui-feature-card {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  padding: 0;
+  color: inherit;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+
+.fengshui-feature-card__art {
+  position: relative;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  background: #11162f;
+  isolation: isolate;
+}
+
+.fengshui-feature-card__art::after {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    linear-gradient(180deg, rgba(8, 10, 30, 0.02) 48%, rgba(8, 10, 30, 0.2) 100%),
+    inset 0 -1px rgba(255, 255, 255, 0.08);
+  pointer-events: none;
+  content: "";
+}
+
+.fengshui-feature-card__art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: none;
+  transform: scale(1.002);
+  transition: transform 600ms cubic-bezier(0.2, 0.75, 0.2, 1);
+}
+
+.fengshui-feature-grid > article:hover img {
+  transform: scale(1.035);
+}
+
+.fengshui-feature-card__art > span {
+  position: absolute;
+  top: 15px;
+  right: auto;
+  bottom: auto;
+  left: 15px;
+  z-index: 2;
+  width: auto;
+  height: auto;
+  padding: 6px 9px;
+  color: #f9f2df;
+  background: rgba(12, 13, 34, 0.7);
+  border: 1px solid rgba(245, 224, 181, 0.28);
+  border-radius: 999px;
+  box-shadow: none;
+  font-family: var(--font-display);
+  font-size: 0.63rem;
+  letter-spacing: 0.12em;
+  backdrop-filter: blur(8px);
+}
+
+.fengshui-feature-card__body {
+  min-height: 226px;
+  display: flex;
+  flex-direction: column;
+  padding: 22px 23px 21px;
+}
+
+.fengshui-feature-card__body > div {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+}
+
+.fengshui-feature-card__label svg {
+  width: 16px;
+  height: 16px;
+  color: #6c43a5;
+  stroke-width: 1.8;
+}
+
+.fengshui-feature-card__body > div span {
+  padding: 0;
+  color: #756486;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  font-size: 0.67rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.fengshui-feature-card__body h3 {
+  margin: 11px 0 8px;
+  color: #211236;
+  font-size: 1.16rem;
+  line-height: 1.3;
+}
+
+.fengshui-feature-card__body > p {
+  min-height: 0;
+  margin: 0;
+  color: #6c6476;
+  font-size: 0.8rem;
+  line-height: 1.65;
+}
+
+.fengshui-feature-card__body footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: auto;
+  padding-top: 17px;
+  color: #8b8192;
+  border-top: 1px solid #ece8f0;
+  font-size: 0.66rem;
+}
+
+.fengshui-feature-card__body footer b {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 10px;
+  color: #5c2f82;
+  background: #f5effa;
+  border-radius: 999px;
+  font-family: var(--font-display);
+  font-size: 0.68rem;
+  transition: color 180ms ease, background 180ms ease;
+}
+
+.fengshui-feature-card__body footer svg {
+  width: 14px;
+  transition: transform 180ms ease;
+}
+
+.fengshui-feature-grid > article:hover footer b,
+.fengshui-feature-grid > article.is-active footer b {
+  color: #fff;
+  background: #633590;
+}
+
+.fengshui-feature-grid > article:hover footer svg {
+  transform: translateX(2px);
+}
+
+@media (max-width: 900px) {
+  .fengshui-feature-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .fengshui-feature-card {
+    grid-template-columns: minmax(250px, 0.82fr) minmax(0, 1.18fr);
+    grid-template-rows: 1fr;
+  }
+
+  .fengshui-feature-card__art {
+    height: 100%;
+    min-height: 238px;
+    aspect-ratio: auto;
+  }
+
+  .fengshui-feature-card__body {
+    min-height: 238px;
+  }
+}
+
+@media (max-width: 620px) {
+  .fengshui-feature-grid {
+    gap: 14px;
+  }
+
+  .fengshui-feature-grid > article {
+    border-radius: 16px;
+  }
+
+  .fengshui-feature-card {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+  }
+
+  .fengshui-feature-card__art {
+    height: auto;
+    min-height: 0;
+    aspect-ratio: 16 / 10;
+  }
+
+  .fengshui-feature-card__body {
+    min-height: 210px;
+    padding: 19px;
+  }
+
+  .fengshui-feature-card__body h3 {
+    font-size: 1.04rem;
+  }
+
+  .fengshui-feature-card__body > p {
+    font-size: 0.76rem;
+  }
+
+  .fengshui-feature-card__body footer > span {
+    display: inline;
+  }
+}

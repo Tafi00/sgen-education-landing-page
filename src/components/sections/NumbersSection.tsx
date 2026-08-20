@@ -133,7 +133,7 @@ export function NumbersSection() {
       <div className="container">
         <SectionHeading
           eyebrow="Khám phá năng lượng con số"
-          title={<>Ý nghĩa các con số<br />trong thần số học Pythagoras</>}
+          title="Ý nghĩa các con số trong thần số học Pythagoras"
           description="Hiểu đúng năng lượng từng con số để sống đúng với bản chất và sứ mệnh của bạn."
           icon={Binary}
           dark

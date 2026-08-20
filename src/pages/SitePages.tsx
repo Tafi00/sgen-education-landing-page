@@ -56,7 +56,10 @@ function PageHero({ eyebrow, title, accent, description, children }: PageHeroPro
       <div className="container page-hero__inner">
         <div className="page-hero__copy">
           <span className="page-kicker"><Sparkles /> {eyebrow}</span>
-          <h1>{title}<br /><em>{accent}</em></h1>
+          <h1>
+            <span className="page-hero__title-line">{title}</span>
+            <em className="page-hero__title-line">{accent}</em>
+          </h1>
           <p>{description}</p>
           {children}
         </div>
@@ -145,7 +148,10 @@ export function LookupPage() {
       <div className="container lookup-workspace">
         <header>
           <span className="page-kicker"><Sparkles /> Tra cứu thần số học</span>
-          <h1>Khám phá bản đồ số học<br /><em>hiểu mình — định hướng đúng</em></h1>
+          <h1>
+            <span className="lookup-title__line">Khám phá bản đồ <span className="text-keep">số học</span></span>
+            <em className="lookup-title__line">hiểu mình — <span className="text-keep">định hướng đúng</span></em>
+          </h1>
           <div className="lookup-steps" aria-label="Quy trình tra cứu">
             {["Nhập thông tin", "Xác nhận", "Phân tích", "Kết quả"].map((step, index) => <div className={submitted || index === 0 ? "is-active" : ""} key={step}><span>{index + 1}</span><small>{step}</small></div>)}
           </div>
