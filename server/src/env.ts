@@ -51,6 +51,11 @@ export const env = {
   dataDir,
   publicOrigin: process.env.PUBLIC_ORIGIN ?? "http://127.0.0.1:5173",
   webDistDir: path.resolve(ROOT, "dist"),
+  /** Nạp nội dung mặc định khi khởi động nếu database còn trống (deploy môi trường mới). */
+  seedOnBoot: (process.env.SEED_ON_BOOT ?? "").toLowerCase() === "true",
+  adminEmail: process.env.ADMIN_EMAIL ?? "",
+  adminPassword: process.env.ADMIN_PASSWORD ?? "",
+  adminName: process.env.ADMIN_NAME ?? "Quản trị SGEN",
 };
 
 export type Env = typeof env;
