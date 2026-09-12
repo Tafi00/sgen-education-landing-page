@@ -1,8 +1,7 @@
-import blogArrows from "../../assets/blog/blog-numerology-arrows.webp";
-import blogCalculation from "../../assets/blog/blog-pythagoras-calculation.webp";
-import blogName from "../../assets/blog/blog-name-numerology.webp";
-import blogPyramid from "../../assets/blog/blog-life-pyramid.webp";
-
+const blogArrows = "/assets/blog/blog-numerology-arrows.webp";
+const blogCalculation = "/assets/blog/blog-pythagoras-calculation.webp";
+const blogName = "/assets/blog/blog-name-numerology.webp";
+const blogPyramid = "/assets/blog/blog-life-pyramid.webp";
 export type BlogPost = {
   slug: string;
   image: string;

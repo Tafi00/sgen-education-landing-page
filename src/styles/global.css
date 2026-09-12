@@ -34,12 +34,16 @@
 
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: 108px;
+  scroll-padding-top: calc(var(--header-h, 96px) + 16px);
 }
 
 section[id],
-[id="ket-qua"] {
-  scroll-margin-top: 120px;
+[id] {
+  scroll-margin-top: calc(var(--header-h, 96px) + 20px);
+}
+
+:target {
+  scroll-margin-top: calc(var(--header-h, 96px) + 20px);
 }
 
 body {
@@ -116,7 +120,10 @@ button {
 
 .app-shell {
   min-height: 100vh;
-  overflow: hidden;
+  /* `overflow: hidden` tạo scroll container và vô hiệu hoá position: sticky của mọi khối con
+     (thanh tiến độ quiz, dải ngày xem-ngay, thanh CTA…). Dùng clip để vẫn cắt tràn ngang. */
+  overflow-x: clip;
+  overflow-y: visible;
 }
 
 .container {

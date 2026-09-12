@@ -317,21 +317,23 @@
 }
 
 .field-control {
-  min-height: 48px;
+  min-height: 50px;
   display: flex;
   align-items: center;
-  gap: 11px;
+  gap: 10px;
   padding: 0 14px;
-  background: rgba(255, 255, 255, 0.055);
-  border: 1px solid rgba(193, 153, 255, 0.47);
-  border-radius: 9px;
+  color: var(--field-text);
+  background: var(--field-bg);
+  border: 1px solid var(--field-border);
+  border-radius: 12px;
+  color-scheme: light;
   transition: border-color 180ms ease, background 180ms ease, box-shadow 180ms ease;
 }
 
 .field-control:focus-within {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: #d5afff;
-  box-shadow: 0 0 0 3px rgba(164, 101, 255, 0.14);
+  background: var(--field-bg);
+  border-color: var(--field-focus);
+  box-shadow: 0 0 0 3px rgba(90, 34, 232, 0.18);
 }
 
 .field-control > svg {
@@ -343,19 +345,20 @@
 .field-control select {
   width: 100%;
   min-width: 0;
-  color: #fff;
+  color: var(--field-text);
   background: transparent;
   border: 0;
   outline: 0;
+  font: inherit;
 }
 
 .field-control input::placeholder,
 .field-control select:invalid {
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--field-placeholder);
 }
 
 .field-control input[type="date"] {
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 .field-control select {
@@ -389,29 +392,32 @@
   min-height: 46px;
   display: flex;
   align-items: center;
-  gap: 11px;
-  padding: 0 13px;
-  color: #fff;
-  background: transparent;
+  gap: 10px;
+  padding: 0 12px;
+  color: var(--field-text);
+  background: var(--field-bg);
+  border: 0;
+  border-radius: 10px;
+  color-scheme: light;
   cursor: pointer;
   text-align: left;
+  font: inherit;
 }
 
 .custom-select__trigger > svg:first-child {
   width: 20px;
   flex: 0 0 auto;
-  color: #dbc7ff;
+  color: #7a6aa8;
 }
 
 .custom-select__trigger .is-placeholder {
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--field-placeholder);
 }
 
 .custom-select__chevron {
   width: 17px;
   margin-left: auto;
-  color: #dbc7ff;
-  transition: transform 180ms ease;
+  color: #7a6aa8;
 }
 
 .custom-select.is-open .custom-select__chevron {
@@ -425,18 +431,14 @@
 
 .custom-select__menu {
   position: absolute;
-  top: calc(100% + 8px);
-  right: -1px;
-  left: -1px;
-  z-index: 40;
+  z-index: 30;
   display: grid;
   gap: 4px;
   padding: 6px;
-  background: rgba(18, 7, 66, 0.98);
-  border: 1px solid rgba(211, 171, 255, 0.62);
+  background: #ffffff;
+  border: 1px solid var(--field-border);
   border-radius: 12px;
-  box-shadow: 0 18px 38px rgba(3, 1, 30, 0.52), inset 0 1px rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(18px);
+  box-shadow: 0 18px 38px rgba(20, 10, 60, 0.22);
 }
 
 .custom-select__option {
@@ -444,13 +446,14 @@
   min-height: 42px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 8px 12px;
-  color: rgba(255, 255, 255, 0.82);
-  background: transparent;
+  padding: 0 12px;
+  color: var(--field-text);
+  background: #ffffff;
+  border: 0;
   border-radius: 8px;
   cursor: pointer;
   text-align: left;
+  font: inherit;
 }
 
 .custom-select__option:hover,
@@ -780,48 +783,6 @@
 }
 
 @media (max-width: 900px) {
-  .site-header {
-    position: relative;
-  }
-
-  .site-header__inner {
-    min-height: 76px;
-    padding: 11px 16px;
-    border-radius: 18px;
-  }
-
-  .site-header__brand img { width: 148px; }
-  .site-header__menu-button { display: grid; place-items: center; }
-
-  .site-nav {
-    position: fixed;
-    inset: 0;
-    z-index: -1;
-    display: grid;
-    align-content: center;
-    gap: 8px;
-    padding: 110px 28px 40px;
-    color: #fff;
-    background: rgba(7, 3, 46, 0.96);
-    backdrop-filter: blur(18px);
-    opacity: 0;
-    pointer-events: none;
-    transform: translateY(-16px);
-    transition: opacity 220ms ease, transform 220ms ease;
-  }
-
-  .site-nav--open {
-    opacity: 1;
-    pointer-events: auto;
-    transform: translateY(0);
-  }
-
-  .site-nav a {
-    padding: 13px;
-    font-size: 1rem;
-    text-align: center;
-  }
-
   .hero__main {
     grid-template-columns: 1fr;
     gap: 54px;
@@ -869,4 +830,48 @@
   }
   .benefit-card .icon-orb { width: 60px; height: 60px; border-width: 6px; }
   .benefit-card .icon-orb svg { width: 27px; height: 27px; }
+}
+
+@media (max-width: 1240px) {
+  .site-header {
+    position: relative;
+  }
+
+  .site-header__inner {
+    min-height: 76px;
+    padding: 11px 16px;
+    border-radius: 18px;
+  }
+
+  .site-header__brand img { width: 148px; }
+  .site-header__menu-button { display: grid; place-items: center; }
+
+  .site-nav {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    display: grid;
+    align-content: center;
+    gap: 8px;
+    padding: 110px 28px 40px;
+    color: #fff;
+    background: rgba(7, 3, 46, 0.96);
+    backdrop-filter: blur(18px);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-16px);
+    transition: opacity 220ms ease, transform 220ms ease;
+  }
+
+  .site-nav--open {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+
+  .site-nav a {
+    padding: 13px;
+    font-size: 1rem;
+    text-align: center;
+  }
 }

@@ -1,0 +1,354 @@
+import { Suspense, useEffect, useMemo, useState } from "react";
+import { Link, NavLink, Navigate, Outlet, useLocation, useNavigate } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
+import {
+  Activity,
+  BookOpen,
+  Building2,
+  CalendarCheck,
+  ChevronRight,
+  ExternalLink,
+  FileText,
+  History,
+  Image,
+  LayoutDashboard,
+  ListChecks,
+  LogOut,
+  Menu,
+  MessageSquareText,
+  Package,
+  PanelLeftClose,
+  PanelLeftOpen,
+  Search,
+  Settings,
+  ShieldCheck,
+  Users,
+  X,
+} from "lucide-react";
+import { api, errorMessage } from "../api/client";
+import { useAdminSession } from "../admin/useAdminSession";
+import { RESOURCES } from "../admin/resources";
+import { useToast } from "../components/ui/Toast";
+
+type NavItem = { to: string; label: string; icon: typeof LayoutDashboard; roles?: ("admin" | "editor")[] };
+type NavGroup = { title: string; items: NavItem[] };
+
+const NAV_GROUPS: NavGroup[] = [
+  {
+    title: "Tổng quan",
+    items: [{ to: "/admin", label: "Bảng điều khiển", icon: LayoutDashboard }],
+  },
+  {
+    title: "Nội dung",
+    items: [
+      { to: "/admin/khoa-hoc", label: "Khóa học", icon: BookOpen },
+      { to: "/admin/nhom-khoa-hoc", label: "Nhóm khóa học", icon: BookOpen },
+      { to: "/admin/blog", label: "Blog", icon: FileText },
+      { to: "/admin/chuyen-muc", label: "Chuyên mục", icon: FileText },
+      { to: "/admin/trang", label: "Trang nội dung", icon: FileText },
+      { to: "/admin/khoi-noi-dung", label: "Khối trang chủ", icon: ListChecks },
+      { to: "/admin/dich-vu", label: "Dịch vụ", icon: Package },
+      { to: "/admin/thu-vien-anh", label: "Thư viện ảnh", icon: Image },
+    ],
+  },
+  {
+    title: "Kinh doanh",
+    items: [
+      { to: "/admin/leads", label: "Leads", icon: MessageSquareText },
+      { to: "/admin/tra-cuu", label: "Báo cáo tra cứu", icon: Activity, roles: ["admin", "editor"] },
+      { to: "/admin/don-hang", label: "Đơn hàng", icon: CalendarCheck, roles: ["admin"] },
+      { to: "/admin/quyen-noi-dung", label: "Quyền nội dung", icon: ShieldCheck, roles: ["admin"] },
+      { to: "/admin/thanh-vien", label: "Thành viên", icon: Users, roles: ["admin"] },
+    ],
+  },
+  {
+    title: "Trắc nghiệm",
+    items: [
+      { to: "/admin/trac-nghiem/bo-cau-hoi", label: "Bộ câu hỏi", icon: ListChecks },
+      { to: "/admin/trac-nghiem/cau-hoi", label: "Câu hỏi", icon: ListChecks },
+      { to: "/admin/trac-nghiem/ket-qua", label: "Luận giải kết quả", icon: ListChecks },
+    ],
+  },
+  {
+    title: "Hệ thống",
+    items: [
+      { to: "/admin/nhat-ky", label: "Nhật ký hoạt động", icon: History },
+      { to: "/admin/thong-bao", label: "Lịch sử thông báo", icon: Activity },
+      { to: "/admin/cai-dat", label: "Cài đặt website", icon: Settings, roles: ["admin"] },
+      { to: "/admin/tai-khoan", label: "Tài khoản quản trị", icon: Users, roles: ["admin"] },
+    ],
+  },
+];
+
+const COLLAPSED_KEY = "sgen.admin.sidebarCollapsed";
+
+/** Bỏ dấu tiếng Việt để tìm nhanh không phân biệt dấu. */
+function normalize(value: string) {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/đ/g, "d")
+    .replace(/Đ/g, "D")
+    .toLowerCase()
+    .trim();
+}
+
+type Crumb = { label: string; to?: string };
+
+/** Suy ra breadcrumb từ pathname dựa trên menu và cấu hình tài nguyên. */
+function resolveBreadcrumb(pathname: string, navGroups: NavGroup[]): { crumbs: Crumb[]; label: string; group: string } {
+  const path = pathname !== "/admin/" ? pathname.replace(/\/+$/, "") : "/admin";
+
+  if (path === "/admin") {
+    return { crumbs: [{ label: "Quản trị", to: "/admin" }, { label: "Tổng quan" }, { label: "Bảng điều khiển" }], label: "Bảng điều khiển", group: "Tổng quan" };
+  }
+
+  let match: { item: NavItem; group: NavGroup } | null = null;
+  for (const group of navGroups) {
+    for (const item of group.items) {
+      if (item.to === "/admin") continue;
+      if (path === item.to || path.startsWith(`${item.to}/`)) {
+        if (!match || item.to.length > match.item.to.length) match = { item, group };
+      }
+    }
+  }
+
+  if (match) {
+    const extra = path.slice(match.item.to.length).split("/").filter(Boolean);
+    const suffix = extra.length === 0 ? "" : extra[0] === "new" ? " · Tạo mới" : " · Chi tiết";
+    const label = `${match.item.label}${suffix}`;
+    return {
+      crumbs: [{ label: "Quản trị", to: "/admin" }, { label: match.group.title }, { label }],
+      label,
+      group: match.group.title,
+    };
+  }
+
+  const resource = Object.values(RESOURCES).find((entry) => path === entry.basePath || path.startsWith(`${entry.basePath}/`));
+  const label = resource?.labelPlural ?? "Trang quản trị";
+  return { crumbs: [{ label: "Quản trị", to: "/admin" }, { label }], label, group: "" };
+}
+
+export function AdminLayout() {
+  const { admin, isLoading } = useAdminSession();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [collapsed, setCollapsed] = useState(() => typeof window !== "undefined" && window.localStorage.getItem(COLLAPSED_KEY) === "1");
+  const [navQuery, setNavQuery] = useState("");
+  const navigate = useNavigate();
+  const location = useLocation();
+  const queryClient = useQueryClient();
+  const toast = useToast();
+
+  useEffect(() => {
+    document.title = "Quản trị nội dung — SGEN Education";
+  }, []);
+
+  useEffect(() => {
+    window.localStorage.setItem(COLLAPSED_KEY, collapsed ? "1" : "0");
+  }, [collapsed]);
+
+  // Đóng sidebar khi đổi route (bấm link, back/forward).
+  useEffect(() => {
+    setSidebarOpen(false);
+  }, [location.pathname]);
+
+  // Khoá cuộn nền khi sidebar mobile đang mở; trả lại giá trị cũ khi đóng.
+  useEffect(() => {
+    if (!sidebarOpen) return;
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previous;
+    };
+  }, [sidebarOpen]);
+
+  // Rời breakpoint mobile (sidebar luôn hiện) thì đóng để không khoá cuộn vô ích.
+  useEffect(() => {
+    const query = window.matchMedia("(max-width: 1080px)");
+    const sync = () => {
+      if (!query.matches) setSidebarOpen(false);
+    };
+    query.addEventListener("change", sync);
+    return () => query.removeEventListener("change", sync);
+  }, []);
+
+  const visibleGroups = useMemo(() => {
+    const groups = NAV_GROUPS.map((group) => ({
+      title: group.title,
+      items: group.items.filter((item) => !item.roles || (admin && item.roles.includes(admin.role))),
+    })).filter((group) => group.items.length > 0);
+
+    const keyword = normalize(navQuery);
+    if (!keyword) return groups;
+    return groups
+      .map((group) => ({ title: group.title, items: group.items.filter((item) => normalize(item.label).includes(keyword)) }))
+      .filter((group) => group.items.length > 0);
+  }, [admin, navQuery]);
+
+  if (isLoading) {
+    return (
+      <div className="admin-loading-screen">
+        <Building2 aria-hidden="true" />
+        <p>Đang kiểm tra phiên đăng nhập…</p>
+      </div>
+    );
+  }
+
+  if (!admin) {
+    return <Navigate to="/admin/dang-nhap" replace state={{ from: location.pathname }} />;
+  }
+
+  const { crumbs, label: pageLabel, group: groupLabel } = resolveBreadcrumb(location.pathname, visibleGroups);
+
+  const logout = async () => {
+    try {
+      await api.post("/api/admin/auth/logout");
+      queryClient.clear();
+      navigate("/admin/dang-nhap", { replace: true });
+    } catch (error) {
+      toast.error("Không đăng xuất được", errorMessage(error));
+    }
+  };
+
+  return (
+    <div className={`admin-shell ${sidebarOpen ? "is-sidebar-open" : ""} ${collapsed ? "is-sidebar-collapsed" : ""}`}>
+      {sidebarOpen ? <button type="button" className="admin-sidebar-overlay" aria-label="Đóng menu quản trị" tabIndex={-1} onClick={() => setSidebarOpen(false)} /> : null}
+      <aside className="admin-sidebar" id="admin-sidebar">
+        <div className="admin-sidebar__brand">
+          <Link to="/admin" title="Về bảng điều khiển">
+            <span className="admin-sidebar__mark" aria-hidden="true">S</span>
+            <strong>SGEN CMS</strong>
+            <small>Quản trị nội dung</small>
+          </Link>
+          <button type="button" onClick={() => setSidebarOpen(false)} aria-label="Đóng menu">
+            <X aria-hidden="true" />
+            <span className="admin-sidebar__close-label">Đóng</span>
+          </button>
+        </div>
+
+        <div className="admin-sidebar__search">
+          <Search aria-hidden="true" />
+          <input
+            type="search"
+            value={navQuery}
+            onChange={(event) => setNavQuery(event.target.value)}
+            placeholder="Tìm nhanh mục menu…"
+            aria-label="Tìm nhanh mục menu quản trị"
+          />
+          {navQuery ? (
+            <button type="button" onClick={() => setNavQuery("")} aria-label="Xoá từ khoá tìm menu">
+              <X aria-hidden="true" />
+            </button>
+          ) : null}
+        </div>
+
+        <nav aria-label="Điều hướng quản trị">
+          {visibleGroups.length === 0 ? (
+            <p className="admin-sidebar__empty">Không có mục nào khớp từ khoá.</p>
+          ) : (
+            visibleGroups.map((group) => (
+              <div key={group.title} className="admin-sidebar__group">
+                <span>{group.title}</span>
+                {group.items.map((item) => (
+                  <NavLink
+                    key={item.to}
+                    to={item.to}
+                    end={item.to === "/admin"}
+                    title={item.label}
+                    onClick={() => setSidebarOpen(false)}
+                  >
+                    <item.icon aria-hidden="true" />
+                    <span className="admin-sidebar__label">{item.label}</span>
+                  </NavLink>
+                ))}
+              </div>
+            ))
+          )}
+        </nav>
+
+        <div className="admin-sidebar__footer">
+          <a href="/" target="_blank" rel="noreferrer" title="Xem website">
+            <ExternalLink aria-hidden="true" /> <span className="admin-sidebar__label">Xem website</span>
+          </a>
+        </div>
+      </aside>
+
+      <div className="admin-main">
+        <header className="admin-topbar">
+          <div className="admin-topbar__lead">
+            <button
+              type="button"
+              className="admin-topbar__menu"
+              onClick={() => setSidebarOpen((open) => !open)}
+              aria-label="Mở menu quản trị"
+              aria-expanded={sidebarOpen}
+              aria-controls="admin-sidebar"
+            >
+              <Menu aria-hidden="true" />
+            </button>
+            <button
+              type="button"
+              className="admin-topbar__collapse"
+              onClick={() => setCollapsed((value) => !value)}
+              aria-label={collapsed ? "Mở rộng menu" : "Thu gọn menu"}
+              title={collapsed ? "Mở rộng menu" : "Thu gọn menu"}
+              aria-pressed={collapsed}
+            >
+              {collapsed ? <PanelLeftOpen aria-hidden="true" /> : <PanelLeftClose aria-hidden="true" />}
+            </button>
+            <div className="admin-topbar__crumb">
+              <strong>{pageLabel}</strong>
+              {groupLabel ? <small>{groupLabel}</small> : null}
+            </div>
+          </div>
+
+          <div className="admin-topbar__user">
+            <a className="admin-topbar__site" href="/" target="_blank" rel="noreferrer">
+              <ExternalLink aria-hidden="true" /> <span>Mở website</span>
+            </a>
+            <span>
+              <strong>{admin.name}</strong>
+              <small>{admin.role === "admin" ? "Quản trị viên" : "Biên tập viên"} · {admin.email}</small>
+            </span>
+            <button type="button" className="button button--ghost" onClick={() => void logout()}>
+              <LogOut aria-hidden="true" /> Đăng xuất
+            </button>
+          </div>
+        </header>
+
+        {admin.mustChangePassword ? (
+          <div className="admin-banner">
+            Bạn đang dùng mật khẩu tạm thời. Hãy đổi mật khẩu trong mục <Link to="/admin/tai-khoan">Tài khoản quản trị</Link>.
+          </div>
+        ) : null}
+
+        <div className="admin-content">
+          <nav className="admin-breadcrumb" aria-label="Đường dẫn">
+            <ol>
+              {crumbs.map((crumb, index) => {
+                const isLast = index === crumbs.length - 1;
+                return (
+                  <li key={`${crumb.label}-${index}`}>
+                    {crumb.to && !isLast ? <Link to={crumb.to}>{crumb.label}</Link> : <span aria-current={isLast ? "page" : undefined}>{crumb.label}</span>}
+                    {!isLast ? <ChevronRight aria-hidden="true" /> : null}
+                  </li>
+                );
+              })}
+            </ol>
+          </nav>
+          <Suspense fallback={<RouteFallback />}>
+            <Outlet />
+          </Suspense>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function RouteFallback() {
+  return (
+    <div className="route-fallback">
+      <span>Đang tải…</span>
+    </div>
+  );
+}

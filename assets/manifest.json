@@ -1,44 +1,174 @@
 {
   "backgrounds": [
-    {"id": "cosmic-dark", "path": "assets/backgrounds/cosmic-dark.webp", "usage": "Hero and footer; includes planetary horizon"},
-    {"id": "cosmic-dark-clean", "path": "assets/backgrounds/cosmic-dark-clean.webp", "usage": "Number meanings and vision/method; no planet"},
-    {"id": "cosmic-light", "path": "assets/backgrounds/cosmic-light.webp", "usage": "Tools, about, programs, blog, consultation"}
+    {
+      "id": "cosmic-dark",
+      "path": "public/assets/backgrounds/cosmic-dark.webp",
+      "usage": "Hero and footer; includes planetary horizon"
+    },
+    {
+      "id": "cosmic-dark-clean",
+      "path": "public/assets/backgrounds/cosmic-dark-clean.webp",
+      "usage": "Number meanings and vision/method; no planet"
+    },
+    {
+      "id": "cosmic-light",
+      "path": "public/assets/backgrounds/cosmic-light.webp",
+      "usage": "Tools, about, programs, blog, consultation"
+    }
   ],
   "brand": [
-    {"id": "logo-dark", "path": "assets/brand/sgen-logo-dark-v2.webp", "usage": "White/light navigation", "transparent": true},
-    {"id": "logo-light", "path": "assets/brand/sgen-logo-light-footer-v2.webp", "usage": "Dark footer or dark panels", "transparent": true}
+    {
+      "id": "logo-dark",
+      "path": "public/assets/brand/sgen-logo-dark-v2.webp",
+      "usage": "White/light navigation",
+      "transparent": true
+    },
+    {
+      "id": "logo-light",
+      "path": "public/assets/brand/sgen-logo-light-footer-v2.webp",
+      "usage": "Dark footer or dark panels",
+      "transparent": true
+    }
   ],
   "illustrations": [
-    {"id": "pythagoras-cosmic", "path": "assets/illustrations/pythagoras-cosmic.webp", "usage": "About Pythagoras panel", "transparent": true},
-    {"id": "numeral-1-cosmic", "path": "assets/illustrations/numeral-1-cosmic.webp", "usage": "Number meanings detail panel", "transparent": true},
-    {"id": "numeral-2-cosmic", "path": "assets/illustrations/numeral-2-cosmic.webp", "usage": "Number meanings detail panel", "transparent": true},
-    {"id": "numeral-3-cosmic", "path": "assets/illustrations/numeral-3-cosmic.webp", "usage": "Number meanings detail panel", "transparent": true},
-    {"id": "numeral-4-cosmic", "path": "assets/illustrations/numeral-4-cosmic.webp", "usage": "Number meanings detail panel", "transparent": true},
-    {"id": "numeral-5-cosmic", "path": "assets/illustrations/numeral-5-cosmic.webp", "usage": "Number meanings detail panel", "transparent": true},
-    {"id": "numeral-6-cosmic", "path": "assets/illustrations/numeral-6-cosmic.webp", "usage": "Number meanings detail panel", "transparent": true},
-    {"id": "numeral-7-cosmic", "path": "assets/illustrations/numeral-7-cosmic.webp", "usage": "Number meanings detail panel", "transparent": true},
-    {"id": "numeral-8-cosmic", "path": "assets/illustrations/numeral-8-cosmic.webp", "usage": "Number meanings detail panel", "transparent": true},
-    {"id": "numeral-9-cosmic", "path": "assets/illustrations/numeral-9-cosmic.webp", "usage": "Number meanings detail panel", "transparent": true},
-    {"id": "numeral-11-cosmic", "path": "assets/illustrations/numeral-11-cosmic.webp", "usage": "Number meanings detail panel", "transparent": true},
-    {"id": "numeral-22-cosmic", "path": "assets/illustrations/numeral-22-cosmic.webp", "usage": "Number meanings detail panel", "transparent": true}
+    {
+      "id": "pythagoras-cosmic",
+      "path": "public/assets/illustrations/pythagoras-cosmic.webp",
+      "usage": "About Pythagoras panel",
+      "transparent": true
+    },
+    {
+      "id": "numeral-1-cosmic",
+      "path": "public/assets/illustrations/numeral-1-cosmic.webp",
+      "usage": "Number meanings detail panel",
+      "transparent": true
+    },
+    {
+      "id": "numeral-2-cosmic",
+      "path": "public/assets/illustrations/numeral-2-cosmic.webp",
+      "usage": "Number meanings detail panel",
+      "transparent": true
+    },
+    {
+      "id": "numeral-3-cosmic",
+      "path": "public/assets/illustrations/numeral-3-cosmic.webp",
+      "usage": "Number meanings detail panel",
+      "transparent": true
+    },
+    {
+      "id": "numeral-4-cosmic",
+      "path": "public/assets/illustrations/numeral-4-cosmic.webp",
+      "usage": "Number meanings detail panel",
+      "transparent": true
+    },
+    {
+      "id": "numeral-5-cosmic",
+      "path": "public/assets/illustrations/numeral-5-cosmic.webp",
+      "usage": "Number meanings detail panel",
+      "transparent": true
+    },
+    {
+      "id": "numeral-6-cosmic",
+      "path": "public/assets/illustrations/numeral-6-cosmic.webp",
+      "usage": "Number meanings detail panel",
+      "transparent": true
+    },
+    {
+      "id": "numeral-7-cosmic",
+      "path": "public/assets/illustrations/numeral-7-cosmic.webp",
+      "usage": "Number meanings detail panel",
+      "transparent": true
+    },
+    {
+      "id": "numeral-8-cosmic",
+      "path": "public/assets/illustrations/numeral-8-cosmic.webp",
+      "usage": "Number meanings detail panel",
+      "transparent": true
+    },
+    {
+      "id": "numeral-9-cosmic",
+      "path": "public/assets/illustrations/numeral-9-cosmic.webp",
+      "usage": "Number meanings detail panel",
+      "transparent": true
+    },
+    {
+      "id": "numeral-11-cosmic",
+      "path": "public/assets/illustrations/numeral-11-cosmic.webp",
+      "usage": "Number meanings detail panel",
+      "transparent": true
+    },
+    {
+      "id": "numeral-22-cosmic",
+      "path": "public/assets/illustrations/numeral-22-cosmic.webp",
+      "usage": "Number meanings detail panel",
+      "transparent": true
+    }
   ],
   "methods": [
-    {"id": "method-pythagoras", "path": "assets/methods/method-pythagoras.webp", "transparent": true},
-    {"id": "method-ikigai", "path": "assets/methods/method-ikigai.webp", "transparent": true},
-    {"id": "method-life-path", "path": "assets/methods/method-life-path.webp", "transparent": true}
+    {
+      "id": "method-pythagoras",
+      "path": "public/assets/methods/method-pythagoras.webp",
+      "transparent": true
+    },
+    {
+      "id": "method-ikigai",
+      "path": "public/assets/methods/method-ikigai.webp",
+      "transparent": true
+    },
+    {
+      "id": "method-life-path",
+      "path": "public/assets/methods/method-life-path.webp",
+      "transparent": true
+    }
   ],
   "programs": [
-    {"id": "program-numerology", "path": "assets/programs/program-numerology-v2.webp", "transparent": true},
-    {"id": "program-fingerprint", "path": "assets/programs/program-fingerprint-v2.webp", "transparent": true},
-    {"id": "program-phone-feng-shui", "path": "assets/programs/program-phone-feng-shui-v2.webp", "transparent": true},
-    {"id": "program-relationship", "path": "assets/programs/program-relationship-v2.webp", "transparent": true},
-    {"id": "program-home-feng-shui", "path": "assets/programs/program-home-feng-shui-v2.webp", "transparent": true},
-    {"id": "program-yin-home", "path": "assets/programs/program-yin-home-v2.webp", "transparent": true}
+    {
+      "id": "program-numerology",
+      "path": "public/assets/programs/program-numerology-v2.webp",
+      "transparent": true
+    },
+    {
+      "id": "program-fingerprint",
+      "path": "public/assets/programs/program-fingerprint-v2.webp",
+      "transparent": true
+    },
+    {
+      "id": "program-phone-feng-shui",
+      "path": "public/assets/programs/program-phone-feng-shui-v2.webp",
+      "transparent": true
+    },
+    {
+      "id": "program-relationship",
+      "path": "public/assets/programs/program-relationship-v2.webp",
+      "transparent": true
+    },
+    {
+      "id": "program-home-feng-shui",
+      "path": "public/assets/programs/program-home-feng-shui-v2.webp",
+      "transparent": true
+    },
+    {
+      "id": "program-yin-home",
+      "path": "public/assets/programs/program-yin-home-v2.webp",
+      "transparent": true
+    }
   ],
   "blog": [
-    {"id": "blog-pythagoras-calculation", "path": "assets/blog/blog-pythagoras-calculation.webp"},
-    {"id": "blog-name-numerology", "path": "assets/blog/blog-name-numerology.webp"},
-    {"id": "blog-life-pyramid", "path": "assets/blog/blog-life-pyramid.webp"},
-    {"id": "blog-numerology-arrows", "path": "assets/blog/blog-numerology-arrows.webp"}
+    {
+      "id": "blog-pythagoras-calculation",
+      "path": "public/assets/blog/blog-pythagoras-calculation.webp"
+    },
+    {
+      "id": "blog-name-numerology",
+      "path": "public/assets/blog/blog-name-numerology.webp"
+    },
+    {
+      "id": "blog-life-pyramid",
+      "path": "public/assets/blog/blog-life-pyramid.webp"
+    },
+    {
+      "id": "blog-numerology-arrows",
+      "path": "public/assets/blog/blog-numerology-arrows.webp"
+    }
   ]
 }

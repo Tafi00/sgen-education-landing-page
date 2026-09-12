@@ -1,0 +1,299 @@
+/* ux-admin — ghi đè/tinh chỉnh UX sau rà soát mobile.
+   File này được nạp SAU responsive.css nên có thể ghi đè rule cũ khi cùng độ ưu tiên. */
+
+/* ---------------------------------------------------------------------------
+   Đăng nhập quản trị
+   --------------------------------------------------------------------------- */
+
+/* Gợi ý tài khoản đầu tiên: một dòng chảy bình thường, không còn flex 2 cột
+   làm lệnh `npm run create-admin` rơi xuống như một cột riêng. */
+.admin-login-card .admin-login-hint {
+  display: block;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.admin-login-card .admin-login-hint svg {
+  display: inline-block;
+  width: 15px;
+  height: 15px;
+  margin-right: 6px;
+  vertical-align: -3px;
+}
+
+.admin-login-card .admin-login-hint code {
+  padding: 1px 6px;
+  color: #4a1fc4;
+  background: #f3efff;
+  border: 1px solid #e0d6fb;
+  border-radius: 6px;
+  font-size: 0.95em;
+  white-space: nowrap;
+}
+
+/* Nút hiện/ẩn mật khẩu nằm trong ô nhập, không đè lên chữ người dùng gõ. */
+.admin-password-field {
+  position: relative;
+  display: grid;
+}
+
+.admin-password-field .field__control {
+  padding-right: 54px;
+}
+
+.admin-password-field__toggle {
+  position: absolute;
+  right: 5px;
+  bottom: 5px;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  color: #5f5486;
+  background: #fff;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  cursor: pointer;
+}
+
+.admin-password-field__toggle:hover {
+  color: #34137f;
+  background: #f6f3ff;
+}
+
+.admin-password-field__toggle:focus-visible {
+  outline: 2px solid #5a22e8;
+  outline-offset: 1px;
+}
+
+.admin-password-field__toggle:disabled {
+  color: #b3a6d8;
+  cursor: not-allowed;
+}
+
+.admin-password-field__toggle svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* Nhãn bọc checkbox chọn dòng (bảng desktop giữ nguyên kích thước). */
+.data-table__check {
+  display: grid;
+  place-items: center;
+}
+
+/* ---------------------------------------------------------------------------
+   Sidebar quản trị trên mobile (<1080px): lớp phủ mờ bấm để đóng.
+   --------------------------------------------------------------------------- */
+
+.admin-sidebar-overlay {
+  display: none;
+}
+
+@media (max-width: 1080px) {
+  .admin-shell.is-sidebar-open .admin-sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 55;
+    display: block;
+    padding: 0;
+    background: rgba(14, 8, 34, 0.52);
+    border: 0;
+    backdrop-filter: blur(2px);
+    cursor: pointer;
+  }
+
+  .admin-shell.is-sidebar-open .admin-sidebar {
+    box-shadow: 24px 0 60px rgba(9, 4, 28, 0.42);
+  }
+
+  /* Nút đóng rõ ràng ở đầu sidebar, đủ vùng chạm. */
+  .admin-sidebar__brand button {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    width: auto;
+    min-width: 44px;
+    height: 44px;
+    padding: 0 12px;
+    color: #efe7ff;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+  }
+
+  .admin-sidebar__brand button svg {
+    width: 17px;
+    height: 17px;
+  }
+
+  .admin-sidebar__close-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+  }
+
+  /* Mục điều hướng đủ 44px để chạm chính xác bằng ngón tay. */
+  .admin-sidebar__group a {
+    min-height: 44px;
+    font-size: 0.84rem;
+  }
+
+  .admin-sidebar__footer a {
+    min-height: 44px;
+  }
+
+  /* Sàn chữ 12px cho nhãn trong sidebar mobile. */
+  .admin-sidebar__brand small,
+  .admin-sidebar__group > span {
+    font-size: 12px;
+    line-height: 1.5;
+  }
+
+  .admin-topbar__menu {
+    width: 44px;
+    height: 44px;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Mobile ≤767px
+   --------------------------------------------------------------------------- */
+
+@media (max-width: 767px) {
+  /* Bảng dữ liệu dạng thẻ: nhãn cột 12px, vùng chạm checkbox và phân trang. */
+  .data-table--cards tbody td {
+    grid-template-columns: 104px minmax(0, 1fr);
+    padding: 8px 0;
+    font-size: 0.84rem;
+  }
+
+  .data-table--cards tbody td::before {
+    font-size: 12px;
+    line-height: 1.4;
+  }
+
+  .data-table--cards tbody td.data-table__select {
+    align-items: center;
+    min-height: 44px;
+  }
+
+  .data-table--cards tbody td.data-table__select input {
+    width: 22px;
+    height: 22px;
+  }
+
+  /* Nhãn bọc checkbox: cả ô 44×44 đều bấm được, không chỉ riêng ô vuông 22px. */
+  .data-table--cards tbody td.data-table__select .data-table__check {
+    width: 44px;
+    height: 44px;
+    margin-left: auto;
+    cursor: pointer;
+  }
+
+  .data-table--cards tbody tr:active {
+    background: #faf9ff;
+  }
+
+  /* Ô trạng thái (đang tải / lỗi / rỗng) không dùng lưới nhãn–giá trị. */
+  .data-table--cards tbody td.data-table__state {
+    display: block;
+    padding: 40px 16px !important;
+  }
+
+  .data-table--cards tbody td.data-table__state::before {
+    content: none;
+  }
+
+  .data-table__footer {
+    display: grid;
+    gap: 10px;
+  }
+
+  .data-table__pager {
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .data-table__pager button {
+    width: 44px;
+    height: 44px;
+  }
+
+  /* Header trang: nhãn và nút xếp dọc, nút "Thêm mới" rộng toàn phần. */
+  .admin-page__header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .admin-page__header .admin-page__actions {
+    display: grid;
+    gap: 8px;
+    justify-content: stretch;
+  }
+
+  /* Nút "Thêm mới" (Link) và mọi nút khác trong header rộng toàn phần. */
+  .admin-page__header .button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* Thanh công cụ (tìm kiếm + lọc + cỡ trang) xếp dọc 1 cột. */
+  .admin-toolbar {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+    align-items: stretch;
+  }
+
+  .admin-toolbar__search {
+    flex: 1 1 auto;
+    min-height: 48px;
+  }
+
+  .admin-toolbar__page-size {
+    justify-content: space-between;
+    min-height: 44px;
+  }
+
+  .admin-toolbar__page-size select {
+    flex: 1 1 auto;
+    min-height: 44px;
+  }
+
+  /* Cài đặt: 8 tab cuộn ngang 1 hàng, ẩn scrollbar. */
+  .settings-tabs {
+    flex-wrap: nowrap;
+    gap: 8px;
+    margin-inline: -14px;
+    padding: 2px 14px 8px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x proximity;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .settings-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .settings-tabs .button {
+    flex: 0 0 auto;
+    padding-inline: 14px;
+    white-space: nowrap;
+    scroll-snap-align: start;
+  }
+
+  /* Ô nhập mật khẩu: nút hiện/ẩn đạt 44px vùng chạm. */
+  .admin-password-field .field__control {
+    padding-right: 58px;
+  }
+
+  .admin-password-field__toggle {
+    right: 2px;
+    bottom: 2px;
+    width: 44px;
+    height: 44px;
+  }
+}

@@ -1,0 +1,871 @@
+{
+  "key": "mbti",
+  "title": "Trắc nghiệm xu hướng tính cách MBTI (tham chiếu khung)",
+  "instructions": "Mỗi câu có 2 lựa chọn đối lập. Hãy chọn phương án gần với bạn hơn trong phần lớn tình huống. Không có đáp án đúng hay sai, hãy trả lời theo thói quen thường ngày. Kết quả mang tính tham chiếu khung MBTI, dùng để gợi ý hướng phát triển bản thân, không phải chẩn đoán tâm lý hay đánh giá năng lực.",
+  "items": [
+    {
+      "id": "m01",
+      "order": 1,
+      "text": "Khi có thời gian rảnh, bạn thích tan học hoặc hết giờ làm?",
+      "dimension": "EI",
+      "options": [
+        {
+          "id": "m01-a",
+          "label": "Rủ vài người bạn đi cà phê cho khuây khoả",
+          "pole": "E"
+        },
+        {
+          "id": "m01-b",
+          "label": "Ở nhà một mình để nạp lại năng lượng",
+          "pole": "I"
+        }
+      ]
+    },
+    {
+      "id": "m02",
+      "order": 2,
+      "text": "Khi tiếp nhận một vấn đề mới, bạn chú ý tới đọc tài liệu hướng dẫn?",
+      "dimension": "SN",
+      "options": [
+        {
+          "id": "m02-a",
+          "label": "Số liệu và chi tiết cụ thể",
+          "pole": "S"
+        },
+        {
+          "id": "m02-b",
+          "label": "Ý tưởng lớn và liên hệ rộng",
+          "pole": "N"
+        }
+      ]
+    },
+    {
+      "id": "m03",
+      "order": 3,
+      "text": "Khi đưa ra quyết định, bạn dựa vào quyết định quan trọng?",
+      "dimension": "TF",
+      "options": [
+        {
+          "id": "m03-a",
+          "label": "Lý lẽ và dữ liệu khách quan",
+          "pole": "T"
+        },
+        {
+          "id": "m03-b",
+          "label": "Ảnh hưởng tới mọi người xung quanh",
+          "pole": "F"
+        }
+      ]
+    },
+    {
+      "id": "m04",
+      "order": 4,
+      "text": "Khi sắp xếp công việc, bạn thích sắp xếp lịch cá nhân?",
+      "dimension": "JP",
+      "options": [
+        {
+          "id": "m04-a",
+          "label": "Lên kế hoạch trước và theo sát",
+          "pole": "J"
+        },
+        {
+          "id": "m04-b",
+          "label": "Để mở và tuỳ hứng điều chỉnh",
+          "pole": "P"
+        }
+      ]
+    },
+    {
+      "id": "m05",
+      "order": 5,
+      "text": "Khi có thời gian rảnh, bạn thích làm bài tập nhóm?",
+      "dimension": "EI",
+      "options": [
+        {
+          "id": "m05-a",
+          "label": "Chủ động phát biểu và trao đổi trong lớp",
+          "pole": "E"
+        },
+        {
+          "id": "m05-b",
+          "label": "Suy nghĩ kỹ rồi mới nêu ý kiến",
+          "pole": "I"
+        }
+      ]
+    },
+    {
+      "id": "m06",
+      "order": 6,
+      "text": "Khi tiếp nhận một vấn đề mới, bạn chú ý tới chọn công việc yêu thích?",
+      "dimension": "SN",
+      "options": [
+        {
+          "id": "m06-a",
+          "label": "Có quy trình rõ ràng, ổn định",
+          "pole": "S"
+        },
+        {
+          "id": "m06-b",
+          "label": "Cho phép thử nghiệm điều mới",
+          "pole": "N"
+        }
+      ]
+    },
+    {
+      "id": "m07",
+      "order": 7,
+      "text": "Khi đưa ra quyết định, bạn dựa vào góp ý cho đồng nghiệp?",
+      "dimension": "TF",
+      "options": [
+        {
+          "id": "m07-a",
+          "label": "Nói thẳng điểm cần sửa",
+          "pole": "T"
+        },
+        {
+          "id": "m07-b",
+          "label": "Chọn lời để bạn dễ nghe",
+          "pole": "F"
+        }
+      ]
+    },
+    {
+      "id": "m08",
+      "order": 8,
+      "text": "Khi sắp xếp công việc, bạn thích gần đến hạn nộp?",
+      "dimension": "JP",
+      "options": [
+        {
+          "id": "m08-a",
+          "label": "Hoàn thành sớm cho chắc chắn",
+          "pole": "J"
+        },
+        {
+          "id": "m08-b",
+          "label": "Dồn sức vào giai đoạn nước rút",
+          "pole": "P"
+        }
+      ]
+    },
+    {
+      "id": "m09",
+      "order": 9,
+      "text": "Khi có thời gian rảnh, bạn thích có tin vui trong công việc?",
+      "dimension": "EI",
+      "options": [
+        {
+          "id": "m09-a",
+          "label": "Chia sẻ ngay với nhiều người xung quanh",
+          "pole": "E"
+        },
+        {
+          "id": "m09-b",
+          "label": "Giữ riêng và tận hưởng một mình",
+          "pole": "I"
+        }
+      ]
+    },
+    {
+      "id": "m10",
+      "order": 10,
+      "text": "Khi tiếp nhận một vấn đề mới, bạn chú ý tới nghe giảng trên lớp?",
+      "dimension": "SN",
+      "options": [
+        {
+          "id": "m10-a",
+          "label": "Ví dụ thực tế và các bước làm",
+          "pole": "S"
+        },
+        {
+          "id": "m10-b",
+          "label": "Nguyên lý chung và xu hướng",
+          "pole": "N"
+        }
+      ]
+    },
+    {
+      "id": "m11",
+      "order": 11,
+      "text": "Khi đưa ra quyết định, bạn dựa vào tranh luận trong nhóm?",
+      "dimension": "TF",
+      "options": [
+        {
+          "id": "m11-a",
+          "label": "Tìm ra đáp án đúng nhất",
+          "pole": "T"
+        },
+        {
+          "id": "m11-b",
+          "label": "Giữ được sự hoà hợp",
+          "pole": "F"
+        }
+      ]
+    },
+    {
+      "id": "m12",
+      "order": 12,
+      "text": "Khi sắp xếp công việc, bạn thích nhìn vào bàn làm việc?",
+      "dimension": "JP",
+      "options": [
+        {
+          "id": "m12-a",
+          "label": "Mọi việc đã được sắp xếp rõ ràng",
+          "pole": "J"
+        },
+        {
+          "id": "m12-b",
+          "label": "Còn chỗ cho sự linh hoạt bất ngờ",
+          "pole": "P"
+        }
+      ]
+    },
+    {
+      "id": "m13",
+      "order": 13,
+      "text": "Khi có thời gian rảnh, bạn thích dự tiệc của công ty?",
+      "dimension": "EI",
+      "options": [
+        {
+          "id": "m13-a",
+          "label": "Bắt chuyện với nhiều người mới",
+          "pole": "E"
+        },
+        {
+          "id": "m13-b",
+          "label": "Trò chuyện sâu với vài người quen",
+          "pole": "I"
+        }
+      ]
+    },
+    {
+      "id": "m14",
+      "order": 14,
+      "text": "Khi tiếp nhận một vấn đề mới, bạn chú ý tới đánh giá một lời khuyên?",
+      "dimension": "SN",
+      "options": [
+        {
+          "id": "m14-a",
+          "label": "Kinh nghiệm đã được kiểm chứng",
+          "pole": "S"
+        },
+        {
+          "id": "m14-b",
+          "label": "Linh cảm và khả năng suy đoán",
+          "pole": "N"
+        }
+      ]
+    },
+    {
+      "id": "m15",
+      "order": 15,
+      "text": "Khi đưa ra quyết định, bạn dựa vào đồng nghiệp gặp khó khăn?",
+      "dimension": "TF",
+      "options": [
+        {
+          "id": "m15-a",
+          "label": "Phân tích nguyên nhân và cách xử lý",
+          "pole": "T"
+        },
+        {
+          "id": "m15-b",
+          "label": "Động viên và đồng cảm trước",
+          "pole": "F"
+        }
+      ]
+    },
+    {
+      "id": "m16",
+      "order": 16,
+      "text": "Khi sắp xếp công việc, bạn thích lên kế hoạch du lịch?",
+      "dimension": "JP",
+      "options": [
+        {
+          "id": "m16-a",
+          "label": "Chốt trước nơi ở và lịch trình",
+          "pole": "J"
+        },
+        {
+          "id": "m16-b",
+          "label": "Đi tới đâu tính tới đó",
+          "pole": "P"
+        }
+      ]
+    },
+    {
+      "id": "m17",
+      "order": 17,
+      "text": "Khi có thời gian rảnh, bạn thích cuối tuần dài?",
+      "dimension": "EI",
+      "options": [
+        {
+          "id": "m17-a",
+          "label": "Dành thời gian bên đông người",
+          "pole": "E"
+        },
+        {
+          "id": "m17-b",
+          "label": "Dành khoảng lặng cho riêng mình",
+          "pole": "I"
+        }
+      ]
+    },
+    {
+      "id": "m18",
+      "order": 18,
+      "text": "Khi tiếp nhận một vấn đề mới, bạn chú ý tới lập kế hoạch cho dự án?",
+      "dimension": "SN",
+      "options": [
+        {
+          "id": "m18-a",
+          "label": "Việc cụ thể cần làm ngay",
+          "pole": "S"
+        },
+        {
+          "id": "m18-b",
+          "label": "Bức tranh tổng thể trong tương lai",
+          "pole": "N"
+        }
+      ]
+    },
+    {
+      "id": "m19",
+      "order": 19,
+      "text": "Khi đưa ra quyết định, bạn dựa vào thấy một quyết định vô lý?",
+      "dimension": "TF",
+      "options": [
+        {
+          "id": "m19-a",
+          "label": "Quyết định thiếu căn cứ logic",
+          "pole": "T"
+        },
+        {
+          "id": "m19-b",
+          "label": "Mọi người đối xử lạnh nhạt với nhau",
+          "pole": "F"
+        }
+      ]
+    },
+    {
+      "id": "m20",
+      "order": 20,
+      "text": "Khi sắp xếp công việc, bạn thích theo dõi công việc?",
+      "dimension": "JP",
+      "options": [
+        {
+          "id": "m20-a",
+          "label": "Có danh sách việc cần làm",
+          "pole": "J"
+        },
+        {
+          "id": "m20-b",
+          "label": "Thay đổi theo tình hình thực tế",
+          "pole": "P"
+        }
+      ]
+    },
+    {
+      "id": "m21",
+      "order": 21,
+      "text": "Khi có thời gian rảnh, bạn thích họp nhóm dự án?",
+      "dimension": "EI",
+      "options": [
+        {
+          "id": "m21-a",
+          "label": "Bàn bạc trực tiếp và sôi nổi",
+          "pole": "E"
+        },
+        {
+          "id": "m21-b",
+          "label": "Trao đổi qua văn bản để có thời gian nghĩ",
+          "pole": "I"
+        }
+      ]
+    },
+    {
+      "id": "m22",
+      "order": 22,
+      "text": "Khi tiếp nhận một vấn đề mới, bạn chú ý tới kể lại câu chuyện?",
+      "dimension": "SN",
+      "options": [
+        {
+          "id": "m22-a",
+          "label": "Kể lại sự việc đã xảy ra",
+          "pole": "S"
+        },
+        {
+          "id": "m22-b",
+          "label": "Liên tưởng tới những khả năng khác",
+          "pole": "N"
+        }
+      ]
+    },
+    {
+      "id": "m23",
+      "order": 23,
+      "text": "Khi đưa ra quyết định, bạn dựa vào đánh giá một ý tưởng?",
+      "dimension": "TF",
+      "options": [
+        {
+          "id": "m23-a",
+          "label": "Xét tính hợp lý và hiệu quả",
+          "pole": "T"
+        },
+        {
+          "id": "m23-b",
+          "label": "Xét tác động tới con người",
+          "pole": "F"
+        }
+      ]
+    },
+    {
+      "id": "m24",
+      "order": 24,
+      "text": "Khi sắp xếp công việc, bạn thích nhận nhiệm vụ mới?",
+      "dimension": "JP",
+      "options": [
+        {
+          "id": "m24-a",
+          "label": "Chia nhỏ và đặt mốc thời gian",
+          "pole": "J"
+        },
+        {
+          "id": "m24-b",
+          "label": "Bắt tay làm rồi xử lý dần",
+          "pole": "P"
+        }
+      ]
+    },
+    {
+      "id": "m25",
+      "order": 25,
+      "text": "Khi có thời gian rảnh, bạn thích ngày nghỉ lý tưởng?",
+      "dimension": "EI",
+      "options": [
+        {
+          "id": "m25-a",
+          "label": "Đọc sách hoặc làm việc mình thích",
+          "pole": "I"
+        },
+        {
+          "id": "m25-b",
+          "label": "Tham gia hoạt động tập thể",
+          "pole": "E"
+        }
+      ]
+    },
+    {
+      "id": "m26",
+      "order": 26,
+      "text": "Khi tiếp nhận một vấn đề mới, bạn chú ý tới tìm hiểu một lĩnh vực mới?",
+      "dimension": "SN",
+      "options": [
+        {
+          "id": "m26-a",
+          "label": "Ý tưởng trừu tượng và mới lạ",
+          "pole": "N"
+        },
+        {
+          "id": "m26-b",
+          "label": "Công việc mang tính thực hành",
+          "pole": "S"
+        }
+      ]
+    },
+    {
+      "id": "m27",
+      "order": 27,
+      "text": "Khi đưa ra quyết định, bạn dựa vào được người khác nhận xét?",
+      "dimension": "TF",
+      "options": [
+        {
+          "id": "m27-a",
+          "label": "Ấm áp và biết quan tâm",
+          "pole": "F"
+        },
+        {
+          "id": "m27-b",
+          "label": "Công bằng và khách quan",
+          "pole": "T"
+        }
+      ]
+    },
+    {
+      "id": "m28",
+      "order": 28,
+      "text": "Khi sắp xếp công việc, bạn thích kế hoạch bị thay đổi?",
+      "dimension": "JP",
+      "options": [
+        {
+          "id": "m28-a",
+          "label": "Mọi thứ bị đóng khung quá chặt",
+          "pole": "P"
+        },
+        {
+          "id": "m28-b",
+          "label": "Kế hoạch bị đổi vào phút cuối",
+          "pole": "J"
+        }
+      ]
+    },
+    {
+      "id": "m29",
+      "order": 29,
+      "text": "Khi có thời gian rảnh, bạn thích gặp vấn đề khó?",
+      "dimension": "EI",
+      "options": [
+        {
+          "id": "m29-a",
+          "label": "Tự nhìn lại trước khi hỏi ai",
+          "pole": "I"
+        },
+        {
+          "id": "m29-b",
+          "label": "Nói ra để cùng nhau gỡ rối",
+          "pole": "E"
+        }
+      ]
+    },
+    {
+      "id": "m30",
+      "order": 30,
+      "text": "Khi tiếp nhận một vấn đề mới, bạn chú ý tới giải quyết vấn đề quen thuộc?",
+      "dimension": "SN",
+      "options": [
+        {
+          "id": "m30-a",
+          "label": "Tìm cách tiếp cận chưa ai thử",
+          "pole": "N"
+        },
+        {
+          "id": "m30-b",
+          "label": "Dùng cách đã thành công trước đây",
+          "pole": "S"
+        }
+      ]
+    },
+    {
+      "id": "m31",
+      "order": 31,
+      "text": "Khi đưa ra quyết định, bạn dựa vào nhóm xảy ra mâu thuẫn?",
+      "dimension": "TF",
+      "options": [
+        {
+          "id": "m31-a",
+          "label": "Tìm tiếng nói chung cho các bên",
+          "pole": "F"
+        },
+        {
+          "id": "m31-b",
+          "label": "Phân định đúng sai rõ ràng",
+          "pole": "T"
+        }
+      ]
+    },
+    {
+      "id": "m32",
+      "order": 32,
+      "text": "Khi sắp xếp công việc, bạn thích giữ bàn làm việc?",
+      "dimension": "JP",
+      "options": [
+        {
+          "id": "m32-a",
+          "label": "Bừa một chút nhưng dễ tìm",
+          "pole": "P"
+        },
+        {
+          "id": "m32-b",
+          "label": "Gọn gàng, mọi thứ có vị trí cố định",
+          "pole": "J"
+        }
+      ]
+    },
+    {
+      "id": "m33",
+      "order": 33,
+      "text": "Khi có thời gian rảnh, bạn thích trong cuộc họp?",
+      "dimension": "EI",
+      "options": [
+        {
+          "id": "m33-a",
+          "label": "Nghe hết rồi mới kết luận",
+          "pole": "I"
+        },
+        {
+          "id": "m33-b",
+          "label": "Nghĩ và nói gần như cùng lúc",
+          "pole": "E"
+        }
+      ]
+    },
+    {
+      "id": "m34",
+      "order": 34,
+      "text": "Khi tiếp nhận một vấn đề mới, bạn chú ý tới đánh giá một sản phẩm?",
+      "dimension": "SN",
+      "options": [
+        {
+          "id": "m34-a",
+          "label": "Sự sáng tạo và đột phá",
+          "pole": "N"
+        },
+        {
+          "id": "m34-b",
+          "label": "Sự chính xác và thiết thực",
+          "pole": "S"
+        }
+      ]
+    },
+    {
+      "id": "m35",
+      "order": 35,
+      "text": "Khi đưa ra quyết định, bạn dựa vào nhận lời phê bình?",
+      "dimension": "TF",
+      "options": [
+        {
+          "id": "m35-a",
+          "label": "Để ý tới thái độ của người nói",
+          "pole": "F"
+        },
+        {
+          "id": "m35-b",
+          "label": "Xem xét lời phê bình có đúng không",
+          "pole": "T"
+        }
+      ]
+    },
+    {
+      "id": "m36",
+      "order": 36,
+      "text": "Khi sắp xếp công việc, bạn thích họp bàn dự án?",
+      "dimension": "JP",
+      "options": [
+        {
+          "id": "m36-a",
+          "label": "Thảo luận cởi mở, chưa cần chốt",
+          "pole": "P"
+        },
+        {
+          "id": "m36-b",
+          "label": "Có chương trình và kết luận rõ ràng",
+          "pole": "J"
+        }
+      ]
+    },
+    {
+      "id": "m37",
+      "order": 37,
+      "text": "Khi có thời gian rảnh, bạn thích khi làm việc chuyên sâu?",
+      "dimension": "EI",
+      "options": [
+        {
+          "id": "m37-a",
+          "label": "Được tập trung không bị ngắt quãng",
+          "pole": "I"
+        },
+        {
+          "id": "m37-b",
+          "label": "Được tương tác với nhiều người",
+          "pole": "E"
+        }
+      ]
+    },
+    {
+      "id": "m38",
+      "order": 38,
+      "text": "Khi tiếp nhận một vấn đề mới, bạn chú ý tới học một kỹ năng mới?",
+      "dimension": "SN",
+      "options": [
+        {
+          "id": "m38-a",
+          "label": "Hiểu nguyên tắc rồi tự mày mò",
+          "pole": "N"
+        },
+        {
+          "id": "m38-b",
+          "label": "Làm theo hướng dẫn từng bước",
+          "pole": "S"
+        }
+      ]
+    },
+    {
+      "id": "m39",
+      "order": 39,
+      "text": "Khi đưa ra quyết định, bạn dựa vào chọn giữa hai phương án?",
+      "dimension": "TF",
+      "options": [
+        {
+          "id": "m39-a",
+          "label": "Cân nhắc điều tốt nhất cho tập thể",
+          "pole": "F"
+        },
+        {
+          "id": "m39-b",
+          "label": "So sánh lợi ích và chi phí",
+          "pole": "T"
+        }
+      ]
+    },
+    {
+      "id": "m40",
+      "order": 40,
+      "text": "Khi sắp xếp công việc, bạn thích đứng trước quyết định lớn?",
+      "dimension": "JP",
+      "options": [
+        {
+          "id": "m40-a",
+          "label": "Chờ thêm thông tin rồi tính",
+          "pole": "P"
+        },
+        {
+          "id": "m40-b",
+          "label": "Chốt sớm để yên tâm triển khai",
+          "pole": "J"
+        }
+      ]
+    },
+    {
+      "id": "m41",
+      "order": 41,
+      "text": "Khi có thời gian rảnh, bạn thích vào lớp học mới?",
+      "dimension": "EI",
+      "options": [
+        {
+          "id": "m41-a",
+          "label": "Quan sát rồi dần mở lòng",
+          "pole": "I"
+        },
+        {
+          "id": "m41-b",
+          "label": "Chủ động làm quen bạn mới",
+          "pole": "E"
+        }
+      ]
+    },
+    {
+      "id": "m42",
+      "order": 42,
+      "text": "Khi tiếp nhận một vấn đề mới, bạn chú ý tới ghi nhớ sự việc?",
+      "dimension": "SN",
+      "options": [
+        {
+          "id": "m42-a",
+          "label": "Ấn tượng và ý nghĩa tổng quát",
+          "pole": "N"
+        },
+        {
+          "id": "m42-b",
+          "label": "Chi tiết của sự việc cụ thể",
+          "pole": "S"
+        }
+      ]
+    },
+    {
+      "id": "m43",
+      "order": 43,
+      "text": "Khi đưa ra quyết định, bạn dựa vào đánh giá đồng nghiệp?",
+      "dimension": "TF",
+      "options": [
+        {
+          "id": "m43-a",
+          "label": "Sự tin cậy và gắn kết",
+          "pole": "F"
+        },
+        {
+          "id": "m43-b",
+          "label": "Năng lực và kết quả công việc",
+          "pole": "T"
+        }
+      ]
+    },
+    {
+      "id": "m44",
+      "order": 44,
+      "text": "Khi sắp xếp công việc, bạn thích kết thúc công việc?",
+      "dimension": "JP",
+      "options": [
+        {
+          "id": "m44-a",
+          "label": "Khi nào xong chất lượng thì xong",
+          "pole": "P"
+        },
+        {
+          "id": "m44-b",
+          "label": "Đúng hạn như đã cam kết",
+          "pole": "J"
+        }
+      ]
+    },
+    {
+      "id": "m45",
+      "order": 45,
+      "text": "Khi có thời gian rảnh, bạn thích sau một ngày họp liên tục?",
+      "dimension": "EI",
+      "options": [
+        {
+          "id": "m45-a",
+          "label": "Muốn về nhà để tĩnh lại",
+          "pole": "I"
+        },
+        {
+          "id": "m45-b",
+          "label": "Vẫn hào hứng đi ăn cùng đồng nghiệp",
+          "pole": "E"
+        }
+      ]
+    },
+    {
+      "id": "m46",
+      "order": 46,
+      "text": "Khi tiếp nhận một vấn đề mới, bạn chú ý tới nhận một đề bài mở?",
+      "dimension": "SN",
+      "options": [
+        {
+          "id": "m46-a",
+          "label": "Mở rộng theo hướng riêng",
+          "pole": "N"
+        },
+        {
+          "id": "m46-b",
+          "label": "Bám sát yêu cầu được nêu",
+          "pole": "S"
+        }
+      ]
+    },
+    {
+      "id": "m47",
+      "order": 47,
+      "text": "Khi đưa ra quyết định, bạn dựa vào xử lý khi ai đó làm sai?",
+      "dimension": "TF",
+      "options": [
+        {
+          "id": "m47-a",
+          "label": "Hỏi thăm xem họ gặp chuyện gì",
+          "pole": "F"
+        },
+        {
+          "id": "m47-b",
+          "label": "Chỉ rõ lỗi và cách khắc phục",
+          "pole": "T"
+        }
+      ]
+    },
+    {
+      "id": "m48",
+      "order": 48,
+      "text": "Khi sắp xếp công việc, bạn thích có nhiều việc cùng lúc?",
+      "dimension": "JP",
+      "options": [
+        {
+          "id": "m48-a",
+          "label": "Chuyển qua lại tuỳ hứng thú",
+          "pole": "P"
+        },
+        {
+          "id": "m48-b",
+          "label": "Ưu tiên và làm lần lượt",
+          "pole": "J"
+        }
+      ]
+    }
+  ]
+}

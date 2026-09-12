@@ -194,21 +194,22 @@
   align-items: center;
   gap: 12px;
   padding: 0 16px;
-  background: rgba(255, 255, 255, 0.64);
-  border: 1px solid rgba(92, 66, 156, 0.2);
-  border-radius: 8px;
+  background: var(--field-bg);
+  border: 1px solid var(--field-border);
+  border-radius: 12px;
+  color-scheme: light;
   transition: border-color 180ms ease, box-shadow 180ms ease, background 180ms ease;
 }
 
 .consultation-field:focus-within {
-  background: #fff;
-  border-color: rgba(101, 49, 229, 0.65);
-  box-shadow: 0 0 0 3px rgba(118, 67, 232, 0.1);
+  background: var(--field-bg);
+  border-color: var(--field-focus);
+  box-shadow: 0 0 0 3px rgba(90, 34, 232, 0.16);
 }
 
 .consultation-field svg {
   width: 20px;
-  color: #767391;
+  color: #7a6aa8;
 }
 
 .consultation-field input,
@@ -388,8 +389,8 @@
 .scroll-top {
   position: fixed;
   right: 22px;
-  bottom: 22px;
-  z-index: 30;
+  bottom: calc(22px + env(safe-area-inset-bottom, 0px));
+  z-index: 45;
   width: 48px;
   height: 48px;
   display: grid;
@@ -442,5 +443,16 @@
   .site-footer__grid { grid-template-columns: 1fr; }
   .site-footer__brand { grid-column: auto; }
   .site-footer__contact { padding: 25px 0; border-top: 1px solid rgba(194, 151, 255, 0.25); border-right: 0; border-bottom: 1px solid rgba(194, 151, 255, 0.25); }
-  .scroll-top { right: 14px; bottom: 14px; width: 44px; height: 44px; }
+  .scroll-top { right: 14px; bottom: calc(14px + env(safe-area-inset-bottom, 0px)); width: 44px; height: 44px; }
+
+  /* Khi thanh CTA dính đáy đang hiện, nút lên đầu trang nhường chỗ để không đè nội dung. */
+  .detail-sticky.is-visible ~ .scroll-top,
+  body:has(.detail-sticky.is-visible) .scroll-top {
+    bottom: calc(var(--sticky-cta-h, 88px) + 14px);
+  }
+}
+
+.consultation-field input::placeholder,
+.consultation-field textarea::placeholder {
+  color: var(--field-placeholder);
 }

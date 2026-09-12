@@ -1,0 +1,858 @@
+/* ux-content — ghi đè/tinh chỉnh UX sau rà soát mobile.
+   File này được nạp SAU responsive.css nên có thể ghi đè rule cũ khi cùng độ ưu tiên.
+
+   Phạm vi: trang khóa học, blog, dịch vụ, giới thiệu/liên hệ, khu vực thành viên
+   và các khối nội dung CMS (BlockRenderer). */
+
+/* ---------------------------------------------------------------------------
+   1. Thẻ khóa học — tách cấp độ thành badge, meta không lặp dữ liệu.
+   --------------------------------------------------------------------------- */
+.course-grid article .course-card__body {
+  min-width: 0;
+}
+
+.course-grid article .course-card__tags {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.course-grid article .course-card__category {
+  color: var(--violet);
+  font-size: 0.66rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.course-grid article .course-card__level {
+  padding: 3px 9px;
+  color: #43208f;
+  background: #f0ebff;
+  border: 1px solid #d9cdff;
+  border-radius: 999px;
+  font-size: 0.66rem;
+  font-weight: 800;
+  text-transform: none;
+  white-space: nowrap;
+}
+
+.course-grid article .course-card__meta {
+  margin: 8px 0 0;
+  color: var(--ink-soft);
+  font-size: 0.74rem;
+  font-weight: 700;
+  text-transform: none;
+}
+
+.course-grid article .course-card__cta {
+  margin-top: 10px;
+}
+
+/* Bộ lọc gom vào popover: thanh tìm kiếm + nút “Bộ lọc (n)” + chip đã áp dụng. */
+.ux-course-list .course-toolbar {
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding: 12px;
+}
+
+.course-filters__panel {
+  right: 0;
+  left: auto;
+  z-index: 40;
+}
+
+@media (max-width: 800px) {
+  .ux-course-list .course-toolbar {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    justify-content: stretch;
+  }
+
+  .ux-course-list .course-toolbar > label {
+    min-width: 0;
+  }
+
+  .ux-course-list .course-filters {
+    width: 100%;
+  }
+
+  .course-filters__panel {
+    width: min(100%, 360px);
+  }
+}
+
+@media (max-width: 767px) {
+  .course-filters .filter-popover__trigger,
+  .course-filters .filter-popover__chips button {
+    min-height: 44px;
+  }
+
+  .course-filters__panel .filter-popover__fields select,
+  .course-filters__panel header button {
+    min-height: 44px;
+  }
+
+  .course-filters__panel header button {
+    width: 44px;
+    height: 44px;
+  }
+
+  .ux-course-list .blog-toolbar {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    justify-content: stretch;
+    gap: 10px;
+    padding: 12px;
+    margin-bottom: 14px;
+  }
+
+  .ux-course-list .blog-count {
+    margin-bottom: 6px;
+  }
+
+  .course-sort {
+    width: 100%;
+  }
+}
+
+.course-sort {
+  min-height: 44px;
+  padding: 0 12px;
+  color: var(--ink);
+  background: #fff;
+  border: 1px solid #d9d3e8;
+  border-radius: 10px;
+  font-size: 0.84rem;
+}
+
+/* Card khóa học trên mobile: 1 cột, ảnh 16/10 phía trên, mô tả cắt 2 dòng. */
+@media (max-width: 560px) {
+  .course-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .course-grid article {
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+    gap: 12px;
+    padding: 14px;
+  }
+
+  .course-grid article > img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    border-radius: 12px;
+  }
+
+  .course-grid article .course-card__summary {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  .course-grid article .course-card__level {
+    white-space: nowrap;
+  }
+
+  .course-grid article .course-card__cta {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   2. Trang chi tiết khóa học — CTA dính đáy 1 hàng, danh sách số thẳng hàng.
+   --------------------------------------------------------------------------- */
+.ux-course-detail .article-list article,
+.ux-service .article-list article,
+.ux-contact .article-list article,
+.ux-account .article-list article,
+.ux-block .article-list article,
+.ux-blog-list .article-list article {
+  min-width: 0;
+}
+
+@media (max-width: 767px) {
+  .ux-course-detail.page-light-section,
+  .ux-service.page-light-section,
+  .ux-contact.page-light-section {
+    padding: 40px 0;
+  }
+
+  /* Khối CMS: nhịp dọc ≤ 40px giữa hai khối liền kề (kể cả margin-top của heading). */
+  .ux-block.page-light-section,
+  .ux-block.page-dark-section {
+    padding-block: 14px;
+  }
+
+  /* Margin dưới cùng của khối không được cộng thêm vào nhịp dọc. */
+  .ux-block .container *:last-child {
+    margin-bottom: 0;
+  }
+
+  /* Margin trên cùng của khối cũng không được đẩy khối kế tiếp ra xa. */
+  .ux-block .container *:first-child {
+    margin-top: 0;
+  }
+
+  .ux-block .page-section-heading,
+  .ux-block .page-section-heading:last-child {
+    margin-bottom: 18px;
+  }
+
+  /* Card / timeline / stats của khối CMS xếp 1 cột. */
+  .ux-block .service-grid,
+  .ux-block .value-grid,
+  .ux-block .story-stats,
+  .ux-block .course-grid,
+  .ux-block .blog-page-grid,
+  .ux-block .journey-line {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* Danh sách không có nút mũi tên: bỏ cột trống, số 28px thẳng dòng tiêu đề. */
+  .ux-course-detail .article-list article:not(:has(> a)),
+  .ux-service .article-list article:not(:has(> a)),
+  .ux-block .article-list article:not(:has(> a)) {
+    grid-template-columns: 34px minmax(0, 1fr);
+    align-items: start;
+    gap: 12px;
+    min-height: 0;
+    padding: 12px 14px;
+  }
+
+  .ux-course-detail .article-list article > span:not(:has(svg)),
+  .ux-service .article-list article > span:not(:has(svg)),
+  .ux-block .article-list article > span:not(:has(svg)) {
+    font-size: 28px;
+    line-height: 24px;
+  }
+
+  .ux-course-detail .article-list h3,
+  .ux-service .article-list h3,
+  .ux-block .article-list h3 {
+    margin-top: 0;
+    font-size: 0.95rem;
+    line-height: 1.4;
+  }
+
+  .ux-course-detail .article-list p,
+  .ux-service .article-list p,
+  .ux-block .article-list p {
+    margin-top: 4px;
+    font-size: 0.82rem;
+  }
+
+  .ux-course-detail .page-section-heading,
+  .ux-service .page-section-heading {
+    margin-bottom: 20px;
+  }
+
+  .ux-course-detail .page-section-heading h2 {
+    margin-top: 8px;
+    font-size: 1.05rem;
+    line-height: 1.35;
+  }
+
+  .ux-course-detail .page-section-heading > span,
+  .ux-service .page-section-heading > span {
+    font-size: max(12px, 0.72rem);
+  }
+
+  .ux-service .page-section-heading h2 {
+    margin-top: 8px;
+    font-size: 1.15rem;
+    line-height: 1.35;
+  }
+
+  .ux-service .process-card {
+    margin-top: 22px;
+    padding: 22px 18px;
+  }
+
+  .ux-service .entitlement-note {
+    margin: 14px 0;
+  }
+
+  /* Thẻ quyền lợi: 1 cột, bỏ cột trống của lưới danh sách. */
+  .ux-service .article-list article:not(:has(> a)) {
+    grid-template-columns: 26px minmax(0, 1fr);
+    gap: 10px;
+    padding: 12px 14px;
+  }
+
+  .ux-service .article-list article > span svg {
+    width: 22px;
+    height: 22px;
+  }
+}
+
+/* Thanh CTA dính đáy: giá + nút chính + 2 icon, cao ≤ 76px. */
+@media (max-width: 767px) {
+  .detail-sticky.is-visible {
+    flex-wrap: nowrap;
+    gap: 8px;
+    padding: 10px 12px calc(10px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .detail-sticky__price {
+    gap: 0;
+    min-width: 0;
+    max-width: 120px;
+    margin-right: 0;
+    overflow: hidden;
+  }
+
+  .detail-sticky__price strong {
+    display: block;
+    overflow: hidden;
+    font-size: 0.96rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .detail-sticky__price small {
+    display: block;
+    overflow: hidden;
+    font-size: max(12px, 0.7rem);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .detail-sticky__row {
+    display: flex;
+    flex: 1 1 auto;
+    min-width: 0;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .detail-sticky__cta {
+    flex: 1 1 auto;
+    min-width: 0;
+    justify-content: center;
+    padding: 0 10px;
+    font-size: 0.78rem;
+    white-space: nowrap;
+  }
+
+  .detail-sticky__icon {
+    flex: 0 0 auto;
+    width: 46px;
+    min-width: 46px;
+    justify-content: center;
+    padding: 0;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   3. Bài viết blog — mục lục trước nội dung, khối công cụ nền sáng.
+   --------------------------------------------------------------------------- */
+.article-outline {
+  max-width: 740px;
+  margin: 20px auto 0;
+  text-align: left;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(220, 175, 255, 0.22);
+  border-radius: 14px;
+}
+
+.article-outline summary {
+  display: flex;
+  min-height: 48px;
+  align-items: center;
+  gap: 9px;
+  padding: 11px 16px;
+  color: #f0e9ff;
+  cursor: pointer;
+  font-size: max(12px, 0.76rem);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  list-style: none;
+}
+
+.article-outline summary::-webkit-details-marker {
+  display: none;
+}
+
+.article-outline summary > svg {
+  width: 17px;
+  height: 17px;
+  flex: 0 0 auto;
+}
+
+.article-outline__caret {
+  width: 16px !important;
+  margin-left: auto;
+  transition: transform 160ms ease;
+}
+
+.article-outline[open] .article-outline__caret {
+  transform: rotate(180deg);
+}
+
+.article-outline nav {
+  display: grid;
+  gap: 2px;
+  padding: 2px 10px 12px;
+}
+
+.article-outline nav a {
+  display: flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 12px;
+  color: #f3ecff;
+  border-radius: 10px;
+  font-size: 0.86rem;
+  font-weight: 600;
+}
+
+.article-outline nav a:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.article-outline nav a.is-active {
+  color: #d9a8ff;
+  font-weight: 800;
+}
+
+.article-outline nav a svg {
+  width: 15px;
+  height: 15px;
+  flex: 0 0 auto;
+}
+
+@media (max-width: 767px) {
+  .article-outline {
+    margin: 16px 0 0;
+  }
+
+  .article-outline summary {
+    padding: 10px 14px;
+  }
+}
+
+/* Khối “Công cụ liên quan” đổi sang nền sáng cho khớp tông trang bài viết. */
+.article-detail__layout aside > .ux-article-tools {
+  color: var(--ink);
+  background: #fff;
+  border-color: #e2d8ff;
+  backdrop-filter: none;
+}
+
+.article-detail__layout aside > .ux-article-tools span {
+  color: var(--violet);
+}
+
+.article-detail__layout aside > .ux-article-tools h2 {
+  color: var(--ink);
+}
+
+.article-detail__layout aside > .ux-article-tools p {
+  color: var(--ink-soft);
+}
+
+.article-detail__layout aside > .ux-article-tools a {
+  color: #43208f;
+  background: #f4f0ff;
+  border: 1px solid #dcd0ff;
+}
+
+.article-detail__layout aside > .ux-article-tools a:first-of-type {
+  color: #fff;
+  background: var(--gradient-cta);
+  border: 0;
+}
+
+/* Danh sách blog mobile: 1 cột, meta 1 dòng, tối đa 1 chip tag. */
+@media (max-width: 767px) {
+  .ux-blog-list .blog-toolbar {
+    gap: 10px;
+    padding: 12px;
+    margin-bottom: 12px;
+  }
+
+  .ux-blog-list .blog-page-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .ux-blog-list .blog-page-grid article {
+    grid-template-rows: auto auto;
+  }
+
+  .ux-blog-list .blog-page-grid img {
+    height: auto;
+    min-height: 0;
+    max-height: none;
+    aspect-ratio: 16 / 9;
+  }
+
+  .ux-blog-list .blog-page-grid small {
+    display: block;
+    width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .ux-blog-list .blog-page-grid .detail-tags a:nth-child(n + 2) {
+    display: none;
+  }
+
+  .ux-blog-list .blog-page-grid article > div {
+    padding: 18px;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   4. Trang dịch vụ — bảng so sánh gói và nhịp dọc gọn hơn.
+   --------------------------------------------------------------------------- */
+.service-compare {
+  margin-top: 28px;
+}
+
+.service-compare > h2 {
+  margin: 0 0 14px;
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  text-transform: uppercase;
+}
+
+.service-compare__table {
+  width: 100%;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.84);
+  border: 1px solid rgba(82, 45, 154, 0.13);
+  border-radius: 16px;
+  border-collapse: collapse;
+  box-shadow: var(--shadow-card);
+}
+
+.service-compare__table th,
+.service-compare__table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(82, 45, 154, 0.1);
+  text-align: left;
+  vertical-align: top;
+  font-size: 0.84rem;
+}
+
+.service-compare__table thead th {
+  color: var(--violet);
+  background: rgba(244, 240, 255, 0.9);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.service-compare__table tbody th {
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+}
+
+.service-compare__flag {
+  display: block;
+  margin-top: 4px;
+  color: var(--violet);
+  font-family: var(--font-body, inherit);
+  font-size: 0.66rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.service-compare__table td {
+  color: var(--ink-soft);
+}
+
+.service-compare__table td strong {
+  color: var(--ink);
+}
+
+.service-compare__price {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.service-compare__table tr:last-child th,
+.service-compare__table tr:last-child td {
+  border-bottom: 0;
+}
+
+.service-compare__table td .button {
+  min-height: 40px;
+  padding: 0 12px;
+  font-size: 0.72rem;
+}
+
+@media (max-width: 767px) {
+  .service-compare {
+    margin-top: 22px;
+  }
+
+  .service-compare > h2 {
+    font-size: 1.2rem;
+  }
+
+  /* Mobile: mỗi gói thành một thẻ, nhãn nằm trên giá trị. */
+  .service-compare__table,
+  .service-compare__table thead,
+  .service-compare__table tbody,
+  .service-compare__table tr,
+  .service-compare__table th,
+  .service-compare__table td {
+    display: block;
+    width: 100%;
+  }
+
+  .service-compare__table {
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .service-compare__table thead {
+    display: none;
+  }
+
+  .service-compare__table tbody tr {
+    margin-bottom: 12px;
+    padding: 16px;
+    background: rgba(255, 255, 255, 0.86);
+    border: 1px solid rgba(82, 45, 154, 0.13);
+    border-radius: 16px;
+    box-shadow: var(--shadow-card);
+  }
+
+  .service-compare__table tbody th {
+    padding: 0 0 10px;
+    border-bottom: 1px solid rgba(82, 45, 154, 0.1);
+    font-size: 1rem;
+  }
+
+  .service-compare__table tbody td {
+    display: grid;
+    gap: 3px;
+    padding: 10px 0 0;
+    border: 0;
+  }
+
+  .service-compare__table tbody td::before {
+    color: var(--violet);
+    content: attr(data-label);
+    font-size: max(12px, 0.7rem);
+    font-weight: 800;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+
+  .service-compare__table td .button {
+    min-height: 44px;
+    margin-top: 4px;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   5. Liên hệ + breadcrumb trang giới thiệu.
+   --------------------------------------------------------------------------- */
+.ux-breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px 8px;
+  margin: 0 0 12px;
+  color: rgba(244, 239, 255, 0.72);
+  font-size: max(12px, 0.76rem);
+  font-weight: 700;
+}
+
+.ux-breadcrumb a {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  color: #d7bbec;
+}
+
+.ux-breadcrumb a:hover {
+  color: #fff;
+}
+
+.ux-breadcrumb span[aria-current="page"] {
+  color: #fff;
+}
+
+.map-placeholder {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.84);
+  border: 1px solid rgba(82, 45, 154, 0.14);
+  border-radius: 16px;
+  box-shadow: var(--shadow-card);
+}
+
+.map-placeholder > svg {
+  width: 28px;
+  height: 28px;
+  flex: 0 0 auto;
+  color: var(--violet);
+}
+
+.map-placeholder strong {
+  display: block;
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+}
+
+.map-placeholder p {
+  margin: 6px 0 0;
+  color: var(--ink-soft);
+}
+
+.map-placeholder a {
+  margin-top: 14px;
+}
+
+@media (max-width: 767px) {
+  .ux-contact .page-section-heading {
+    margin-bottom: 20px;
+  }
+
+  .ux-contact .admin-quick-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .ux-contact .admin-quick {
+    min-height: 44px;
+  }
+
+  .map-placeholder {
+    flex-direction: column;
+    gap: 10px;
+    padding: 16px;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   6. Khu vực thành viên — field gọn, lỗi dưới field, hàng hành động 1 hàng.
+   --------------------------------------------------------------------------- */
+@media (max-width: 767px) {
+  .ux-member .login-card {
+    padding: 22px 16px;
+  }
+
+  .ux-member .login-card .admin-form {
+    gap: 14px;
+  }
+
+  .ux-member .login-card .admin-form__grid {
+    gap: 12px;
+  }
+
+  .ux-member .login-card .field {
+    gap: 5px;
+  }
+
+  .ux-member .login-card .field__control {
+    min-height: 48px;
+  }
+
+  .ux-member .login-card .field__control input {
+    padding: 10px 0;
+  }
+
+  .ux-member .login-card .field__error,
+  .ux-member .login-card .field__hint {
+    font-size: max(12px, 0.74rem);
+  }
+
+  .ux-member .login-card .admin-error {
+    margin: 0;
+    font-size: max(12px, 0.76rem);
+  }
+
+  .ux-member .login-card .button--primary {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .ux-account .admin-page__actions {
+    flex-wrap: nowrap;
+    gap: 8px;
+    padding-bottom: 4px;
+    overflow-x: auto;
+    scrollbar-width: thin;
+  }
+
+  .ux-account .admin-page__actions > * {
+    flex: 0 0 auto;
+  }
+}
+
+/* Bổ sung sau đo lại: meta thẻ khóa học/bài viết phải đọc được và link đủ vùng chạm trên mobile. */
+@media (max-width: 767px) {
+  .course-card__category,
+  .course-card__summary,
+  .course-card__meta,
+  .blog-card small,
+  .blog-page-grid small {
+    font-size: 12.5px !important;
+  }
+
+  .course-card__title a,
+  .blog-card a,
+  .blog-page-grid article > a {
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
+  }
+}
+
+/* Bổ sung: link tiêu đề trong thẻ khóa học (h3 > a) phải đủ vùng chạm 44px trên mobile. */
+@media (max-width: 767px) {
+  .course-card__body h3 a,
+  .course-card h3 a,
+  .course-card__body > a {
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
+  }
+}
+
+/* Bổ sung: link "quay lại" ở đầu trang chi tiết cũng cần vùng chạm 44px trên mobile. */
+@media (max-width: 767px) {
+  .article-back,
+  .page-body .admin-back {
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
+  }
+}
+
+/* Bổ sung: link trong cây chuyên mục blog (trang /blog/kien-thuc) đủ vùng chạm trên mobile. */
+@media (max-width: 767px) {
+  .blog-library aside a,
+  .blog-category-tree a,
+  .blog-page aside a,
+  .blog-categories a {
+    display: flex;
+    min-height: 44px;
+    align-items: center;
+  }
+}

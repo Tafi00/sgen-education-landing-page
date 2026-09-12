@@ -1,0 +1,753 @@
+/* Ô nhập liệu dùng chung: nền trắng để trang không bị tối và mỏi mắt (feedback khách hàng). */
+:root {
+  --field-bg: #ffffff;
+  --field-bg-soft: #faf7f1;
+  --field-border: #d9d3e8;
+  --field-border-strong: #b6a9dd;
+  --field-text: #1b1a35;
+  --field-placeholder: #6f6b85;
+  --field-focus: #5a22e8;
+  --field-error: #c0264f;
+  --field-success: #15803d;
+  --field-radius: 10px;
+  /* Nhãn và gợi ý mặc định cho nền sáng. */
+  --field-label: #3d3856;
+  --field-hint: #5f5b78;
+}
+
+/* Trên nền tối, nhãn và gợi ý đổi sang tông sáng để đủ tương phản (WCAG AA). */
+:is(
+  .page-hero,
+  .page-dark-section,
+  .lookup-page__hero,
+  .login-stage,
+  .tool-assurance,
+  .program-path,
+  .section--dark,
+  .article-detail,
+  .hero
+) {
+  --field-label: #ece3ff;
+  --field-hint: #c6b8e4;
+}
+
+.field {
+  display: grid;
+  gap: 7px;
+  min-width: 0;
+}
+
+.field--wide {
+  grid-column: 1 / -1;
+}
+
+.field__label {
+  color: var(--field-label);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.field__control {
+  display: flex;
+  min-height: 48px;
+  align-items: center;
+  gap: 10px;
+  padding: 0 14px;
+  color: var(--field-text);
+  background: var(--field-bg);
+  border: 1px solid var(--field-border);
+  border-radius: var(--field-radius);
+  color-scheme: light;
+  transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
+}
+
+.field__control:hover {
+  border-color: var(--field-border-strong);
+}
+
+.field__control:focus-within {
+  background: var(--field-bg);
+  border-color: var(--field-focus);
+  box-shadow: 0 0 0 3px rgba(90, 34, 232, 0.16);
+}
+
+.field__control input,
+.field__control select,
+.field__control textarea {
+  width: 100%;
+  min-width: 0;
+  padding: 12px 0;
+  color: var(--field-text);
+  background: transparent;
+  border: 0;
+  outline: 0;
+  font: inherit;
+}
+
+.field__control input::placeholder,
+.field__control textarea::placeholder {
+  color: var(--field-placeholder);
+}
+
+.field__control select {
+  appearance: none;
+  cursor: pointer;
+}
+
+.field__control--textarea {
+  align-items: stretch;
+  padding-block: 6px;
+}
+
+.field__control--textarea textarea {
+  resize: vertical;
+  line-height: 1.6;
+}
+
+.field__control > svg {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+  color: #7a6aa8;
+}
+
+.field__spinner,
+.spin {
+  animation: field-spin 900ms linear infinite;
+}
+
+@keyframes field-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.field--invalid .field__control {
+  border-color: var(--field-error);
+  box-shadow: 0 0 0 3px rgba(192, 38, 79, 0.12);
+}
+
+.field__error {
+  margin: 0;
+  color: var(--field-error);
+  font-size: 0.74rem;
+  font-weight: 600;
+}
+
+.field__hint {
+  margin: 0;
+  color: var(--field-hint);
+  font-size: 0.74rem;
+}
+
+.field__checkbox {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  font-size: 0.86rem;
+  line-height: 1.5;
+}
+
+.field__checkbox input {
+  width: 17px;
+  height: 17px;
+  margin-top: 2px;
+  accent-color: var(--field-focus);
+}
+
+.image-field {
+  display: grid;
+  grid-template-columns: 132px minmax(0, 1fr);
+  gap: 14px;
+  padding: 14px;
+  background: var(--field-bg-soft);
+  border: 1px solid var(--field-border);
+  border-radius: 14px;
+}
+
+.image-field__preview {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  color: #9c8fbb;
+  background: #fff;
+  border: 1px dashed var(--field-border);
+  border-radius: 10px;
+}
+
+.image-field__preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.image-field__body {
+  display: grid;
+  gap: 10px;
+  align-content: start;
+  min-width: 0;
+}
+
+.image-field__url {
+  width: 100%;
+  min-height: 42px;
+  padding: 10px 12px;
+  color: var(--field-text);
+  background: #fff;
+  border: 1px solid var(--field-border);
+  border-radius: 9px;
+  font: inherit;
+}
+
+.image-field__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.image-field__upload,
+.image-field__remove {
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
+  gap: 7px;
+  padding: 0 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.image-field__upload {
+  color: #fff;
+  background: linear-gradient(120deg, #7134df, #b347e4);
+}
+
+.image-field__upload input {
+  display: none;
+}
+
+.image-field__remove {
+  color: var(--field-error);
+  background: #fff;
+  border: 1px solid rgba(192, 38, 79, 0.34);
+}
+
+.image-field__remove svg,
+.image-field__upload svg {
+  width: 16px;
+  height: 16px;
+}
+
+.repeater {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  background: var(--field-bg-soft);
+  border: 1px solid var(--field-border);
+  border-radius: 14px;
+}
+
+.repeater__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.repeater__empty {
+  margin: 0;
+  color: #6f6b85;
+  font-size: 0.78rem;
+}
+
+.repeater__row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px;
+  align-items: end;
+  padding: 12px;
+  background: #fff;
+  border: 1px solid var(--field-border);
+  border-radius: 10px;
+}
+
+.repeater__row label {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: #443f63;
+}
+
+.repeater__row input,
+.repeater__row textarea,
+.repeater__row select {
+  width: 100%;
+  min-height: 40px;
+  padding: 9px 11px;
+  color: var(--field-text);
+  background: #fff;
+  border: 1px solid var(--field-border);
+  border-radius: 8px;
+  font: inherit;
+  font-weight: 400;
+}
+
+.repeater__remove {
+  justify-self: end;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  color: var(--field-error);
+  background: #fff;
+  border: 1px solid rgba(192, 38, 79, 0.3);
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.repeater__remove svg {
+  width: 16px;
+  height: 16px;
+}
+
+@media (max-width: 640px) {
+  .image-field {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Lớp dùng chung cho trang chi tiết (khóa học, dịch vụ, bài viết). */
+.detail-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin: 14px 0 0;
+  color: var(--ink-soft);
+  font-size: 0.82rem;
+}
+
+.page-dark-section .detail-meta,
+.page-hero .detail-meta,
+.article-detail .detail-meta {
+  color: rgba(244, 239, 255, 0.78);
+}
+
+.detail-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.detail-meta svg {
+  width: 15px;
+  height: 15px;
+}
+
+.detail-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 16px 0 0;
+}
+
+.detail-tags a,
+.detail-tags span {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 12px;
+  color: #4a2a9c;
+  background: #f1ecff;
+  border: 1px solid #dcd0ff;
+  border-radius: 999px;
+  font-size: 0.74rem;
+  font-weight: 700;
+}
+
+.detail-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin: 22px 0 0;
+}
+
+.detail-share {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.detail-share button,
+.detail-share a {
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
+  gap: 7px;
+  padding: 0 14px;
+  color: var(--field-text);
+  background: #fff;
+  border: 1px solid var(--field-border);
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.detail-share svg {
+  width: 15px;
+  height: 15px;
+}
+
+.page-dark-section .detail-share button,
+.page-dark-section .detail-share a,
+.article-detail .detail-share button,
+.article-detail .detail-share a {
+  color: #f0e9ff;
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(206, 164, 255, 0.34);
+}
+
+/* Thanh CTA cố định đáy màn hình trên mobile (khóa học, dịch vụ). */
+.detail-sticky {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 60;
+  display: none;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px));
+  background: rgba(255, 255, 255, 0.97);
+  border-top: 1px solid var(--field-border);
+  box-shadow: 0 -10px 30px rgba(24, 10, 79, 0.14);
+  backdrop-filter: blur(10px);
+}
+
+.detail-sticky__price {
+  display: grid;
+  gap: 2px;
+  margin-right: auto;
+}
+
+.detail-sticky__price strong {
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: 1rem;
+}
+
+.detail-sticky__price small {
+  color: var(--ink-soft);
+  font-size: 0.7rem;
+}
+
+@media (max-width: 768px) {
+  .detail-sticky.is-visible {
+    display: flex;
+  }
+}
+
+/* Giải thích quyền truy cập kèm theo gói dịch vụ. */
+.entitlement-note {
+  display: grid;
+  gap: 8px;
+  margin: 20px 0;
+  padding: 18px 20px;
+  color: #2b1a63;
+  background: #f4f0ff;
+  border: 1px solid #dcd0ff;
+  border-radius: 16px;
+}
+
+.entitlement-note strong {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-display);
+  font-size: 1rem;
+}
+
+.entitlement-note ul {
+  margin: 0;
+  padding-left: 20px;
+  font-size: 0.86rem;
+  line-height: 1.7;
+}
+
+/* Bài trước / bài kế trong trang bài viết. */
+.pager-links {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 14px;
+  margin: 28px 0;
+}
+
+.pager-links a {
+  display: grid;
+  gap: 6px;
+  padding: 16px 18px;
+  background: #fff;
+  border: 1px solid var(--field-border);
+  border-radius: 14px;
+  transition: border-color 160ms ease, transform 160ms ease;
+}
+
+.pager-links a:hover {
+  border-color: #b6a9dd;
+  transform: translateY(-2px);
+}
+
+.pager-links small {
+  color: var(--ink-soft);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.pager-links strong {
+  color: var(--ink);
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+/* Mục lục bài viết: trạng thái đang đọc. */
+.article-toc a.is-active {
+  color: #5a22e8;
+  font-weight: 800;
+}
+
+/* Trình soạn khối nội dung trong CMS. */
+.block-editor {
+  display: grid;
+  gap: 12px;
+}
+
+.block-editor__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.block-editor__empty {
+  margin: 0;
+  padding: 18px;
+  color: var(--field-hint);
+  background: var(--field-bg-soft);
+  border: 1px dashed var(--field-border);
+  border-radius: 12px;
+  font-size: 0.82rem;
+}
+
+.block-editor__card {
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+  background: #fff;
+  border: 1px solid var(--field-border);
+  border-radius: 14px;
+}
+
+.block-editor__card header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.block-editor__index {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  color: #fff;
+  background: linear-gradient(120deg, #7134df, #b347e4);
+  border-radius: 50%;
+  font-size: 0.74rem;
+  font-weight: 800;
+}
+
+.block-editor__card header select {
+  min-height: 38px;
+  padding: 0 10px;
+  border: 1px solid var(--field-border);
+  border-radius: 9px;
+  font: inherit;
+  font-size: 0.8rem;
+}
+
+.block-editor__tools {
+  display: flex;
+  gap: 6px;
+  margin-left: auto;
+}
+
+.block-editor__tools button {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  color: var(--field-text);
+  background: #fff;
+  border: 1px solid var(--field-border);
+  border-radius: 9px;
+  cursor: pointer;
+}
+
+.block-editor__tools button:disabled {
+  color: #c4bedd;
+  cursor: not-allowed;
+}
+
+.block-editor__tools button.is-danger {
+  color: var(--field-error);
+  border-color: rgba(192, 38, 79, 0.32);
+}
+
+.block-editor__tools svg {
+  width: 15px;
+  height: 15px;
+}
+
+.block-editor__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 10px;
+}
+
+.block-editor__grid label {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+  color: var(--field-label);
+  font-size: 0.74rem;
+  font-weight: 700;
+}
+
+.block-editor__grid label.is-wide {
+  grid-column: 1 / -1;
+}
+
+.block-editor__grid input,
+.block-editor__grid textarea {
+  width: 100%;
+  min-height: 40px;
+  padding: 9px 11px;
+  color: var(--field-text);
+  background: var(--field-bg);
+  border: 1px solid var(--field-border);
+  border-radius: 9px;
+  font: inherit;
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+.block-editor__grid textarea {
+  resize: vertical;
+}
+
+.block-editor__shape,
+.block-editor__error {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.72rem;
+  font-style: normal;
+  font-weight: 600;
+}
+
+.block-editor__shape {
+  color: var(--field-hint);
+}
+
+.block-editor__error {
+  color: var(--field-error);
+}
+
+.block-editor__error svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* Trang lỗi route: thay màn hình trắng của React Router bằng nội dung có lối thoát. */
+.route-error {
+  display: grid;
+  place-items: center;
+  min-height: 70vh;
+  padding: calc(var(--header-h, 96px) + 40px) 0 80px;
+  color: #f4efff;
+  background: linear-gradient(180deg, #0b0430 0%, #170a4b 100%);
+}
+
+.route-error__inner {
+  display: grid;
+  justify-items: start;
+  gap: 14px;
+  max-width: 720px;
+}
+
+.route-error__icon {
+  display: grid;
+  place-items: center;
+  width: 54px;
+  height: 54px;
+  color: #ffd9a1;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(206, 164, 255, 0.34);
+  border-radius: 16px;
+}
+
+.route-error__icon svg {
+  width: 26px;
+  height: 26px;
+}
+
+.route-error h1 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 4vw, 2.4rem);
+}
+
+.route-error p {
+  margin: 0;
+  color: rgba(244, 239, 255, 0.82);
+  line-height: 1.7;
+}
+
+.route-error__detail {
+  max-width: 100%;
+  padding: 8px 12px;
+  color: #e6dcff;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(206, 164, 255, 0.2);
+  border-radius: 10px;
+  font-size: 0.78rem;
+  overflow-wrap: anywhere;
+}
+
+.route-error__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+@media (max-width: 767px) {
+  .route-error__actions {
+    width: 100%;
+  }
+
+  .route-error__actions > * {
+    flex: 1 1 100%;
+    justify-content: center;
+  }
+}

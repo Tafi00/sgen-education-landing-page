@@ -1,17 +1,17 @@
 import { useEffect, useRef, useState } from "react";
-import { Binary, Lightbulb, Orbit, Rocket, ShieldCheck, UserRound } from "lucide-react";
-import cosmicDarkClean from "../../../assets/backgrounds/cosmic-dark-clean.webp";
-import numeralOne from "../../../assets/illustrations/numeral-1-cosmic.webp";
-import numeralTwo from "../../../assets/illustrations/numeral-2-cosmic.webp";
-import numeralThree from "../../../assets/illustrations/numeral-3-cosmic.webp";
-import numeralFour from "../../../assets/illustrations/numeral-4-cosmic.webp";
-import numeralFive from "../../../assets/illustrations/numeral-5-cosmic.webp";
-import numeralSix from "../../../assets/illustrations/numeral-6-cosmic.webp";
-import numeralSeven from "../../../assets/illustrations/numeral-7-cosmic.webp";
-import numeralEight from "../../../assets/illustrations/numeral-8-cosmic.webp";
-import numeralNine from "../../../assets/illustrations/numeral-9-cosmic.webp";
-import numeralEleven from "../../../assets/illustrations/numeral-11-cosmic.webp";
-import numeralTwentyTwo from "../../../assets/illustrations/numeral-22-cosmic.webp";
+import { Binary, ChevronDown, ChevronUp, Lightbulb, Orbit, Rocket, ShieldCheck, UserRound } from "lucide-react";
+const cosmicDarkClean = "/assets/backgrounds/cosmic-dark-clean.webp";
+const numeralOne = "/assets/illustrations/numeral-1-cosmic.webp";
+const numeralTwo = "/assets/illustrations/numeral-2-cosmic.webp";
+const numeralThree = "/assets/illustrations/numeral-3-cosmic.webp";
+const numeralFour = "/assets/illustrations/numeral-4-cosmic.webp";
+const numeralFive = "/assets/illustrations/numeral-5-cosmic.webp";
+const numeralSix = "/assets/illustrations/numeral-6-cosmic.webp";
+const numeralSeven = "/assets/illustrations/numeral-7-cosmic.webp";
+const numeralEight = "/assets/illustrations/numeral-8-cosmic.webp";
+const numeralNine = "/assets/illustrations/numeral-9-cosmic.webp";
+const numeralEleven = "/assets/illustrations/numeral-11-cosmic.webp";
+const numeralTwentyTwo = "/assets/illustrations/numeral-22-cosmic.webp";
 import { Reveal } from "../ui/Reveal";
 import { SectionHeading } from "../ui/SectionHeading";
 import { SparkleButton } from "../ui/GradientButton";
@@ -72,6 +72,7 @@ function preloadImage(source: string) {
 
 export function NumbersSection() {
   const [activeNumber, setActiveNumber] = useState<NumerologyNumber>("1");
+  const [descriptionOpen, setDescriptionOpen] = useState(false);
   const [previousNumber, setPreviousNumber] = useState<NumerologyNumber | null>(null);
   const [pendingNumber, setPendingNumber] = useState<NumerologyNumber | null>(null);
   const sectionRef = useRef<HTMLElement>(null);
@@ -112,6 +113,7 @@ export function NumbersSection() {
 
     const request = ++requestRef.current;
     setPendingNumber(number);
+    setDescriptionOpen(false);
     await preloadImage(numberImages[number]);
     if (request !== requestRef.current) return;
 
@@ -180,7 +182,29 @@ export function NumbersSection() {
           <div id="number-detail" role="tabpanel" className="number-detail" key={`detail-${activeNumber}`}>
             <span className="number-detail__eyebrow"><Orbit aria-hidden="true" /> Thần số học số {activeNumber}</span>
             <p className="number-detail__subtitle">{current.title} — {current.subtitle}</p>
-            <p className="number-detail__description">{current.description}</p>
+            <p
+              id="number-detail-description"
+              className={`number-detail__description${descriptionOpen ? "" : " is-collapsed"}`}
+            >
+              {current.description}
+            </p>
+            <button
+              type="button"
+              className="number-detail__toggle"
+              aria-expanded={descriptionOpen}
+              aria-controls="number-detail-description"
+              onClick={() => setDescriptionOpen((open) => !open)}
+            >
+              {descriptionOpen ? (
+                <>
+                  Thu gọn <ChevronUp aria-hidden="true" />
+                </>
+              ) : (
+                <>
+                  Đọc thêm <ChevronDown aria-hidden="true" />
+                </>
+              )}
+            </button>
             <div className="number-detail__traits">
               {current.traits.map((trait, index) => {
                 const Icon = traitIcons[index];

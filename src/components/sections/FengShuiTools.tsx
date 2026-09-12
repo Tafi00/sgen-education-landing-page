@@ -17,9 +17,9 @@ import {
   Waves,
   X,
 } from "lucide-react";
-import ichingArtwork from "../../../assets/fengshui/iching-editorial-v2.webp";
-import baziArtwork from "../../../assets/fengshui/bazi-editorial-v2.webp";
-import calendarArtwork from "../../../assets/fengshui/auspicious-calendar-editorial-v2.webp";
+const ichingArtwork = "/assets/fengshui/iching-editorial-v2.webp";
+const baziArtwork = "/assets/fengshui/bazi-editorial-v2.webp";
+const calendarArtwork = "/assets/fengshui/auspicious-calendar-editorial-v2.webp";
 import {
   getBaziRelations,
   getBaziSupportProfile,
@@ -35,7 +35,7 @@ import {
   getSolarTerm,
   getTenGod,
   type ElementName,
-} from "../../lib/menh-thu/metaphysics";
+} from "../../../shared/menh-thu/metaphysics";
 
 type FengShuiTool = "iching" | "bazi" | "calendar";
 

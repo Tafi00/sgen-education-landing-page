@@ -1,0 +1,439 @@
+{
+  "key": "disc",
+  "title": "Trắc nghiệm phong cách làm việc DISC (tham chiếu khung)",
+  "instructions": "Mỗi nhóm gồm 4 mô tả hành vi. Hãy chọn 1 mô tả GIỐNG bạn nhất và 1 mô tả ÍT GIỐNG bạn nhất. Trả lời theo cảm nhận nhanh, không có đáp án đúng hay sai. Kết quả mang tính tham chiếu khung DISC và chỉ dùng để gợi ý cách phát triển bản thân, không phải đánh giá năng lực hay chẩn đoán tâm lý.",
+  "items": [
+    {
+      "id": "d01",
+      "order": 1,
+      "text": "Trong công việc nhóm, cách thể hiện nào giống bạn nhất?",
+      "options": [
+        {
+          "id": "d01-a",
+          "label": "Quyết đoán và nắm vai trò dẫn dắt",
+          "dimension": "D"
+        },
+        {
+          "id": "d01-b",
+          "label": "Sôi nổi và dễ bắt chuyện",
+          "dimension": "I"
+        },
+        {
+          "id": "d01-c",
+          "label": "Kiên nhẫn và bình tĩnh trước áp lực",
+          "dimension": "S"
+        },
+        {
+          "id": "d01-d",
+          "label": "Chú trọng chính xác và chi tiết",
+          "dimension": "C"
+        }
+      ]
+    },
+    {
+      "id": "d02",
+      "order": 2,
+      "text": "Khi nhận một nhiệm vụ mới, bạn thường...",
+      "options": [
+        {
+          "id": "d02-a",
+          "label": "Kết nối mọi người trong nhóm",
+          "dimension": "I"
+        },
+        {
+          "id": "d02-b",
+          "label": "Trung thành với nhóm và công việc",
+          "dimension": "S"
+        },
+        {
+          "id": "d02-c",
+          "label": "Làm việc theo quy trình đã định",
+          "dimension": "C"
+        },
+        {
+          "id": "d02-d",
+          "label": "Đặt mục tiêu rồi thúc đẩy cả nhóm",
+          "dimension": "D"
+        }
+      ]
+    },
+    {
+      "id": "d03",
+      "order": 3,
+      "text": "Trong cuộc họp, bạn là người...",
+      "options": [
+        {
+          "id": "d03-a",
+          "label": "Lắng nghe trước khi nêu ý kiến",
+          "dimension": "S"
+        },
+        {
+          "id": "d03-b",
+          "label": "Kiểm tra kỹ trước khi nộp kết quả",
+          "dimension": "C"
+        },
+        {
+          "id": "d03-c",
+          "label": "Dám nhận trách nhiệm và quyết nhanh",
+          "dimension": "D"
+        },
+        {
+          "id": "d03-d",
+          "label": "Truyền cảm hứng bằng sự nhiệt tình",
+          "dimension": "I"
+        }
+      ]
+    },
+    {
+      "id": "d04",
+      "order": 4,
+      "text": "Khi tiến độ dự án bị chậm, bạn...",
+      "options": [
+        {
+          "id": "d04-a",
+          "label": "Phân tích dữ liệu để ra quyết định",
+          "dimension": "C"
+        },
+        {
+          "id": "d04-b",
+          "label": "Ưu tiên kết quả hơn quy trình",
+          "dimension": "D"
+        },
+        {
+          "id": "d04-c",
+          "label": "Thích giao tiếp và chia sẻ ý tưởng",
+          "dimension": "I"
+        },
+        {
+          "id": "d04-d",
+          "label": "Duy trì nhịp độ làm việc ổn định",
+          "dimension": "S"
+        }
+      ]
+    },
+    {
+      "id": "d05",
+      "order": 5,
+      "text": "Cách bạn xử lý áp lực công việc là...",
+      "options": [
+        {
+          "id": "d05-a",
+          "label": "Thích cạnh tranh và thử thách mới",
+          "dimension": "D"
+        },
+        {
+          "id": "d05-b",
+          "label": "Quan tâm đến cảm xúc đồng nghiệp",
+          "dimension": "S"
+        },
+        {
+          "id": "d05-c",
+          "label": "Lạc quan khi nhóm gặp khó khăn",
+          "dimension": "I"
+        },
+        {
+          "id": "d05-d",
+          "label": "Giữ tiêu chuẩn chất lượng cao",
+          "dimension": "C"
+        }
+      ]
+    },
+    {
+      "id": "d06",
+      "order": 6,
+      "text": "Khi làm việc với đồng nghiệp mới, bạn...",
+      "options": [
+        {
+          "id": "d06-a",
+          "label": "Thuyết phục người khác bằng lời nói",
+          "dimension": "I"
+        },
+        {
+          "id": "d06-b",
+          "label": "Nói thẳng, tập trung vào mục tiêu",
+          "dimension": "D"
+        },
+        {
+          "id": "d06-c",
+          "label": "Ghi chép và hệ thống hoá thông tin",
+          "dimension": "C"
+        },
+        {
+          "id": "d06-d",
+          "label": "Thích môi trường quen thuộc, ổn định",
+          "dimension": "S"
+        }
+      ]
+    },
+    {
+      "id": "d07",
+      "order": 7,
+      "text": "Điều bạn quan tâm nhất khi hoàn thành công việc là...",
+      "options": [
+        {
+          "id": "d07-a",
+          "label": "Hoàn thành đều đặn việc được giao",
+          "dimension": "S"
+        },
+        {
+          "id": "d07-b",
+          "label": "Tạo không khí vui vẻ, thoải mái",
+          "dimension": "I"
+        },
+        {
+          "id": "d07-c",
+          "label": "Cẩn trọng với rủi ro và sai sót",
+          "dimension": "C"
+        },
+        {
+          "id": "d07-d",
+          "label": "Chủ động đề xuất và ra quyết định",
+          "dimension": "D"
+        }
+      ]
+    },
+    {
+      "id": "d08",
+      "order": 8,
+      "text": "Khi có ý kiến trái chiều trong nhóm, bạn...",
+      "options": [
+        {
+          "id": "d08-a",
+          "label": "Đặt câu hỏi để làm rõ vấn đề",
+          "dimension": "C"
+        },
+        {
+          "id": "d08-b",
+          "label": "Hỗ trợ đồng đội khi họ cần",
+          "dimension": "S"
+        },
+        {
+          "id": "d08-c",
+          "label": "Mạnh mẽ khi đối mặt áp lực",
+          "dimension": "D"
+        },
+        {
+          "id": "d08-d",
+          "label": "Thích được công nhận trước tập thể",
+          "dimension": "I"
+        }
+      ]
+    },
+    {
+      "id": "d09",
+      "order": 9,
+      "text": "Phong cách học tập của bạn là...",
+      "options": [
+        {
+          "id": "d09-a",
+          "label": "Dễ đồng cảm và lắng nghe",
+          "dimension": "I"
+        },
+        {
+          "id": "d09-b",
+          "label": "Tuân thủ nguyên tắc và quy định",
+          "dimension": "C"
+        },
+        {
+          "id": "d09-c",
+          "label": "Muốn kiểm soát tiến độ công việc",
+          "dimension": "D"
+        },
+        {
+          "id": "d09-d",
+          "label": "Giữ hoà khí trong tập thể",
+          "dimension": "S"
+        }
+      ]
+    },
+    {
+      "id": "d10",
+      "order": 10,
+      "text": "Khi được giao việc quan trọng, bạn...",
+      "options": [
+        {
+          "id": "d10-a",
+          "label": "Làm theo kế hoạch đã thống nhất",
+          "dimension": "S"
+        },
+        {
+          "id": "d10-b",
+          "label": "Táo bạo thử cách làm mới",
+          "dimension": "D"
+        },
+        {
+          "id": "d10-c",
+          "label": "Sắp xếp công việc có trật tự",
+          "dimension": "C"
+        },
+        {
+          "id": "d10-d",
+          "label": "Kể chuyện hấp dẫn, lôi cuốn",
+          "dimension": "I"
+        }
+      ]
+    },
+    {
+      "id": "d11",
+      "order": 11,
+      "text": "Cách bạn sắp xếp công việc hằng ngày là...",
+      "options": [
+        {
+          "id": "d11-a",
+          "label": "Đứng ra tổ chức khi nhóm bế tắc",
+          "dimension": "D"
+        },
+        {
+          "id": "d11-b",
+          "label": "Đánh giá bằng số liệu và bằng chứng",
+          "dimension": "C"
+        },
+        {
+          "id": "d11-c",
+          "label": "Giữ gìn mối quan hệ lâu dài",
+          "dimension": "S"
+        },
+        {
+          "id": "d11-d",
+          "label": "Mở rộng quan hệ với nhiều người",
+          "dimension": "I"
+        }
+      ]
+    },
+    {
+      "id": "d12",
+      "order": 12,
+      "text": "Khi đồng nghiệp cần giúp đỡ, bạn...",
+      "options": [
+        {
+          "id": "d12-a",
+          "label": "Lập kế hoạch chi tiết trước khi làm",
+          "dimension": "C"
+        },
+        {
+          "id": "d12-b",
+          "label": "Khích lệ tinh thần đồng đội",
+          "dimension": "I"
+        },
+        {
+          "id": "d12-c",
+          "label": "Kiên trì theo đuổi mục tiêu dài hạn",
+          "dimension": "S"
+        },
+        {
+          "id": "d12-d",
+          "label": "Nêu vấn đề thẳng và giải quyết gọn",
+          "dimension": "D"
+        }
+      ]
+    },
+    {
+      "id": "d13",
+      "order": 13,
+      "text": "Bạn cảm thấy thoải mái nhất khi...",
+      "options": [
+        {
+          "id": "d13-a",
+          "label": "Chấp nhận rủi ro để đạt mục tiêu",
+          "dimension": "D"
+        },
+        {
+          "id": "d13-b",
+          "label": "Bộc lộ cảm xúc cởi mở",
+          "dimension": "I"
+        },
+        {
+          "id": "d13-c",
+          "label": "Chính xác trong từng con số",
+          "dimension": "C"
+        },
+        {
+          "id": "d13-d",
+          "label": "Chăm chút chi tiết nhỏ cho đồng đội",
+          "dimension": "S"
+        }
+      ]
+    },
+    {
+      "id": "d14",
+      "order": 14,
+      "text": "Khi đánh giá một kế hoạch, bạn chú ý đến...",
+      "options": [
+        {
+          "id": "d14-a",
+          "label": "Thích hợp tác hơn làm một mình",
+          "dimension": "I"
+        },
+        {
+          "id": "d14-b",
+          "label": "Thích sự nhất quán và rõ ràng",
+          "dimension": "S"
+        },
+        {
+          "id": "d14-c",
+          "label": "Luôn hướng tới kết quả rõ ràng",
+          "dimension": "D"
+        },
+        {
+          "id": "d14-d",
+          "label": "Ưu tiên chính xác hơn tốc độ",
+          "dimension": "C"
+        }
+      ]
+    },
+    {
+      "id": "d15",
+      "order": 15,
+      "text": "Trong một buổi thuyết trình, bạn...",
+      "options": [
+        {
+          "id": "d15-a",
+          "label": "Đáng tin cậy trong việc hằng ngày",
+          "dimension": "S"
+        },
+        {
+          "id": "d15-b",
+          "label": "Soát lại lỗi trước khi hoàn thành",
+          "dimension": "C"
+        },
+        {
+          "id": "d15-c",
+          "label": "Nhiệt tình giúp đỡ đồng nghiệp",
+          "dimension": "I"
+        },
+        {
+          "id": "d15-d",
+          "label": "Thích được giao quyền tự quyết",
+          "dimension": "D"
+        }
+      ]
+    },
+    {
+      "id": "d16",
+      "order": 16,
+      "text": "Điều khiến bạn hài lòng nhất ở công việc là...",
+      "options": [
+        {
+          "id": "d16-a",
+          "label": "Làm việc dựa trên tiêu chuẩn rõ ràng",
+          "dimension": "C"
+        },
+        {
+          "id": "d16-b",
+          "label": "Nhanh nhạy nắm bắt cơ hội",
+          "dimension": "D"
+        },
+        {
+          "id": "d16-c",
+          "label": "Nhẹ nhàng góp ý cho người khác",
+          "dimension": "S"
+        },
+        {
+          "id": "d16-d",
+          "label": "Ứng biến khéo léo khi giao tiếp",
+          "dimension": "I"
+        }
+      ]
+    }
+  ]
+}

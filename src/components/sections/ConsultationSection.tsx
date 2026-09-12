@@ -1,4 +1,6 @@
 import { useState, type FormEvent } from "react";
+import { AlertCircle, Clock, Loader2 } from "lucide-react";
+import { api, errorMessage } from "../../api/client";
 import {
   CalendarDays,
   CalendarCheck,
@@ -12,7 +14,7 @@ import {
   UserRound,
   UserRoundCheck,
 } from "lucide-react";
-import cosmicLight from "../../../assets/backgrounds/cosmic-light.webp";
+const cosmicLight = "/assets/backgrounds/cosmic-light.webp";
 import { IconOrb } from "../ui/IconOrb";
 import { Reveal } from "../ui/Reveal";
 import { SectionBadge } from "../ui/SectionBadge";
@@ -37,10 +39,33 @@ const benefits = [
 
 export function ConsultationSection() {
   const [sent, setSent] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setSent(true);
+    const form = event.currentTarget;
+    const data = new FormData(form);
+    setSending(true);
+    setError("");
+    try {
+      await api.post("/api/leads", {
+        name: String(data.get("name") ?? ""),
+        phone: String(data.get("phone") ?? ""),
+        email: String(data.get("email") ?? ""),
+        birthDate: String(data.get("birthDate") ?? ""),
+        message: String(data.get("message") ?? ""),
+        source: "trang-chu/tu-van",
+        sourceLabel: "Form tư vấn trang chủ",
+        consent: true,
+      });
+      form.reset();
+      setSent(true);
+    } catch (caught) {
+      setError(errorMessage(caught));
+    } finally {
+      setSending(false);
+    }
   };
 
   return (
@@ -78,7 +103,7 @@ export function ConsultationSection() {
           <h3><MessageSquareText aria-hidden="true" /> Nhận tư vấn miễn phí</h3>
           <p className="consultation-form-card__intro">Để lại thông tin, SGEN sẽ liên hệ và tư vấn lộ trình phù hợp với bạn.</p>
           <form onSubmit={handleSubmit}>
-            <label className="consultation-field">
+            <label className="consultation-field consultation-field--name">
               <span className="sr-only">Họ và tên</span>
               <UserRound aria-hidden="true" />
               <input name="name" placeholder="Họ và tên" autoComplete="name" required />
@@ -93,7 +118,7 @@ export function ConsultationSection() {
               <Mail aria-hidden="true" />
               <input name="email" type="email" placeholder="Email" autoComplete="email" required />
             </label>
-            <label className="consultation-field">
+            <label className="consultation-field consultation-field--phone">
               <span className="sr-only">Điện thoại</span>
               <Phone aria-hidden="true" />
               <input name="phone" type="tel" placeholder="Điện thoại" autoComplete="tel" pattern="[0-9+ .-]{9,15}" required />
@@ -103,12 +128,21 @@ export function ConsultationSection() {
               <MessageSquareText aria-hidden="true" />
               <textarea name="message" placeholder="Nội dung" rows={3} />
             </label>
-            <button type="submit" className={`consultation-form-card__submit ${sent ? "is-sent" : ""}`}>
-              {sent ? <CheckCircle2 aria-hidden="true" /> : <Send aria-hidden="true" />}
-              <span>{sent ? "Đã gửi đăng ký" : "Gửi đăng ký"}</span>
+            <button type="submit" className={`consultation-form-card__submit ${sent ? "is-sent" : ""}`} disabled={sending}>
+              {sending ? <Loader2 className="spin" aria-hidden="true" /> : sent ? <CheckCircle2 aria-hidden="true" /> : <Send aria-hidden="true" />}
+              <span>{sending ? "Đang gửi…" : sent ? "Đã gửi đăng ký" : "Gửi đăng ký"}</span>
             </button>
-            <p className={`consultation-form-card__status ${sent ? "is-visible" : ""}`} role="status">
-              Cảm ơn bạn! SGEN sẽ liên hệ trong thời gian sớm nhất.
+            <p className={`consultation-form-card__status ${sent ? "is-visible" : ""} ${error ? "is-error" : ""}`} role="status">
+              {error ? (
+                <>
+                  <AlertCircle aria-hidden="true" /> {error}
+                </>
+              ) : (
+                "Cảm ơn bạn! SGEN sẽ liên hệ trong thời gian sớm nhất."
+              )}
+            </p>
+            <p className="consultation-form-card__promise">
+              <Clock aria-hidden="true" /> SGEN phản hồi trong 24 giờ làm việc
             </p>
           </form>
         </Reveal>

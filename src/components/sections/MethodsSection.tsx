@@ -1,8 +1,8 @@
 import { BriefcaseBusiness, Compass, GraduationCap, MoveRight, Star } from "lucide-react";
-import cosmicDarkClean from "../../../assets/backgrounds/cosmic-dark-clean.webp";
-import methodIkigai from "../../../assets/methods/method-ikigai.webp";
-import methodLifePath from "../../../assets/methods/method-life-path.webp";
-import methodPythagoras from "../../../assets/methods/method-pythagoras.webp";
+const cosmicDarkClean = "/assets/backgrounds/cosmic-dark-clean.webp";
+const methodIkigai = "/assets/methods/method-ikigai.webp";
+const methodLifePath = "/assets/methods/method-life-path.webp";
+const methodPythagoras = "/assets/methods/method-pythagoras.webp";
 import { IconOrb } from "../ui/IconOrb";
 import { Reveal } from "../ui/Reveal";
 import { SectionHeading } from "../ui/SectionHeading";

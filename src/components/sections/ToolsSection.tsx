@@ -13,8 +13,8 @@ import {
   UserRound,
   UsersRound,
 } from "lucide-react";
-import cosmicLight from "../../../assets/backgrounds/cosmic-light.webp";
-import type { NumerologyMetricKey } from "../../lib/numerology";
+const cosmicLight = "/assets/backgrounds/cosmic-light.webp";
+import type { NumerologyMetricKey } from "../../../shared/numerology";
 import { IconOrb } from "../ui/IconOrb";
 import { Reveal } from "../ui/Reveal";
 import { SectionHeading } from "../ui/SectionHeading";
@@ -23,10 +23,11 @@ const FengShuiTools = lazy(() => import("./FengShuiTools").then((module) => ({ d
 
 type ToolCategory = "quick" | "free" | "fengshui";
 
-const tabs: { id: ToolCategory; label: string }[] = [
-  { id: "quick", label: "Tính nhanh chỉ số" },
-  { id: "free", label: "Công cụ miễn phí" },
-  { id: "fengshui", label: "Công cụ phong thủy" },
+/** `shortLabel` dùng cho thanh tab cuộn ngang trên mobile (xem `ux-home.css`). */
+const tabs: { id: ToolCategory; label: string; shortLabel: string }[] = [
+  { id: "quick", label: "Tính nhanh chỉ số", shortLabel: "Chỉ số" },
+  { id: "free", label: "Công cụ miễn phí", shortLabel: "Miễn phí" },
+  { id: "fengshui", label: "Công cụ phong thủy", shortLabel: "Phong thủy" },
 ];
 
 const toolGroups = {
@@ -90,7 +91,10 @@ export function ToolsSection() {
                 className={activeTab === tab.id ? "is-active" : ""}
                 onClick={() => setActiveTab(tab.id)}
               >
-                {tab.label}
+                <span className="tools-tabs__label">{tab.label}</span>
+                <span className="tools-tabs__label-short" aria-hidden="true" data-short-label={tab.shortLabel}>
+                  {tab.shortLabel}
+                </span>
               </button>
             ))}
           </div>

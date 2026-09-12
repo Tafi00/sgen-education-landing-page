@@ -1,0 +1,446 @@
+[
+  {
+    "code": "DI",
+    "title": "Người dẫn dắt truyền cảm hứng",
+    "summary": "Theo tham chiếu khung DISC, bạn nổi bật ở nhóm D (Thống lĩnh) kết hợp I (Ảnh hưởng). Bạn thường chủ động nắm vai trò dẫn dắt, quyết đoán và biết cách lôi cuốn người khác cùng hướng tới mục tiêu. Bạn phù hợp với môi trường có thử thách và được ghi nhận kết quả.",
+    "strengths": [
+      "Quyết đoán và dám chịu trách nhiệm",
+      "Truyền được cảm hứng cho tập thể",
+      "Giao tiếp thuyết phục, tạo động lực",
+      "Nắm bắt cơ hội và thúc đẩy tiến độ",
+      "Tự tin đại diện nhóm ra bên ngoài"
+    ],
+    "cautions": [
+      "Dễ nóng vội, muốn thấy kết quả ngay",
+      "Có thể lấn át ý kiến của người khác",
+      "Hay bỏ qua chi tiết nhỏ khi chạy theo mục tiêu",
+      "Thiếu kiên nhẫn với quy trình nhiều bước"
+    ],
+    "careers": [
+      "Quản lý dự án",
+      "Trưởng nhóm kinh doanh",
+      "Chuyên viên phát triển thị trường",
+      "Quản lý sự kiện",
+      "Giám đốc vận hành doanh nghiệp nhỏ"
+    ],
+    "growth": [
+      "Lắng nghe trọn vẹn ý kiến rồi mới phản hồi",
+      "Dành thời gian soát lại chi tiết quan trọng",
+      "Ghi nhận đóng góp cụ thể của từng thành viên",
+      "Rèn tính kiên nhẫn với các bước bắt buộc"
+    ],
+    "teaming": [
+      "Hợp tác tốt với nhóm C để bổ sung độ chính xác",
+      "Nên có đồng nghiệp S giữ nhịp ổn định cho nhóm",
+      "Phù hợp dẫn dắt giai đoạn cần đổi mới",
+      "Cần người thẳng thắn nhắc khi bạn quá nóng vội"
+    ]
+  },
+  {
+    "code": "DS",
+    "title": "Người dẫn dắt bền bỉ",
+    "summary": "Theo tham chiếu khung DISC, bạn kết hợp D (Thống lĩnh) với S (Kiên định). Bạn vừa quyết đoán trong mục tiêu vừa kiên trì theo đuổi đường dài, thường giữ được sự ổn định cho nhóm trong giai đoạn khó khăn. Bạn thích kết quả bền vững hơn là thắng lợi nhất thời.",
+    "strengths": [
+      "Quyết tâm theo đuổi mục tiêu dài hạn",
+      "Bình tĩnh và vững vàng trước áp lực",
+      "Đáng tin cậy với đồng đội",
+      "Biết cân bằng giữa kết quả và con người",
+      "Chủ động nhận trách nhiệm khi cần"
+    ],
+    "cautions": [
+      "Có thể bảo thủ với cách làm cũ",
+      "Khó thay đổi kế hoạch giữa chừng",
+      "Đôi khi ôm việc thay vì chia sẻ",
+      "Chậm tiếp nhận cái mới nếu chưa kiểm chứng"
+    ],
+    "careers": [
+      "Quản lý vận hành",
+      "Trưởng phòng sản xuất",
+      "Chuyên viên quản lý chất lượng",
+      "Quản lý chuỗi cung ứng",
+      "Trưởng nhóm chăm sóc khách hàng"
+    ],
+    "growth": [
+      "Chủ động thử cách làm mới ở quy mô nhỏ",
+      "Chia sẻ khối lượng việc cho đồng đội",
+      "Dành thời gian lắng nghe ý tưởng khác biệt",
+      "Đặt mốc đánh giá lại kế hoạch định kỳ"
+    ],
+    "teaming": [
+      "Hợp tác tốt với nhóm I để tăng tính đổi mới",
+      "Nên làm việc cùng C để chuẩn hoá quy trình",
+      "Là chỗ dựa tinh thần cho nhóm khi gặp biến động",
+      "Cần đồng nghiệp nhắc về hạn chót linh hoạt"
+    ]
+  },
+  {
+    "code": "DC",
+    "title": "Người dẫn dắt chuẩn mực",
+    "summary": "Theo tham chiếu khung DISC, bạn kết hợp D (Thống lĩnh) với C (Tuân thủ). Bạn hướng tới kết quả nhưng đòi hỏi tiêu chuẩn cao và bằng chứng rõ ràng trước khi quyết định. Bạn thường được tin cậy ở những việc cần vừa nhanh vừa chính xác.",
+    "strengths": [
+      "Quyết đoán dựa trên phân tích",
+      "Đặt tiêu chuẩn cao cho bản thân và nhóm",
+      "Xử lý vấn đề phức tạp có hệ thống",
+      "Dám chịu trách nhiệm với quyết định khó",
+      "Kiểm soát rủi ro tốt"
+    ],
+    "cautions": [
+      "Dễ tạo áp lực cho người xung quanh",
+      "Khắt khe với sai sót nhỏ",
+      "Có thể chậm ra quyết định vì muốn đủ dữ liệu",
+      "Ít bộc lộ cảm xúc, dễ bị xem là lạnh lùng"
+    ],
+    "careers": [
+      "Chuyên viên phân tích tài chính",
+      "Kiểm toán viên",
+      "Quản lý dự án kỹ thuật",
+      "Chuyên viên quản trị rủi ro",
+      "Kỹ sư cải tiến quy trình"
+    ],
+    "growth": [
+      "Mềm hoá cách góp ý với đồng nghiệp",
+      "Chấp nhận mức 'đủ tốt' ở việc ít quan trọng",
+      "Chia sẻ lý do quyết định để nhóm thấu hiểu",
+      "Dành thời gian ghi nhận nỗ lực của người khác"
+    ],
+    "teaming": [
+      "Hợp tác tốt với nhóm I để cân bằng cảm xúc tập thể",
+      "Nên ghép với S khi cần duy trì quan hệ dài hạn",
+      "Phù hợp dẫn dắt dự án yêu cầu độ chính xác cao",
+      "Cần đồng nghiệp nhắc về yếu tố con người"
+    ]
+  },
+  {
+    "code": "ID",
+    "title": "Người truyền cảm hứng quyết đoán",
+    "summary": "Theo tham chiếu khung DISC, bạn kết hợp I (Ảnh hưởng) với D (Thống lĩnh). Bạn thường là người khởi xướng, khuấy động tinh thần nhóm rồi nhanh chóng đẩy mọi việc tiến lên. Bạn mạnh ở việc kết nối con người với mục tiêu chung.",
+    "strengths": [
+      "Giao tiếp cuốn hút và thuyết phục",
+      "Khơi dậy tinh thần đồng đội",
+      "Nhạy bén nhận diện cơ hội",
+      "Tự tin trước đám đông",
+      "Lan toả năng lượng tích cực"
+    ],
+    "cautions": [
+      "Có thể hứa nhiều hơn khả năng thực hiện",
+      "Dễ mất tập trung giữa nhiều việc",
+      "Ngại các bước kiểm tra chi tiết",
+      "Cảm xúc có thể chi phối quyết định"
+    ],
+    "careers": [
+      "Chuyên viên marketing",
+      "Nhân viên kinh doanh",
+      "Chuyên viên quan hệ công chúng",
+      "Quản lý thương hiệu",
+      "Chuyên viên đào tạo nội bộ"
+    ],
+    "growth": [
+      "Cam kết có chọn lọc, ghi rõ hạn hoàn thành",
+      "Duy trì danh sách việc ưu tiên rõ ràng",
+      "Kiểm tra lại cam kết trước khi nhận thêm",
+      "Rèn thói quen soát chi tiết trước khi nộp"
+    ],
+    "teaming": [
+      "Cần đồng nghiệp C để giữ chuẩn xác cho kế hoạch",
+      "Nên có S cân bằng nhịp độ nhóm",
+      "Toả sáng khi dẫn dắt các buổi truyền thông",
+      "Hợp tác tốt trong môi trường nhiều tương tác"
+    ]
+  },
+  {
+    "code": "IS",
+    "title": "Người kết nối thân thiện",
+    "summary": "Theo tham chiếu khung DISC, bạn kết hợp I (Ảnh hưởng) với S (Kiên định). Bạn thường tạo được không khí dễ chịu, cởi mở và duy trì quan hệ tốt với nhiều người. Bạn vừa biết lắng nghe vừa biết khích lệ người khác.",
+    "strengths": [
+      "Xây dựng quan hệ nhanh và bền",
+      "Lắng nghe và đồng cảm tốt",
+      "Tạo không khí tích cực cho tập thể",
+      "Kiên nhẫn hỗ trợ đồng nghiệp",
+      "Được nhiều người yêu mến, tin cậy"
+    ],
+    "cautions": [
+      "Ngại đối đầu khi cần thiết",
+      "Có thể nhận quá nhiều việc vì nể",
+      "Khó nói lời từ chối",
+      "Dễ bị ảnh hưởng bởi cảm xúc tập thể"
+    ],
+    "careers": [
+      "Chuyên viên nhân sự",
+      "Chuyên viên chăm sóc khách hàng",
+      "Giáo viên",
+      "Chuyên viên quan hệ cộng đồng",
+      "Điều phối viên dự án"
+    ],
+    "growth": [
+      "Luyện cách từ chối lịch sự mà dứt khoát",
+      "Nêu quan điểm riêng khi cần",
+      "Đặt giới hạn thời gian cho việc hỗ trợ",
+      "Chủ động đối thoại khi có mâu thuẫn nhỏ"
+    ],
+    "teaming": [
+      "Là cầu nối giữa các thành viên trong nhóm",
+      "Hợp tác tốt với nhóm D để biến ý tưởng thành hành động",
+      "Cần đồng nghiệp C giúp chuẩn hoá thông tin",
+      "Phù hợp vai trò giữ nhịp và gắn kết tập thể"
+    ]
+  },
+  {
+    "code": "IC",
+    "title": "Người truyền đạt rõ ràng",
+    "summary": "Theo tham chiếu khung DISC, bạn kết hợp I (Ảnh hưởng) với C (Tuân thủ). Bạn thường trình bày thông tin mạch lạc, có dẫn chứng và vẫn giữ được sự gần gũi với người nghe. Bạn phù hợp với công việc cần vừa giải thích vừa thuyết phục.",
+    "strengths": [
+      "Diễn đạt rõ ràng, có cấu trúc",
+      "Chuẩn bị kỹ nội dung trao đổi",
+      "Tạo niềm tin qua sự chính xác",
+      "Lắng nghe và phản hồi có căn cứ",
+      "Kết hợp hài hoà giữa lý lẽ và cảm xúc"
+    ],
+    "cautions": [
+      "Có thể quá cầu toàn với bài trình bày",
+      "Mất thời gian chuẩn bị hơn mức cần",
+      "Ngại nói khi chưa đủ dữ liệu",
+      "Dễ bỏ sót việc vì muốn làm thật kỹ"
+    ],
+    "careers": [
+      "Chuyên viên truyền thông nội bộ",
+      "Biên tập viên nội dung",
+      "Chuyên viên phân tích nghiệp vụ",
+      "Giảng viên đào tạo",
+      "Chuyên viên tư vấn khách hàng"
+    ],
+    "growth": [
+      "Đặt hạn chuẩn bị để tránh cầu toàn",
+      "Cho phép bản thân trình bày khi chưa hoàn hảo",
+      "Ưu tiên thông điệp chính thay vì quá nhiều chi tiết",
+      "Rèn khả năng ứng biến khi thiếu dữ liệu"
+    ],
+    "teaming": [
+      "Hợp tác tốt với nhóm D khi cần thúc đẩy tiến độ",
+      "Nên có S giữ ổn định trong các buổi thảo luận",
+      "Phù hợp ghi chép và tổng hợp nội dung nhóm",
+      "Cần đồng nghiệp nhắc tránh sa vào tiểu tiết"
+    ]
+  },
+  {
+    "code": "SD",
+    "title": "Người đồng hành vững vàng",
+    "summary": "Theo tham chiếu khung DISC, bạn kết hợp S (Kiên định) với D (Thống lĩnh). Bạn thường điềm tĩnh, đáng tin cậy nhưng vẫn đủ quyết đoán khi tình huống đòi hỏi. Bạn là chỗ dựa để nhóm giữ vững tiến độ trước biến động.",
+    "strengths": [
+      "Ổn định và kiên trì",
+      "Đáng tin cậy qua thời gian",
+      "Dám ra quyết định khi cần",
+      "Giữ được bình tĩnh trong khủng hoảng",
+      "Bảo vệ lợi ích chung của tập thể"
+    ],
+    "cautions": [
+      "Có thể chậm thích nghi với thay đổi lớn",
+      "Đôi khi im lặng quá lâu rồi mới lên tiếng",
+      "Xu hướng giữ cách làm quen thuộc",
+      "Khó uỷ quyền vì sợ ảnh hưởng chất lượng"
+    ],
+    "careers": [
+      "Quản lý chi nhánh",
+      "Trưởng nhóm kỹ thuật",
+      "Chuyên viên quản lý vận hành",
+      "Quản lý kho vận",
+      "Trưởng nhóm dịch vụ khách hàng"
+    ],
+    "growth": [
+      "Chủ động đề xuất cải tiến định kỳ",
+      "Thử nhận việc chưa từng làm",
+      "Lên tiếng sớm khi thấy vấn đề",
+      "Tin tưởng và giao việc cho đồng đội"
+    ],
+    "teaming": [
+      "Là trụ cột giữ nhịp cho nhóm đông người",
+      "Hợp tác tốt với I để tăng tính đổi mới",
+      "Cần C hỗ trợ khi quy trình phức tạp",
+      "Phù hợp dẫn dắt nhóm cần sự ổn định"
+    ]
+  },
+  {
+    "code": "SI",
+    "title": "Người hỗ trợ tận tâm",
+    "summary": "Theo tham chiếu khung DISC, bạn kết hợp S (Kiên định) với I (Ảnh hưởng). Bạn thường chăm sóc đồng đội, giữ hoà khí và tạo cảm giác an toàn cho tập thể. Bạn mạnh ở việc xây dựng niềm tin dài hạn.",
+    "strengths": [
+      "Tận tâm và chu đáo với đồng nghiệp",
+      "Duy trì quan hệ ấm áp, tin cậy",
+      "Kiên nhẫn lắng nghe người khác",
+      "Tạo môi trường làm việc dễ chịu",
+      "Hỗ trợ người mới hoà nhập nhanh"
+    ],
+    "cautions": [
+      "Khó nói lời từ chối",
+      "Ngại xung đột và tranh luận",
+      "Có thể bị đặt việc ngoài chuyên môn",
+      "Thường đặt nhu cầu bản thân sau cùng"
+    ],
+    "careers": [
+      "Chuyên viên nhân sự",
+      "Nhân viên công tác xã hội",
+      "Chuyên viên chăm sóc khách hàng",
+      "Giáo viên mầm non",
+      "Điều dưỡng"
+    ],
+    "growth": [
+      "Tập nói 'không' khi vượt quá khả năng",
+      "Dành thời gian cho nhu cầu bản thân",
+      "Chủ động nêu ý kiến trong cuộc họp",
+      "Rèn kỹ năng xử lý xung đột trực diện"
+    ],
+    "teaming": [
+      "Là chất keo kết nối tập thể",
+      "Hợp tác tốt với nhóm D để đẩy nhanh tiến độ",
+      "Cần C hướng dẫn khi cần quy trình rõ ràng",
+      "Phù hợp vai trò hỗ trợ và chăm sóc khách hàng"
+    ]
+  },
+  {
+    "code": "SC",
+    "title": "Người giữ nhịp ổn định",
+    "summary": "Theo tham chiếu khung DISC, bạn kết hợp S (Kiên định) với C (Tuân thủ). Bạn thường làm việc đều đặn, cẩn thận và đáng tin cậy trong từng bước. Bạn phù hợp với công việc đòi hỏi sự nhất quán và chính xác lâu dài.",
+    "strengths": [
+      "Kiên trì và nhất quán",
+      "Cẩn thận, ít mắc sai sót",
+      "Tuân thủ quy trình và tiêu chuẩn",
+      "Đáng tin cậy với cam kết đã đưa",
+      "Quản lý hồ sơ, số liệu gọn gàng"
+    ],
+    "cautions": [
+      "Ngại thay đổi đột ngột",
+      "Có thể chậm khi cần quyết định nhanh",
+      "Ôm chi tiết và khó uỷ quyền",
+      "Ít chủ động đề xuất ý tưởng mới"
+    ],
+    "careers": [
+      "Kế toán viên",
+      "Chuyên viên hành chính",
+      "Thư ký pháp lý",
+      "Kiểm soát viên chất lượng",
+      "Chuyên viên lưu trữ hồ sơ"
+    ],
+    "growth": [
+      "Chủ động đề xuất một cải tiến mỗi quý",
+      "Rèn quyết định nhanh với việc ít rủi ro",
+      "Học cách tin tưởng và giao việc",
+      "Cập nhật kỹ năng mới định kỳ"
+    ],
+    "teaming": [
+      "Hợp tác tốt với D khi cần ra quyết định nhanh",
+      "Nên ghép với I để tăng tính linh hoạt",
+      "Phù hợp giữ vai trò kiểm soát chất lượng",
+      "Cần đồng nghiệp nhắc về thời hạn linh hoạt"
+    ]
+  },
+  {
+    "code": "CD",
+    "title": "Người chuẩn mực quyết đoán",
+    "summary": "Theo tham chiếu khung DISC, bạn kết hợp C (Tuân thủ) với D (Thống lĩnh). Bạn thường quyết định dựa trên phân tích nhưng vẫn dám dứt khoát khi dữ liệu đã đủ. Bạn phù hợp với vai trò đòi hỏi tiêu chuẩn cao và trách nhiệm lớn.",
+    "strengths": [
+      "Tư duy phân tích và logic",
+      "Dám ra quyết định khó",
+      "Kiểm soát rủi ro chặt chẽ",
+      "Đặt tiêu chuẩn chất lượng cao",
+      "Làm việc có nguyên tắc, đáng tin"
+    ],
+    "cautions": [
+      "Khắt khe, dễ gây căng thẳng cho nhóm",
+      "Ít thể hiện cảm xúc, khó gần",
+      "Có thể bỏ qua yếu tố con người",
+      "Muốn mọi việc theo đúng chuẩn mực"
+    ],
+    "careers": [
+      "Kiểm toán viên",
+      "Chuyên viên phân tích dữ liệu",
+      "Quản lý chất lượng",
+      "Kỹ sư hệ thống",
+      "Chuyên viên tuân thủ pháp lý"
+    ],
+    "growth": [
+      "Học cách truyền đạt quyết định mềm mỏng hơn",
+      "Lắng nghe cảm xúc trước khi phân tích",
+      "Chấp nhận mức độ hoàn hảo khác nhau",
+      "Chủ động ghi nhận đóng góp của nhóm"
+    ],
+    "teaming": [
+      "Hợp tác tốt với I để giữ cân bằng cảm xúc tập thể",
+      "Nên có S duy trì quan hệ dài hạn",
+      "Phù hợp dẫn dắt dự án cần chuẩn xác",
+      "Cần đồng nghiệp nhắc về yếu tố con người"
+    ]
+  },
+  {
+    "code": "CI",
+    "title": "Người phân tích dễ gần",
+    "summary": "Theo tham chiếu khung DISC, bạn kết hợp C (Tuân thủ) với I (Ảnh hưởng). Bạn thường phân tích kỹ lưỡng nhưng biết cách trình bày thân thiện, dễ hiểu với người khác. Bạn phù hợp với công việc vừa cần độ chính xác vừa cần giao tiếp.",
+    "strengths": [
+      "Phân tích có căn cứ, rõ ràng",
+      "Trình bày dễ hiểu cho người không chuyên",
+      "Cẩn thận mà vẫn cởi mở",
+      "Lắng nghe và tiếp thu phản hồi",
+      "Tạo niềm tin bằng sự chính xác"
+    ],
+    "cautions": [
+      "Có thể sa vào chi tiết khi trình bày",
+      "Mất thời gian khi muốn mọi thứ hoàn hảo",
+      "Khó quyết nhanh khi thiếu dữ liệu",
+      "Đôi lúc nói nhiều hơn mức cần thiết"
+    ],
+    "careers": [
+      "Chuyên viên phân tích nghiệp vụ",
+      "Chuyên viên marketing phân tích",
+      "Giảng viên",
+      "Chuyên viên tư vấn giải pháp",
+      "Biên tập viên kỹ thuật"
+    ],
+    "growth": [
+      "Tóm tắt kết luận trước, chi tiết sau",
+      "Đặt hạn cho việc thu thập dữ liệu",
+      "Luyện quyết định với thông tin chưa đầy đủ",
+      "Rèn kỹ năng lắng nghe ngắn gọn, tập trung"
+    ],
+    "teaming": [
+      "Hợp tác tốt với D để thúc đẩy hành động",
+      "Nên có S giữ nhịp ổn định cho nhóm",
+      "Phù hợp vai trò cố vấn nội dung và số liệu",
+      "Cần đồng nghiệp nhắc tránh lan man"
+    ]
+  },
+  {
+    "code": "CS",
+    "title": "Người chính xác kiên nhẫn",
+    "summary": "Theo tham chiếu khung DISC, bạn kết hợp C (Tuân thủ) với S (Kiên định). Bạn thường làm việc tỉ mỉ, kiên nhẫn và giữ chuẩn ổn định qua thời gian. Bạn phù hợp với công việc cần độ chính xác và sự bền bỉ.",
+    "strengths": [
+      "Tỉ mỉ và chính xác cao",
+      "Kiên nhẫn với công việc lặp lại",
+      "Trung thành và đáng tin cậy",
+      "Giữ tiêu chuẩn ổn định",
+      "Làm việc có hệ thống, ngăn nắp"
+    ],
+    "cautions": [
+      "Ngại thay đổi và điều chỉnh",
+      "Khó chịu khi quy trình bị phá vỡ",
+      "Cầu toàn dẫn tới chậm tiến độ",
+      "Ít chủ động lên tiếng khi có vấn đề"
+    ],
+    "careers": [
+      "Kế toán viên",
+      "Chuyên viên kiểm nghiệm",
+      "Thủ thư",
+      "Chuyên viên lưu trữ dữ liệu",
+      "Kiểm soát viên chất lượng"
+    ],
+    "growth": [
+      "Cho phép bản thân thử cách làm mới",
+      "Đặt hạn để tránh cầu toàn kéo dài",
+      "Chủ động báo sớm khi thấy bất thường",
+      "Luyện phản hồi nhanh với việc nhỏ"
+    ],
+    "teaming": [
+      "Hợp tác tốt với I để tăng tính linh hoạt",
+      "Nên có D giúp đẩy tiến độ khi cần",
+      "Phù hợp giữ vai trò kiểm chuẩn cho nhóm",
+      "Cần đồng nghiệp đồng hành khi có thay đổi lớn"
+    ]
+  }
+]

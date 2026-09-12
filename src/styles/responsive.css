@@ -761,11 +761,13 @@
   }
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1240px) {
   .site-nav {
     inset: 0 auto auto 0;
     width: 100vw;
     height: 100dvh;
+    align-content: start;
+    overflow-y: auto;
   }
 }
 
@@ -844,7 +846,7 @@
   }
 
   html {
-    scroll-padding-top: 82px;
+    scroll-padding-top: calc(var(--header-h, 76px) + 12px);
   }
 
   body {
@@ -1506,5 +1508,83 @@
 
   .consultation-phone {
     font-size: 0.76rem;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Đợt rà soát UX mobile: nhịp dọc, sàn chữ và vùng chạm.
+   --------------------------------------------------------------------------- */
+@media (max-width: 767px) {
+  :root {
+    --section-space: clamp(48px, 9vw, 68px);
+  }
+
+  /* Sàn chữ 12px cho nhãn, meta và ghi chú — trước đây có chỗ 10–11px. */
+  .page-kicker,
+  .section-badge,
+  .status-badge,
+  .detail-meta,
+  .detail-tags a,
+  .detail-tags span,
+  .blog-count,
+  .category-row button,
+  .course-toolbar button,
+  .lookup-card__privacy,
+  .consultation-form-card__status,
+  .field__hint,
+  .page-check,
+  .site-footer__bottom,
+  .privacy-banner span,
+  .entitlement-note ul {
+    font-size: max(12px, 0.75rem) !important;
+  }
+
+  /* Vùng chạm tối thiểu 44px cho các điều khiển nhỏ. */
+  .category-row button,
+  .course-toolbar button,
+  .detail-tags a,
+  .detail-tags span,
+  .detail-share button,
+  .detail-share a,
+  .blog-toolbar input,
+  .course-toolbar input {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .page-primary,
+  .button,
+  .lookup-card__submit,
+  .consultation-form-card__submit,
+  .fengshui-primary-action,
+  .fengshui-reset {
+    min-height: 48px;
+  }
+
+  /* Nút chính và nút phụ trong cùng một khối hành động xếp dọc, rộng toàn phần. */
+  .detail-actions {
+    width: 100%;
+    gap: 8px;
+  }
+
+  .detail-actions > .page-primary,
+  .detail-actions > .button {
+    flex: 1 1 100%;
+  }
+
+  /* Bù chỗ cho thanh CTA dính đáy để không che nội dung cuối trang. */
+  .page-body:has(.detail-sticky.is-visible) {
+    padding-bottom: calc(var(--sticky-cta-h, 96px) + 16px);
+  }
+}
+
+@media (max-width: 767px) {
+  /* Bảo đảm section/khối đầu tiên của mọi trang không nằm dưới header cố định.
+     Trang nào đã tự đặt padding lớn hơn (inline style) thì giữ nguyên. */
+  .page-body > section:first-child:not(.hero),
+  .page-body > article:first-child,
+  .page-body > div:first-child > section:first-child {
+    padding-top: max(calc(var(--header-h, 76px) + 22px), 0px);
   }
 }

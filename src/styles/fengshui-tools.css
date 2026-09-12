@@ -296,18 +296,26 @@
   font-weight: 500;
 }
 
+.fengshui-form-card label {
+  color: var(--field-label, #ece3ff);
+}
+
+.fengshui-form-card label em {
+  color: var(--field-hint, #c6b8e4);
+}
+
 .fengshui-form-card input,
 .fengshui-form-card select,
 .fengshui-form-card textarea {
   width: 100%;
   min-height: 47px;
   padding: 11px 13px;
-  color: #fff;
-  background: rgba(10, 3, 23, 0.54);
-  border: 1px solid rgba(227, 196, 255, 0.18);
+  color: var(--field-text);
+  background: var(--field-bg);
+  border: 1px solid var(--field-border);
   border-radius: 11px;
   outline: none;
-  color-scheme: dark;
+  color-scheme: light;
   font: inherit;
   font-size: 0.8rem;
   transition: border-color 180ms ease, box-shadow 180ms ease;
@@ -320,13 +328,13 @@
 .fengshui-form-card input:focus,
 .fengshui-form-card select:focus,
 .fengshui-form-card textarea:focus {
-  border-color: #a857ec;
-  box-shadow: 0 0 0 3px rgba(172, 82, 235, 0.14);
+  border-color: var(--field-focus);
+  box-shadow: 0 0 0 3px rgba(90, 34, 232, 0.16);
 }
 
 .fengshui-form-card input::placeholder,
 .fengshui-form-card textarea::placeholder {
-  color: #877a95;
+  color: var(--field-placeholder);
 }
 
 .fengshui-fields {
@@ -1443,17 +1451,17 @@
 .fengshui-form-card select,
 .fengshui-form-card textarea {
   min-height: 45px;
-  color: #f5f0f7;
-  background: #18111f;
-  border-color: #45374f;
-  border-radius: 7px;
+  color: var(--field-text);
+  background: var(--field-bg);
+  border-color: var(--field-border);
+  border-radius: 9px;
 }
 
 .fengshui-form-card input:focus,
 .fengshui-form-card select:focus,
 .fengshui-form-card textarea:focus {
-  border-color: #9871b0;
-  box-shadow: 0 0 0 2px rgba(152, 113, 176, 0.15);
+  border-color: var(--field-focus);
+  box-shadow: 0 0 0 2px rgba(90, 34, 232, 0.16);
 }
 
 .fengshui-primary-action,

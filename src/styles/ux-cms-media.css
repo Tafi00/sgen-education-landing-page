@@ -1,0 +1,560 @@
+/* ux-cms-media — hoàn thiện CMS: giao diện quản trị theo chuẩn dashboard.
+   Nạp SAU tất cả file khác nên có thể ghi đè rule cũ khi cùng độ ưu tiên. */
+
+/* ── Vùng kéo-thả tải ảnh ─────────────────────────────────────────────── */
+.dropzone {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  padding: 30px 20px;
+  color: var(--admin-ink-soft);
+  text-align: center;
+  background: #faf9ff;
+  border: 2px dashed #cdc2ee;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: border-color 0.16s ease, background 0.16s ease, box-shadow 0.16s ease;
+}
+
+.dropzone:hover,
+.dropzone:focus-visible {
+  background: #f4f0ff;
+  border-color: #8b5cf6;
+  box-shadow: 0 0 0 4px rgba(122, 60, 255, 0.1);
+  outline: none;
+}
+
+.dropzone.is-dragging {
+  background: #f0e9ff;
+  border-color: #7a3cff;
+  box-shadow: 0 0 0 4px rgba(122, 60, 255, 0.18);
+}
+
+.dropzone.is-busy {
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.dropzone > svg {
+  width: 34px;
+  height: 34px;
+  color: #7a3cff;
+}
+
+.dropzone strong {
+  color: var(--admin-ink);
+  font-family: var(--font-display);
+  font-size: 1rem;
+}
+
+.dropzone span {
+  font-size: 0.78rem;
+}
+
+.dropzone__folder {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 14px;
+  margin-top: 14px;
+}
+
+/* ── Hàng đợi tệp chờ tải ─────────────────────────────────────────────── */
+.upload-queue {
+  display: grid;
+  gap: 8px;
+  margin: 14px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.upload-queue__item {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  background: #fff;
+  border: 1px solid var(--admin-line);
+  border-radius: 12px;
+}
+
+.upload-queue__item.is-error {
+  background: #fff5f8;
+  border-color: #f2c4d3;
+}
+
+.upload-queue__item img {
+  width: 52px;
+  height: 52px;
+  border-radius: 9px;
+  object-fit: cover;
+  background: #f2f0fa;
+}
+
+.upload-queue__info {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+  font-size: 0.78rem;
+}
+
+.upload-queue__info strong {
+  overflow: hidden;
+  color: var(--admin-ink);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.upload-queue__bar {
+  position: relative;
+  overflow: hidden;
+  height: 6px;
+  background: #ece7f9;
+  border-radius: 999px;
+}
+
+.upload-queue__bar > span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, #7134df, #b347e4);
+  border-radius: 999px;
+  transition: width 0.2s ease;
+}
+
+.upload-queue__ok {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #157347;
+  font-weight: 700;
+}
+
+.upload-queue__ok svg {
+  width: 14px;
+  height: 14px;
+}
+
+.upload-queue__error {
+  color: #b02047;
+  font-weight: 600;
+}
+
+/* ── Thẻ ảnh trong lưới ───────────────────────────────────────────────── */
+.admin-media-card__thumb {
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 10px;
+  cursor: zoom-in;
+}
+
+.admin-media-card__thumb img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  background: #f2f0fa;
+  border-radius: 10px;
+}
+
+.admin-media-card {
+  position: relative;
+  transition: border-color 0.16s ease, box-shadow 0.16s ease;
+}
+
+.admin-media-card.is-selected {
+  border-color: #7a3cff;
+  box-shadow: 0 0 0 3px rgba(122, 60, 255, 0.14);
+}
+
+.media-check {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.media-check input,
+.data-table__select input {
+  width: 18px;
+  height: 18px;
+  accent-color: #7a3cff;
+  cursor: pointer;
+}
+
+.admin-media-card__alt {
+  display: grid;
+  gap: 4px;
+  font-size: 0.72rem;
+}
+
+.admin-media-card__alt > span {
+  color: var(--admin-ink-soft);
+  font-weight: 700;
+}
+
+.admin-media-card__alt input {
+  width: 100%;
+  min-height: 38px;
+  padding: 0 10px;
+  color: var(--admin-ink);
+  background: #fff;
+  border: 1px solid var(--admin-line);
+  border-radius: 9px;
+  font: inherit;
+  font-size: 0.78rem;
+}
+
+.admin-media-card__alt input:focus {
+  border-color: #7a3cff;
+  box-shadow: 0 0 0 3px rgba(122, 60, 255, 0.14);
+  outline: none;
+}
+
+/* ── Bảng ảnh (chế độ xem dạng bảng) ──────────────────────────────────── */
+.media-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 220px;
+}
+
+.media-cell img {
+  width: 46px;
+  height: 46px;
+  border-radius: 9px;
+  object-fit: cover;
+  background: #f2f0fa;
+}
+
+.media-cell > div {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.media-cell strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.media-cell span {
+  overflow: hidden;
+  font-size: 0.72rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.media-row-actions {
+  display: inline-flex;
+  gap: 6px;
+}
+
+.media-row-actions .button {
+  min-height: 36px;
+  padding: 0 10px;
+}
+
+/* ── Chuyển chế độ xem ────────────────────────────────────────────────── */
+.media-view-toggle {
+  display: inline-flex;
+  overflow: hidden;
+  border: 1px solid var(--admin-line);
+  border-radius: 10px;
+}
+
+.media-view-toggle button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 42px;
+  padding: 0 12px;
+  color: var(--admin-ink-soft);
+  background: #fff;
+  border: 0;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.media-view-toggle button + button {
+  border-left: 1px solid var(--admin-line);
+}
+
+.media-view-toggle button svg {
+  width: 16px;
+  height: 16px;
+}
+
+.media-view-toggle button.is-active {
+  color: #fff;
+  background: linear-gradient(120deg, #7134df, #b347e4);
+}
+
+/* ── Skeleton tải dữ liệu ─────────────────────────────────────────────── */
+.media-skeleton-card {
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+  background: #fff;
+  border: 1px solid var(--admin-line);
+  border-radius: 14px;
+}
+
+.media-skeleton {
+  background: linear-gradient(90deg, #f0eef8 25%, #e6e2f5 37%, #f0eef8 63%);
+  background-size: 400% 100%;
+  border-radius: 9px;
+  animation: media-skeleton-shimmer 1.4s ease infinite;
+}
+
+.media-skeleton--thumb {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+}
+
+.media-skeleton--line {
+  height: 12px;
+}
+
+.media-skeleton--short {
+  width: 60%;
+}
+
+@keyframes media-skeleton-shimmer {
+  0% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0 50%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .media-skeleton {
+    animation: none;
+  }
+
+  .upload-queue__bar > span {
+    transition: none;
+  }
+}
+
+/* ── Hộp chọn ảnh dùng chung ──────────────────────────────────────────── */
+.media-picker-backdrop {
+  z-index: 90;
+}
+
+.media-picker {
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  gap: 14px;
+  width: min(100%, 940px);
+  max-height: min(88vh, 820px);
+  padding: 18px;
+  background: var(--admin-surface, #fff);
+  border-radius: 18px;
+  box-shadow: 0 30px 70px rgba(24, 10, 60, 0.32);
+}
+
+.media-picker__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.media-picker__head h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+}
+
+.media-picker__head p {
+  margin: 4px 0 0;
+  font-size: 0.8rem;
+}
+
+.media-picker__head > button {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  color: var(--admin-ink);
+  background: #fff;
+  border: 1px solid var(--admin-line);
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.media-picker__head > button svg {
+  width: 16px;
+  height: 16px;
+}
+
+.media-picker__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.media-picker__toolbar .admin-toolbar__search {
+  flex: 1 1 260px;
+}
+
+.media-picker__upload {
+  cursor: pointer;
+}
+
+.media-picker__upload input {
+  display: none;
+}
+
+.media-picker__body {
+  overflow-y: auto;
+  min-height: 180px;
+  padding: 2px;
+}
+
+.media-picker__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 12px;
+}
+
+.media-picker__item {
+  display: grid;
+  gap: 6px;
+  padding: 8px;
+  color: var(--admin-ink);
+  text-align: left;
+  background: #fff;
+  border: 1px solid var(--admin-line);
+  border-radius: 12px;
+  cursor: pointer;
+  font: inherit;
+  transition: border-color 0.16s ease, box-shadow 0.16s ease;
+}
+
+.media-picker__item:hover,
+.media-picker__item:focus-visible {
+  border-color: #7a3cff;
+  box-shadow: 0 0 0 3px rgba(122, 60, 255, 0.16);
+  outline: none;
+}
+
+.media-picker__item img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  background: #f2f0fa;
+  border-radius: 8px;
+}
+
+.media-picker__item span {
+  overflow: hidden;
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.media-picker .data-table__footer {
+  padding: 0;
+  border-top: 0;
+}
+
+/* ── Điều chỉnh cho màn hình nhỏ ──────────────────────────────────────── */
+@media (max-width: 720px) {
+  .media-picker {
+    max-height: 94vh;
+    padding: 14px;
+    border-radius: 14px;
+  }
+
+  .media-picker__grid {
+    grid-template-columns: repeat(auto-fill, minmax(108px, 1fr));
+    gap: 8px;
+  }
+
+  .media-picker__toolbar {
+    gap: 8px;
+  }
+
+  .media-picker__upload {
+    flex: 1 1 100%;
+    justify-content: center;
+  }
+
+  .dropzone {
+    padding: 22px 14px;
+  }
+
+  .upload-queue__item {
+    grid-template-columns: 44px minmax(0, 1fr) auto;
+    gap: 10px;
+  }
+
+  .upload-queue__item img {
+    width: 44px;
+    height: 44px;
+  }
+
+  .admin-media-grid {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 10px;
+  }
+
+  .admin-media-card__actions {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .admin-media-card__actions .button {
+    width: 100%;
+    justify-content: center;
+    white-space: nowrap;
+  }
+
+  .media-view-toggle {
+    width: 100%;
+  }
+
+  .media-view-toggle button {
+    flex: 1 1 auto;
+    justify-content: center;
+  }
+
+  .media-row-actions .button {
+    min-height: 40px;
+    padding: 0 9px;
+  }
+}
+
+/* Nút chọn ảnh từ thư viện trong ô ảnh dùng chung. */
+.image-field__pick {
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
+  gap: 7px;
+  padding: 0 14px;
+  color: #4a1fb8;
+  background: #fff;
+  border: 1px solid #cbb8f5;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.image-field__pick svg {
+  width: 16px;
+  height: 16px;
+}
+
+.image-field__pick:hover {
+  background: #f6f3ff;
+}

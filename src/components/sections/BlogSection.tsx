@@ -1,5 +1,5 @@
 import { ArrowRight, BookOpen, Tag } from "lucide-react";
-import cosmicLight from "../../../assets/backgrounds/cosmic-light.webp";
+const cosmicLight = "/assets/backgrounds/cosmic-light.webp";
 import { blogPosts } from "../../data/blog";
 import { Reveal } from "../ui/Reveal";
 import { SectionHeading } from "../ui/SectionHeading";
@@ -38,7 +38,7 @@ export function BlogSection() {
         </div>
 
         <Reveal className="blog-section__more" delay={120}>
-          <a href="/blog"><span>Xem thêm bài viết</span><ArrowRight aria-hidden="true" /></a>
+          <a href="/blog"><span>Xem tất cả bài viết</span><ArrowRight aria-hidden="true" /></a>
         </Reveal>
       </div>
     </section>

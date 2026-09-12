@@ -1,0 +1,594 @@
+[
+  {
+    "code": "INTJ",
+    "title": "Nhà hoạch định chiến lược",
+    "summary": "Theo tham chiếu khung MBTI, bạn có xu hướng thiên về Hướng nội – Trực giác – Lý trí – Nguyên tắc. Bạn thường nhìn xa, thích hệ thống hoá vấn đề và làm việc độc lập để theo đuổi mục tiêu dài hạn. Bạn coi trọng năng lực và sự logic hơn là hình thức bên ngoài.",
+    "strengths": [
+      "Tư duy chiến lược, nhìn được bức tranh dài hạn",
+      "Độc lập và tự chủ cao trong công việc",
+      "Phân tích vấn đề phức tạp có hệ thống",
+      "Kiên định với mục tiêu đã chọn",
+      "Học nhanh các lĩnh vực chuyên sâu"
+    ],
+    "cautions": [
+      "Có thể khó gần và ít bộc lộ cảm xúc",
+      "Dễ cho rằng ý kiến của mình hợp lý hơn",
+      "Thiếu kiên nhẫn với việc được cho là kém hiệu quả",
+      "Có xu hướng bỏ qua nhu cầu cảm xúc của đồng đội"
+    ],
+    "careers": [
+      "Chuyên viên phân tích dữ liệu",
+      "Kiến trúc sư giải pháp phần mềm",
+      "Chuyên viên hoạch định chiến lược",
+      "Nghiên cứu viên",
+      "Quản lý dự án công nghệ"
+    ],
+    "growth": [
+      "Luyện cách truyền đạt ý tưởng dễ hiểu hơn",
+      "Chủ động hỏi thăm cảm xúc đồng nghiệp",
+      "Cho phép ý tưởng chưa hoàn chỉnh được thử",
+      "Cân bằng giữa phân tích và hành động"
+    ],
+    "relationships": [
+      "Cần người đối thoại thẳng thắn, tôn trọng không gian riêng",
+      "Thường thể hiện quan tâm qua hành động hơn lời nói",
+      "Nên nói rõ mong đợi để tránh hiểu lầm",
+      "Phù hợp với người kiên nhẫn và độc lập"
+    ]
+  },
+  {
+    "code": "INTP",
+    "title": "Nhà phân tích tò mò",
+    "summary": "Theo tham chiếu khung MBTI, bạn có xu hướng thiên về Hướng nội – Trực giác – Lý trí – Linh hoạt. Bạn thường thích khám phá nguyên lý, đặt câu hỏi và tìm lời giải thích hợp lý cho mọi việc. Bạn thoải mái với ý tưởng trừu tượng và môi trường ít khuôn mẫu.",
+    "strengths": [
+      "Tư duy logic và khả năng phân tích sâu",
+      "Ham học hỏi, tò mò với điều mới",
+      "Phát hiện lỗ hổng trong lập luận",
+      "Sáng tạo trong cách giải quyết vấn đề",
+      "Làm việc độc lập hiệu quả"
+    ],
+    "cautions": [
+      "Dễ trì hoãn khi chưa thấy hứng thú",
+      "Khó hoàn tất chi tiết hành chính",
+      "Có thể nói thẳng gây khó chịu",
+      "Mất tập trung khi bị ràng buộc quy trình"
+    ],
+    "careers": [
+      "Lập trình viên",
+      "Chuyên viên nghiên cứu",
+      "Kỹ sư dữ liệu",
+      "Chuyên viên phân tích hệ thống",
+      "Giảng viên đại học"
+    ],
+    "growth": [
+      "Đặt hạn rõ ràng cho từng đầu việc",
+      "Chia sẻ kết quả sớm thay vì chờ hoàn hảo",
+      "Rèn kỹ năng trình bày ngắn gọn",
+      "Duy trì thói quen theo dõi tiến độ"
+    ],
+    "relationships": [
+      "Cần không gian riêng để suy nghĩ",
+      "Thường bày tỏ quan tâm qua việc giúp giải quyết vấn đề",
+      "Nên chủ động chia sẻ cảm xúc nhiều hơn",
+      "Hợp với người tôn trọng sự độc lập"
+    ]
+  },
+  {
+    "code": "ENTJ",
+    "title": "Nhà chỉ huy quyết đoán",
+    "summary": "Theo tham chiếu khung MBTI, bạn có xu hướng thiên về Hướng ngoại – Trực giác – Lý trí – Nguyên tắc. Bạn thường đặt mục tiêu lớn, tổ chức nguồn lực và dẫn dắt người khác cùng tiến. Bạn mạnh ở việc biến ý tưởng thành kế hoạch hành động cụ thể.",
+    "strengths": [
+      "Tầm nhìn và khả năng tổ chức cao",
+      "Quyết đoán, dám chịu trách nhiệm",
+      "Truyền được định hướng cho tập thể",
+      "Xử lý áp lực tốt",
+      "Nhìn ra điểm chưa hiệu quả và cải thiện"
+    ],
+    "cautions": [
+      "Có thể áp đặt quan điểm lên người khác",
+      "Thiếu kiên nhẫn với người chậm hơn",
+      "Dễ bỏ qua cảm xúc khi theo đuổi mục tiêu",
+      "Ôm nhiều việc và dễ quá tải"
+    ],
+    "careers": [
+      "Giám đốc điều hành",
+      "Quản lý kinh doanh vùng",
+      "Trưởng phòng dự án",
+      "Chuyên viên tư vấn chiến lược",
+      "Trưởng nhóm khởi nghiệp"
+    ],
+    "growth": [
+      "Tập hỏi ý kiến trước khi quyết định",
+      "Lắng nghe trọn vẹn trước khi phản hồi",
+      "Uỷ quyền nhiều hơn để giảm tải",
+      "Ghi nhận nỗ lực của đồng đội thường xuyên"
+    ],
+    "relationships": [
+      "Đóng vai trò người dẫn dắt trong các mối quan hệ",
+      "Cần người đối tác bình tĩnh, biết lắng nghe",
+      "Nên dành thời gian cho cảm xúc của người thân",
+      "Tránh biến trò chuyện thành cuộc tranh luận"
+    ]
+  },
+  {
+    "code": "ENTP",
+    "title": "Nhà phát kiến linh hoạt",
+    "summary": "Theo tham chiếu khung MBTI, bạn có xu hướng thiên về Hướng ngoại – Trực giác – Lý trí – Linh hoạt. Bạn thường hào hứng với ý tưởng mới, thích tranh luận để mở rộng góc nhìn và ứng biến nhanh. Bạn hợp với môi trường nhiều thay đổi và ít khuôn khổ.",
+    "strengths": [
+      "Sáng tạo và nhạy bén với cơ hội",
+      "Giao tiếp linh hoạt, thuyết phục tốt",
+      "Học nhanh và thích nghi nhanh",
+      "Đặt được nhiều câu hỏi mở rộng vấn đề",
+      "Tự tin trong tình huống bất ngờ"
+    ],
+    "cautions": [
+      "Dễ bỏ dở khi hết hứng thú",
+      "Ngại công việc lặp lại, chi tiết",
+      "Có thể tranh luận quá mức cần thiết",
+      "Khó tuân theo quy trình cứng nhắc"
+    ],
+    "careers": [
+      "Chuyên viên sáng tạo nội dung",
+      "Chuyên viên kinh doanh phát triển thị trường",
+      "Quản lý sản phẩm",
+      "Chuyên viên truyền thông",
+      "Khởi nghiệp"
+    ],
+    "growth": [
+      "Chọn lọc và theo đuổi đến cùng một ý tưởng",
+      "Rèn thói quen hoàn tất việc đã bắt đầu",
+      "Lắng nghe hết ý kiến trước khi phản biện",
+      "Duy trì hệ thống ghi chú và nhắc việc"
+    ],
+    "relationships": [
+      "Có xu hướng mang đến năng lượng mới cho tập thể",
+      "Cần người đồng hành kiên nhẫn với sự thay đổi",
+      "Nên để ý cảm xúc ẩn sau lời nói",
+      "Tránh tranh luận khi người khác đang mệt"
+    ]
+  },
+  {
+    "code": "INFJ",
+    "title": "Nhà cố vấn sâu sắc",
+    "summary": "Theo tham chiếu khung MBTI, bạn có xu hướng thiên về Hướng nội – Trực giác – Cảm xúc – Nguyên tắc. Bạn thường quan sát tinh tế, quan tâm tới ý nghĩa công việc và mong giúp người khác phát triển. Bạn làm việc có mục đích rõ ràng và khá kiên định.",
+    "strengths": [
+      "Thấu hiểu cảm xúc và động cơ của người khác",
+      "Có tầm nhìn về điều tốt đẹp dài hạn",
+      "Kiên định với giá trị bản thân",
+      "Lắng nghe sâu và tư vấn tận tình",
+      "Làm việc chu đáo, ít sai sót"
+    ],
+    "cautions": [
+      "Dễ ôm cảm xúc của người khác",
+      "Có xu hướng cầu toàn với chính mình",
+      "Khó nói lời từ chối",
+      "Cần thời gian một mình để hồi phục"
+    ],
+    "careers": [
+      "Chuyên viên tham vấn tâm lý học đường",
+      "Chuyên viên nhân sự phát triển",
+      "Giảng viên",
+      "Chuyên viên phát triển cộng đồng",
+      "Biên tập viên nội dung giáo dục"
+    ],
+    "growth": [
+      "Đặt giới hạn cho việc giúp đỡ người khác",
+      "Chấp nhận mức đủ tốt ở một số việc",
+      "Chia sẻ kỳ vọng rõ ràng thay vì ngầm hiểu",
+      "Dành thời gian chăm sóc bản thân"
+    ],
+    "relationships": [
+      "Coi trọng các mối quan hệ sâu sắc, ít nhưng chất",
+      "Cần người tôn trọng nhu cầu tĩnh lặng",
+      "Thường là người lắng nghe trong nhóm",
+      "Nên nói ra mong đợi để tránh tự gánh"
+    ]
+  },
+  {
+    "code": "INFP",
+    "title": "Người lý tưởng dịu dàng",
+    "summary": "Theo tham chiếu khung MBTI, bạn có xu hướng thiên về Hướng nội – Trực giác – Cảm xúc – Linh hoạt. Bạn thường sống theo giá trị cá nhân, giàu cảm xúc và quan tâm tới điều có ý nghĩa. Bạn thích không gian tự do để sáng tạo và làm việc theo nhịp riêng.",
+    "strengths": [
+      "Giàu đồng cảm và tôn trọng sự khác biệt",
+      "Sáng tạo, có sức tưởng tượng tốt",
+      "Trung thành với giá trị bản thân",
+      "Biết lắng nghe và động viên người khác",
+      "Làm việc có ý nghĩa, tận tâm"
+    ],
+    "cautions": [
+      "Dễ bị tổn thương bởi lời phê bình",
+      "Tránh xung đột nên đôi khi im lặng",
+      "Khó duy trì kỷ luật với việc nhàm chán",
+      "Hay mơ mộng, dễ trì hoãn"
+    ],
+    "careers": [
+      "Chuyên viên sáng tạo nội dung",
+      "Biên tập viên",
+      "Giáo viên ngữ văn",
+      "Chuyên viên thiết kế",
+      "Chuyên viên công tác xã hội"
+    ],
+    "growth": [
+      "Rèn thói quen chia nhỏ việc lớn",
+      "Chủ động nêu ý kiến khi có bất đồng",
+      "Tách phê bình công việc khỏi giá trị bản thân",
+      "Duy trì một vài nền nếp cố định"
+    ],
+    "relationships": [
+      "Coi trọng sự chân thành và thấu hiểu",
+      "Cần người dịu dàng, tôn trọng cảm xúc",
+      "Thường thể hiện tình cảm qua hành động nhỏ",
+      "Nên học cách nói ra nhu cầu của mình"
+    ]
+  },
+  {
+    "code": "ENFJ",
+    "title": "Người dẫn dắt truyền cảm hứng",
+    "summary": "Theo tham chiếu khung MBTI, bạn có xu hướng thiên về Hướng ngoại – Trực giác – Cảm xúc – Nguyên tắc. Bạn thường quan tâm tới con người, giỏi khích lệ và tổ chức tập thể cùng hướng tới mục tiêu chung. Bạn làm việc có kế hoạch và coi trọng sự gắn kết.",
+    "strengths": [
+      "Truyền cảm hứng và động viên người khác",
+      "Thấu hiểu nhu cầu của tập thể",
+      "Tổ chức công việc nhóm hiệu quả",
+      "Giao tiếp khéo léo, dễ tạo thiện cảm",
+      "Kiên định với mục tiêu chung"
+    ],
+    "cautions": [
+      "Dễ quá tải vì ôm việc của người khác",
+      "Quá để tâm tới đánh giá của người khác",
+      "Khó đưa ra phản hồi tiêu cực",
+      "Bỏ qua nhu cầu của bản thân"
+    ],
+    "careers": [
+      "Quản lý nhân sự",
+      "Giáo viên chủ nhiệm",
+      "Chuyên viên đào tạo",
+      "Trưởng nhóm kinh doanh",
+      "Chuyên viên quan hệ công chúng"
+    ],
+    "growth": [
+      "Đặt giới hạn cho các cam kết hỗ trợ",
+      "Học cách góp ý thẳng thắn, tôn trọng",
+      "Dành thời gian tĩnh lặng cho bản thân",
+      "Cho phép người khác tự chịu trách nhiệm"
+    ],
+    "relationships": [
+      "Là người kết nối và giữ gắn kết trong nhóm",
+      "Cần người biết ghi nhận nỗ lực của bạn",
+      "Nên nói ra khi bản thân đã quá mệt",
+      "Thường chủ động chăm sóc người xung quanh"
+    ]
+  },
+  {
+    "code": "ENFP",
+    "title": "Người truyền lửa sáng tạo",
+    "summary": "Theo tham chiếu khung MBTI, bạn có xu hướng thiên về Hướng ngoại – Trực giác – Cảm xúc – Linh hoạt. Bạn thường tràn đầy ý tưởng, dễ kết nối với người khác và thích những trải nghiệm mới. Bạn làm việc dựa trên cảm hứng và giá trị cá nhân.",
+    "strengths": [
+      "Sáng tạo và giàu năng lượng tích cực",
+      "Kết nối và truyền cảm hứng cho người khác",
+      "Nhạy cảm với nhu cầu của tập thể",
+      "Thích nghi nhanh với hoàn cảnh mới",
+      "Dám thử những điều chưa ai làm"
+    ],
+    "cautions": [
+      "Dễ mất tập trung giữa nhiều ý tưởng",
+      "Khó hoàn tất việc chi tiết, lặp lại",
+      "Cảm xúc lên xuống thất thường",
+      "Đôi khi hứa quá nhiều"
+    ],
+    "careers": [
+      "Chuyên viên marketing",
+      "Chuyên viên tổ chức sự kiện",
+      "Biên tập viên sáng tạo",
+      "Chuyên viên tư vấn tuyển dụng",
+      "Huấn luyện viên kỹ năng mềm"
+    ],
+    "growth": [
+      "Chọn tối đa vài việc ưu tiên mỗi tuần",
+      "Dùng công cụ nhắc việc và hạn chót",
+      "Hoàn thành việc nhỏ trước khi mở việc mới",
+      "Rèn tính kiên nhẫn với quy trình"
+    ],
+    "relationships": [
+      "Mang lại không khí tích cực cho nhóm",
+      "Cần người đồng hành bình tĩnh, đáng tin",
+      "Nên lắng nghe nhiều hơn khi hào hứng",
+      "Tránh để cảm xúc nhất thời dẫn dắt quyết định"
+    ]
+  },
+  {
+    "code": "ISTJ",
+    "title": "Người thực thi đáng tin",
+    "summary": "Theo tham chiếu khung MBTI, bạn có xu hướng thiên về Hướng nội – Giác quan – Lý trí – Nguyên tắc. Bạn thường làm việc có trách nhiệm, tuân thủ quy trình và giữ lời hứa. Bạn coi trọng sự chính xác và ổn định trong công việc.",
+    "strengths": [
+      "Đáng tin cậy và có trách nhiệm cao",
+      "Làm việc ngăn nắp, có kế hoạch",
+      "Tỉ mỉ và chính xác",
+      "Kiên trì tới khi hoàn thành",
+      "Tôn trọng quy định và cam kết"
+    ],
+    "cautions": [
+      "Ngại thay đổi và cách làm mới",
+      "Có thể cứng nhắc với quy trình",
+      "Khó thích nghi khi kế hoạch đổi",
+      "Ít bộc lộ cảm xúc"
+    ],
+    "careers": [
+      "Kế toán viên",
+      "Kiểm toán viên",
+      "Chuyên viên hành chính",
+      "Quản lý kho vận",
+      "Chuyên viên tuân thủ pháp lý"
+    ],
+    "growth": [
+      "Thử một cách làm mới mỗi tháng",
+      "Chấp nhận điều chỉnh linh hoạt khi cần",
+      "Chủ động chia sẻ cảm xúc với đồng đội",
+      "Lắng nghe ý tưởng khác biệt trước khi phản hồi"
+    ],
+    "relationships": [
+      "Trung thành và giữ cam kết lâu dài",
+      "Cần người tôn trọng nếp sống riêng",
+      "Thể hiện quan tâm bằng việc làm cụ thể",
+      "Nên nói lời động viên nhiều hơn"
+    ]
+  },
+  {
+    "code": "ISFJ",
+    "title": "Người chăm sóc tận tụy",
+    "summary": "Theo tham chiếu khung MBTI, bạn có xu hướng thiên về Hướng nội – Giác quan – Cảm xúc – Nguyên tắc. Bạn thường chu đáo, tận tâm và ghi nhớ những chi tiết liên quan tới người khác. Bạn thích môi trường ổn định và các mối quan hệ tin cậy.",
+    "strengths": [
+      "Chu đáo và quan tâm tới người khác",
+      "Làm việc tỉ mỉ, đúng hạn",
+      "Trung thành với tập thể",
+      "Kiên nhẫn với công việc đòi hỏi sự bền bỉ",
+      "Giữ gìn truyền thống và nếp chung"
+    ],
+    "cautions": [
+      "Khó nói lời từ chối",
+      "Ngại xung đột, dễ chịu thiệt",
+      "Bỏ qua nhu cầu bản thân",
+      "Khó thích nghi với thay đổi lớn"
+    ],
+    "careers": [
+      "Điều dưỡng viên",
+      "Chuyên viên hành chính nhân sự",
+      "Giáo viên tiểu học",
+      "Chuyên viên chăm sóc khách hàng",
+      "Thủ thư"
+    ],
+    "growth": [
+      "Tập nói không khi quá tải",
+      "Chủ động đề xuất ý kiến của mình",
+      "Dành thời gian cho sở thích cá nhân",
+      "Đón nhận thay đổi theo từng bước nhỏ"
+    ],
+    "relationships": [
+      "Là chỗ dựa đáng tin cho người thân",
+      "Cần người biết ghi nhận sự chu đáo của bạn",
+      "Nên bày tỏ điều mình cần thay vì chờ đợi",
+      "Giữ được quan hệ bền lâu"
+    ]
+  },
+  {
+    "code": "ESTJ",
+    "title": "Nhà quản lý nguyên tắc",
+    "summary": "Theo tham chiếu khung MBTI, bạn có xu hướng thiên về Hướng ngoại – Giác quan – Lý trí – Nguyên tắc. Bạn thường tổ chức công việc rõ ràng, ra quyết định dựa trên thực tế và thúc đẩy mọi người hoàn thành đúng hạn. Bạn coi trọng trật tự và hiệu quả.",
+    "strengths": [
+      "Tổ chức và điều hành tốt",
+      "Quyết đoán dựa trên thực tế",
+      "Đáng tin cậy với cam kết",
+      "Dám chịu trách nhiệm trước tập thể",
+      "Làm việc có mục tiêu và thời hạn rõ ràng"
+    ],
+    "cautions": [
+      "Có thể cứng nhắc với quy định",
+      "Thiếu kiên nhẫn với người làm chậm",
+      "Dễ làm người khác căng thẳng khi góp ý",
+      "Ít để ý tới cảm xúc tinh tế"
+    ],
+    "careers": [
+      "Quản lý vận hành",
+      "Trưởng phòng kinh doanh",
+      "Chuyên viên quản lý chất lượng",
+      "Giám sát sản xuất",
+      "Trưởng nhóm hành chính"
+    ],
+    "growth": [
+      "Lắng nghe người khác trước khi kết luận",
+      "Mềm mỏng hơn khi góp ý",
+      "Chấp nhận cách làm khác nếu vẫn đạt kết quả",
+      "Ghi nhận nỗ lực của đồng đội"
+    ],
+    "relationships": [
+      "Là chỗ dựa và người tổ chức trong gia đình",
+      "Cần người đối thoại nhẹ nhàng, kiên nhẫn",
+      "Nên lắng nghe cảm xúc trước khi góp ý",
+      "Thể hiện quan tâm qua việc lo toan cụ thể"
+    ]
+  },
+  {
+    "code": "ESFJ",
+    "title": "Người kết nối chu đáo",
+    "summary": "Theo tham chiếu khung MBTI, bạn có xu hướng thiên về Hướng ngoại – Giác quan – Cảm xúc – Nguyên tắc. Bạn thường quan tâm tới mọi người, giữ không khí hoà nhã và thích giúp đỡ tập thể. Bạn làm việc có trách nhiệm, coi trọng sự hài hoà.",
+    "strengths": [
+      "Quan tâm và chu đáo với tập thể",
+      "Giao tiếp thân thiện, dễ mến",
+      "Tổ chức hoạt động chung chu toàn",
+      "Đáng tin cậy, đúng hẹn",
+      "Nhạy cảm với nhu cầu người khác"
+    ],
+    "cautions": [
+      "Quá để tâm ý kiến người khác",
+      "Ngại đối đầu, dễ nhượng bộ",
+      "Có thể ôm việc vì sợ làm ai thất vọng",
+      "Khó tiếp nhận phê bình"
+    ],
+    "careers": [
+      "Chuyên viên nhân sự",
+      "Chuyên viên chăm sóc khách hàng",
+      "Giáo viên mầm non",
+      "Điều phối viên sự kiện",
+      "Quản lý dịch vụ"
+    ],
+    "growth": [
+      "Rèn cách góp ý thẳng thắn nhưng tôn trọng",
+      "Phân biệt giữa giúp đỡ và nhận hết việc",
+      "Dành thời gian cho bản thân",
+      "Đặt giới hạn rõ ràng với yêu cầu ngoài luồng"
+    ],
+    "relationships": [
+      "Coi trọng sự hài hoà và gắn kết trong quan hệ",
+      "Cần người ghi nhận sự chu đáo của bạn",
+      "Nên nói ra điều mình cần thay vì chờ đợi",
+      "Thường là người giữ nhịp kết nối bạn bè"
+    ]
+  },
+  {
+    "code": "ISTP",
+    "title": "Người xử lý thực tế",
+    "summary": "Theo tham chiếu khung MBTI, bạn có xu hướng thiên về Hướng nội – Giác quan – Lý trí – Linh hoạt. Bạn thường bình tĩnh, thích tìm hiểu cách mọi thứ vận hành và giải quyết vấn đề bằng hành động. Bạn thoải mái với môi trường ít khuôn mẫu.",
+    "strengths": [
+      "Bình tĩnh và thực tế trong xử lý vấn đề",
+      "Khéo léo trong công việc thực hành",
+      "Học nhanh qua trải nghiệm trực tiếp",
+      "Độc lập và không cần giám sát sát sao",
+      "Linh hoạt khi tình huống thay đổi"
+    ],
+    "cautions": [
+      "Ít chia sẻ cảm xúc, dễ bị hiểu là lạnh nhạt",
+      "Ngại cam kết dài hạn",
+      "Có thể liều lĩnh vì thích thử nghiệm",
+      "Không kiên nhẫn với họp hành dài dòng"
+    ],
+    "careers": [
+      "Kỹ sư cơ khí",
+      "Kỹ thuật viên điện tử",
+      "Chuyên viên vận hành máy",
+      "Lập trình viên hệ thống",
+      "Chuyên viên kiểm định"
+    ],
+    "growth": [
+      "Chủ động báo cáo tiến độ cho nhóm",
+      "Rèn kỹ năng lắng nghe và chia sẻ cảm xúc",
+      "Cân nhắc rủi ro trước khi hành động",
+      "Kiên nhẫn hơn với giao tiếp nội bộ"
+    ],
+    "relationships": [
+      "Thể hiện quan tâm qua hành động cụ thể",
+      "Cần không gian riêng và sự tin tưởng",
+      "Nên nói ra suy nghĩ thay vì im lặng",
+      "Hợp với người chấp nhận sự tự lập"
+    ]
+  },
+  {
+    "code": "ISFP",
+    "title": "Người nghệ sĩ nhẹ nhàng",
+    "summary": "Theo tham chiếu khung MBTI, bạn có xu hướng thiên về Hướng nội – Giác quan – Cảm xúc – Linh hoạt. Bạn thường sống theo cảm nhận riêng, nhẹ nhàng và tinh tế trong quan hệ. Bạn thích được làm điều mình thấy có ý nghĩa trong môi trường dễ chịu.",
+    "strengths": [
+      "Tinh tế và giàu cảm xúc",
+      "Khiêm tốn, ít phán xét người khác",
+      "Khéo tay, nhạy cảm với cái đẹp",
+      "Thích nghi tốt trong quan hệ gần gũi",
+      "Tận tâm với điều mình tin"
+    ],
+    "cautions": [
+      "Ngại xung đột, dễ thu mình",
+      "Khó nói ra nhu cầu của bản thân",
+      "Dễ bị tổn thương bởi phê bình",
+      "Khó làm việc dưới áp lực thời hạn gấp"
+    ],
+    "careers": [
+      "Nhà thiết kế đồ hoạ",
+      "Chuyên viên chăm sóc khách hàng",
+      "Giáo viên năng khiếu",
+      "Chuyên viên trang trí nội thất",
+      "Đầu bếp"
+    ],
+    "growth": [
+      "Luyện nêu ý kiến trong cuộc họp",
+      "Chia nhỏ việc để tránh quá tải",
+      "Chấp nhận phản hồi như thông tin cải thiện",
+      "Đặt mục tiêu nhỏ và hoàn thành đều"
+    ],
+    "relationships": [
+      "Cần sự yên tĩnh và tôn trọng trong quan hệ",
+      "Quan tâm người khác theo cách rất riêng",
+      "Nên chia sẻ cảm xúc nhiều hơn",
+      "Phù hợp với người kiên nhẫn, ấm áp"
+    ]
+  },
+  {
+    "code": "ESTP",
+    "title": "Người hành động nhanh nhạy",
+    "summary": "Theo tham chiếu khung MBTI, bạn có xu hướng thiên về Hướng ngoại – Giác quan – Lý trí – Linh hoạt. Bạn thường nhanh nhẹn, thực tế và thích bắt tay vào việc hơn là bàn luận dài. Bạn xử lý tình huống bất ngờ tốt và thích môi trường sôi động.",
+    "strengths": [
+      "Nhanh nhẹn và quyết đoán trong hành động",
+      "Nhạy bén với cơ hội thực tế",
+      "Giao tiếp tự tin, dễ tạo thiện cảm",
+      "Bình tĩnh khi có sự cố",
+      "Học nhanh qua trải nghiệm"
+    ],
+    "cautions": [
+      "Có thể hành động trước khi suy nghĩ kỹ",
+      "Ngại việc đòi hỏi kiên nhẫn dài hạn",
+      "Dễ bỏ qua chi tiết quan trọng",
+      "Thích rủi ro hơn mức cần thiết"
+    ],
+    "careers": [
+      "Nhân viên kinh doanh",
+      "Chuyên viên phát triển thị trường",
+      "Điều phối viên sự kiện",
+      "Chuyên viên môi giới bất động sản",
+      "Kỹ thuật viên hiện trường"
+    ],
+    "growth": [
+      "Dành vài phút cân nhắc trước quyết định lớn",
+      "Ghi chú lại chi tiết quan trọng",
+      "Theo đuổi một mục tiêu dài hạn",
+      "Lắng nghe ý kiến khác trước khi phản hồi"
+    ],
+    "relationships": [
+      "Mang lại năng lượng sôi nổi cho tập thể",
+      "Cần người đồng hành biết lắng nghe",
+      "Nên để ý cảm xúc của người đối diện",
+      "Tránh nói đùa quá đà khi đang nghiêm túc"
+    ]
+  },
+  {
+    "code": "ESFP",
+    "title": "Người toả sáng tự nhiên",
+    "summary": "Theo tham chiếu khung MBTI, bạn có xu hướng thiên về Hướng ngoại – Giác quan – Cảm xúc – Linh hoạt. Bạn thường vui vẻ, dễ gần và biết tạo không khí tích cực cho tập thể. Bạn thích trải nghiệm thực tế và được làm việc cùng nhiều người.",
+    "strengths": [
+      "Hoạt bát và tạo được thiện cảm",
+      "Nhạy cảm với không khí tập thể",
+      "Thực tế, biết chăm lo cho người khác",
+      "Linh hoạt khi tình huống thay đổi",
+      "Truyền năng lượng tích cực"
+    ],
+    "cautions": [
+      "Dễ mất tập trung khi nhiều việc",
+      "Ngại công việc đơn điệu, kéo dài",
+      "Có thể chi tiêu và quyết định theo cảm hứng",
+      "Khó kiên nhẫn với kế hoạch dài hạn"
+    ],
+    "careers": [
+      "Chuyên viên tổ chức sự kiện",
+      "Nhân viên chăm sóc khách hàng",
+      "Hướng dẫn viên du lịch",
+      "Chuyên viên bán hàng",
+      "Chuyên viên truyền thông"
+    ],
+    "growth": [
+      "Dùng danh sách việc để giữ tập trung",
+      "Đặt mục tiêu nhỏ và hoàn thành đều",
+      "Cân nhắc kỹ trước quyết định tài chính",
+      "Luyện tính kiên nhẫn với việc cần thời gian"
+    ],
+    "relationships": [
+      "Dễ kết bạn và giữ quan hệ rộng",
+      "Cần người đồng hành ổn định, đáng tin",
+      "Nên lắng nghe nhiều hơn khi hào hứng",
+      "Quan tâm người khác bằng sự hiện diện"
+    ]
+  }
+]

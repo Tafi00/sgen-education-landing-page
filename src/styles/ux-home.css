@@ -1,0 +1,867 @@
+/* ux-home — ghi đè/tinh chỉnh UX sau rà soát mobile (đợt 2: trang chủ).
+   File này được nạp SAU responsive.css nên có thể ghi đè rule cũ khi cùng độ ưu tiên.
+   Mọi thay đổi chỉ áp cho các section của trang chủ, không đụng trang khác. */
+
+/* Nhãn ngắn của tab công cụ: chỉ hiện trên mobile.
+   Nhãn đầy đủ vẫn nằm trong DOM (ẩn bằng kỹ thuật visually-hidden) nên screen reader
+   vẫn đọc đúng tên tab. */
+.tools-tabs__label-short {
+  display: none;
+}
+
+/* Nút "Đọc thêm / Thu gọn" của phần luận giải con số: chỉ dùng trên mobile
+   (desktop luôn hiện đủ nội dung). */
+.number-detail__toggle {
+  display: none;
+}
+
+/* Dòng cam kết thời gian phản hồi dưới nút gửi của form tư vấn. */
+.consultation-form-card__promise {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 0.82rem;
+  text-align: center;
+}
+
+.consultation-form-card__promise svg {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+  color: var(--violet);
+}
+
+@media (max-width: 767px) {
+  /* ================= Nhịp dọc & tiêu đề section ================= */
+  .tools-section,
+  .numbers-section,
+  .about-section,
+  .methods-section,
+  .programs-section,
+  .blog-section,
+  .consultation-section {
+    padding-block: clamp(26px, 7vw, 44px);
+  }
+
+  .tools-section .section-heading,
+  .numbers-section .section-heading,
+  .about-section .section-heading,
+  .methods-section .section-heading,
+  .programs-section .section-heading,
+  .blog-section .section-heading,
+  .consultation-section .section-heading {
+    margin-bottom: 14px;
+  }
+
+  /* ================= Hero ================= */
+  /* Hero bắt đầu ngay dưới header: 64px + 30px của .hero__main = 94px, tức mép dưới
+     header (--header-h 76px + 10px đệm) còn 8px trống cho eyebrow. */
+  .hero {
+    padding-top: 64px;
+  }
+
+  .hero__main {
+    gap: 16px;
+    padding-top: 30px;
+    padding-bottom: 18px;
+  }
+
+  .hero__content h1 {
+    margin-top: 10px;
+  }
+
+  .hero__tagline {
+    margin-top: 12px;
+  }
+
+  .hero__description {
+    margin-top: 8px;
+  }
+
+  /* 2 CTA nằm gọn 1 hàng, mỗi nút ~50% chiều rộng. */
+  .hero__actions {
+    flex-wrap: nowrap;
+    gap: 8px;
+    margin-top: 14px;
+  }
+
+  .hero__action {
+    flex: 1 1 0;
+    min-width: 0;
+    min-height: 48px;
+    gap: 7px;
+    padding-inline: 8px;
+    font-size: 0.75rem;
+    white-space: nowrap;
+  }
+
+  .hero__action svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  /* 3 chip tin cậy: 1 hàng cuộn ngang thay vì 3 hàng cao. */
+  .hero__trust-list {
+    flex-wrap: nowrap;
+    gap: 8px;
+    margin-top: 14px;
+    margin-inline: -14px;
+    padding: 2px 14px 2px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x proximity;
+    scroll-padding-inline: 14px;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .hero__trust-list::-webkit-scrollbar {
+    display: none;
+  }
+
+  .hero__trust-item {
+    flex: 0 0 auto;
+    min-height: 44px;
+    scroll-snap-align: start;
+    font-size: max(12px, 0.74rem);
+  }
+
+  /* Form tra cứu: nhãn gọn + field ≤ 52px để cả form nằm trong ~1.2 màn hình. */
+  .lookup-card {
+    padding: 16px 14px;
+  }
+
+  .lookup-card__intro {
+    margin: 6px 0 10px;
+    font-size: 0.82rem;
+    line-height: 1.45;
+  }
+
+  .lookup-card form {
+    gap: 8px;
+  }
+
+  .lookup-card .field-group {
+    gap: 2px;
+  }
+
+  .lookup-card .field-group > span:first-child {
+    font-size: max(12px, 0.72rem);
+    line-height: 1.2;
+  }
+
+  .lookup-card .field-control,
+  .lookup-card .custom-select {
+    min-height: 44px;
+    max-height: 52px;
+  }
+
+  /* Ô nhập cao đúng vùng chạm 44px (trước đây input chỉ ~21px). */
+  .lookup-card .field-control input {
+    min-height: 44px;
+  }
+
+  .lookup-card__options label {
+    min-height: 44px;
+    align-items: center;
+  }
+
+  /* Ô vuông giữ 20px (vùng chạm thực tế là cả hàng label 44px bên trên). */
+  .lookup-card__options input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    flex: 0 0 auto;
+  }
+
+  /* Nút mũi tên của thẻ lợi ích: vùng chạm 44px. */
+  .benefit-card > a {
+    right: 4px;
+    bottom: 2px;
+    width: 44px;
+    height: 44px;
+    display: grid;
+    place-items: center;
+  }
+
+  .lookup-card__submit {
+    min-height: 48px;
+  }
+
+  .lookup-card__privacy {
+    margin-top: 6px;
+  }
+
+  /* Khối lợi ích dưới hero: gọn lại để không chiếm thêm 1 màn hình. */
+  .hero__benefits {
+    gap: 8px;
+    padding-block: 4px;
+  }
+
+  .benefit-card {
+    padding: 10px 38px 10px 10px;
+  }
+
+  .benefit-card .icon-orb {
+    width: 46px;
+    height: 46px;
+    border-width: 4px;
+  }
+
+  .benefit-card .icon-orb svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .benefit-card h3 {
+    font-size: 0.95rem;
+  }
+
+  .benefit-card p {
+    margin-top: 4px;
+    font-size: 0.78rem;
+    line-height: 1.45;
+  }
+
+  /* ================= Tools ================= */
+  .tools-tabs {
+    position: relative;
+    margin-bottom: 12px;
+  }
+
+  /* 3 tab: 1 hàng cuộn ngang, không còn wrap 2 hàng và gạch chân lệch. */
+  .tools-tabs [role="tablist"] {
+    display: flex;
+    flex-wrap: nowrap;
+    grid-template-columns: none;
+    justify-content: flex-start;
+    gap: 0;
+    padding: 4px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: 4px;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .tools-tabs [role="tablist"]::-webkit-scrollbar {
+    display: none;
+  }
+
+  .tools-tabs button {
+    flex: 0 0 auto;
+    min-width: 136px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 48px;
+    padding: 8px 14px;
+    font-size: 0.78rem;
+    line-height: 1.2;
+    white-space: nowrap;
+    scroll-snap-align: start;
+  }
+
+  /* Vạch ngăn giữa các tab bám đúng chiều cao hàng. */
+  .tools-tabs button:not(:last-child)::after {
+    top: auto;
+    bottom: 17px;
+    height: 14px;
+  }
+
+  /* Nhãn ngắn hiện trên mobile, nhãn đầy đủ vẫn dành cho screen reader. */
+  .tools-tabs__label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .tools-tabs__label-short {
+    display: inline;
+  }
+
+  /* Fade mép phải để thấy còn tab phía sau khi cuộn ngang. */
+  .tools-tabs::after {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 30px;
+    background: linear-gradient(90deg, rgba(248, 246, 255, 0), rgba(248, 246, 255, 0.96));
+    border-radius: 0 16px 16px 0;
+    content: "";
+    pointer-events: none;
+  }
+
+  .tools-grid {
+    gap: 6px;
+  }
+
+  .tool-card {
+    min-height: 0;
+    padding: 12px 14px;
+    border-radius: 16px;
+  }
+
+  /* ================= Numbers ================= */
+  .number-tabs {
+    margin: -2px 0 10px;
+  }
+
+  /* 11 tab số: 1 hàng cuộn ngang. */
+  .number-tabs [role="tablist"] {
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    gap: 8px;
+    margin-inline: -14px;
+    padding: 4px 14px 8px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: 14px;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .number-tabs [role="tablist"]::-webkit-scrollbar {
+    display: none;
+  }
+
+  .number-tabs button {
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+  }
+
+  .number-panel {
+    grid-template-columns: 1fr;
+  }
+
+  .number-art {
+    min-height: 106px;
+    padding: 8px;
+  }
+
+  .number-art img {
+    max-height: 100px;
+  }
+
+  .number-detail {
+    padding: 12px 15px;
+  }
+
+  .number-detail__eyebrow {
+    font-size: 1rem;
+  }
+
+  .number-detail h3 {
+    margin-top: 8px;
+    font-size: 1.5rem;
+  }
+
+  .number-detail__subtitle {
+    margin-top: 8px;
+    font-size: 0.95rem;
+  }
+
+  .number-detail__description {
+    margin-top: 10px;
+    font-size: 0.88rem;
+    line-height: 1.55;
+  }
+
+  /* Mặc định thu gọn ~5 dòng trên mobile + nút Đọc thêm/Thu gọn. */
+  .number-detail__description.is-collapsed {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 5;
+  }
+
+  .number-detail__toggle {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    align-self: flex-start;
+    gap: 6px;
+    margin-top: 2px;
+    padding: 0 12px;
+    color: #d9b9ff;
+    background: rgba(36, 14, 92, 0.5);
+    border: 1px solid rgba(209, 156, 255, 0.44);
+    border-radius: var(--radius-pill);
+    font-size: max(12px, 0.78rem);
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .number-detail__toggle svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .number-detail__traits {
+    gap: 8px;
+    margin-block: 10px;
+  }
+
+  .number-detail__traits div {
+    min-height: 56px;
+    padding: 6px 4px;
+  }
+
+  .number-detail__traits svg {
+    width: 20px;
+  }
+
+  .number-detail__traits span {
+    font-size: max(12px, 0.72rem);
+  }
+
+  /* ================= About ================= */
+  .about-grid {
+    gap: 14px;
+  }
+
+  .about-copy h2 {
+    margin-top: 10px;
+  }
+
+  .about-copy > p {
+    margin-top: 8px;
+  }
+
+  /* 3 giá trị + đường nối: gọn thành 1 hàng 3 ô thay vì 3 hàng cao. */
+  .about-values {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    margin-block: 12px 10px;
+  }
+
+  .about-values > div {
+    min-height: 88px;
+    flex-direction: column;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 6px;
+    text-align: center;
+  }
+
+  .about-values .icon-orb {
+    width: 40px;
+    height: 40px;
+    border-width: 4px;
+  }
+
+  .about-values .icon-orb svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .about-values strong {
+    max-width: none;
+    font-size: max(12px, 0.72rem);
+    line-height: 1.3;
+    text-align: center;
+  }
+
+  .about-copy > .action-button {
+    min-height: 48px;
+    font-size: 0.9rem;
+  }
+
+  .pythagoras-card {
+    min-height: 368px;
+  }
+
+  .pythagoras-card img {
+    max-height: 240px;
+    width: auto;
+    max-width: 76%;
+  }
+
+  .pythagoras-card__math {
+    font-size: 0.9rem;
+    opacity: 0.32;
+  }
+
+  .pythagoras-card__content {
+    padding: 16px 16px 14px;
+  }
+
+  .pythagoras-card__content h3 {
+    font-size: 1rem;
+  }
+
+  .pythagoras-card__content p {
+    margin-top: 8px;
+    font-size: 0.84rem;
+  }
+
+  /* ================= Methods ================= */
+  .methods-grid {
+    gap: 8px;
+    margin-top: 0;
+    padding-top: 0;
+  }
+
+  /* Card dạng hàng ngang: badge 64px bên trái, tiêu đề + mô tả bên phải. */
+  .method-card {
+    min-height: 0;
+    display: grid;
+    grid-template-columns: 64px minmax(0, 1fr);
+    align-items: center;
+    column-gap: 14px;
+    row-gap: 2px;
+    padding: 8px 14px;
+    text-align: left;
+  }
+
+  .method-card img {
+    grid-row: 1 / span 3;
+    width: 64px;
+    height: 64px;
+  }
+
+  .method-card__number {
+    grid-column: 2;
+    margin: 0;
+    font-size: 0.9rem;
+  }
+
+  .method-card h3 {
+    grid-column: 2;
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.3;
+    text-align: left;
+  }
+
+  .method-card p {
+    grid-column: 2;
+    margin: 4px 0 0;
+    font-size: 0.8rem;
+    line-height: 1.45;
+  }
+
+  .methods-pillars {
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  .pillar-pill {
+    min-height: 46px;
+    padding: 6px 16px 6px 6px;
+    font-size: 0.78rem;
+  }
+
+  .pillar-pill .icon-orb {
+    width: 40px;
+    height: 40px;
+    border-width: 4px;
+  }
+
+  .pillar-pill .icon-orb svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  /* ================= Programs ================= */
+  .programs-grid {
+    gap: 10px;
+    margin-top: 0;
+    padding-top: 0;
+  }
+
+  .program-card {
+    min-height: 0;
+    grid-template-columns: 84px minmax(0, 1fr);
+    gap: 8px;
+    padding: 12px;
+  }
+
+  /* Chỉ hiện 3 chương trình đầu trên mobile (dữ liệu vẫn giữ nguyên). */
+  .program-card:nth-child(n + 4) {
+    display: none;
+  }
+
+  .program-card__body {
+    padding-right: 40px;
+  }
+
+  /* Số thứ tự về góc phải trên của khối chữ, không đè lên ảnh. */
+  .program-card__number {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 34px;
+    height: 34px;
+    margin: 0;
+    font-size: 0.8rem;
+  }
+
+  .program-card h3 {
+    font-size: 0.95rem;
+  }
+
+  .program-card p {
+    margin-block: 6px 8px;
+    font-size: 0.78rem;
+    line-height: 1.5;
+  }
+
+  .program-card a {
+    width: auto;
+    min-height: 44px;
+    justify-content: flex-start;
+    gap: 6px;
+    padding-inline: 0;
+    background: none;
+    border: 0;
+    font-size: 0.78rem;
+  }
+
+  .programs-section__cta {
+    justify-content: flex-start;
+    margin-top: 10px;
+  }
+
+  .programs-section__cta .action-button {
+    min-width: 0;
+    min-height: 48px;
+    padding-inline: 20px;
+    font-size: 0.82rem;
+  }
+
+  /* ================= Blog ================= */
+  /* Bỏ carousel ngang thiếu affordance: danh sách 1 cột 3 bài. */
+  .blog-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: none;
+    gap: 10px;
+    max-width: none;
+    margin-inline: 0;
+    padding: 0;
+    overflow: visible;
+  }
+
+  .blog-card,
+  .blog-card--featured,
+  .blog-card--side,
+  .blog-card--wide {
+    min-height: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto;
+    flex: initial;
+    scroll-snap-align: none;
+  }
+
+  .blog-card--wide {
+    display: none;
+  }
+
+  .blog-card__image {
+    min-height: 0;
+    aspect-ratio: 16 / 9;
+  }
+
+  .blog-card__image img {
+    width: 100%;
+    height: 100%;
+  }
+
+  .blog-card__content {
+    padding: 10px 12px 12px;
+  }
+
+  .blog-card__content > span {
+    font-size: max(12px, 0.72rem);
+  }
+
+  .blog-card h3 {
+    margin-top: 6px;
+    font-size: 0.95rem;
+  }
+
+  .blog-card p {
+    display: none;
+  }
+
+  .blog-card__content > a {
+    min-height: 44px;
+    padding-top: 2px;
+    font-size: 0.78rem;
+  }
+
+  .blog-section__more {
+    gap: 12px;
+    margin-top: 12px;
+    text-align: left;
+  }
+
+  .blog-section__more a {
+    min-height: 44px;
+    font-size: max(12px, 0.78rem);
+  }
+
+  /* ================= Consultation ================= */
+  .consultation-grid {
+    gap: 14px;
+  }
+
+  .consultation-copy {
+    padding: 16px 14px;
+  }
+
+  .consultation-copy h2 {
+    margin-top: 10px;
+  }
+
+  .consultation-copy > p {
+    margin-top: 0;
+  }
+
+  .consultation-benefits {
+    margin-top: 10px;
+  }
+
+  .consultation-benefits > div {
+    gap: 10px;
+  }
+
+  .consultation-benefits .icon-orb {
+    width: 40px;
+    height: 40px;
+    border-width: 4px;
+  }
+
+  .consultation-benefits .icon-orb svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .consultation-benefits h3 {
+    font-size: 0.95rem;
+  }
+
+  .consultation-benefits p {
+    font-size: 0.8rem;
+    line-height: 1.45;
+  }
+
+  .consultation-phone {
+    min-height: 48px;
+    font-size: 0.8rem;
+  }
+
+  .consultation-form-card {
+    padding: 16px 14px;
+  }
+
+  .consultation-form-card__intro {
+    margin: 8px 0 14px;
+    font-size: 0.85rem;
+  }
+
+  /* Họ tên + Điện thoại nằm cùng 1 hàng. */
+  .consultation-form-card form {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .consultation-field {
+    min-height: 50px;
+    grid-column: 1 / -1;
+  }
+
+  .consultation-field--name {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .consultation-field--phone {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .consultation-field--textarea {
+    min-height: 88px;
+  }
+
+  .consultation-form-card__submit {
+    min-height: 48px;
+  }
+
+  /* Dòng cam kết thời gian phản hồi. */
+  .consultation-form-card__promise {
+    margin-top: 2px;
+    font-size: max(12px, 0.78rem);
+  }
+}
+
+@media (max-width: 560px) {
+  /* Lưới tool card: 1 cột dạng hàng ngang (orb 44px trái, tiêu đề + nút phải). */
+  .tools-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .tool-card {
+    min-height: 0;
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr);
+    align-items: center;
+    justify-content: normal;
+    column-gap: 12px;
+    row-gap: 2px;
+    padding: 10px 14px;
+    text-align: left;
+    max-height: 92px;
+  }
+
+  .tool-card .icon-orb--lg,
+  .tool-card__number {
+    grid-row: 1 / span 2;
+    width: 44px;
+    height: 44px;
+    border-width: 4px;
+  }
+
+  .tool-card .icon-orb--lg svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .tool-card__number {
+    font-size: 1.1rem;
+  }
+
+  .tool-card h3 {
+    min-height: 0;
+    display: block;
+    margin: 0;
+    font-size: 0.86rem;
+    line-height: 1.25;
+    text-align: left;
+  }
+
+  .tool-card > a {
+    width: auto;
+    min-height: 44px;
+    justify-content: flex-start;
+    gap: 6px;
+    margin-top: 0;
+    padding-inline: 0;
+    background: none;
+    border: 0;
+    font-size: 0.78rem;
+  }
+}

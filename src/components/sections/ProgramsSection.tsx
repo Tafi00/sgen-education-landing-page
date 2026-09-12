@@ -1,11 +1,11 @@
 import { ArrowRight, Layers3 } from "lucide-react";
-import cosmicLight from "../../../assets/backgrounds/cosmic-light.webp";
-import programFingerprint from "../../../assets/programs/program-fingerprint-v2.webp";
-import programHome from "../../../assets/programs/program-home-feng-shui-v2.webp";
-import programNumerology from "../../../assets/programs/program-numerology-v2.webp";
-import programPhone from "../../../assets/programs/program-phone-feng-shui-v2.webp";
-import programRelationship from "../../../assets/programs/program-relationship-v2.webp";
-import programYinHome from "../../../assets/programs/program-yin-home-v2.webp";
+const cosmicLight = "/assets/backgrounds/cosmic-light.webp";
+const programFingerprint = "/assets/programs/program-fingerprint-v2.webp";
+const programHome = "/assets/programs/program-home-feng-shui-v2.webp";
+const programNumerology = "/assets/programs/program-numerology-v2.webp";
+const programPhone = "/assets/programs/program-phone-feng-shui-v2.webp";
+const programRelationship = "/assets/programs/program-relationship-v2.webp";
+const programYinHome = "/assets/programs/program-yin-home-v2.webp";
 import { Reveal } from "../ui/Reveal";
 import { SectionHeading } from "../ui/SectionHeading";
 import { SparkleButton } from "../ui/GradientButton";
@@ -52,7 +52,7 @@ export function ProgramsSection() {
         </div>
 
         <Reveal className="programs-section__cta" delay={120}>
-          <SparkleButton href="/khoa-hoc">Xem toàn bộ chương trình</SparkleButton>
+          <SparkleButton href="/khoa-hoc">Xem tất cả 11 khóa học</SparkleButton>
         </Reveal>
       </div>
     </section>

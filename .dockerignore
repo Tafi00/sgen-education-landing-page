@@ -1,0 +1,15 @@
+node_modules
+dist
+dist-server
+.git
+.gitignore
+artifacts
+screenshots
+sections
+uploads
+.data
+.env
+.env.*
+*.log
+*.tsbuildinfo
+docs

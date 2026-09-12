@@ -1,0 +1,374 @@
+/* Điều hướng 9 menu cấp 1 (feedback khách hàng) + dropdown mô tả. */
+/* Header ẩn khi cuộn xuống (mobile/tablet) để không che nội dung; hiện lại khi cuộn lên. */
+.site-header--hidden .site-header__inner {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-130%);
+}
+
+/* Tăng độ ưu tiên để thắng nền bán trong suốt của các file nạp sau (responsive.css). */
+.site-header.site-header--scrolled .site-header__inner,
+.site-header.site-header--menu-open .site-header__inner,
+.site-header.site-header--hidden .site-header__inner {
+  background: #ffffff;
+}
+
+.site-header.site-header--hidden .site-header__inner {
+  background: transparent;
+}
+
+.site-header__inner {
+  transition: transform 280ms cubic-bezier(0.22, 1, 0.36, 1), opacity 220ms ease, background 200ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-header__inner {
+    transition: none;
+  }
+}
+
+/* Khối tài khoản/hotline chỉ hiện trong drawer mobile. */
+.site-nav__mobile-extra {
+  display: none;
+}
+
+.site-nav__dropdown-all {
+  color: #4a1fb8;
+  background: #f6f3ff;
+  font-size: 0.78rem;
+}
+
+
+.site-nav__list {
+  display: flex;
+  align-items: center;
+  gap: clamp(14px, 1.7vw, 26px);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.site-nav__item {
+  position: relative;
+}
+
+.site-nav__item > a,
+.site-nav__trigger > a {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.site-nav__trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0;
+  color: inherit;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+}
+
+.site-nav__trigger > svg {
+  width: 14px;
+  height: 14px;
+  color: rgba(255, 255, 255, 0.62);
+  transition: transform 180ms ease;
+}
+
+.site-nav__item.is-open .site-nav__trigger > svg {
+  transform: rotate(180deg);
+}
+
+.site-nav__dropdown {
+  position: absolute;
+  top: calc(100% + 14px);
+  left: -14px;
+  z-index: 40;
+  display: grid;
+  gap: 2px;
+  min-width: 292px;
+  padding: 10px;
+  background: #ffffff;
+  border: 1px solid rgba(90, 34, 232, 0.14);
+  border-radius: 16px;
+  box-shadow: 0 24px 54px rgba(9, 3, 48, 0.24);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-6px);
+  transition: opacity 160ms ease, transform 160ms ease;
+}
+
+.site-nav__item.is-open .site-nav__dropdown,
+.site-nav__item:focus-within .site-nav__dropdown {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.site-nav__dropdown a {
+  display: grid;
+  gap: 2px;
+  padding: 10px 12px;
+  color: var(--ink);
+  border-radius: 11px;
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 700;
+  transition: background 150ms ease;
+}
+
+.site-nav__dropdown a:hover,
+.site-nav__dropdown a:focus-visible {
+  background: #f3efff;
+}
+
+.site-nav__dropdown a::after {
+  display: none;
+}
+
+.site-nav__dropdown small {
+  color: #6f6b85;
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.site-header__actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: 18px;
+}
+
+.site-header__hotline {
+  display: inline-flex;
+  min-height: 42px;
+  align-items: center;
+  gap: 8px;
+  padding: 0 15px;
+  color: #f0e7ff;
+  background: rgba(18, 7, 69, 0.5);
+  border: 1px solid rgba(208, 170, 255, 0.34);
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.site-header__hotline svg {
+  width: 15px;
+  height: 15px;
+}
+
+.site-header__login {
+  display: inline-flex;
+  min-height: 42px;
+  align-items: center;
+  gap: 8px;
+  padding: 0 18px;
+  color: #fff;
+  background: var(--gradient-cta);
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  box-shadow: 0 12px 26px rgba(81, 27, 195, 0.32);
+  white-space: nowrap;
+}
+
+.site-header__login svg {
+  width: 16px;
+  height: 16px;
+}
+
+.site-header--scrolled .site-header__login {
+  min-height: 38px;
+  padding-inline: 15px;
+  font-size: 0.74rem;
+}
+
+/* Từ 1241px trở xuống dùng drawer (khớp breakpoint trong hero.css). */
+/* Hotline chỉ hiện ở màn hình rất rộng để 8 menu cấp 1 luôn đủ chỗ. */
+@media (max-width: 1810px) {
+  .site-header__hotline {
+    display: none;
+  }
+}
+
+@media (min-width: 1501px) {
+  .site-nav__list {
+    gap: 15px;
+  }
+
+  .site-nav__item > a,
+  .site-nav__trigger {
+    font-size: 0.78rem;
+  }
+
+  .site-header__brand img {
+    width: 150px;
+  }
+}
+
+@media (min-width: 1241px) and (max-width: 1500px) {
+  .site-nav__list {
+    gap: 8px;
+  }
+
+  .site-nav__item > a,
+  .site-nav__trigger {
+    font-size: 0.66rem;
+  }
+
+  .site-header__brand img {
+    width: 132px;
+  }
+
+  .site-header__login {
+    padding-inline: 13px;
+    font-size: 0.72rem;
+  }
+
+  .site-header__login span {
+    display: none;
+  }
+
+  .site-header__actions {
+    margin-left: 10px;
+  }
+}
+
+@media (max-width: 1240px) {
+  .site-header__actions {
+    display: none;
+  }
+
+  .site-nav__mobile-extra {
+    display: grid;
+    gap: 10px;
+    width: 100%;
+    padding: 18px 2px 0;
+  }
+
+  .site-nav__mobile-extra .site-header__login,
+  .site-nav__mobile-extra .site-header__hotline {
+    width: 100%;
+    min-height: 48px;
+    justify-content: center;
+    border-radius: 12px;
+  }
+
+  .site-nav__list {
+    display: grid;
+    gap: 4px;
+    width: 100%;
+  }
+
+  .site-nav__item {
+    width: 100%;
+    border-bottom: 1px solid rgba(206, 164, 255, 0.16);
+  }
+
+  .site-nav__item > a,
+  .site-nav__trigger {
+    font-size: 0.95rem;
+  }
+
+  .site-nav__item > a,
+  .site-nav__trigger {
+    width: 100%;
+    justify-content: space-between;
+    padding: 14px 2px;
+  }
+
+  .site-nav__dropdown {
+    position: static;
+    min-width: 0;
+    margin-bottom: 12px;
+    padding: 8px;
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(206, 164, 255, 0.24);
+    box-shadow: none;
+    opacity: 1;
+    pointer-events: auto;
+    transform: none;
+  }
+
+  .site-nav__dropdown a {
+    color: #f3ecff;
+  }
+
+  .site-nav__dropdown a:hover,
+  .site-nav__dropdown a:focus-visible {
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  .site-nav__dropdown small {
+    color: rgba(243, 236, 255, 0.66);
+  }
+
+  .site-header__actions {
+    margin-left: 0;
+    order: -1;
+  }
+
+  .site-header__login {
+    min-height: 40px;
+    padding-inline: 14px;
+  }
+}
+
+@media (max-width: 640px) {
+  .site-header__login span {
+    display: none;
+  }
+
+  .site-header__login {
+    min-height: 40px;
+    padding: 0 13px;
+  }
+}
+
+@media (max-width: 767px) {
+  .site-header__progress {
+    display: none;
+  }
+
+  .site-header__menu-button {
+    order: 3;
+  }
+
+  .site-header__brand {
+    order: 1;
+    margin-right: auto;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Focus bàn phím nhìn thấy rõ trên cả nền sáng và nền tối.
+   --------------------------------------------------------------------------- */
+:where(a, button, input, select, textarea, summary, [tabindex]:not([tabindex="-1"])):focus-visible {
+  outline: 3px solid #7a3cff;
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+.page-dark-section :where(a, button, input, select, textarea, summary):focus-visible,
+.hero :where(a, button, input, select, textarea, summary):focus-visible,
+.article-detail :where(a, button, input, select, textarea, summary):focus-visible,
+.site-footer :where(a, button, input, select, textarea, summary):focus-visible,
+.login-stage :where(a, button, input, select, textarea, summary):focus-visible,
+.admin-sidebar :where(a, button, input, select, textarea, summary):focus-visible {
+  outline-color: #f0d9ff;
+}
+
+/* Bỏ outline mặc định khi đã có style riêng, tránh viền kép. */
+:where(input, select, textarea):focus-visible {
+  outline-offset: 0;
+}

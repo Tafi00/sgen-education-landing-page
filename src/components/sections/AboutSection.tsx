@@ -1,6 +1,6 @@
 import { BriefcaseBusiness, HeartHandshake, Info, Star, Telescope, UserRound } from "lucide-react";
-import cosmicLight from "../../../assets/backgrounds/cosmic-light.webp";
-import pythagoras from "../../../assets/illustrations/pythagoras-cosmic.webp";
+const cosmicLight = "/assets/backgrounds/cosmic-light.webp";
+const pythagoras = "/assets/illustrations/pythagoras-cosmic.webp";
 import { IconOrb } from "../ui/IconOrb";
 import { Reveal } from "../ui/Reveal";
 import { SectionBadge } from "../ui/SectionBadge";

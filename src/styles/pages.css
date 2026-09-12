@@ -215,10 +215,35 @@
 .page-form-card > label:not(.page-check) { display:grid; gap:7px; margin-top:14px; }
 .page-form-card label > span { font-size:.74rem; font-weight:700; }
 .page-form-card label em { color:#9486a2; font-weight:400; }
-.page-form-card label > div,.login-card label > div { min-height:50px; display:flex; align-items:center; gap:11px; padding:0 14px; background:rgba(5,1,24,.52); border:1px solid rgba(217,179,255,.18); border-radius:10px; }
-.page-form-card label > div:focus-within,.login-card label > div:focus-within { border-color:#a651eb; box-shadow:0 0 0 3px rgba(167,74,235,.14); }
-.page-form-card label svg,.login-card label svg { width:19px; color:#a987c6; }
-.page-form-card input,.login-card input { width:100%; min-width:0; padding:12px 0; color:#fff; background:transparent; border:0; outline:0; color-scheme:dark; }
+.page-form-card label > div,.login-card label > div {
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 0 14px;
+  background: var(--field-bg);
+  border: 1px solid var(--field-border);
+  border-radius: 10px;
+  color-scheme: light;
+}
+.page-form-card label > div:focus-within,.login-card label > div:focus-within {
+  border-color: var(--field-focus);
+  box-shadow: 0 0 0 3px rgba(90, 34, 232, 0.16);
+}
+.page-form-card label svg,.login-card label svg {
+  width: 19px;
+  color: #7a6aa8;
+}
+.page-form-card input,.login-card input {
+  width: 100%;
+  min-width: 0;
+  padding: 12px 0;
+  color: var(--field-text);
+  background: transparent;
+  border: 0;
+  outline: 0;
+  color-scheme: light;
+}
 .page-check { display:flex!important; align-items:flex-start; gap:9px!important; margin-top:16px!important; }
 .page-check input { width:16px!important; margin-top:4px; accent-color:#7d38df; }
 .page-form-card > button,.login-submit { width:100%; min-height:52px; display:flex; align-items:center; justify-content:center; gap:10px; margin-top:20px; color:#fff; background:var(--gradient-cta); border-radius:11px; font-weight:800; cursor:pointer; text-transform:uppercase; }
@@ -524,3 +549,7 @@
   .login-portal span { font-size:8rem; }
   .login-card { padding:26px 18px; }
 }
+
+.page-form-card input::placeholder,.login-card input::placeholder { color: var(--field-placeholder); }
+.page-form-card select,.login-card select { width:100%; min-width:0; padding:12px 0; color:var(--field-text); background:transparent; border:0; outline:0; color-scheme:light; }
+.course-toolbar input::placeholder,.blog-toolbar input::placeholder { color:var(--field-placeholder); }

@@ -13,9 +13,8 @@ import {
   UserRound,
   VenusAndMars,
 } from "lucide-react";
-import cosmicDark from "../../../assets/backgrounds/cosmic-dark.webp";
-import { calculateNumerologyReport, type NumerologyReport } from "../../lib/numerology";
-import { Header } from "../layout/Header";
+const cosmicDark = "/assets/backgrounds/cosmic-dark.webp";
+import { calculateNumerologyReport, type NumerologyReport } from "../../../shared/numerology";
 import { CustomSelect } from "../ui/CustomSelect";
 import { IconOrb } from "../ui/IconOrb";
 import { Reveal } from "../ui/Reveal";
@@ -65,7 +64,6 @@ export function HeroSection() {
 
   return (
     <section id="top" className="hero" style={{ "--hero-bg": `url(${cosmicDark})` } as React.CSSProperties}>
-      <Header />
       <div className="hero__numbers" aria-hidden="true">
         {floatingNumbers.map((number, index) => (
           <span key={`${number}-${index}`} className={`hero__number hero__number--${index + 1}`}>{number}</span>
