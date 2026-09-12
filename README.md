@@ -1,13 +1,13 @@
 # SGEN Education — website + CMS (PostgreSQL)
 
-Website SGEN Education (Thần số học, DISC/MBTI, phong thủy ứng dụng) kèm CMS quản trị nội dung trên MongoDB.
+Website SGEN Education (Thần số học, DISC/MBTI, phong thủy ứng dụng) kèm CMS quản trị nội dung trên PostgreSQL.
 Giao diện công khai giữ nguyên bố cục landing page cũ; các module nội dung đọc từ CMS và có bản dự phòng trong repo.
 
 ## Kiến trúc
 
 - `src/` — React 19 + TypeScript + react-router v7 (SPA, tải trang theo nhu cầu).
 - `shared/` — engine dùng chung cho cả client và server: `numerology.ts`, `menh-thu/*` (âm lịch, tứ trụ, quẻ dịch, hồ sơ ngày), `sim/` (luận sim), `quiz/` (DISC, MBTI).
-- `server/` — Express + Mongoose: API công khai, API quản trị, upload ảnh, thông báo lead, phục vụ `dist/` và `/uploads`.
+- `server/` — Express + lớp model `pg`: API công khai, API quản trị, upload ảnh, thông báo lead, phục vụ `dist/` và `/uploads`.
 - `public/assets/` — ảnh tĩnh dùng chung; ảnh tải lên nằm trong `UPLOAD_DIR` và được phục vụ tại `/uploads/...`.
 
 ## Chạy dự án
@@ -20,19 +20,19 @@ ADMIN_EMAIL=admin@sgen.vn npm run create-admin   # tạo admin đầu tiên, m�
 npm run dev                   # Vite (5173) + API (4000)
 ```
 
-Không có MongoDB sẵn? Chạy `npm run dev:memory` để dùng MongoDB tạm trong bộ nhớ (đã seed sẵn, mất dữ liệu khi dừng).
+Không có PostgreSQL sẵn? Chạy `npm run dev:memory` để dùng PostgreSQL tạm trong bộ nhớ (đã seed sẵn, mất dữ liệu khi dừng).
 
 ### Lệnh thường dùng
 
 | Lệnh | Việc |
 | --- | --- |
 | `npm run dev` | Chạy song song website + API |
-| `npm run dev:memory` | API + CMS với MongoDB trong bộ nhớ, tự seed |
+| `npm run dev:memory` | API + CMS với PostgreSQL trong bộ nhớ, tự seed |
 | `npm run build` | Typecheck, build SPA và bundle server vào `dist-server/` |
 | `npm start` | Chạy bản production (phục vụ `dist/`, `/uploads`, `/sitemap.xml`) |
 | `npm run seed` | Nạp nội dung mặc định, không ghi đè nội dung đã sửa (`seed:force` để ghi đè) |
 | `npm run create-admin` | Tạo/đặt lại mật khẩu admin đầu tiên |
-| `npm run smoke` | Kiểm thử end-to-end API trên MongoDB tạm: seed, tra cứu, lead, upload, đơn hàng, phân quyền |
+| `npm run smoke` | Kiểm thử end-to-end API trên PostgreSQL tạm: seed, tra cứu, lead, upload, đơn hàng, phân quyền |
 | `npm test` | Unit test engine dùng chung (vitest) |
 | `npm run typecheck` | Typecheck app + server |
 
@@ -40,7 +40,7 @@ Không có MongoDB sẵn? Chạy `npm run dev:memory` để dùng MongoDB tạm 
 
 - `/admin` — CMS, yêu cầu đăng nhập. Hai vai trò: `admin` (toàn quyền, gồm người dùng/cài đặt/đơn hàng) và `editor` (nội dung: khóa học, blog, trang, media, trắc nghiệm, dịch vụ).
 - `/tai-khoan` — khu vực thành viên: lịch sử tra cứu, đơn hàng, quyền nội dung trả phí.
-- Mật khẩu băm bằng bcrypt; phiên lưu trong MongoDB qua cookie httpOnly; thao tác ghi yêu cầu mã CSRF.
+- Mật khẩu băm bằng bcrypt; phiên lưu trong PostgreSQL qua cookie httpOnly; thao tác ghi yêu cầu mã CSRF.
 
 ## Thông báo lead
 
@@ -48,13 +48,13 @@ Resend và Telegram được cấu hình trong `/admin/cai-dat` (không dùng bi
 
 1. Bật kênh, nhập API key/bot token và người nhận. Secret được mã hoá AES-256-GCM khi lưu, chỉ trả về dạng mask; bỏ trống ô nhập nghĩa là giữ nguyên giá trị cũ.
 2. Nút “Gửi thử thông báo” kiểm tra từng kênh và ghi kết quả vào `/admin/thong-bao`.
-3. Lead luôn được lưu vào MongoDB trước; lỗi gửi thông báo không làm hỏng lượt gửi của khách và được ghi lại kèm nút gửi lại.
+3. Lead luôn được lưu vào PostgreSQL trước; lỗi gửi thông báo không làm hỏng lượt gửi của khách và được ghi lại kèm nút gửi lại.
 
 ## Nội dung và dữ liệu
 
-- Nội dung công khai đọc từ MongoDB; nếu API/CSDL chưa sẵn sàng, giao diện tự dùng bộ dữ liệu trong `src/data/defaults/` nên trang không trắng.
+- Nội dung công khai đọc từ PostgreSQL; nếu API/CSDL chưa sẵn sàng, giao diện tự dùng bộ dữ liệu trong `src/data/defaults/` nên trang không trắng.
 - `npm run seed` là idempotent: chỉ tạo bản ghi còn thiếu, không ghi đè nội dung đã chỉnh trong CMS.
-- Ảnh tải lên lưu trong `UPLOAD_DIR`, sinh biến thể WebP (480/960/1920) và phục vụ công khai tại `/uploads/...`; MongoDB chỉ giữ đường dẫn.
+- Ảnh tải lên lưu trong `UPLOAD_DIR`, sinh biến thể WebP (480/960/1920) và phục vụ công khai tại `/uploads/...`; PostgreSQL chỉ giữ đường dẫn.
 
 ## CMS quản trị (/admin)
 

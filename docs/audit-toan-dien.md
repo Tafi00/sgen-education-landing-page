@@ -1,5 +1,18 @@
 # Audit toàn diện — SGEN Education (12/09/2026)
 
+> **Cập nhật cuối ngày 12/09/2026 — đã xử lý và triển khai.**
+> - Toàn bộ hệ thống đã chuyển từ MongoDB/Mongoose sang **PostgreSQL** (`pg`): schema `server/src/db/schema.sql`,
+>   lớp model `server/src/db/model.ts`, session `connect-pg-simple`, seed/smoke chạy trên Postgres.
+>   Kiểm chứng: `npm run typecheck` sạch · `npm test` 39/39 · `npm run smoke` **32/32** (thêm 6 kiểm tra mới).
+> - **P0-1 đã sửa**: `passwordHash` là trường `sensitive` — mặc định không nạp, phải `.select("+passwordHash")`;
+>   smoke khẳng định API thành viên/tài khoản quản trị không trả hash.
+> - **P0-2 đã sửa**: `createCrudRouter` mặc định chỉ cho `admin`; module nội dung khai báo rõ `["admin","editor"]`;
+>   router báo cáo tra cứu và nhật ký hoạt động cũng chỉ admin. Smoke kiểm 6 đường dẫn kinh doanh trả 403 với editor.
+> - **P1-3 đã sửa**: 404 từ CMS không còn bị che bởi nội dung mặc định trong repo.
+> - **P2-7 (một phần)**: đã thêm Dockerfile, tài liệu triển khai, `COOKIE_SECURE` cho môi trường HTTP tạm.
+>
+> Môi trường production: `http://sgeneducation-frontend-q0ee38-f80160-20-255-63-162.sslip.io` (Dokploy, Docker, PostgreSQL nội bộ).
+
 Cách kiểm: đọc mã nguồn, chạy `typecheck` / `build` / `test` / `smoke`, mở trình duyệt thật (Chromium 1440×900 + 390×844) trên 21 route công khai và 19 route CMS, gọi API thật bằng 4 phiên (admin, editor, member, ẩn danh), đối chiếu `AGENTS.md` và feedback PDF của khách. Mọi mục dưới đây đều kèm bằng chứng tái lập được.
 
 Kết quả tổng hợp: **39/39 test · 26/26 smoke · typecheck sạch · build OK · 0 lỗi console · 0 tràn ngang** trên cả 40 route đã kiểm.
