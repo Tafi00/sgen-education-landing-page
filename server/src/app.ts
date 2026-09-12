@@ -47,7 +47,7 @@ export function createApp() {
       cookie: {
         httpOnly: true,
         sameSite: "lax",
-        secure: env.isProduction,
+        secure: env.cookieSecure,
         maxAge: 1000 * 60 * 60 * 24 * 14,
       },
     }),

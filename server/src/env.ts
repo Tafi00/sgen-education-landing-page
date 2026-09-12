@@ -51,6 +51,12 @@ export const env = {
   dataDir,
   publicOrigin: process.env.PUBLIC_ORIGIN ?? "http://127.0.0.1:5173",
   webDistDir: path.resolve(ROOT, "dist"),
+  /**
+   * Cookie phiên chỉ gửi qua HTTPS. Mặc định bật ở production; đặt `COOKIE_SECURE=false`
+   * khi triển khai tạm qua HTTP (ví dụ domain tạm chưa có chứng chỉ) — nếu không, trình duyệt
+   * sẽ bỏ qua cookie và đăng nhập luôn thất bại với lỗi CSRF.
+   */
+  cookieSecure: process.env.COOKIE_SECURE ? process.env.COOKIE_SECURE === "true" : isProduction,
   /** Nạp nội dung mặc định khi khởi động nếu database còn trống (deploy môi trường mới). */
   seedOnBoot: (process.env.SEED_ON_BOOT ?? "").toLowerCase() === "true",
   adminEmail: process.env.ADMIN_EMAIL ?? "",
