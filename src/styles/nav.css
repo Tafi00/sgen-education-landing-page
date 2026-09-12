@@ -110,6 +110,19 @@
   transform: translateY(0);
 }
 
+/* Cầu nối 14px giữa mục cha và panel: rê chuột qua khe vẫn tính là đang ở trong mục,
+   nên menu không tắt giữa đường. Chỉ áp dụng ở chế độ desktop (dưới 1241px panel nằm trong drawer). */
+@media (min-width: 1241px) {
+  .site-nav__dropdown::before {
+    content: "";
+    position: absolute;
+    top: -14px;
+    right: 0;
+    left: 0;
+    height: 14px;
+  }
+}
+
 .site-nav__dropdown a {
   display: grid;
   gap: 2px;

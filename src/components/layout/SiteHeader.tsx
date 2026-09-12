@@ -6,6 +6,8 @@ import { useSiteSettings } from "../../api/hooks";
 
 const AUTO_HIDE_BREAKPOINT = 1240;
 const AUTO_HIDE_AFTER = 200;
+/** Nhịp trễ khi rời chuột, đủ để đi từ mục cha xuống panel (khe 14px) mà menu không tắt. */
+const HOVER_CLOSE_DELAY = 160;
 
 export function SiteHeader() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -15,8 +17,28 @@ export function SiteHeader() {
   const progressRef = useRef<HTMLSpanElement>(null);
   const innerRef = useRef<HTMLDivElement>(null);
   const lastScrollRef = useRef(0);
+  const hoverCapableRef = useRef(false);
+  const hoverCloseTimerRef = useRef<number | null>(null);
   const location = useLocation();
   const { settings } = useSiteSettings();
+
+  /** Chỉ mở menu bằng hover trên thiết bị có chuột thật; cảm ứng vẫn dùng nút như cũ. */
+  useEffect(() => {
+    const query = window.matchMedia("(hover: hover) and (pointer: fine)");
+    hoverCapableRef.current = query.matches;
+    const sync = (event: MediaQueryListEvent) => {
+      hoverCapableRef.current = event.matches;
+    };
+    query.addEventListener("change", sync);
+    return () => query.removeEventListener("change", sync);
+  }, []);
+
+  useEffect(
+    () => () => {
+      if (hoverCloseTimerRef.current !== null) window.clearTimeout(hoverCloseTimerRef.current);
+    },
+    [],
+  );
 
   /**
    * Chiều cao thật của header được ghi vào CSS var `--header-h` để mọi section
@@ -91,6 +113,31 @@ export function SiteHeader() {
 
   const closeMenu = () => setMenuOpen(false);
 
+  const clearHoverClose = () => {
+    if (hoverCloseTimerRef.current === null) return;
+    window.clearTimeout(hoverCloseTimerRef.current);
+    hoverCloseTimerRef.current = null;
+  };
+
+  const handleGroupEnter = (label: string) => {
+    if (!hoverCapableRef.current) return;
+    clearHoverClose();
+    setOpenGroup(label);
+  };
+
+  /**
+   * Đóng sau một nhịp ngắn: kịp đi qua khe 14px xuống panel hoặc rê ngang sang mục khác,
+   * nhưng vẫn tắt ngay khi người dùng rời hẳn khỏi mục.
+   */
+  const handleGroupLeave = (label: string) => {
+    if (!hoverCapableRef.current) return;
+    clearHoverClose();
+    hoverCloseTimerRef.current = window.setTimeout(() => {
+      hoverCloseTimerRef.current = null;
+      setOpenGroup((current) => (current === label ? null : current));
+    }, HOVER_CLOSE_DELAY);
+  };
+
   return (
     <header
       className={[
@@ -110,7 +157,12 @@ export function SiteHeader() {
         <nav id="site-navigation" className={`site-nav ${menuOpen ? "site-nav--open" : ""}`} aria-label="Điều hướng chính">
           <ul className="site-nav__list">
             {PRIMARY_NAV.map((item) => (
-              <li key={item.label} className={`site-nav__item ${openGroup === item.label ? "is-open" : ""} ${item.children ? "has-children" : ""}`}>
+              <li
+                key={item.label}
+                className={`site-nav__item ${openGroup === item.label ? "is-open" : ""} ${item.children ? "has-children" : ""}`}
+                onMouseEnter={item.children ? () => handleGroupEnter(item.label) : undefined}
+                onMouseLeave={item.children ? () => handleGroupLeave(item.label) : undefined}
+              >
                 {item.children ? (
                   <>
                     <button
