@@ -58,6 +58,15 @@
   backdrop-filter: blur(22px) saturate(145%);
 }
 
+/* Desktop: 8 menu + logo + hotline cần hơn 1120px, nên pill scrolled co theo nội dung
+   (không bao giờ rộng hơn thanh lúc chưa cuộn, không tràn chữ ra ngoài nền trắng). */
+@media (min-width: 1241px) {
+  .site-header--scrolled .site-header__inner {
+    width: fit-content;
+    max-width: calc(100% - 32px);
+  }
+}
+
 .site-header--scrolled .site-header__brand img {
   width: 142px;
   transform: translateY(-1px);
