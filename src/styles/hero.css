@@ -527,6 +527,24 @@
   color: #d8b8ff;
 }
 
+.lookup-card__submit:disabled {
+  opacity: 0.7;
+  cursor: wait;
+  transform: none;
+}
+
+.lookup-card__error {
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: 10px 14px;
+  color: #ffd7e8;
+  background: rgba(199, 12, 129, 0.18);
+  border: 1px solid rgba(255, 130, 190, 0.35);
+  border-radius: 10px;
+  font-size: 0.74rem;
+  text-align: center;
+}
+
 .lookup-card__submit:hover {
   transform: translateY(-2px);
   box-shadow: 0 18px 38px rgba(77, 20, 196, 0.42);

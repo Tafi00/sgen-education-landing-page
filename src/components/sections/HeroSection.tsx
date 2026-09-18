@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   ArrowRight,
   BookOpenCheck,
@@ -7,14 +8,17 @@ import {
   CalendarDays,
   ChartNoAxesCombined,
   HeartHandshake,
+  Loader2,
   Search,
   ShieldCheck,
   Target,
   UserRound,
   VenusAndMars,
 } from "lucide-react";
+import { api, errorMessage } from "../../api/client";
+import type { LookupResultPayload } from "../../../shared/lookup-types";
 const cosmicDark = "/assets/backgrounds/cosmic-dark.webp";
-import { calculateNumerologyReport, type NumerologyReport } from "../../../shared/numerology";
+
 import { CustomSelect } from "../ui/CustomSelect";
 import { IconOrb } from "../ui/IconOrb";
 import { Reveal } from "../ui/Reveal";
@@ -50,16 +54,46 @@ const benefits = [
 const floatingNumbers = ["7", "9", "2", "5", "8", "4", "3", "6"];
 
 export function HeroSection() {
-  const [report, setReport] = useState<NumerologyReport | null>(null);
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
-    if (!formData.get("gender")) return;
-
-    const birthName = String(formData.get("birthName") ?? "");
+    const birthName = String(formData.get("birthName") ?? "").trim();
     const birthDate = String(formData.get("birthDate") ?? "");
-    setReport(calculateNumerologyReport(birthName, birthDate));
+    const commonName = String(formData.get("commonName") ?? "").trim();
+    if (birthName.length < 2) {
+      setError("Vui lòng nhập họ tên (ít nhất 2 ký tự).");
+      return;
+    }
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(birthDate)) {
+      setError("Vui lòng chọn ngày sinh.");
+      return;
+    }
+    setLoading(true);
+    setError("");
+    try {
+      const data = await api.post<{ report: LookupResultPayload & { id: string; shareToken?: string } }>("/api/lookups/numerology", {
+        inputs: {
+          name: birthName,
+          birthDate,
+          commonName: commonName || undefined,
+          referenceYear: new Date().getFullYear(),
+        },
+        save: true,
+        source: "/#tra-cuu",
+      });
+      const url = data.report.shareToken
+        ? `/tra-cuu/ket-qua/${data.report.id}?token=${data.report.shareToken}`
+        : `/tra-cuu/ket-qua/${data.report.id}`;
+      navigate(url);
+    } catch (caught) {
+      setError(errorMessage(caught));
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -153,45 +187,20 @@ export function HeroSection() {
               <label><input type="checkbox" /> <span>Xem cả số điện thoại hợp</span></label>
             </div>
 
-            <button className="lookup-card__submit" type="submit">
-              <span>Tra cứu ngay</span>
-              <Search aria-hidden="true" size={19} />
+            <button className="lookup-card__submit" type="submit" disabled={loading}>
+              <span>{loading ? "Đang phân tích…" : "Tra cứu ngay"}</span>
+              {loading ? <Loader2 className="spin" aria-hidden="true" size={19} /> : <Search aria-hidden="true" size={19} />}
             </button>
+
+            {error ? (
+              <p className="lookup-card__error" role="alert">
+                {error}
+              </p>
+            ) : null}
 
             <p className="lookup-card__privacy">
               <ShieldCheck aria-hidden="true" /> Miễn phí tra cứu · Bảo mật thông tin
             </p>
-
-            {report && (
-              <div className="lookup-result" role="status" aria-live="polite">
-                <div className="lookup-result__heading">
-                  <span className="lookup-result__core">{report.metrics[0].value}</span>
-                  <div>
-                    <small>Bản đồ số học của</small>
-                    <h3>{report.displayName}</h3>
-                    <p>{report.birthDateLabel} · Đường đời {report.metrics[0].value}</p>
-                  </div>
-                </div>
-
-                <p className="lookup-result__summary">{report.metrics[0].note}</p>
-
-                <div className="lookup-result__grid">
-                  {report.metrics.map((metric) => (
-                    <article id={`chi-so-${metric.key}`} key={metric.key}>
-                      <span>{metric.value}</span>
-                      <div>
-                        <strong>{metric.label}</strong>
-                        <small>{metric.note}</small>
-                      </div>
-                    </article>
-                  ))}
-                </div>
-
-                <p className="lookup-result__source">
-                  Kết quả áp dụng hệ Pythagoras và quy tắc số vua, số nợ nghiệp của SGEN.
-                </p>
-              </div>
-            )}
           </form>
         </Reveal>
       </div>
