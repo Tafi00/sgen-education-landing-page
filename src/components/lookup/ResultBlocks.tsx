@@ -323,14 +323,21 @@ export type ResultBlocksProps = { payload: LookupResultPayload; actions?: ReactN
 export function ResultBlocks({ payload, actions }: ResultBlocksProps) {
   const disclaimer = payload.disclaimer?.trim() || RESULTS_DISCLAIMER;
   const navSections = payload.blocks.filter((block): block is Extract<ResultBlock, { kind: "section" }> => block.kind === "section");
+  const coreMetric = payload.blocks.find((block): block is Extract<ResultBlock, { kind: "metrics" }> => block.kind === "metrics")?.items[0];
   return (
     <section className="result-preview section--dark">
-      <header>
-        <div>
+      <header className="result-hero">
+        <div className="result-hero__info">
           <small>Kết quả tra cứu</small>
           <h2>{payload.headline}</h2>
           {payload.subhead ? <p>{payload.subhead}</p> : null}
         </div>
+        {coreMetric ? (
+          <div className="result-hero__core">
+            <span>{coreMetric.value}</span>
+            <small>{coreMetric.label}</small>
+          </div>
+        ) : null}
       </header>
       {navSections.length >= 2 || actions ? (
         <nav className="report-nav" aria-label="Mục lục kết quả">

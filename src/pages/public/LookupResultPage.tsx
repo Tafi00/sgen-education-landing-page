@@ -48,16 +48,20 @@ export function LookupResultPage() {
         ) : query.data ? (
           <>
             <div className="lookup-workspace">
-              <ResultBlocks payload={query.data.report.result} />
-              {query.data.report.type === "numerology" ? (
-                <a
-                  className="page-primary report-download"
-                  href={`/api/lookups/${id}/pdf?token=${encodeURIComponent(token)}`}
-                  download
-                >
-                  <Download aria-hidden="true" /> Tải báo cáo PDF
-                </a>
-              ) : null}
+              <ResultBlocks
+                payload={query.data.report.result}
+                actions={
+                  query.data.report.type === "numerology" ? (
+                    <a
+                      className="action-button action-button--gradient"
+                      href={`/api/lookups/${id}/pdf?token=${encodeURIComponent(token)}`}
+                      download
+                    >
+                      <Download aria-hidden="true" /> Tải PDF
+                    </a>
+                  ) : undefined
+                }
+              />
             </div>
             <div className="privacy-banner">
               <ShieldCheck aria-hidden="true" />
