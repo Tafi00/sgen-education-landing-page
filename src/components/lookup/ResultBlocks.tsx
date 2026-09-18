@@ -324,7 +324,7 @@ export function ResultBlocks({ payload, actions }: ResultBlocksProps) {
   const disclaimer = payload.disclaimer?.trim() || RESULTS_DISCLAIMER;
   const navSections = payload.blocks.filter((block): block is Extract<ResultBlock, { kind: "section" }> => block.kind === "section");
   const coreMetric = payload.blocks.find((block): block is Extract<ResultBlock, { kind: "metrics" }> => block.kind === "metrics")?.items[0];
-  const [activeSection, setActiveSection] = useState("");
+  const [activeSection, setActiveSection] = useState(navSections[0]?.id ?? "");
 
   useEffect(() => {
     const sections = navSections
