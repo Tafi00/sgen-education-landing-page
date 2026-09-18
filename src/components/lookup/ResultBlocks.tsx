@@ -339,23 +339,33 @@ export function ResultBlocks({ payload, actions }: ResultBlocksProps) {
           </div>
         ) : null}
       </header>
-      {navSections.length >= 2 || actions ? (
-        <nav className="report-nav" aria-label="Mục lục kết quả">
-          <div className="report-nav__links">
-            {navSections.map((section) => (
-              <a key={section.id} href={`#${section.id}`}>
-                {section.title}
-              </a>
-            ))}
-          </div>
-          {actions ? <div className="report-nav__actions">{actions}</div> : null}
-        </nav>
-      ) : null}
-      <div className="article-content">
-        {payload.blocks.map((block, index) => (
-          <ResultBlockView block={block} key={index} />
-        ))}
+
+      <div className="report-layout">
+        {navSections.length >= 2 || actions ? (
+          <aside className="report-sidebar">
+            <div className="report-sidebar__inner">
+              {navSections.length >= 2 ? (
+                <nav className="report-toc" aria-label="Mục lục kết quả">
+                  <small>Mục lục</small>
+                  {navSections.map((section) => (
+                    <a key={section.id} href={`#${section.id}`}>
+                      {section.title}
+                    </a>
+                  ))}
+                </nav>
+              ) : null}
+              {actions ? <div className="report-sidebar__actions">{actions}</div> : null}
+            </div>
+          </aside>
+        ) : null}
+
+        <div className="report-body article-content">
+          {payload.blocks.map((block, index) => (
+            <ResultBlockView block={block} key={index} />
+          ))}
+        </div>
       </div>
+
       <div className="privacy-banner">
         <ShieldCheck aria-hidden="true" />
         <div>
