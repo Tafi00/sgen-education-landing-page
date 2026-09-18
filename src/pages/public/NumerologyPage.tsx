@@ -1,6 +1,6 @@
-import { useState, type FormEvent } from "react";
+import { useRef, useState, type FormEvent } from "react";
 import { Link } from "react-router-dom";
-import { AlertTriangle, ArrowRight, CalendarDays, Hash, Loader2, Share2, ShieldCheck, Sparkles, UserRound } from "lucide-react";
+import { AlertTriangle, ArrowRight, CalendarDays, Hash, Loader2, Printer, Share2, ShieldCheck, Sparkles, UserRound } from "lucide-react";
 import { api, errorMessage } from "../../api/client";
 import { TextField } from "../../components/form/Field";
 import { ResultBlocks } from "../../components/lookup/ResultBlocks";
@@ -24,6 +24,7 @@ export function NumerologyPage() {
   const [payload, setPayload] = useState<LookupResultPayload | null>(null);
   const [shareUrl, setShareUrl] = useState("");
   const [saved, setSaved] = useState(false);
+  const resultRef = useRef<HTMLDivElement>(null);
 
   const activeStep = payload ? 2 : loading ? 1 : 0;
 
@@ -66,7 +67,8 @@ export function NumerologyPage() {
         : `${window.location.origin}/tra-cuu/ket-qua/${data.report.id}`;
       setShareUrl(url);
       setSaved(false);
-      toast.success("Đã phân tích xong", "Kết quả hiển thị ở khung bên cạnh.");
+      toast.success("Đã phân tích xong", "Báo cáo đầy đủ hiển thị bên dưới.");
+      requestAnimationFrame(() => resultRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }));
     } catch (caught) {
       const message = errorMessage(caught);
       setError(message);
@@ -89,17 +91,17 @@ export function NumerologyPage() {
 
   return (
     <section className="page-dark-section">
-      <div className="container lookup-workspace">
+      <div className={payload ? "container lookup-workspace lookup-workspace--result" : "container lookup-workspace"}>
         <header>
           <span className="page-kicker">
             <Hash aria-hidden="true" /> Tra cứu Thần số học
           </span>
           <h1>
-            Giải mã <em>tám chỉ số</em> từ họ tên và ngày sinh
+            Giải mã <em>bản đồ số học</em> từ họ tên và ngày sinh
           </h1>
           <p>
-            Điền họ tên, ngày sinh và tên thường dùng (nếu có). Hệ thống tính các chỉ số theo hệ Pythagoras rồi trả về phần luận giải dễ hiểu.
-            Kết quả chỉ mang tính tham khảo, không thay thế tư vấn y tế, pháp lý hay tài chính.
+            Điền họ tên, ngày sinh và tên thường dùng (nếu có). Hệ thống tính 20 chỉ số theo hệ Pythagoras cùng biểu đồ
+            chặng đường đời, Ikigai, ngày sinh và họ tên. Kết quả chỉ mang tính tham khảo, không thay thế tư vấn y tế, pháp lý hay tài chính.
           </p>
           <div className="lookup-steps">
             {STEPS.map((step, index) => (
@@ -111,7 +113,7 @@ export function NumerologyPage() {
           </div>
         </header>
 
-        <div className="lookup-workspace__grid">
+        <div className={payload ? "lookup-workspace__grid lookup-workspace__grid--result" : "lookup-workspace__grid"}>
           <form className="page-form-card" onSubmit={handleSubmit} noValidate>
             <div>
               <small>Bước 1</small>
@@ -171,30 +173,34 @@ export function NumerologyPage() {
             </p>
           </form>
 
-          <div>
+          <div ref={resultRef} className="lookup-workspace__result">
             {payload ? (
               <>
-                <ResultBlocks payload={payload} />
-                <div style={{ marginTop: 16 }}>
-                  <button type="button" className="action-button action-button--gradient" onClick={() => void saveResult()}>
-                    <Share2 aria-hidden="true" /> Lưu kết quả
-                  </button>
-                  {saved && shareUrl ? (
-                    <p style={{ margin: "10px 0 0", color: "#c9b4dc", fontSize: ".75rem", wordBreak: "break-all" }}>
-                      Liên kết chia sẻ:{" "}
-                      <a href={shareUrl} style={{ color: "#d9a1fb" }}>
-                        {shareUrl}
-                      </a>
-                    </p>
-                  ) : null}
-                </div>
+                <ResultBlocks
+                  payload={payload}
+                  actions={
+                    <>
+                      <button type="button" className="action-button action-button--gradient" onClick={() => void saveResult()}>
+                        <Share2 aria-hidden="true" /> Lưu kết quả
+                      </button>
+                      <button type="button" className="action-button" onClick={() => window.print()}>
+                        <Printer aria-hidden="true" /> In báo cáo
+                      </button>
+                    </>
+                  }
+                />
+                {saved && shareUrl ? (
+                  <p className="share-url-note">
+                    Liên kết chia sẻ: <a href={shareUrl}>{shareUrl}</a>
+                  </p>
+                ) : null}
               </>
             ) : (
               <div className="result-preview section--dark">
                 <div className="result-preview__empty result-preview__empty--compact">
                   <Sparkles aria-hidden="true" />
                   <h2>Kết quả sẽ hiển thị tại đây</h2>
-                  <p>Điền thông tin để xem tám chỉ số.</p>
+                  <p>Điền thông tin để xem báo cáo đầy đủ gồm 20 chỉ số và 4 biểu đồ.</p>
                   <Link className="result-preview__example" to="/#y-nghia-con-so">
                     Xem ví dụ <ArrowRight aria-hidden="true" />
                   </Link>

@@ -607,7 +607,7 @@ export function FreeToolsPage() {
                 <Sparkles aria-hidden="true" /> Tính chỉ số Đường đời
               </Link>
               <Link className="action-button action-button--outline" to="/tra-cuu/than-so-hoc">
-                Tra cứu tám chỉ số <ArrowRight aria-hidden="true" />
+                Tra cứu bản đồ số học <ArrowRight aria-hidden="true" />
               </Link>
             </div>
           </div>
@@ -955,7 +955,7 @@ export function FreeToolDetailPage() {
           </div>
           <div className="service-grid">
             <article>
-              <h3>Tra cứu đầy đủ tám chỉ số</h3>
+              <h3>Tra cứu bản đồ số học đầy đủ</h3>
               <p>Nhập họ tên và ngày sinh một lần để xem toàn bộ bản đồ số học kèm phần luận giải chi tiết.</p>
               <Link to="/tra-cuu/than-so-hoc">
                 Tra cứu ngay <ArrowRight aria-hidden="true" />

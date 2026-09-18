@@ -78,6 +78,10 @@ const BLOCK_LABELS: Record<string, string> = {
   table: "Bảng",
   cards: "Thẻ nội dung",
   badges: "Nhãn",
+  section: "Nhóm",
+  chart3x3: "Biểu đồ 3×3",
+  pinnacles: "Chặng đường đời",
+  ikigai: "Ikigai",
 };
 
 function formatDateTime(value: unknown) {
@@ -103,8 +107,13 @@ type ResultRow = { key: string; value: string };
 /** Chuyển các khối kết quả tra cứu thành dòng nhãn — giá trị để hiển thị, không dump JSON thô. */
 function buildResultRows(blocks: ResultBlock[]): ResultRow[] {
   const rows: ResultRow[] = [];
+  let group = "";
   for (const block of blocks) {
-    const heading = block.heading || BLOCK_LABELS[block.kind] || "Kết quả";
+    if (block.kind === "section") {
+      group = block.title;
+      continue;
+    }
+    const heading = `${group ? `${group} · ` : ""}${"heading" in block && block.heading ? block.heading : BLOCK_LABELS[block.kind] || "Kết quả"}`;
     switch (block.kind) {
       case "metrics":
         for (const item of block.items) {
@@ -138,6 +147,26 @@ function buildResultRows(blocks: ResultBlock[]): ResultRow[] {
         break;
       case "badges":
         rows.push({ key: heading, value: block.items.map((item) => item.label).join(" · ") || "—" });
+        break;
+      case "chart3x3":
+        rows.push({
+          key: heading,
+          value: Object.entries(block.counts)
+            .map(([digit, count]) => `${digit}×${count}`)
+            .join(" · ") || "—",
+        });
+        break;
+      case "pinnacles":
+        rows.push({ key: `${heading} · Gốc`, value: block.bases.map((base) => `${base.label} ${base.value}`).join(" · ") });
+        for (const [index, pinnacle] of block.pinnacles.entries()) {
+          rows.push({ key: `${heading} · Đỉnh ${index + 1}${pinnacle.range ? ` (${pinnacle.range})` : ""}`, value: pinnacle.value });
+        }
+        break;
+      case "ikigai":
+        rows.push({ key: `${heading} · Đam mê`, value: block.passion.join(", ") || "—" });
+        rows.push({ key: `${heading} · Sứ mệnh`, value: block.mission || "—" });
+        rows.push({ key: `${heading} · Chuyên môn`, value: block.expertise.join(", ") || "—" });
+        rows.push({ key: `${heading} · Sự nghiệp`, value: block.career.join(", ") || "—" });
         break;
     }
   }

@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { Check, ShieldCheck } from "lucide-react";
 import { RESULTS_DISCLAIMER, type LookupResultPayload, type ResultBlock, type VerdictTone } from "../../../shared/lookup-types";
 
@@ -169,6 +170,96 @@ function BadgesBlock({ block }: { block: Extract<ResultBlock, { kind: "badges" }
     </section>
   );
 }
+/** Khối `section`: vạch chia nhóm nội dung có neo cho thanh điều hướng dính. */
+function SectionBlock({ block }: { block: Extract<ResultBlock, { kind: "section" }> }) {
+  return (
+    <div className="report-section" id={block.id}>
+      <span>{block.title}</span>
+      {block.description ? <small>{block.description}</small> : null}
+    </div>
+  );
+}
+
+/** Thứ tự ô của biểu đồ 3×3 theo trường phái Pythagoras: hàng trên 3-6-9, giữa 2-5-8, dưới 1-4-7. */
+const CHART_CELLS = [3, 6, 9, 2, 5, 8, 1, 4, 7];
+
+/** Khối `chart3x3`: lưới chín ô, mỗi ô lặp lại con số theo tần suất xuất hiện. */
+function Chart3x3Block({ block }: { block: Extract<ResultBlock, { kind: "chart3x3" }> }) {
+  return (
+    <section>
+      {block.heading ? <h2>{block.heading}</h2> : null}
+      <div className="chart3x3" role="img" aria-label={block.heading ?? "Biểu đồ 3×3"}>
+        {CHART_CELLS.map((cell) => {
+          const count = block.counts[String(cell)] ?? 0;
+          return (
+            <div key={cell} className={count ? "chart3x3__cell is-filled" : "chart3x3__cell"}>
+              <span className="chart3x3__digits">{count ? String(cell).repeat(count) : "·"}</span>
+              <small>{cell}</small>
+            </div>
+          );
+        })}
+      </div>
+      {block.note ? <p className="chart-note">{block.note}</p> : null}
+    </section>
+  );
+}
+
+/** Khối `pinnacles`: bốn đỉnh cao kèm khoảng tuổi phía trên bốn con số gốc. */
+function PinnaclesBlock({ block }: { block: Extract<ResultBlock, { kind: "pinnacles" }> }) {
+  return (
+    <section>
+      {block.heading ? <h2>{block.heading}</h2> : null}
+      <div className="pinnacle-chart">
+        <div className="pinnacle-chart__peaks">
+          {block.pinnacles.map((pinnacle, index) => (
+            <div key={index} className="pinnacle-chart__node pinnacle-chart__node--peak">
+              <b>{pinnacle.value}</b>
+              {pinnacle.range ? <small>Đỉnh {index + 1} · {pinnacle.range} tuổi</small> : <small>Đỉnh {index + 1}</small>}
+            </div>
+          ))}
+        </div>
+        <div className="pinnacle-chart__bases">
+          {block.bases.map((base, index) => (
+            <div key={index} className="pinnacle-chart__node">
+              <b>{base.value}</b>
+              <small>{base.label}</small>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/** Khối `ikigai`: bốn nhóm con số Đam mê — Sứ mệnh — Chuyên môn — Sự nghiệp. */
+function IkigaiBlock({ block }: { block: Extract<ResultBlock, { kind: "ikigai" }> }) {
+  const groups = [
+    { label: "Đam mê", values: block.passion, className: "ikigai__group--passion" },
+    { label: "Sứ mệnh", values: [block.mission], className: "ikigai__group--mission" },
+    { label: "Chuyên môn", values: block.expertise, className: "ikigai__group--expertise" },
+    { label: "Sự nghiệp", values: block.career, className: "ikigai__group--career" },
+  ];
+  return (
+    <section>
+      {block.heading ? <h2>{block.heading}</h2> : null}
+      <div className="ikigai">
+        {groups.map((group) => (
+          <div key={group.label} className={`ikigai__group ${group.className}`}>
+            <small>{group.label}</small>
+            <div>
+              {group.values.length ? (
+                group.values.map((value, index) => <b key={index}>{value}</b>)
+              ) : (
+                <b className="is-empty">—</b>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 
 /** Render một `ResultBlock` theo đúng `kind`; tách riêng để trang công cụ chỉ có một block vẫn dùng lại được. */
 export function ResultBlockView({ block }: { block: ResultBlock }) {
@@ -185,19 +276,28 @@ export function ResultBlockView({ block }: { block: ResultBlock }) {
       return <CardsBlock block={block} />;
     case "badges":
       return <BadgesBlock block={block} />;
+    case "section":
+      return <SectionBlock block={block} />;
+    case "chart3x3":
+      return <Chart3x3Block block={block} />;
+    case "pinnacles":
+      return <PinnaclesBlock block={block} />;
+    case "ikigai":
+      return <IkigaiBlock block={block} />;
     default:
       return null;
   }
 }
 
-export type ResultBlocksProps = { payload: LookupResultPayload };
+export type ResultBlocksProps = { payload: LookupResultPayload; actions?: ReactNode };
 
 /**
  * Hiển thị đầy đủ một `LookupResultPayload`: tiêu đề, mô tả, toàn bộ block và disclaimer bắt buộc.
  * Không tự render header/footer của site.
  */
-export function ResultBlocks({ payload }: ResultBlocksProps) {
+export function ResultBlocks({ payload, actions }: ResultBlocksProps) {
   const disclaimer = payload.disclaimer?.trim() || RESULTS_DISCLAIMER;
+  const navSections = payload.blocks.filter((block): block is Extract<ResultBlock, { kind: "section" }> => block.kind === "section");
   return (
     <section className="result-preview section--dark">
       <header>
@@ -207,6 +307,18 @@ export function ResultBlocks({ payload }: ResultBlocksProps) {
           {payload.subhead ? <p>{payload.subhead}</p> : null}
         </div>
       </header>
+      {navSections.length >= 2 || actions ? (
+        <nav className="report-nav" aria-label="Mục lục kết quả">
+          <div className="report-nav__links">
+            {navSections.map((section) => (
+              <a key={section.id} href={`#${section.id}`}>
+                {section.title}
+              </a>
+            ))}
+          </div>
+          {actions ? <div className="report-nav__actions">{actions}</div> : null}
+        </nav>
+      ) : null}
       <div className="article-content">
         {payload.blocks.map((block, index) => (
           <ResultBlockView block={block} key={index} />

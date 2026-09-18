@@ -8,7 +8,16 @@ export type ResultBlock =
   | { kind: "score"; heading?: string; items: { label: string; value: number; max?: number; tone?: VerdictTone; note?: string }[] }
   | { kind: "table"; heading?: string; headings: string[]; rows: string[][] }
   | { kind: "cards"; heading?: string; items: { title: string; text: string; tone?: VerdictTone; meta?: string }[] }
-  | { kind: "badges"; heading?: string; items: { label: string; tone?: VerdictTone }[] };
+  | { kind: "badges"; heading?: string; items: { label: string; tone?: VerdictTone }[] }
+  | { kind: "section"; id: string; title: string; description?: string }
+  | { kind: "chart3x3"; heading?: string; counts: Record<string, number>; note?: string }
+  | {
+      kind: "pinnacles";
+      heading?: string;
+      bases: { label: string; value: string }[];
+      pinnacles: { value: string; range?: string }[];
+    }
+  | { kind: "ikigai"; heading?: string; passion: string[]; mission: string; expertise: string[]; career: string[] };
 
 export type LookupResultPayload = {
   headline: string;

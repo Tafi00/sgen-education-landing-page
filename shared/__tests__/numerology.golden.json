@@ -1,0 +1,807 @@
+[
+  {
+    "name": "Nguyễn Minh Anh",
+    "birthDate": "1996-03-12",
+    "expect": {
+      "noi_tam": "9",
+      "logic": "8",
+      "cam_xuc": "9",
+      "truc_giac": "1",
+      "trai_nghiem": "9",
+      "tiem_thuc": 7,
+      "lap": "9",
+      "thai_do": "6",
+      "tuong_tac": "9",
+      "can_bang": "1",
+      "bai_hoc_nghiep": "2,6",
+      "no_nghiep": "4",
+      "nam_ca_nhan": "7",
+      "su_menh": "9",
+      "duong_doi": "13/4",
+      "ngay_sinh": "3",
+      "truong_thanh": "4",
+      "dam_me": "5",
+      "noi_tam_tuong_tac": "0",
+      "su_menh_duong_doi": "5",
+      "bieu_do_duong_doi": [
+        "3",
+        "3",
+        "7",
+        "6",
+        "1",
+        "7",
+        "1"
+      ],
+      "age_range": 32,
+      "bieu_do_ngay_sinh": {
+        "1": 2,
+        "2": 1,
+        "3": 1,
+        "6": 1,
+        "9": 2
+      },
+      "bieu_do_ho_ten": {
+        "1": 1,
+        "3": 1,
+        "4": 1,
+        "5": 5,
+        "7": 2,
+        "8": 2,
+        "9": 1
+      },
+      "ikigai": {
+        "dam_me": [
+          "5"
+        ],
+        "su_menh": "9",
+        "chuyen_mon": [
+          "9",
+          "9",
+          "3"
+        ],
+        "su_nghiep": [
+          "4",
+          "4",
+          "7"
+        ]
+      }
+    }
+  },
+  {
+    "name": "Đào Thị Hồng Hải",
+    "birthDate": "1981-06-16",
+    "expect": {
+      "noi_tam": "5",
+      "logic": "11/2",
+      "cam_xuc": "5",
+      "truc_giac": "1",
+      "trai_nghiem": "4",
+      "tiem_thuc": 8,
+      "lap": "5",
+      "thai_do": "4",
+      "tuong_tac": "6",
+      "can_bang": "4",
+      "bai_hoc_nghiep": "3",
+      "no_nghiep": "1,4,5,7",
+      "nam_ca_nhan": "14/5",
+      "su_menh": "11/2",
+      "duong_doi": "14/5",
+      "ngay_sinh": "16/7",
+      "truong_thanh": "7",
+      "dam_me": "8",
+      "noi_tam_tuong_tac": "1",
+      "su_menh_duong_doi": "3",
+      "bieu_do_duong_doi": [
+        "16/7",
+        "6",
+        "19/1",
+        "13/4",
+        "8",
+        "3",
+        "7"
+      ],
+      "age_range": 31,
+      "bieu_do_ngay_sinh": {
+        "1": 3,
+        "6": 2,
+        "8": 1,
+        "9": 1
+      },
+      "bieu_do_ho_ten": {
+        "1": 2,
+        "2": 1,
+        "4": 1,
+        "5": 1,
+        "6": 2,
+        "7": 1,
+        "8": 3,
+        "9": 2
+      },
+      "ikigai": {
+        "dam_me": [
+          "8"
+        ],
+        "su_menh": "2",
+        "chuyen_mon": [
+          "5",
+          "6",
+          "7"
+        ],
+        "su_nghiep": [
+          "5",
+          "7",
+          "5"
+        ]
+      }
+    }
+  },
+  {
+    "name": "Trần Quốc Bảo",
+    "birthDate": "1990-05-29",
+    "expect": {
+      "noi_tam": "8",
+      "logic": "7",
+      "cam_xuc": "7",
+      "truc_giac": "5",
+      "trai_nghiem": "1",
+      "tiem_thuc": 7,
+      "lap": "2, 8",
+      "thai_do": "7",
+      "tuong_tac": "2",
+      "can_bang": "3",
+      "bai_hoc_nghiep": "4,7",
+      "no_nghiep": "1,7",
+      "nam_ca_nhan": "8",
+      "su_menh": "19/1",
+      "duong_doi": "8",
+      "ngay_sinh": "11/2",
+      "truong_thanh": "9",
+      "dam_me": "2, 1, 3, 6",
+      "noi_tam_tuong_tac": "6",
+      "su_menh_duong_doi": "7",
+      "bieu_do_duong_doi": [
+        "11/2",
+        "5",
+        "19/1",
+        "16/7",
+        "3",
+        "1",
+        "6"
+      ],
+      "age_range": 28,
+      "bieu_do_ngay_sinh": {
+        "1": 1,
+        "2": 1,
+        "5": 1,
+        "9": 3
+      },
+      "bieu_do_ho_ten": {
+        "1": 2,
+        "2": 2,
+        "3": 2,
+        "5": 1,
+        "6": 2,
+        "8": 1,
+        "9": 1
+      },
+      "ikigai": {
+        "dam_me": [
+          "2",
+          " 1",
+          " 3",
+          " 6"
+        ],
+        "su_menh": "1",
+        "chuyen_mon": [
+          "8",
+          "2",
+          "2"
+        ],
+        "su_nghiep": [
+          "8",
+          "9",
+          "8"
+        ]
+      }
+    }
+  },
+  {
+    "name": "Lý Thuỳ Vy",
+    "birthDate": "1985-11-11",
+    "expect": {
+      "noi_tam": "8",
+      "logic": "11/2",
+      "cam_xuc": "2",
+      "truc_giac": "1",
+      "trai_nghiem": "1",
+      "tiem_thuc": 5,
+      "lap": "",
+      "thai_do": "4",
+      "tuong_tac": "6",
+      "can_bang": "9",
+      "bai_hoc_nghiep": "1,5,6,9",
+      "no_nghiep": "5,7",
+      "nam_ca_nhan": "5",
+      "su_menh": "14/5",
+      "duong_doi": "9",
+      "ngay_sinh": "11/2",
+      "truong_thanh": "5",
+      "dam_me": "7",
+      "noi_tam_tuong_tac": "2",
+      "su_menh_duong_doi": "4",
+      "bieu_do_duong_doi": [
+        "11/2",
+        "11/2",
+        "5",
+        "22/4",
+        "16/7",
+        "11/2",
+        "16/7"
+      ],
+      "age_range": 27,
+      "bieu_do_ngay_sinh": {
+        "1": 5,
+        "5": 1,
+        "8": 1,
+        "9": 1
+      },
+      "bieu_do_ho_ten": {
+        "2": 1,
+        "3": 2,
+        "4": 1,
+        "7": 3,
+        "8": 1
+      },
+      "ikigai": {
+        "dam_me": [
+          "7"
+        ],
+        "su_menh": "5",
+        "chuyen_mon": [
+          "8",
+          "6",
+          "2"
+        ],
+        "su_nghiep": [
+          "9",
+          "5",
+          "5"
+        ]
+      }
+    }
+  },
+  {
+    "name": "Nguyễn Thị Yến",
+    "birthDate": "1988-02-22",
+    "expect": {
+      "noi_tam": "22/4",
+      "logic": "3",
+      "cam_xuc": "11/2",
+      "truc_giac": "8",
+      "trai_nghiem": "1",
+      "tiem_thuc": 6,
+      "lap": "4, 5",
+      "thai_do": "6",
+      "tuong_tac": "1",
+      "can_bang": "5",
+      "bai_hoc_nghiep": "1,4,6",
+      "no_nghiep": "5",
+      "nam_ca_nhan": "7",
+      "su_menh": "14/5",
+      "duong_doi": "5",
+      "ngay_sinh": "22/4",
+      "truong_thanh": "1",
+      "dam_me": "5",
+      "noi_tam_tuong_tac": "3",
+      "su_menh_duong_doi": "0",
+      "bieu_do_duong_doi": [
+        "22/4",
+        "2",
+        "8",
+        "6",
+        "3",
+        "9",
+        "1"
+      ],
+      "age_range": 31,
+      "bieu_do_ngay_sinh": {
+        "1": 1,
+        "2": 3,
+        "8": 2,
+        "9": 1
+      },
+      "bieu_do_ho_ten": {
+        "2": 1,
+        "3": 1,
+        "5": 5,
+        "7": 3,
+        "8": 1,
+        "9": 1
+      },
+      "ikigai": {
+        "dam_me": [
+          "5"
+        ],
+        "su_menh": "5",
+        "chuyen_mon": [
+          "4",
+          "1",
+          "4"
+        ],
+        "su_nghiep": [
+          "5",
+          "1",
+          "7"
+        ]
+      }
+    }
+  },
+  {
+    "name": "Đỗ Thị Hồng Nhung",
+    "birthDate": "1992-07-13",
+    "expect": {
+      "noi_tam": "6",
+      "logic": "8",
+      "cam_xuc": "5",
+      "truc_giac": "3",
+      "trai_nghiem": "4",
+      "tiem_thuc": 8,
+      "lap": "2, 5",
+      "thai_do": "11/2",
+      "tuong_tac": "14/5",
+      "can_bang": "1",
+      "bai_hoc_nghiep": "1",
+      "no_nghiep": "4,5",
+      "nam_ca_nhan": "3",
+      "su_menh": "11/2",
+      "duong_doi": "14/5",
+      "ngay_sinh": "13/4",
+      "truong_thanh": "7",
+      "dam_me": "8, 5",
+      "noi_tam_tuong_tac": "1",
+      "su_menh_duong_doi": "3",
+      "bieu_do_duong_doi": [
+        "13/4",
+        "7",
+        "3",
+        "11/2",
+        "7",
+        "9",
+        "1"
+      ],
+      "age_range": 31,
+      "bieu_do_ngay_sinh": {
+        "1": 2,
+        "2": 1,
+        "3": 1,
+        "7": 1,
+        "9": 2
+      },
+      "bieu_do_ho_ten": {
+        "2": 1,
+        "3": 1,
+        "4": 1,
+        "5": 3,
+        "6": 2,
+        "7": 2,
+        "8": 3,
+        "9": 1
+      },
+      "ikigai": {
+        "dam_me": [
+          "8",
+          " 5"
+        ],
+        "su_menh": "2",
+        "chuyen_mon": [
+          "6",
+          "5",
+          "4"
+        ],
+        "su_nghiep": [
+          "5",
+          "7",
+          "3"
+        ]
+      }
+    }
+  },
+  {
+    "name": "Phạm Văn Đức",
+    "birthDate": "1994-09-14",
+    "expect": {
+      "noi_tam": "5",
+      "logic": "22/4",
+      "cam_xuc": "1",
+      "truc_giac": "1",
+      "trai_nghiem": "8",
+      "tiem_thuc": 6,
+      "lap": "5",
+      "thai_do": "5",
+      "tuong_tac": "8",
+      "can_bang": "6",
+      "bai_hoc_nghiep": "2,6,9",
+      "no_nghiep": "1,5",
+      "nam_ca_nhan": "6",
+      "su_menh": "4",
+      "duong_doi": "19/1",
+      "ngay_sinh": "14/5",
+      "truong_thanh": "5",
+      "dam_me": "4",
+      "noi_tam_tuong_tac": "3",
+      "su_menh_duong_doi": "3",
+      "bieu_do_duong_doi": [
+        "14/5",
+        "9",
+        "5",
+        "14/5",
+        "1",
+        "6",
+        "14/5"
+      ],
+      "age_range": 35,
+      "bieu_do_ngay_sinh": {
+        "1": 2,
+        "4": 2,
+        "9": 3
+      },
+      "bieu_do_ho_ten": {
+        "1": 2,
+        "3": 2,
+        "4": 3,
+        "5": 1,
+        "7": 1,
+        "8": 1
+      },
+      "ikigai": {
+        "dam_me": [
+          "4"
+        ],
+        "su_menh": "4",
+        "chuyen_mon": [
+          "5",
+          "8",
+          "5"
+        ],
+        "su_nghiep": [
+          "1",
+          "5",
+          "6"
+        ]
+      }
+    }
+  },
+  {
+    "name": "Vũ Ngọc Quỳnh",
+    "birthDate": "1990-01-16",
+    "expect": {
+      "noi_tam": "3",
+      "logic": "7",
+      "cam_xuc": "6",
+      "truc_giac": "1",
+      "trai_nghiem": "1",
+      "tiem_thuc": 6,
+      "lap": "",
+      "thai_do": "8",
+      "tuong_tac": "11/2",
+      "can_bang": "8",
+      "bai_hoc_nghiep": "1,2,9",
+      "no_nghiep": "1,5,7",
+      "nam_ca_nhan": "9",
+      "su_menh": "14/5",
+      "duong_doi": "9",
+      "ngay_sinh": "16/7",
+      "truong_thanh": "5",
+      "dam_me": "3",
+      "noi_tam_tuong_tac": "1",
+      "su_menh_duong_doi": "4",
+      "bieu_do_duong_doi": [
+        "16/7",
+        "1",
+        "19/1",
+        "8",
+        "8",
+        "16/7",
+        "2"
+      ],
+      "age_range": 27,
+      "bieu_do_ngay_sinh": {
+        "1": 3,
+        "6": 1,
+        "9": 2
+      },
+      "bieu_do_ho_ten": {
+        "3": 3,
+        "4": 1,
+        "5": 2,
+        "6": 1,
+        "7": 2,
+        "8": 2
+      },
+      "ikigai": {
+        "dam_me": [
+          "3"
+        ],
+        "su_menh": "5",
+        "chuyen_mon": [
+          "3",
+          "2",
+          "7"
+        ],
+        "su_nghiep": [
+          "9",
+          "5",
+          "9"
+        ]
+      }
+    }
+  },
+  {
+    "name": "Hoàng Anh Tuấn",
+    "birthDate": "1985-12-19",
+    "expect": {
+      "noi_tam": "3",
+      "logic": "5",
+      "cam_xuc": "8",
+      "truc_giac": "3",
+      "trai_nghiem": "1",
+      "tiem_thuc": 7,
+      "lap": "4",
+      "thai_do": "4",
+      "tuong_tac": "13/4",
+      "can_bang": "2",
+      "bai_hoc_nghiep": "4,9",
+      "no_nghiep": "1,4",
+      "nam_ca_nhan": "5",
+      "su_menh": "7",
+      "duong_doi": "9",
+      "ngay_sinh": "19/1",
+      "truong_thanh": "7",
+      "dam_me": "1, 5",
+      "noi_tam_tuong_tac": "1",
+      "su_menh_duong_doi": "2",
+      "bieu_do_duong_doi": [
+        "19/1",
+        "3",
+        "5",
+        "4",
+        "6",
+        "1",
+        "8"
+      ],
+      "age_range": 27,
+      "bieu_do_ngay_sinh": {
+        "1": 3,
+        "2": 1,
+        "5": 1,
+        "8": 1,
+        "9": 2
+      },
+      "bieu_do_ho_ten": {
+        "1": 3,
+        "2": 1,
+        "3": 1,
+        "5": 3,
+        "6": 1,
+        "7": 1,
+        "8": 2
+      },
+      "ikigai": {
+        "dam_me": [
+          "1",
+          " 5"
+        ],
+        "su_menh": "7",
+        "chuyen_mon": [
+          "3",
+          "4",
+          "1"
+        ],
+        "su_nghiep": [
+          "9",
+          "7",
+          "5"
+        ]
+      }
+    }
+  },
+  {
+    "name": "Yến Vy",
+    "birthDate": "2000-01-01",
+    "expect": {
+      "noi_tam": "3",
+      "logic": "5",
+      "cam_xuc": "1",
+      "truc_giac": "9",
+      "trai_nghiem": "5",
+      "tiem_thuc": 3,
+      "lap": "1",
+      "thai_do": "2",
+      "tuong_tac": "7",
+      "can_bang": "2",
+      "bai_hoc_nghiep": "1,2,3,6,8,9",
+      "no_nghiep": "1",
+      "nam_ca_nhan": "3",
+      "su_menh": "19/1",
+      "duong_doi": "4",
+      "ngay_sinh": "1",
+      "truong_thanh": "5",
+      "dam_me": "7, 5",
+      "noi_tam_tuong_tac": "4",
+      "su_menh_duong_doi": "3",
+      "bieu_do_duong_doi": [
+        "1",
+        "1",
+        "2",
+        "2",
+        "3",
+        "5",
+        "3"
+      ],
+      "age_range": 32,
+      "bieu_do_ngay_sinh": {
+        "1": 2,
+        "2": 1
+      },
+      "bieu_do_ho_ten": {
+        "4": 1,
+        "5": 2,
+        "7": 2
+      },
+      "ikigai": {
+        "dam_me": [
+          "7",
+          " 5"
+        ],
+        "su_menh": "1",
+        "chuyen_mon": [
+          "3",
+          "7",
+          "1"
+        ],
+        "su_nghiep": [
+          "4",
+          "5",
+          "3"
+        ]
+      }
+    }
+  },
+  {
+    "name": "Bùi Thế Sơn",
+    "birthDate": "1993-10-28",
+    "expect": {
+      "noi_tam": "14/5",
+      "logic": "4",
+      "cam_xuc": "2",
+      "truc_giac": "3",
+      "trai_nghiem": "5",
+      "tiem_thuc": 7,
+      "lap": "5",
+      "thai_do": "2",
+      "tuong_tac": "9",
+      "can_bang": "5",
+      "bai_hoc_nghiep": "4,7",
+      "no_nghiep": "5",
+      "nam_ca_nhan": "3",
+      "su_menh": "14/5",
+      "duong_doi": "6",
+      "ngay_sinh": "1",
+      "truong_thanh": "11/2",
+      "dam_me": "2, 5",
+      "noi_tam_tuong_tac": "4",
+      "su_menh_duong_doi": "1",
+      "bieu_do_duong_doi": [
+        "1",
+        "1",
+        "22/4",
+        "2",
+        "5",
+        "7",
+        "5"
+      ],
+      "age_range": 30,
+      "bieu_do_ngay_sinh": {
+        "1": 2,
+        "2": 1,
+        "3": 1,
+        "8": 1,
+        "9": 2
+      },
+      "bieu_do_ho_ten": {
+        "1": 1,
+        "2": 2,
+        "3": 1,
+        "5": 2,
+        "6": 1,
+        "8": 1,
+        "9": 1
+      },
+      "ikigai": {
+        "dam_me": [
+          "2",
+          " 5"
+        ],
+        "su_menh": "5",
+        "chuyen_mon": [
+          "5",
+          "9",
+          "1"
+        ],
+        "su_nghiep": [
+          "6",
+          "2",
+          "3"
+        ]
+      }
+    }
+  },
+  {
+    "name": "Ngô Phương Thảo",
+    "birthDate": "2001-08-05",
+    "expect": {
+      "noi_tam": "22/4",
+      "logic": "3",
+      "cam_xuc": "2",
+      "truc_giac": "3",
+      "trai_nghiem": "1",
+      "tiem_thuc": 7,
+      "lap": "4",
+      "thai_do": "4",
+      "tuong_tac": "13/4",
+      "can_bang": "5",
+      "bai_hoc_nghiep": "4,9",
+      "no_nghiep": "4,5,7",
+      "nam_ca_nhan": "14/5",
+      "su_menh": "8",
+      "duong_doi": "16/7",
+      "ngay_sinh": "5",
+      "truong_thanh": "6",
+      "dam_me": "7, 6",
+      "noi_tam_tuong_tac": "0",
+      "su_menh_duong_doi": "1",
+      "bieu_do_duong_doi": [
+        "5",
+        "8",
+        "3",
+        "13/4",
+        "8",
+        "3",
+        "11/2"
+      ],
+      "age_range": 29,
+      "bieu_do_ngay_sinh": {
+        "1": 1,
+        "2": 1,
+        "5": 1,
+        "8": 1
+      },
+      "bieu_do_ho_ten": {
+        "1": 1,
+        "2": 1,
+        "3": 1,
+        "5": 2,
+        "6": 3,
+        "7": 3,
+        "8": 2
+      },
+      "ikigai": {
+        "dam_me": [
+          "7",
+          " 6"
+        ],
+        "su_menh": "8",
+        "chuyen_mon": [
+          "4",
+          "4",
+          "5"
+        ],
+        "su_nghiep": [
+          "7",
+          "6",
+          "5"
+        ]
+      }
+    }
+  }
+]

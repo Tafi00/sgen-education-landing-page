@@ -1,6 +1,6 @@
 import { DISC_LABELS, type DiscResult } from "../../../shared/quiz/types.js";
 import { MBTI_DIMENSIONS, type MbtiResult } from "../../../shared/quiz/mbti-types.js";
-import type { NumerologyReport } from "../../../shared/numerology.js";
+import type { NumerologyFullReport } from "../../../shared/numerology.js";
 import type { SimReport } from "../../../shared/sim/types.js";
 import { RESULTS_DISCLAIMER, type LookupResultPayload, type ResultBlock } from "../../../shared/lookup-types.js";
 
@@ -15,13 +15,63 @@ type QuizTemplate = {
   teaming?: string[];
 };
 
-export function numerologyPayload(report: NumerologyReport): LookupResultPayload {
+export function numerologyPayload(report: NumerologyFullReport): LookupResultPayload {
   const blocks: ResultBlock[] = [];
   blocks.push({
     kind: "metrics",
     heading: "Tám chỉ số chủ đạo",
     items: report.metrics.map((metric) => ({ label: metric.label, value: String(metric.value), note: metric.note })),
   });
+
+  for (const section of report.sections) {
+    blocks.push({ kind: "section", id: section.id, title: section.title });
+    blocks.push({
+      kind: "metrics",
+      items: section.metrics.map((item) => ({ label: item.label, value: item.value || "—", note: item.note })),
+    });
+  }
+
+  if (report.commonNameMetrics?.length) {
+    blocks.push({ kind: "section", id: "ten-thuong-dung", title: "Chỉ số theo tên thường dùng" });
+    blocks.push({
+      kind: "metrics",
+      items: report.commonNameMetrics.map((item) => ({ label: item.label, value: item.value || "—", note: item.note })),
+    });
+  }
+
+  blocks.push({ kind: "section", id: "bieu-do", title: "Biểu đồ năng lượng" });
+  blocks.push({
+    kind: "pinnacles",
+    heading: "Biểu đồ chặng đường đời",
+    bases: [
+      { label: "Ngày", value: report.lifePathChart.day },
+      { label: "Ngày sinh", value: report.lifePathChart.birthNumber },
+      { label: "Tháng", value: report.lifePathChart.month },
+      { label: "Năm", value: report.lifePathChart.year },
+    ],
+    pinnacles: report.lifePathChart.pinnacles,
+  });
+  blocks.push({
+    kind: "ikigai",
+    heading: "Biểu đồ Ikigai",
+    passion: report.ikigai.passion,
+    mission: report.ikigai.mission,
+    expertise: report.ikigai.expertise,
+    career: report.ikigai.career,
+  });
+  blocks.push({
+    kind: "chart3x3",
+    heading: "Biểu đồ ngày sinh",
+    counts: Object.fromEntries(Object.entries(report.birthChart).map(([key, value]) => [key, value])),
+    note: "Mỗi con số trong ngày, tháng, năm sinh xuất hiện bao nhiêu lần — ô trống là năng lượng còn thiếu.",
+  });
+  blocks.push({
+    kind: "chart3x3",
+    heading: "Biểu đồ họ tên",
+    counts: Object.fromEntries(Object.entries(report.nameChart).map(([key, value]) => [key, value])),
+    note: "Tần suất các giá trị chữ cái trong họ tên khai sinh theo bảng Pythagoras.",
+  });
+
   return {
     headline: report.displayName,
     subhead: `Ngày sinh ${report.birthDateLabel}`,

@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { z } from "zod";
 import { LOOKUP_LABELS, type LookupResultPayload, type LookupType, type ResultBlock } from "../../../../shared/lookup-types.js";
-import { calculateNumerologyReport } from "../../../../shared/numerology.js";
+import { calculateFullNumerologyReport } from "../../../../shared/numerology.js";
 import { analyzeSim } from "../../../../shared/sim/index.js";
 import { LookupReport } from "../../models/index.js";
 import { asyncHandler, AppError } from "../../middleware/errors.js";
@@ -76,9 +76,14 @@ publicLookupRouter.post(
 
     if (type === "numerology") {
       const input = numerologyLookupSchema.parse(body.inputs);
-      const report = calculateNumerologyReport(input.name, input.birthDate, input.referenceYear);
+      const report = calculateFullNumerologyReport(input.name, input.birthDate, input.referenceYear, input.commonName);
       payload = numerologyPayload(report);
-      storedInputs = { name: input.name, birthDate: input.birthDate, referenceYear: input.referenceYear ?? new Date().getFullYear() };
+      storedInputs = {
+        name: input.name,
+        birthDate: input.birthDate,
+        commonName: input.commonName ?? "",
+        referenceYear: input.referenceYear ?? new Date().getFullYear(),
+      };
     } else if (type === "sim") {
       const input = simLookupSchema.parse(body.inputs);
       const report = analyzeSim({

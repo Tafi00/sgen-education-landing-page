@@ -1414,3 +1414,384 @@
     grid-template-columns: auto minmax(0, 1fr);
   }
 }
+
+/* ---------------------------------------------------------------------------
+   9. Báo cáo thần số học đầy đủ: nav dính, vạch chia nhóm, biểu đồ 3×3,
+   chặng đường đời, Ikigai và bố cục một cột khi đã có kết quả.
+   --------------------------------------------------------------------------- */
+.lookup-workspace__grid--result {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.lookup-workspace__grid--result .page-form-card {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px 18px;
+  align-items: end;
+}
+
+.lookup-workspace__grid--result .page-form-card > div:first-child {
+  grid-column: 1 / -1;
+}
+
+.lookup-workspace__grid--result .page-form-card > div:first-child h2 {
+  margin-bottom: 0;
+}
+
+.lookup-workspace__grid--result .page-form-card .field {
+  margin: 0;
+}
+
+.lookup-workspace__grid--result .page-form-card .page-check {
+  grid-column: 1 / 3;
+  margin: 0;
+}
+
+.lookup-workspace__grid--result .page-form-card > button {
+  grid-column: 3;
+}
+
+.lookup-workspace__grid--result .page-form-card > p,
+.lookup-workspace__grid--result .page-form-card .privacy-banner {
+  grid-column: 1 / -1;
+}
+
+.lookup-workspace__result {
+  min-width: 0;
+  scroll-margin-top: calc(var(--header-h, 96px) + 20px);
+}
+
+.report-nav {
+  position: sticky;
+  z-index: 6;
+  top: calc(var(--header-h, 96px) + 10px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0 -6px 18px;
+  padding: 8px 10px;
+  background: rgba(16, 5, 48, 0.88);
+  border: 1px solid rgba(211, 164, 255, 0.22);
+  border-radius: 14px;
+  box-shadow: 0 14px 34px rgba(4, 0, 24, 0.4);
+  backdrop-filter: blur(10px);
+}
+
+.report-nav__links {
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.report-nav__links::-webkit-scrollbar {
+  display: none;
+}
+
+.report-nav__links a {
+  flex: 0 0 auto;
+  padding: 8px 12px;
+  color: #bda8cf;
+  border-radius: 999px;
+  font-size: max(12px, 0.72rem);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.report-nav__links a:hover,
+.report-nav__links a:focus-visible {
+  color: #f0ddff;
+  background: rgba(154, 70, 233, 0.22);
+}
+
+.report-nav__actions {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 8px;
+}
+
+.report-nav__actions .action-button {
+  min-height: 36px;
+  padding: 0 14px;
+  font-size: max(12px, 0.72rem);
+}
+
+.report-section {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin: 44px 0 18px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(211, 164, 255, 0.24);
+  scroll-margin-top: calc(var(--header-h, 96px) + 70px);
+}
+
+.report-section > span {
+  color: #e9c6ff;
+  font-family: var(--font-display);
+  font-size: clamp(1.05rem, 1.8vw, 1.35rem);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.report-section > small {
+  color: #9d8eaa;
+  font-size: max(12px, 0.74rem);
+}
+
+.chart3x3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  max-width: 380px;
+  border: 1px solid rgba(211, 164, 255, 0.3);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.chart3x3__cell {
+  position: relative;
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(211, 164, 255, 0.14);
+}
+
+.chart3x3__cell.is-filled {
+  background: rgba(142, 65, 221, 0.14);
+}
+
+.chart3x3__digits {
+  color: #e4baff;
+  font-family: var(--font-display);
+  font-size: clamp(1rem, 2.4vw, 1.5rem);
+  font-weight: 800;
+  letter-spacing: 0.12em;
+}
+
+.chart3x3__cell small {
+  position: absolute;
+  right: 8px;
+  bottom: 6px;
+  color: #8d7ba0;
+  font-size: max(11px, 0.62rem);
+}
+
+.chart-note {
+  max-width: 560px;
+  margin-top: 10px;
+  color: #9d8eaa;
+  font-size: max(12px, 0.78rem);
+}
+
+.pinnacle-chart {
+  display: grid;
+  gap: 18px;
+  max-width: 760px;
+}
+
+.pinnacle-chart__peaks,
+.pinnacle-chart__bases {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.pinnacle-chart__peaks {
+  align-items: end;
+}
+
+.pinnacle-chart__node {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  padding: 14px 8px 12px;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(211, 164, 255, 0.16);
+  border-radius: 14px;
+}
+
+.pinnacle-chart__node--peak {
+  background: linear-gradient(160deg, rgba(154, 70, 233, 0.28), rgba(60, 18, 125, 0.3));
+  border-color: rgba(217, 157, 255, 0.4);
+}
+
+.pinnacle-chart__node b {
+  color: #f0d9ff;
+  font-family: var(--font-display);
+  font-size: clamp(1.05rem, 2vw, 1.4rem);
+}
+
+.pinnacle-chart__node small {
+  color: #a08eb3;
+  font-size: max(11px, 0.66rem);
+  line-height: 1.4;
+}
+
+.ikigai {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  max-width: 860px;
+}
+
+.ikigai__group {
+  display: grid;
+  gap: 10px;
+  padding: 16px 14px;
+  border: 1px solid rgba(211, 164, 255, 0.18);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.ikigai__group > small {
+  color: #bd9fd4;
+  font-size: max(11px, 0.68rem);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.ikigai__group > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.ikigai__group b {
+  min-width: 40px;
+  padding: 8px 10px;
+  text-align: center;
+  color: #f0d9ff;
+  background: rgba(142, 65, 221, 0.22);
+  border: 1px solid rgba(211, 164, 255, 0.3);
+  border-radius: 10px;
+  font-family: var(--font-display);
+  font-size: 1rem;
+}
+
+.ikigai__group b.is-empty {
+  color: #8d7ba0;
+  background: transparent;
+  border-style: dashed;
+}
+
+.ikigai__group--passion { border-top: 3px solid #e06bd0; }
+.ikigai__group--mission { border-top: 3px solid #9c50ff; }
+.ikigai__group--expertise { border-top: 3px solid #63d89c; }
+.ikigai__group--career { border-top: 3px solid #f0c674; }
+
+.share-url-note {
+  margin: 12px 0 0;
+  color: #c9b4dc;
+  font-size: max(12px, 0.75rem);
+  word-break: break-all;
+}
+
+.share-url-note a {
+  color: #d9a1fb;
+}
+
+/* Badge sắc thái dùng trong các khối kết quả công khai. */
+.status-badge--good { color: #14512d; background: #e2f6e9; }
+.status-badge--warn { color: #6b4a00; background: #fff3dc; }
+.status-badge--bad { color: #8d1039; background: #ffe6ee; }
+.status-badge--neutral { color: #4b2a86; background: #ece2fb; }
+
+@media (max-width: 900px) {
+  .lookup-workspace__grid--result .page-form-card {
+    grid-template-columns: 1fr;
+  }
+
+  .lookup-workspace__grid--result .page-form-card .page-check,
+  .lookup-workspace__grid--result .page-form-card > button {
+    grid-column: 1 / -1;
+  }
+
+  .report-nav {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .report-nav__actions {
+    justify-content: flex-end;
+  }
+
+  .ikigai,
+  .pinnacle-chart__peaks,
+  .pinnacle-chart__bases {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* In báo cáo: chỉ giữ nội dung kết quả, chuyển sang nền sáng tiết kiệm mực. */
+@media print {
+  .site-header,
+  .site-footer,
+  .lookup-workspace > header,
+  .lookup-workspace .page-form-card,
+  .report-nav,
+  .share-url-note,
+  .article-back,
+  .privacy-banner {
+    display: none !important;
+  }
+
+  .page-dark-section,
+  .result-preview,
+  .lookup-workspace,
+  .lookup-workspace__grid,
+  .lookup-workspace__result {
+    display: block !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    background: #fff !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+
+  .result-preview > header h2,
+  .article-content h2,
+  .report-section > span {
+    color: #2a1244 !important;
+  }
+
+  .result-preview > header p,
+  .result-preview > header small,
+  .article-content p,
+  .report-section > small,
+  .chart-note {
+    color: #4c3d63 !important;
+  }
+
+  .report-grid article,
+  .pinnacle-chart__node,
+  .ikigai__group,
+  .chart3x3__cell {
+    background: #fff !important;
+    border-color: #cbb8e2 !important;
+  }
+
+  .report-grid article > span,
+  .chart3x3__digits,
+  .pinnacle-chart__node b,
+  .ikigai__group b {
+    color: #4b2a86 !important;
+    background: #f3ebfd !important;
+  }
+
+  .report-grid article strong,
+  .report-grid article small,
+  .pinnacle-chart__node small,
+  .ikigai__group > small,
+  .chart3x3__cell small {
+    color: #4c3d63 !important;
+  }
+
+  .report-section {
+    border-bottom-color: #cbb8e2;
+  }
+}

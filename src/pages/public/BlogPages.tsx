@@ -281,7 +281,7 @@ const CATEGORY_TOOLS: Record<string, { label: string; to: string; note: string }
   "kien-thuc": {
     label: "Tra cứu thần số học",
     to: "/tra-cuu/than-so-hoc",
-    note: "Nhập họ tên và ngày sinh để xem trọn bộ tám chỉ số kèm phần luận giải chi tiết.",
+    note: "Nhập họ tên và ngày sinh để xem báo cáo đầy đủ 20 chỉ số và 4 biểu đồ kèm phần luận giải chi tiết.",
   },
   "ung-dung": {
     label: "Trắc nghiệm DISC",

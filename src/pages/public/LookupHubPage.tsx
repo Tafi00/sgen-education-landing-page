@@ -7,7 +7,7 @@ const TOOLS = [
     title: "Tra cứu Thần số học",
     href: "/tra-cuu/than-so-hoc",
     description:
-      "Nhập họ tên, ngày sinh và tên thường dùng để xem tám chỉ số cơ bản cùng phần luận giải theo hệ Pythagoras mà SGEN đang áp dụng.",
+      "Nhập họ tên, ngày sinh và tên thường dùng để xem báo cáo đầy đủ 20 chỉ số và 4 biểu đồ theo hệ Pythagoras mà SGEN đang áp dụng.",
     action: "Tra cứu ngay",
   },
   {
