@@ -1,6 +1,5 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
 import * as fontkit from "fontkit";
 import { PDFDocument, rgb, type PDFFont } from "pdf-lib";
 import type { NumerologyFullReport } from "../../../shared/numerology.js";
@@ -12,7 +11,8 @@ import type { NumerologyFullReport } from "../../../shared/numerology.js";
  * chọn đúng file theo con số thay vì file cứng.
  */
 
-const ASSET_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../assets/numerology-pdf");
+// Asset đặt ở <cwd>/assets/numerology-pdf — khớp cả chạy tsx (project root) lẫn Docker (/app).
+const ASSET_DIR = path.resolve(process.cwd(), "assets/numerology-pdf");
 
 const PURPLE = rgb(0.5, 0, 0.5);
 const RED = rgb(1, 0, 0);
