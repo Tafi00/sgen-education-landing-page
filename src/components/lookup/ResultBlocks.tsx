@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { Check, ShieldCheck } from "lucide-react";
 import { RESULTS_DISCLAIMER, type LookupResultPayload, type ResultBlock, type VerdictTone } from "../../../shared/lookup-types";
 
@@ -324,6 +324,24 @@ export function ResultBlocks({ payload, actions }: ResultBlocksProps) {
   const disclaimer = payload.disclaimer?.trim() || RESULTS_DISCLAIMER;
   const navSections = payload.blocks.filter((block): block is Extract<ResultBlock, { kind: "section" }> => block.kind === "section");
   const coreMetric = payload.blocks.find((block): block is Extract<ResultBlock, { kind: "metrics" }> => block.kind === "metrics")?.items[0];
+  const [activeSection, setActiveSection] = useState("");
+
+  useEffect(() => {
+    const sections = navSections
+      .map((section) => document.getElementById(section.id))
+      .filter((el): el is HTMLElement => Boolean(el));
+    if (!sections.length) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) setActiveSection(entry.target.id);
+        }
+      },
+      { rootMargin: "-30% 0px -60% 0px" },
+    );
+    for (const section of sections) observer.observe(section);
+    return () => observer.disconnect();
+  }, [payload]);
   return (
     <section className="result-preview section--dark">
       <header className="result-hero">
@@ -347,8 +365,8 @@ export function ResultBlocks({ payload, actions }: ResultBlocksProps) {
               {navSections.length >= 2 ? (
                 <nav className="report-toc" aria-label="Mục lục kết quả">
                   <small>Mục lục</small>
-                  {navSections.map((section) => (
-                    <a key={section.id} href={`#${section.id}`}>
+                  {navSections.map((section, index) => (
+                    <a key={section.id} href={`#${section.id}`} data-index={String(index + 1).padStart(2, "0")} data-section={section.id} className={activeSection === section.id ? "is-active" : undefined}>
                       {section.title}
                     </a>
                   ))}
