@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { AlertTriangle, ArrowLeft, Loader2, ShieldCheck } from "lucide-react";
+import { AlertTriangle, ArrowLeft, Download, Loader2, ShieldCheck } from "lucide-react";
 import { api, errorMessage } from "../../api/client";
 import { ResultBlocks } from "../../components/lookup/ResultBlocks";
 import type { LookupResultPayload } from "../../../shared/lookup-types";
@@ -49,6 +49,15 @@ export function LookupResultPage() {
           <>
             <div className="lookup-workspace">
               <ResultBlocks payload={query.data.report.result} />
+              {query.data.report.type === "numerology" ? (
+                <a
+                  className="page-primary report-download"
+                  href={`/api/lookups/${id}/pdf?token=${encodeURIComponent(token)}`}
+                  download
+                >
+                  <Download aria-hidden="true" /> Tải báo cáo PDF
+                </a>
+              ) : null}
             </div>
             <div className="privacy-banner">
               <ShieldCheck aria-hidden="true" />
