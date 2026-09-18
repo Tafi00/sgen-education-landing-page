@@ -1,6 +1,6 @@
 import { useRef, useState, type FormEvent } from "react";
 import { Link } from "react-router-dom";
-import { AlertTriangle, ArrowRight, CalendarDays, Hash, Loader2, Printer, Share2, ShieldCheck, Sparkles, UserRound } from "lucide-react";
+import { AlertTriangle, ArrowRight, CalendarDays, Download, Hash, Loader2, Printer, Share2, ShieldCheck, Sparkles, UserRound } from "lucide-react";
 import { api, errorMessage } from "../../api/client";
 import { TextField } from "../../components/form/Field";
 import { ResultBlocks } from "../../components/lookup/ResultBlocks";
@@ -23,6 +23,7 @@ export function NumerologyPage() {
   const [error, setError] = useState("");
   const [payload, setPayload] = useState<LookupResultPayload | null>(null);
   const [shareUrl, setShareUrl] = useState("");
+  const [reportRef, setReportRef] = useState<{ id: string; token: string } | null>(null);
   const [saved, setSaved] = useState(false);
   const resultRef = useRef<HTMLDivElement>(null);
 
@@ -65,6 +66,7 @@ export function NumerologyPage() {
       const url = data.report.shareToken
         ? `${window.location.origin}/tra-cuu/ket-qua/${data.report.id}?token=${data.report.shareToken}`
         : `${window.location.origin}/tra-cuu/ket-qua/${data.report.id}`;
+      setReportRef({ id: data.report.id, token: data.report.shareToken ?? "" });
       setShareUrl(url);
       setSaved(false);
       toast.success("Đã phân tích xong", "Báo cáo đầy đủ hiển thị bên dưới.");
@@ -183,6 +185,15 @@ export function NumerologyPage() {
                       <button type="button" className="action-button action-button--gradient" onClick={() => void saveResult()}>
                         <Share2 aria-hidden="true" /> Lưu kết quả
                       </button>
+                      {reportRef ? (
+                        <a
+                          className="action-button"
+                          href={`/api/lookups/${reportRef.id}/pdf?token=${encodeURIComponent(reportRef.token)}`}
+                          download
+                        >
+                          <Download aria-hidden="true" /> Tải PDF
+                        </a>
+                      ) : null}
                       <button type="button" className="action-button" onClick={() => window.print()}>
                         <Printer aria-hidden="true" /> In báo cáo
                       </button>

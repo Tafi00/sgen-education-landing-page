@@ -20,6 +20,8 @@ COPY --from=build /app/dist ./dist
 COPY --from=build /app/dist-server ./dist-server
 # schema.sql nằm cạnh bundle để tiến trình tự áp schema PostgreSQL khi khởi động.
 COPY --from=build /app/server/src/db/schema.sql ./dist-server/schema.sql
+# Template PDF thần số học (18 trang + font Faustina) cho endpoint /api/lookups/:id/pdf.
+COPY --from=build /app/server/assets/numerology-pdf ./assets/numerology-pdf
 RUN mkdir -p /app/uploads
 EXPOSE 3000
 CMD ["node", "dist-server/index.js"]
