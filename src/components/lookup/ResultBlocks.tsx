@@ -17,21 +17,37 @@ const TONE_CLASS: Record<VerdictTone, string> = {
   neutral: "status-badge--neutral",
 };
 
+/** Trả về ảnh minh họa cosmic cho giá trị số: ưu tiên số master (11/2, 22/4), còn lại lấy số cuối. */
+function numeralAsset(value: string): string | null {
+  const parts = value.split("/").map((part) => Number(part.trim()));
+  const first = parts[0];
+  const last = parts.at(-1);
+  const master = first === 11 || first === 22 ? first : null;
+  const numeral = master ?? (last && last >= 1 && last <= 9 ? last : null);
+  return numeral ? `/assets/illustrations/numeral-${numeral}-cosmic.webp` : null;
+}
 /** Khối `metrics`: lưới nhãn/giá trị, giá trị dài tự nới rộng ô. */
 function MetricsBlock({ block }: { block: Extract<ResultBlock, { kind: "metrics" }> }) {
   return (
     <section>
       {block.heading ? <h2>{block.heading}</h2> : null}
       <div className="report-grid">
-        {block.items.map((item, index) => (
-          <article key={index}>
-            <span className={item.value.length > 3 ? "is-wide-value" : undefined}>{item.value}</span>
-            <div>
-              <strong>{item.label}</strong>
-              {item.note ? <small>{item.note}</small> : null}
-            </div>
-          </article>
-        ))}
+        {block.items.map((item, index) => {
+          const asset = numeralAsset(item.value);
+          return (
+            <article key={index}>
+              {asset ? (
+                <img className="report-grid__numeral" src={asset} alt="" loading="lazy" />
+              ) : (
+                <span className={item.value.length > 3 ? "is-wide-value" : undefined}>{item.value}</span>
+              )}
+              <div>
+                <strong>{item.label}</strong>
+                {item.note ? <small>{item.note}</small> : null}
+              </div>
+            </article>
+          );
+        })}
       </div>
     </section>
   );
@@ -83,8 +99,50 @@ function ScoreBlock({ block }: { block: Extract<ResultBlock, { kind: "score" }> 
   );
 }
 
+/** Khối Thư ngỏ Pythagoras với chân dung phát sáng và phong cách thư trang trọng. */
+function PythagorasLetterBlock({ block }: { block: Extract<ResultBlock, { kind: "text" }> }) {
+  return (
+    <section className="pythagoras-card">
+      <div className="pythagoras-card__content">
+        <div className="pythagoras-card__badge">
+          <span className="pythagoras-card__badge-tag">Triết lý Pythagoras</span>
+          <span className="pythagoras-card__badge-sub">Định hướng & Khai mở tiềm năng</span>
+        </div>
+        <h2>{block.heading}</h2>
+        <div className="pythagoras-card__body">
+          {block.paragraphs.map((paragraph, index) => (
+            <p key={index} className={index === 0 ? "pythagoras-card__lead" : undefined}>
+              {paragraph}
+            </p>
+          ))}
+        </div>
+        <div className="pythagoras-card__footer">
+          <div className="pythagoras-card__sign">
+            <small>Học viện Khai vấn & Số học Ứng dụng</small>
+            <strong>SGEN EDUCATION</strong>
+          </div>
+          <div className="pythagoras-card__quote-mark" aria-hidden="true">“</div>
+        </div>
+      </div>
+      <div className="pythagoras-card__visual">
+        <img
+          src="/assets/illustrations/pythagoras-cosmic.webp"
+          alt="Triết gia Pythagoras"
+          className="pythagoras-card__portrait"
+          width={200}
+          height={221}
+          loading="eager"
+        />
+      </div>
+    </section>
+  );
+}
+
 /** Khối `text`: đoạn văn và/hoặc danh sách gạch đầu dòng. */
 function TextBlock({ block }: { block: Extract<ResultBlock, { kind: "text" }> }) {
+  if (block.heading && /pythagoras|thư ngỏ/i.test(block.heading)) {
+    return <PythagorasLetterBlock block={block} />;
+  }
   return (
     <section>
       {block.heading ? <h2>{block.heading}</h2> : null}
@@ -188,17 +246,21 @@ function MetricDetailBlock({ block }: { block: Extract<ResultBlock, { kind: "met
       {block.intro?.map((paragraph, index) => (
         <p className="metric-detail__intro" key={`intro-${index}`}>{paragraph}</p>
       ))}
-      {block.items.map((item, index) => (
-        <article className="metric-detail__item" key={index}>
-          <header>
-            <h3>{item.label}</h3>
-            <strong>{item.value}</strong>
-          </header>
-          {item.paragraphs.map((paragraph, paragraphIndex) => (
-            <p key={paragraphIndex}>{paragraph}</p>
-          ))}
-        </article>
-      ))}
+      {block.items.map((item, index) => {
+        const asset = numeralAsset(item.value);
+        return (
+          <article className="metric-detail__item" key={index}>
+            {asset ? <img className="metric-detail__numeral" src={asset} alt="" loading="lazy" /> : null}
+            <header>
+              <h3>{item.label}</h3>
+              <strong>{item.value}</strong>
+            </header>
+            {item.paragraphs.map((paragraph, paragraphIndex) => (
+              <p key={paragraphIndex}>{paragraph}</p>
+            ))}
+          </article>
+        );
+      })}
     </div>
   );
 }
@@ -206,21 +268,56 @@ function MetricDetailBlock({ block }: { block: Extract<ResultBlock, { kind: "met
 /** Thứ tự ô của biểu đồ 3×3 theo trường phái Pythagoras: hàng trên 3-6-9, giữa 2-5-8, dưới 1-4-7. */
 const CHART_CELLS = [3, 6, 9, 2, 5, 8, 1, 4, 7];
 
-/** Khối `chart3x3`: lưới chín ô, mỗi ô lặp lại con số theo tần suất xuất hiện. */
+
+
+/** Ảnh minh họa cho các block biểu đồ đặc thù. */
+const BLOCK_ILLUSTRATION: Partial<Record<ResultBlock["kind"], string>> = {
+  chart3x3: "/assets/methods/method-pythagoras.webp",
+  pinnacles: "/assets/methods/method-life-path.webp",
+  ikigai: "/assets/methods/method-ikigai.webp",
+};
+
+/** Heading kèm ảnh minh họa nhỏ cho block biểu đồ. */
+function IllustratedHeading({ kind, heading }: { kind: ResultBlock["kind"]; heading?: string }) {
+  const src = BLOCK_ILLUSTRATION[kind];
+  if (!heading) return null;
+  return (
+    <h2 className="block-heading--illustrated">
+      {src ? <img src={src} alt="" loading="lazy" /> : null}
+      <span>{heading}</span>
+    </h2>
+  );
+}
 function Chart3x3Block({ block }: { block: Extract<ResultBlock, { kind: "chart3x3" }> }) {
   return (
     <section>
-      {block.heading ? <h2>{block.heading}</h2> : null}
-      <div className="chart3x3" role="img" aria-label={block.heading ?? "Biểu đồ 3×3"}>
-        {CHART_CELLS.map((cell) => {
-          const count = block.counts[String(cell)] ?? 0;
-          return (
-            <div key={cell} className={count ? "chart3x3__cell is-filled" : "chart3x3__cell"}>
-              <span className="chart3x3__digits">{count ? String(cell).repeat(count) : "·"}</span>
-              <small>{cell}</small>
-            </div>
-          );
-        })}
+      <IllustratedHeading kind="chart3x3" heading={block.heading} />
+      <div className="chart3x3-wrapper">
+        <div className="chart3x3" role="img" aria-label={block.heading ?? "Biểu đồ 3×3"}>
+          {CHART_CELLS.map((cell) => {
+            const count = block.counts[String(cell)] ?? 0;
+            return (
+              <div key={cell} className={count ? "chart3x3__cell is-filled" : "chart3x3__cell"}>
+                <span className="chart3x3__digits">{count ? String(cell).repeat(count) : "·"}</span>
+                <small>{cell}</small>
+              </div>
+            );
+          })}
+        </div>
+        <div className="chart3x3-axes" aria-hidden="true">
+          <div className="chart3x3-axis">
+            <strong>3 · 6 · 9</strong>
+            <small>Trục Trí tuệ (Tư duy — Trực giác — Hoài bão)</small>
+          </div>
+          <div className="chart3x3-axis">
+            <strong>2 · 5 · 8</strong>
+            <small>Trục Tâm hồn (Cảm xúc — Tự do — Tình yêu thương)</small>
+          </div>
+          <div className="chart3x3-axis">
+            <strong>1 · 4 · 7</strong>
+            <small>Trục Thể chất (Cá tính — Thực tế — Trải nghiệm)</small>
+          </div>
+        </div>
       </div>
       {block.note ? <p className="chart-note">{block.note}</p> : null}
     </section>
@@ -231,23 +328,33 @@ function Chart3x3Block({ block }: { block: Extract<ResultBlock, { kind: "chart3x
 function PinnaclesBlock({ block }: { block: Extract<ResultBlock, { kind: "pinnacles" }> }) {
   return (
     <section>
-      {block.heading ? <h2>{block.heading}</h2> : null}
-      <div className="pinnacle-chart">
-        <div className="pinnacle-chart__peaks">
-          {block.pinnacles.map((pinnacle, index) => (
-            <div key={index} className="pinnacle-chart__node pinnacle-chart__node--peak">
-              <b>{pinnacle.value}</b>
-              {pinnacle.range ? <small>Đỉnh {index + 1} · {pinnacle.range} tuổi</small> : <small>Đỉnh {index + 1}</small>}
-            </div>
-          ))}
+      <IllustratedHeading kind="pinnacles" heading={block.heading} />
+      <div className="pinnacle-layout">
+        <div className="pinnacle-visual">
+          <img
+            src="/assets/blog/blog-life-pyramid.webp"
+            alt="Mô hình kim tự tháp 4 đỉnh cao"
+            loading="lazy"
+          />
+          <small>Mô hình kim tự tháp 4 đỉnh cao theo chu kỳ 9 năm</small>
         </div>
-        <div className="pinnacle-chart__bases">
-          {block.bases.map((base, index) => (
-            <div key={index} className="pinnacle-chart__node">
-              <b>{base.value}</b>
-              <small>{base.label}</small>
-            </div>
-          ))}
+        <div className="pinnacle-chart">
+          <div className="pinnacle-chart__peaks">
+            {block.pinnacles.map((pinnacle, index) => (
+              <div key={index} className="pinnacle-chart__node pinnacle-chart__node--peak">
+                <b>{pinnacle.value}</b>
+                {pinnacle.range ? <small>Đỉnh {index + 1} · {pinnacle.range} tuổi</small> : <small>Đỉnh {index + 1}</small>}
+              </div>
+            ))}
+          </div>
+          <div className="pinnacle-chart__bases">
+            {block.bases.map((base, index) => (
+              <div key={index} className="pinnacle-chart__node">
+                <b>{base.value}</b>
+                <small>{base.label}</small>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </section>
@@ -264,7 +371,7 @@ function IkigaiBlock({ block }: { block: Extract<ResultBlock, { kind: "ikigai" }
   ];
   return (
     <section>
-      {block.heading ? <h2>{block.heading}</h2> : null}
+      <IllustratedHeading kind="ikigai" heading={block.heading} />
       <div className="ikigai">
         {groups.map((group) => (
           <div key={group.label} className={`ikigai__group ${group.className}`}>
@@ -324,6 +431,7 @@ export function ResultBlocks({ payload, actions }: ResultBlocksProps) {
   const disclaimer = payload.disclaimer?.trim() || RESULTS_DISCLAIMER;
   const navSections = payload.blocks.filter((block): block is Extract<ResultBlock, { kind: "section" }> => block.kind === "section");
   const coreMetric = payload.blocks.find((block): block is Extract<ResultBlock, { kind: "metrics" }> => block.kind === "metrics")?.items[0];
+  const coreAsset = coreMetric ? numeralAsset(coreMetric.value) : null;
   const [activeSection, setActiveSection] = useState(navSections[0]?.id ?? "");
 
   useEffect(() => {
@@ -352,8 +460,18 @@ export function ResultBlocks({ payload, actions }: ResultBlocksProps) {
         </div>
         {coreMetric ? (
           <div className="result-hero__core">
-            <span>{coreMetric.value}</span>
-            <small>{coreMetric.label}</small>
+            {coreAsset ? (
+              <img
+                className="result-hero__core-orb"
+                src={coreAsset}
+                alt={`Số chủ đạo ${coreMetric.value}`}
+                loading="lazy"
+              />
+            ) : null}
+            <div className="result-hero__core-meta">
+              <span>{coreMetric.value}</span>
+              <small>{coreMetric.label}</small>
+            </div>
           </div>
         ) : null}
       </header>

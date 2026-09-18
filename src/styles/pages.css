@@ -260,18 +260,23 @@
 .result-preview > header h2 { margin:3px 0; font-family:var(--font-display); text-transform:uppercase; }
 .result-preview > header p,.result-preview > header small { margin:0; color:#ad9bbd; }
 .result-preview > header > strong { width:82px; height:82px; display:grid; place-items:center; flex:0 0 auto; background:linear-gradient(145deg,#9c50ff,#3c127d); border:5px solid rgba(224,193,255,.5); border-radius:50%; font-size:2rem; box-shadow:0 0 30px rgba(162,67,255,.46); }
-.result-hero { display:flex; justify-content:space-between; align-items:center; gap:24px; margin-bottom:22px; padding:22px 26px; background:linear-gradient(135deg,rgba(88,28,180,.34),rgba(38,10,86,.5)); border:1px solid rgba(196,141,255,.22); border-radius:20px; }
+.result-hero { display:flex; justify-content:space-between; align-items:center; gap:24px; margin-bottom:22px; padding:22px 26px; background:linear-gradient(135deg,rgba(88,28,180,.34),rgba(38,10,86,.5)),url("/assets/backgrounds/cosmic-dark.webp") center/cover; border:1px solid rgba(196,141,255,.22); border-radius:20px; }
 .result-hero__info small { color:#c9a8f2; font-size:.68rem; letter-spacing:.14em; text-transform:uppercase; }
 .result-hero__info h2 { margin:4px 0 2px; font-family:var(--font-display); font-size:clamp(1.5rem,3vw,2.1rem); text-transform:uppercase; }
 .result-hero__info p { margin:0; color:#ad9bbd; }
-.result-hero__core { display:grid; place-items:center; gap:2px; flex:0 0 auto; min-width:118px; padding:16px 18px; background:linear-gradient(160deg,#a552ff,#4a1494); border:1px solid rgba(226,196,255,.5); border-radius:18px; box-shadow:0 0 34px rgba(162,67,255,.4); text-align:center; }
-.result-hero__core span { font-family:var(--font-display); font-size:clamp(1.7rem,3.4vw,2.4rem); font-weight:800; line-height:1; }
-.result-hero__core small { color:#e6cfff; font-size:.62rem; letter-spacing:.1em; text-transform:uppercase; }
+.result-hero__core { display:flex; align-items:center; gap:14px; flex:0 0 auto; min-width:140px; padding:12px 18px; background:linear-gradient(160deg,#a552ff,#4a1494); border:1px solid rgba(226,196,255,.5); border-radius:18px; box-shadow:0 0 34px rgba(162,67,255,.4); }
+.result-hero__core-orb { width:58px; height:58px; flex:0 0 58px; object-fit:contain; filter:drop-shadow(0 0 12px rgba(230,190,255,.7)); }
+.result-hero__core-meta { display:grid; gap:2px; }
+.result-hero__core-meta span { font-family:var(--font-display); font-size:clamp(1.7rem,3.4vw,2.3rem); font-weight:800; line-height:1; }
+.result-hero__core-meta small { color:#e6cfff; font-size:.62rem; letter-spacing:.1em; text-transform:uppercase; }
 .report-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; }
 .report-grid article { min-height:96px; display:flex; align-items:center; gap:12px; padding:13px; background:rgba(255,255,255,.045); border:1px solid rgba(213,173,255,.12); border-radius:12px; }
 .report-grid article > span { min-width:48px; min-height:48px; display:grid; place-items:center; flex:0 0 48px; padding:6px; color:#e4baff; background:rgba(142,65,221,.16); border-radius:10px; font-family:var(--font-display); font-size:.88rem; font-weight:800; line-height:1.25; text-align:center; white-space:nowrap; }
 .report-grid article > span.is-wide-value { flex-basis:94px; font-size:.72rem; letter-spacing:-.03em; }
+.report-grid article > img.report-grid__numeral { width:52px; height:52px; flex:0 0 52px; object-fit:contain; filter:drop-shadow(0 0 10px rgba(190,120,255,.5)); }
 .report-grid article.is-requested { background:rgba(154,70,233,.16); border-color:rgba(217,157,255,.62); box-shadow:0 0 0 1px rgba(211,139,255,.14),0 12px 28px rgba(64,17,128,.22); }
+.report-grid article:hover { border-color:rgba(217,157,255,.4); background:rgba(255,255,255,.07); transform:translateY(-2px); transition:transform 180ms ease, border-color 180ms ease, background 180ms ease; }
+.report-grid article:hover img.report-grid__numeral { transform:scale(1.08); transition:transform 180ms ease; }
 .report-grid article div { display:grid; gap:2px; }
 .report-grid small { color:#9789a4; font-size:.62rem; line-height:1.45; }
 .result-preview .article-content { max-width:none; min-width:0; }
