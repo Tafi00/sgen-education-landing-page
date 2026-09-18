@@ -82,6 +82,7 @@ const BLOCK_LABELS: Record<string, string> = {
   chart3x3: "Biểu đồ 3×3",
   pinnacles: "Chặng đường đời",
   ikigai: "Ikigai",
+  metricDetail: "Luận giải",
 };
 
 function formatDateTime(value: unknown) {
@@ -167,6 +168,11 @@ function buildResultRows(blocks: ResultBlock[]): ResultRow[] {
         rows.push({ key: `${heading} · Sứ mệnh`, value: block.mission || "—" });
         rows.push({ key: `${heading} · Chuyên môn`, value: block.expertise.join(", ") || "—" });
         rows.push({ key: `${heading} · Sự nghiệp`, value: block.career.join(", ") || "—" });
+        break;
+      case "metricDetail":
+        for (const item of block.items) {
+          rows.push({ key: `${heading} · ${item.label}`, value: `${item.value} — ${item.paragraphs.join(" ")}` });
+        }
         break;
     }
   }

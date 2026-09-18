@@ -180,6 +180,29 @@ function SectionBlock({ block }: { block: Extract<ResultBlock, { kind: "section"
   );
 }
 
+/** Khối `metricDetail`: luận giải đầy đủ cho từng chỉ số (trích từ bộ báo cáo gốc). */
+function MetricDetailBlock({ block }: { block: Extract<ResultBlock, { kind: "metricDetail" }> }) {
+  return (
+    <div className="metric-detail">
+      {block.heading ? <h2>{block.heading}</h2> : null}
+      {block.intro?.map((paragraph, index) => (
+        <p className="metric-detail__intro" key={`intro-${index}`}>{paragraph}</p>
+      ))}
+      {block.items.map((item, index) => (
+        <article className="metric-detail__item" key={index}>
+          <header>
+            <h3>{item.label}</h3>
+            <strong>{item.value}</strong>
+          </header>
+          {item.paragraphs.map((paragraph, paragraphIndex) => (
+            <p key={paragraphIndex}>{paragraph}</p>
+          ))}
+        </article>
+      ))}
+    </div>
+  );
+}
+
 /** Thứ tự ô của biểu đồ 3×3 theo trường phái Pythagoras: hàng trên 3-6-9, giữa 2-5-8, dưới 1-4-7. */
 const CHART_CELLS = [3, 6, 9, 2, 5, 8, 1, 4, 7];
 
@@ -284,6 +307,8 @@ export function ResultBlockView({ block }: { block: ResultBlock }) {
       return <PinnaclesBlock block={block} />;
     case "ikigai":
       return <IkigaiBlock block={block} />;
+    case "metricDetail":
+      return <MetricDetailBlock block={block} />;
     default:
       return null;
   }

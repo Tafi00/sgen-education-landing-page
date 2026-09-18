@@ -1541,6 +1541,66 @@
   font-size: max(12px, 0.74rem);
 }
 
+.metric-detail {
+  display: grid;
+  gap: 18px;
+  margin-top: 18px;
+}
+
+.metric-detail > h2 {
+  margin: 0;
+}
+
+.metric-detail__intro {
+  color: #bda8cf;
+  font-size: max(13px, 0.8rem);
+  line-height: 1.8;
+}
+
+.metric-detail__item {
+  padding: 20px 22px;
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(213, 173, 255, 0.12);
+  border-radius: 16px;
+}
+
+.metric-detail__item > header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(213, 173, 255, 0.14);
+}
+
+.metric-detail__item > header h3 {
+  margin: 0;
+  color: #e9c6ff;
+  font-family: var(--font-display);
+  font-size: max(14px, 0.92rem);
+  font-weight: 700;
+}
+
+.metric-detail__item > header strong {
+  flex: 0 0 auto;
+  color: #f0ddff;
+  font-family: var(--font-display);
+  font-size: max(15px, 1rem);
+  font-weight: 800;
+}
+
+.metric-detail__item p {
+  margin: 0 0 10px;
+  color: #cbb9da;
+  font-size: max(13px, 0.8rem);
+  line-height: 1.8;
+}
+
+.metric-detail__item p:last-child {
+  margin-bottom: 0;
+}
+
 .chart3x3 {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -1788,6 +1848,25 @@
   .pinnacle-chart__node small,
   .ikigai__group > small,
   .chart3x3__cell small {
+    color: #4c3d63 !important;
+  }
+
+  .metric-detail__item {
+    background: #fff !important;
+    border-color: #cbb8e2 !important;
+  }
+
+  .metric-detail__item > header {
+    border-bottom-color: #cbb8e2;
+  }
+
+  .metric-detail__item > header h3,
+  .metric-detail__item > header strong {
+    color: #2a1244 !important;
+  }
+
+  .metric-detail__item p,
+  .metric-detail__intro {
     color: #4c3d63 !important;
   }
 

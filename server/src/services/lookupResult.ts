@@ -3,6 +3,16 @@ import { MBTI_DIMENSIONS, type MbtiResult } from "../../../shared/quiz/mbti-type
 import type { NumerologyFullReport } from "../../../shared/numerology.js";
 import type { SimReport } from "../../../shared/sim/types.js";
 import { RESULTS_DISCLAIMER, type LookupResultPayload, type ResultBlock } from "../../../shared/lookup-types.js";
+import {
+  BIRTH_NAME_CHART_PAGES,
+  CAREER_INTRO,
+  CONCLUSION_CONTENT,
+  IKIGAI_INTRO,
+  NUMEROLOGY_CONTENT,
+  OPENING_CONTENT,
+  PINNACLE_CONTENT,
+  type MetricContent,
+} from "./numerologyContent.js";
 
 type QuizTemplate = {
   title?: string;
@@ -15,6 +25,25 @@ type QuizTemplate = {
   teaming?: string[];
 };
 
+/** Ghép luận giải cho một chỉ số: file theo tử số ("13/4" → "13"), thiếu thì dùng căn số. */
+function metricParagraphs(value: string, content: MetricContent | undefined): string[] {
+  if (!content) return [];
+  const numerator = value.split("/")[0];
+  const root = value.split("/").at(-1) ?? numerator;
+  return content.byValue[numerator] ?? content.byValue[root] ?? [];
+}
+
+/** Một mục luận giải: chỉ số đơn trị hoặc nhiều trị (lặp, bài học, nợ nghiệp, đam mê). */
+function detailItem(label: string, value: string, values: string[] | undefined, content: MetricContent | undefined) {
+  const paragraphs = values?.length
+    ? values.flatMap((item) => metricParagraphs(item, content))
+    : metricParagraphs(value, content);
+  const intro = paragraphs.length ? [] : (content?.intro ?? []);
+  const merged = [...intro, ...paragraphs];
+  if (!merged.length) return null;
+  return { label, value: value || "—", paragraphs: merged };
+}
+
 export function numerologyPayload(report: NumerologyFullReport): LookupResultPayload {
   const blocks: ResultBlock[] = [];
   blocks.push({
@@ -23,12 +52,31 @@ export function numerologyPayload(report: NumerologyFullReport): LookupResultPay
     items: report.metrics.map((metric) => ({ label: metric.label, value: String(metric.value), note: metric.note })),
   });
 
+  const openingParagraphs = [
+    ...OPENING_CONTENT.letter,
+    ...OPENING_CONTENT.pythagoras,
+    ...OPENING_CONTENT.history,
+    ...OPENING_CONTENT.purpose,
+  ];
+  if (openingParagraphs.length) {
+    blocks.push({ kind: "text", heading: "Thư ngỏ — Thần số học Pythagoras", paragraphs: openingParagraphs });
+  }
+
   for (const section of report.sections) {
     blocks.push({ kind: "section", id: section.id, title: section.title });
+    if (section.id === "dinh-huong-su-nghiep" && CAREER_INTRO.length) {
+      blocks.push({ kind: "text", paragraphs: CAREER_INTRO });
+    }
     blocks.push({
       kind: "metrics",
       items: section.metrics.map((item) => ({ label: item.label, value: item.value || "—", note: item.note })),
     });
+    const details = section.metrics
+      .map((item) => detailItem(item.label, item.value, item.values, NUMEROLOGY_CONTENT[item.key]))
+      .filter((item): item is NonNullable<typeof item> => Boolean(item));
+    if (details.length) {
+      blocks.push({ kind: "metricDetail", items: details });
+    }
   }
 
   if (report.commonNameMetrics?.length) {
@@ -51,6 +99,17 @@ export function numerologyPayload(report: NumerologyFullReport): LookupResultPay
     ],
     pinnacles: report.lifePathChart.pinnacles,
   });
+  const pinnacleDetails = report.lifePathChart.pinnacles
+    .map((pinnacle, index) => {
+      const content = PINNACLE_CONTENT[`dinh${index + 1}` as "dinh1"];
+      const paragraphs = metricParagraphs(pinnacle.value, { byValue: content });
+      if (!paragraphs.length) return null;
+      return { label: `Đỉnh ${index + 1}${pinnacle.range ? ` · ${pinnacle.range} tuổi` : ""}`, value: pinnacle.value, paragraphs };
+    })
+    .filter((item): item is NonNullable<typeof item> => Boolean(item));
+  if (PINNACLE_CONTENT.intro.length || pinnacleDetails.length) {
+    blocks.push({ kind: "metricDetail", intro: PINNACLE_CONTENT.intro, items: pinnacleDetails });
+  }
   blocks.push({
     kind: "ikigai",
     heading: "Biểu đồ Ikigai",
@@ -59,6 +118,9 @@ export function numerologyPayload(report: NumerologyFullReport): LookupResultPay
     expertise: report.ikigai.expertise,
     career: report.ikigai.career,
   });
+  if (IKIGAI_INTRO.length) {
+    blocks.push({ kind: "text", heading: "Cách đọc biểu đồ Ikigai", paragraphs: IKIGAI_INTRO });
+  }
   blocks.push({
     kind: "chart3x3",
     heading: "Biểu đồ ngày sinh",
@@ -71,6 +133,14 @@ export function numerologyPayload(report: NumerologyFullReport): LookupResultPay
     counts: Object.fromEntries(Object.entries(report.nameChart).map(([key, value]) => [key, value])),
     note: "Tần suất các giá trị chữ cái trong họ tên khai sinh theo bảng Pythagoras.",
   });
+  const chartPages = BIRTH_NAME_CHART_PAGES.flat();
+  if (chartPages.length) {
+    blocks.push({ kind: "text", heading: "Luận giải biểu đồ ngày sinh và họ tên", paragraphs: chartPages });
+  }
+  if (CONCLUSION_CONTENT.length) {
+    blocks.push({ kind: "section", id: "ket-luan", title: "Kết luận" });
+    blocks.push({ kind: "text", paragraphs: CONCLUSION_CONTENT });
+  }
 
   return {
     headline: report.displayName,

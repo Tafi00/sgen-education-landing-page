@@ -17,7 +17,13 @@ export type ResultBlock =
       bases: { label: string; value: string }[];
       pinnacles: { value: string; range?: string }[];
     }
-  | { kind: "ikigai"; heading?: string; passion: string[]; mission: string; expertise: string[]; career: string[] };
+  | { kind: "ikigai"; heading?: string; passion: string[]; mission: string; expertise: string[]; career: string[] }
+  | {
+      kind: "metricDetail";
+      heading?: string;
+      intro?: string[];
+      items: { label: string; value: string; paragraphs: string[] }[];
+    };
 
 export type LookupResultPayload = {
   headline: string;
