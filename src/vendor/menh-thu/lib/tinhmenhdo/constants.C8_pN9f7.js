@@ -1,0 +1,1 @@
+const g={GIEO_QUE:"https://gemini.google.com/gem/cd8dcc81bacd",TU_VI_BAT_TU:"https://gemini.google.com/gem/46f94da81b49"};export{g as G};

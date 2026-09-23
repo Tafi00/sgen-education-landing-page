@@ -171,7 +171,7 @@ export function SiteHeader() {
                       aria-expanded={openGroup === item.label}
                       onClick={() => setOpenGroup((current) => (current === item.label ? null : item.label))}
                     >
-                      <NavLink to={item.href} className={({ isActive }) => (isActive ? "is-active" : "")} onClick={(event) => event.stopPropagation()}>
+                      <NavLink to={item.href} end={item.href === "/"} className={({ isActive }) => (isActive ? "is-active" : "")} onClick={(event) => event.stopPropagation()}>
                         {item.label}
                       </NavLink>
                       <ChevronDown aria-hidden="true" />
@@ -181,7 +181,20 @@ export function SiteHeader() {
                         Tổng quan {item.label}
                       </Link>
                       {item.children.map((child) => (
-                        <Link key={child.href} to={child.href} onClick={closeMenu}>
+                        <Link
+                          key={child.href}
+                          to={child.href}
+                          onClick={() => {
+                            closeMenu();
+                            if (child.href.includes("#")) {
+                              const hash = child.href.slice(child.href.indexOf("#"));
+                              const target = document.querySelector(hash);
+                              if (target) {
+                                target.scrollIntoView({ behavior: "smooth", block: "start" });
+                              }
+                            }
+                          }}
+                        >
                           <strong>{child.label}</strong>
                           {child.description ? <small>{child.description}</small> : null}
                         </Link>
@@ -189,7 +202,7 @@ export function SiteHeader() {
                     </div>
                   </>
                 ) : (
-                  <NavLink to={item.href} className={({ isActive }) => (isActive ? "is-active" : "")} onClick={closeMenu}>
+                  <NavLink to={item.href} end={item.href === "/"} className={({ isActive }) => (isActive ? "is-active" : "")} onClick={closeMenu}>
                     {item.label}
                   </NavLink>
                 )}

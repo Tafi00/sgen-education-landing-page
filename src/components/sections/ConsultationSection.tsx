@@ -55,8 +55,8 @@ export function ConsultationSection() {
         email: String(data.get("email") ?? ""),
         birthDate: String(data.get("birthDate") ?? ""),
         message: String(data.get("message") ?? ""),
-        source: "trang-chu/tu-van",
-        sourceLabel: "Form tư vấn trang chủ",
+        source: "trang-chu/lien-he",
+        sourceLabel: "Form liên hệ trang chủ",
         consent: true,
       });
       form.reset();
@@ -70,13 +70,13 @@ export function ConsultationSection() {
 
   return (
     <section
-      id="tu-van"
+      id="lien-he"
       className="consultation-section section"
       style={{ "--consultation-bg": `url(${cosmicLight})` } as React.CSSProperties}
     >
       <div className="container consultation-grid">
         <Reveal className="consultation-copy" direction="right">
-          <SectionBadge icon={CalendarCheck}>Đăng ký tư vấn ngay hôm nay</SectionBadge>
+          <SectionBadge icon={CalendarCheck}>Liên hệ & Đăng ký tư vấn</SectionBadge>
           <h2><span>Sẵn sàng hôm nay</span><span>Vững bước tương lai</span></h2>
           <div className="consultation-copy__divider"><span><MessageSquareText /></span></div>
           <p>Liên hệ với chúng tôi để được tư vấn và hỗ trợ miễn phí.</p>

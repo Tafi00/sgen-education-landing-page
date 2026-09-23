@@ -1,6 +1,9 @@
 import { Link } from "react-router-dom";
 import { Brain, GraduationCap, ListChecks, MessageSquareText, Route, ShieldCheck } from "lucide-react";
 import { QuizRunner } from "../../components/lookup/QuizRunner";
+import { LookupNavTabs } from "../../components/lookup/LookupNavTabs";
+
+const cosmicDarkClean = "/assets/backgrounds/cosmic-dark-clean.webp";
 
 type QuizPageConfig = {
   quizKey: "disc" | "mbti";
@@ -17,36 +20,40 @@ type QuizPageConfig = {
 
 function QuizPage({ config }: { config: QuizPageConfig }) {
   return (
-    <div className="quiz-page">
-      <section className="page-hero">
-        <div className="container page-hero__inner">
-          <div className="page-hero__copy">
-            <span className="page-kicker">
-              <Brain aria-hidden="true" /> {config.kicker}
-            </span>
-            <h1>
-              {config.title} <em>{config.accent}</em>
-            </h1>
-            <p>{config.lead}</p>
-            <p style={{ marginTop: 14, fontSize: ".82rem", color: "rgba(255,255,255,.62)" }}>
-              <ShieldCheck aria-hidden="true" style={{ width: 16, verticalAlign: "-2px", marginRight: 6 }} />
-              Bài trắc nghiệm tham chiếu khung {config.quizKey === "disc" ? "DISC" : "MBTI"}, không phải công cụ chẩn đoán tâm lý hay đánh giá năng lực.
-            </p>
-          </div>
-        </div>
-      </section>
+    <div
+      className="quiz-page numerology-lookup-page"
+      style={
+        {
+          "--page-dark-bg": `url(${cosmicDarkClean})`,
+          backgroundColor: "#07032e",
+          backgroundImage:
+            "radial-gradient(circle at 75% 18%, rgba(132, 60, 245, 0.22), transparent 45%), radial-gradient(circle at 25% 45%, rgba(90, 34, 232, 0.18), transparent 40%), var(--page-dark-bg)",
+          backgroundPosition: "center top",
+          backgroundSize: "cover",
+        } as React.CSSProperties
+      }
+    >
+      <div className="container numerology-hero-container">
+        <LookupNavTabs activeKey={config.quizKey} />
 
-      <section className="page-dark-section">
-        <div className="container lookup-workspace">
-          <header>
-            <span className="page-kicker">
-              <ListChecks aria-hidden="true" /> Làm bài trắc nghiệm
-            </span>
-            <h2>{config.runnerTitle}</h2>
-          </header>
+        <header className="numerology-header">
+          <span className="page-kicker">
+            <Brain aria-hidden="true" /> {config.kicker}
+          </span>
+          <h1>
+            {config.title} <em>{config.accent}</em>
+          </h1>
+          <p className="numerology-header__desc">{config.lead}</p>
+          <p style={{ margin: "0 auto", fontSize: ".82rem", color: "rgba(255,255,255,.68)", maxWidth: 700 }}>
+            <ShieldCheck aria-hidden="true" style={{ width: 16, verticalAlign: "-2px", marginRight: 6, color: "#38e19e" }} />
+            Bài trắc nghiệm tham chiếu khung {config.quizKey === "disc" ? "DISC" : "MBTI"}, không phải công cụ chẩn đoán tâm lý hay đánh giá năng lực.
+          </p>
+        </header>
+
+        <div className="lookup-workspace" style={{ marginTop: 28 }}>
           <QuizRunner quizKey={config.quizKey} title={config.runnerTitle} description={config.runnerDescription} />
         </div>
-      </section>
+      </div>
 
       <section className="page-light-section">
         <div className="container">

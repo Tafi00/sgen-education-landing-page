@@ -37,6 +37,7 @@ const pillars = [
 export function MethodsSection() {
   return (
     <section
+      id="tam-nhin"
       className="methods-section section section--dark"
       style={{ "--methods-bg": `url(${cosmicDarkClean})` } as React.CSSProperties}
     >

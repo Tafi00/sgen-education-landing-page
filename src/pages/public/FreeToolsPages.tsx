@@ -730,6 +730,91 @@ export function FreeToolsPage() {
         </div>
       </section>
 
+      <section className="page-light-section ux-free-cta">
+        <div className="container">
+          <div className="ref-lookup-cta">
+            <div>
+              <span className="page-kicker">
+                <Sparkles aria-hidden="true" /> Tra cứu đầy đủ
+              </span>
+              <h2>Tra cứu các chỉ số của bạn ngay</h2>
+              <p>
+                Các công cụ trên chỉ tính một chỉ số mỗi lần. Nhập họ tên và ngày sinh một lần để xem báo cáo đầy đủ 20 chỉ số, 4 biểu đồ và phần
+                luận giải chi tiết — vẫn miễn phí và không cần tài khoản.
+              </p>
+            </div>
+            <Link className="page-primary" to="/tra-cuu/than-so-hoc">
+              Tra cứu ngay <ArrowRight aria-hidden="true" />
+            </Link>
+          </div>
+
+          <div className="ref-faq">
+            <div className="page-section-heading page-section-heading--light">
+              <span>Đôi lời chia sẻ</span>
+              <h2>Câu hỏi thường gặp về Thần số học</h2>
+            </div>
+            <div className="ref-acc-list">
+              <details className="ref-acc">
+                <summary>
+                  <span className="ref-acc__icon">
+                    <BookOpen aria-hidden="true" />
+                  </span>
+                  <span className="ref-acc__head">
+                    <b>Thần số học là gì?</b>
+                    <small>Lĩnh vực nghiên cứu ý nghĩa các con số gắn với con người</small>
+                  </span>
+                  <ChevronDown className="ref-acc__caret" aria-hidden="true" />
+                </summary>
+                <div className="ref-acc__form">
+                  <p>
+                    Thần số học (nhân số học) là lĩnh vực nghiên cứu và giải mã con người trong phạm trù huyền học, đi sâu vào ý nghĩa và mối liên hệ
+                    giữa các chữ số với cá nhân. Hệ Pythagoras chỉ dùng các số tự nhiên 1–9 cùng hai số bậc thầy 11 và 22; số nhiều chữ số được rút
+                    gọn về một trong các giá trị này.
+                  </p>
+                </div>
+              </details>
+              <details className="ref-acc">
+                <summary>
+                  <span className="ref-acc__icon">
+                    <Target aria-hidden="true" />
+                  </span>
+                  <span className="ref-acc__head">
+                    <b>Khám phá bản thân theo nhân số học</b>
+                    <small>Điểm mạnh, điểm yếu và nhu cầu nội tâm từ ngày sinh và họ tên</small>
+                  </span>
+                  <ChevronDown className="ref-acc__caret" aria-hidden="true" />
+                </summary>
+                <div className="ref-acc__form">
+                  <p>
+                    Từ ngày sinh và họ tên khai sinh, hệ thống suy ra các chỉ số mô tả tài năng, phản ứng cảm xúc, cách đối nhân xử thế và nhịp thời
+                    gian của một người. Bạn có thể dùng các chỉ số này để nhận diện điểm mạnh cần phát huy, điểm yếu cần điều chỉnh và các mốc phù
+                    hợp cho quyết định lớn — xem như gợi ý suy ngẫm, không phải chỉ thị hành động.
+                  </p>
+                </div>
+              </details>
+              <details className="ref-acc">
+                <summary>
+                  <span className="ref-acc__icon">
+                    <ShieldCheck aria-hidden="true" />
+                  </span>
+                  <span className="ref-acc__head">
+                    <b>Dữ liệu của tôi có được lưu lại không?</b>
+                    <small>Các phép tính chạy trên trình duyệt của bạn</small>
+                  </span>
+                  <ChevronDown className="ref-acc__caret" aria-hidden="true" />
+                </summary>
+                <div className="ref-acc__form">
+                  <p>
+                    Không. Các công cụ trong trang này tính trực tiếp trên trình duyệt; họ tên và ngày sinh chỉ được gửi lên máy chủ khi bạn chủ động
+                    bấm lưu hoặc chia sẻ báo cáo ở trang tra cứu đầy đủ.
+                  </p>
+                </div>
+              </details>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section className="page-dark-section">
         <div className="container">
           <div className="privacy-banner">
@@ -970,7 +1055,7 @@ export function FreeToolDetailPage() {
             </article>
             <article>
               <h3>Học để tự luận giải</h3>
-              <p>Khóa học Thần số học căn bản hướng dẫn cách tính và đọc các chỉ số theo trình tự có hệ thống.</p>
+              <p>Khóa học Thần số học hướng dẫn cách tính và đọc các chỉ số theo trình tự có hệ thống.</p>
               <Link to="/khoa-hoc">
                 Xem khóa học <ArrowRight aria-hidden="true" />
               </Link>

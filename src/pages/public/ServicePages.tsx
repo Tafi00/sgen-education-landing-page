@@ -169,7 +169,7 @@ export function ServicesListPage() {
           <header className="page-section-heading page-section-heading--light">
             <span>Gói dịch vụ</span>
             <h2>Chọn hình thức đồng hành phù hợp</h2>
-            <p>Giá hiển thị là giá tham khảo và có thể điều chỉnh trong CMS theo từng thời điểm.</p>
+            <p>Xem nhanh thời lượng, quyền lợi và mức giá để chọn gói phù hợp với mục tiêu của bạn.</p>
           </header>
 
           {isLoading && !services.length ? (
@@ -179,16 +179,19 @@ export function ServicesListPage() {
           ) : services.length ? (
             <div className="service-grid">
               {services.map((service, index) => (
-                <article key={service.slug}>
-                  <span className="service-grid__number">{String(index + 1).padStart(2, "0")}</span>
-                  {service.isFeatured ? <span className="page-kicker page-kicker--light">Được chọn nhiều</span> : null}
+                <article className={`service-card${service.isFeatured ? " service-card--featured" : ""}`} key={service.slug}>
+                  <div className="service-card__media">
+                    {service.coverImage ? <img src={service.coverImage} alt="" loading="lazy" /> : <PackageCheck aria-hidden="true" />}
+                    <span className="service-grid__number">{String(index + 1).padStart(2, "0")}</span>
+                    {service.isFeatured ? <span className="service-card__badge"><Sparkles aria-hidden="true" /> Được chọn nhiều</span> : null}
+                  </div>
+                  <div className="service-card__meta">{service.durationLabel || "Linh hoạt"}</div>
                   <h3>{service.name}</h3>
-                  <p>{service.tagline}</p>
-                  <p>
+                  <p className="service-card__tagline">{service.tagline}</p>
+                  <div className="service-card__price">
                     <strong>{formatPrice(service.price)}</strong>
                     {service.compareAtPrice > service.price ? <s> {formatPrice(service.compareAtPrice)}</s> : null}
-                    {service.durationLabel ? ` · ${service.durationLabel}` : ""}
-                  </p>
+                  </div>
                   <ul>
                     {service.deliverables.slice(0, 3).map((item) => (
                       <li key={item}>
@@ -196,8 +199,8 @@ export function ServicesListPage() {
                       </li>
                     ))}
                   </ul>
-                  <Link to={`/dich-vu/${service.slug}`}>
-                    {service.ctaLabel || "Xem chi tiết"} <ArrowRight aria-hidden="true" />
+                  <Link to={`/dich-vu/${service.slug}`} aria-label={`Xem chi tiết ${service.name}`}>
+                    Xem gói dịch vụ <ArrowRight aria-hidden="true" />
                   </Link>
                 </article>
               ))}
@@ -252,10 +255,10 @@ export function ServicesListPage() {
           ) : null}
 
           <div className="process-card">
-            <h2>Quy trình đặt mua</h2>
+            <h2>Đăng ký trong 4 bước</h2>
             <div>
               <span>
-                <b>1</b> Chọn gói dịch vụ
+                <b>1</b> Chọn gói phù hợp
               </span>
               <span>
                 <b>2</b> Điền thông tin liên hệ
@@ -264,7 +267,7 @@ export function ServicesListPage() {
                 <b>3</b> Chuyển khoản theo mã QR
               </span>
               <span>
-                <b>4</b> Gửi biên lai, nhận quyền truy cập
+                <b>4</b> Gửi biên lai và chờ xác nhận
               </span>
             </div>
           </div>
@@ -385,7 +388,7 @@ export function ServiceDetailPage() {
                   <BadgeCheck aria-hidden="true" /> Tiết kiệm {savingsPercent}% so với giá niêm yết {formatPrice(service.compareAtPrice)}.
                 </p>
               ) : null}
-              {service.priceNote ? <p>{service.priceNote}</p> : null}
+              {service.priceNote && !/CMS/i.test(service.priceNote) ? <p>{service.priceNote}</p> : null}
               <ul>
                 {hasDiscount ? (
                   <li>
@@ -401,7 +404,7 @@ export function ServiceDetailPage() {
                   <CheckCircle2 aria-hidden="true" /> Hình thức: chuyển khoản ngân hàng hoặc quét mã VietQR
                 </li>
               </ul>
-              <a href="#dat-mua">{service.ctaLabel || "Đặt mua ngay"}</a>
+              <a href="#dat-mua">{purchaseDisabled ? "Xem cách liên hệ" : service.ctaLabel || "Đặt mua ngay"} <ArrowRight aria-hidden="true" /></a>
             </div>
             {service.coverImage ? (
               <img src={service.coverImage} alt={service.name} />
@@ -490,7 +493,7 @@ export function ServiceDetailPage() {
             <h2>Quy trình mua gói dịch vụ</h2>
             <div>
               <span>
-                <b>1</b> Chọn gói dịch vụ
+                <b>1</b> Điền thông tin đặt mua
               </span>
               <span>
                 <b>2</b> Chuyển khoản theo mã đơn
@@ -499,7 +502,7 @@ export function ServiceDetailPage() {
                 <b>3</b> Tải biên lai chuyển khoản
               </span>
               <span>
-                <b>4</b> Nhận quyền sau xác nhận
+                <b>4</b> Nhận quyền sau khi xác nhận
               </span>
             </div>
           </div>
@@ -515,38 +518,38 @@ export function ServiceDetailPage() {
           ) : null}
 
           {otherServices.length ? (
-            <>
-              <header className="page-section-heading page-section-heading--light">
-                <span>Gói khác</span>
-                <h2>Các gói khác</h2>
-                <p>So sánh nhanh với những gói đồng hành khác của SGEN trước khi quyết định.</p>
+            <section className="service-related" aria-labelledby="service-related-title">
+              <header className="service-related__heading">
+                <div>
+                  <span>Khám phá thêm</span>
+                  <h2 id="service-related-title">Gói dịch vụ khác</h2>
+                  <p>Chọn hướng đồng hành phù hợp với thời gian và mục tiêu của bạn.</p>
+                </div>
+                <Link to="/dich-vu">Xem tất cả gói <ArrowRight aria-hidden="true" /></Link>
               </header>
-              <div className="service-grid">
+              <div className="service-grid service-related__grid">
                 {otherServices.map((item, index) => (
-                  <article key={item.slug}>
-                    <span className="service-grid__number">{String(index + 1).padStart(2, "0")}</span>
-                    {item.isFeatured ? <span className="page-kicker page-kicker--light">Được chọn nhiều</span> : null}
+                  <article className="service-related__card" key={item.slug}>
+                    <div className="service-related__image">
+                      {item.coverImage ? <img src={item.coverImage} alt="" loading="lazy" /> : <PackageCheck aria-hidden="true" />}
+                      <span>{String(index + 1).padStart(2, "0")}</span>
+                    </div>
+                    <div className="service-related__body">
+                    <span className="service-related__duration">{item.durationLabel || "Linh hoạt"}</span>
                     <h3>{item.name}</h3>
                     <p>{item.tagline}</p>
-                    <p>
+                    <div className="service-related__price">
                       <strong>{formatPrice(item.price)}</strong>
                       {item.compareAtPrice > item.price ? <s> {formatPrice(item.compareAtPrice)}</s> : null}
-                      {item.durationLabel ? ` · ${item.durationLabel}` : ""}
-                    </p>
-                    <ul>
-                      {item.deliverables.slice(0, 3).map((deliverable) => (
-                        <li key={deliverable}>
-                          <CheckCircle2 aria-hidden="true" /> {deliverable}
-                        </li>
-                      ))}
-                    </ul>
-                    <Link to={`/dich-vu/${item.slug}`}>
-                      {item.ctaLabel || "Xem chi tiết"} <ArrowRight aria-hidden="true" />
+                    </div>
+                    <Link to={`/dich-vu/${item.slug}`} aria-label={`Xem chi tiết ${item.name}`}>
+                      Xem chi tiết <ArrowRight aria-hidden="true" />
                     </Link>
+                    </div>
                   </article>
                 ))}
               </div>
-            </>
+            </section>
           ) : null}
         </div>
       </section>
@@ -555,7 +558,7 @@ export function ServiceDetailPage() {
         <div className="container" id="dat-mua">
           <header className="page-section-heading page-section-heading--light">
             <span>Đặt mua</span>
-            <h2>Thông tin người đặt</h2>
+            <h2>Hoàn tất đăng ký</h2>
             <p>Sau khi gửi, hệ thống tạo mã đơn và hiển thị hướng dẫn chuyển khoản kèm mã QR.</p>
           </header>
 
@@ -573,7 +576,7 @@ export function ServiceDetailPage() {
             <PaymentPanel payment={created.payment} amount={created.order.amount} code={created.order.code} viewToken={created.order.viewToken} />
           ) : (
             <div className="lookup-workspace__grid">
-              <form className="admin-card" onSubmit={submit}>
+              <form className="admin-card service-checkout__form" onSubmit={submit}>
                 <div className="admin-form">
                   <div className="admin-form__grid">
                     <TextField
@@ -626,10 +629,13 @@ export function ServiceDetailPage() {
                 </div>
               </form>
 
-              <aside className="admin-card">
+              <aside className="admin-card service-checkout__summary">
                 <div className="admin-panel__head">
-                  <h2>Quyền lợi gói</h2>
+                  <h2>Đơn hàng của bạn</h2>
                 </div>
+                <div className="service-checkout__total"><span>{service.name}</span><strong>{formatPrice(service.price)}</strong></div>
+                {service.durationLabel ? <p className="service-checkout__duration">Thời lượng: {service.durationLabel}</p> : null}
+                <h3 className="service-checkout__subheading">Bao gồm</h3>
                 <div className="article-list">
                   {service.deliverables.map((item) => (
                     <article key={item}>
@@ -642,9 +648,7 @@ export function ServiceDetailPage() {
                     </article>
                   ))}
                 </div>
-                <p className="admin-hint">
-                  <Info aria-hidden="true" /> {service.priceNote}
-                </p>
+                {service.priceNote && !/CMS/i.test(service.priceNote) ? <p className="admin-hint"><Info aria-hidden="true" /> {service.priceNote}</p> : null}
               </aside>
             </div>
           )}

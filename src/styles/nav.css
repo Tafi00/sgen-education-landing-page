@@ -110,6 +110,12 @@
   transform: translateY(0);
 }
 
+/* Item cuối (Khóa học, 11 mục): căn phải để panel không tràn mép viewport. */
+.site-nav__item:last-child .site-nav__dropdown {
+  left: auto;
+  right: -14px;
+}
+
 /* Cầu nối 14px giữa mục cha và panel: rê chuột qua khe vẫn tính là đang ở trong mục,
    nên menu không tắt giữa đường. Chỉ áp dụng ở chế độ desktop (dưới 1241px panel nằm trong drawer). */
 @media (min-width: 1241px) {
@@ -166,9 +172,9 @@
   align-items: center;
   gap: 8px;
   padding: 0 15px;
-  color: #f0e7ff;
-  background: rgba(18, 7, 69, 0.5);
-  border: 1px solid rgba(208, 170, 255, 0.34);
+  color: #fff;
+  background: #352064;
+  border: 1px solid #352064;
   border-radius: 999px;
   font-size: 0.78rem;
   font-weight: 700;

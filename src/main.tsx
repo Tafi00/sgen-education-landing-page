@@ -23,6 +23,7 @@ import "./styles/ux-reference.css";
 import "./styles/ux-cms.css";
 import "./styles/ux-cms-media.css";
 import "./styles/ux-cms-forms.css";
+import "./styles/ux-services.css";
 
 const queryClient = new QueryClient({
   defaultOptions: {

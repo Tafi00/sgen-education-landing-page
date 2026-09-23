@@ -1973,7 +1973,40 @@ const MOVING_LINE_GUIDANCE = [
   "Sự việc đã đến cực điểm hoặc cuối chu kỳ. Bớt cố giữ trạng thái cũ và chuẩn bị cho pha kế tiếp.",
 ] as const;
 
-export function getHexagram(lines: number[]) {
+export interface TrigramInfo {
+  key: string;
+  name: string;
+  symbol: string;
+  nature: string;
+}
+
+export interface HexagramInfo {
+  number: number;
+  name: string;
+  keyword: string;
+  message: string;
+  lower: TrigramInfo;
+  upper: TrigramInfo;
+}
+
+export interface MovingLineDetail {
+  position: number;
+  value: number;
+  polarity: string;
+  change: string;
+  focus: string;
+  guidance: string;
+}
+
+export interface HexagramResult {
+  primary: HexagramInfo;
+  changed: HexagramInfo;
+  moving: number[];
+  movingDetails: MovingLineDetail[];
+  readingRule: string;
+}
+
+export function getHexagram(lines: number[]): HexagramResult {
   const bits = lines.map((value) => (value === 7 || value === 9 ? "1" : "0"));
   const changedBits = lines.map((value) => value === 6 ? "1" : value === 9 ? "0" : value === 7 ? "1" : "0");
   const resolve = (lineBits: string[]) => {

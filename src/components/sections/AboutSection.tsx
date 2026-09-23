@@ -36,7 +36,16 @@ export function AboutSection() {
             ))}
           </div>
 
-          <SparkleButton href="/gioi-thieu">Tìm hiểu về SGEN</SparkleButton>
+          <SparkleButton
+            href="#tam-nhin"
+            onClick={(e) => {
+              e.preventDefault();
+              window.history.pushState(null, "", "#tam-nhin");
+              document.getElementById("tam-nhin")?.scrollIntoView({ behavior: "smooth", block: "start" });
+            }}
+          >
+            Khám phá tầm nhìn & sứ mệnh
+          </SparkleButton>
         </Reveal>
 
         <Reveal className="pythagoras-card" direction="left" delay={100}>

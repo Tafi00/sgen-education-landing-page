@@ -15,12 +15,12 @@ import {
   Sparkles,
   type LucideIcon,
 } from "lucide-react";
-import { BaziToolView } from "../../components/fengshui/BaziToolView";
 import { CalendarToolView } from "../../components/fengshui/CalendarToolView";
 import { IChingToolView } from "../../components/fengshui/IChingToolView";
+import MenhThuApp from "../../vendor/menh-thu/app/MenhThuApp";
+import "../../styles/menh-thu-bazi.css";
 import { getDateProfile } from "../../../shared/menh-thu/metaphysics";
 import { RESULTS_DISCLAIMER } from "../../../shared/lookup-types";
-
 const COURSE_IMAGE = "/assets/programs/program-home-feng-shui-v2.webp";
 
 /** Header của site là `position: fixed` cao 98px, nên section đầu trang công cụ cần chừa thêm khoảng đệm. */
@@ -136,7 +136,7 @@ function RelatedTools({ current }: { current: string }) {
 
 function CourseCta({ note }: { note?: string }) {
   return (
-    <section className="page-dark-section">
+    <section className="page-dark-section fengshui-course-section">
       <div className="container">
         <div className="featured-course">
           <div>
@@ -164,7 +164,7 @@ function CourseCta({ note }: { note?: string }) {
 
 function Disclaimer() {
   return (
-    <section className="page-dark-section">
+    <section className="page-dark-section fengshui-disclaimer-section">
       <div className="container">
         <div className="privacy-banner">
           <ShieldCheck aria-hidden="true" />
@@ -198,7 +198,7 @@ export function FengShuiHubPage() {
               SGEN tổng hợp ba công cụ miễn phí: gieo quẻ Kinh Dịch, lập Tứ Trụ Bát Tự và xem ngày theo lịch pháp Việt Nam. Mỗi công cụ trình bày
               rõ dữ liệu đầu vào, thuật toán đang dùng và phần luận giải để bạn chủ động đối chiếu.
             </p>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
+            <div className="fengshui-hub__actions">
               <Link className="page-primary" to="/cong-cu-phong-thuy/gieo-que-kinh-dich">
                 <Coins aria-hidden="true" /> Gieo quẻ ngay
               </Link>
@@ -317,7 +317,7 @@ export function GieoQuePage() {
         />
         <div className="container fengshui-tools">
           <div className="fengshui-workspace is-open">
-            <IChingToolView />
+            <IChingToolView compact />
           </div>
         </div>
       </section>
@@ -395,97 +395,22 @@ export function GieoQuePage() {
   );
 }
 
-/** Trang lập Tứ Trụ Bát Tự: an bốn trụ theo tiết khí kèm luận giải ngũ hành và Đại vận. */
+/** Trang lap Tu Tru Bát Tu dùng truc tiep MenhThuApp voi giao dien Menh Thu nguyên ban, đoi sac tím SGEN. */
 export function TuTruPage() {
+  const today = useMemo(localDateValue, []);
   return (
-    <>
-      <section className="page-dark-section" style={FIRST_SECTION_STYLE}>
-        <ToolHero
-          kicker="Công cụ phong thủy"
-          icon={LayoutGrid}
-          title="Phân tích"
-          accent="Tứ Trụ Bát Tự"
-          description="Nhập họ tên, giới tính, ngày và giờ sinh dương lịch. Công cụ hiệu chỉnh giờ Mặt Trời theo kinh độ Hà Nội rồi an bốn trụ, tính cân bằng ngũ hành, quan hệ Can Chi và chu kỳ Đại vận."
-        />
-        <div className="container fengshui-tools">
-          <div className="fengshui-workspace is-open">
-            <BaziToolView />
-          </div>
-        </div>
-      </section>
-
-      <MethodSection
-        heading="Bốn trụ được an theo tiết khí"
-        lead="Công cụ dùng lịch Can Chi và tiết khí để an trụ, không dùng tháng dương lịch thông thường."
-        items={[
-          {
-            icon: Clock3,
-            title: "Hiệu chỉnh giờ Mặt Trời",
-            text: "Giờ dân dụng được quy về giờ Mặt Trời thực theo kinh độ 105,8333° Đông, múi giờ UTC+7 và phương trình thời gian.",
-          },
-          {
-            icon: LayoutGrid,
-            title: "An trụ năm, tháng, ngày, giờ",
-            text: "Trụ tháng cắt theo tiết khí; trụ ngày theo chu kỳ 60 Can Chi; trụ giờ theo địa chi giờ sinh.",
-          },
-          {
-            icon: Sparkles,
-            title: "Nhật chủ và Thập thần",
-            text: "Thiên can trụ ngày là Nhật chủ. Quan hệ giữa Nhật chủ với các can còn lại được biểu diễn bằng Thập thần.",
-          },
-          {
-            icon: Compass,
-            title: "Cân bằng ngũ hành và Đại vận",
-            text: "Công cụ đếm hành của can, chi và tàng can để tính tỷ trọng, đồng thời tính mốc khởi và mười chu kỳ Đại vận.",
-          },
-        ]}
+    <div className="bazi-reference-page">
+      <MenhThuApp
+        initialToday={today}
+        initialTool="bazi"
+        standaloneBazi={true}
+        initialChartStyle="Trung Châu Phái + Khâm Thiên"
+        initialConfigOpen={true}
       />
-
-      <MethodSection
-        heading="Đọc chỉ báo vượng suy cho đúng"
-        lead="Phần vượng suy là lớp định lượng để có kết quả ngay; luận chuyên sâu vẫn cần xét hợp hóa và điều hậu của toàn cục."
-        items={[
-          {
-            icon: ShieldCheck,
-            title: "Điểm vượng suy có giới hạn",
-            text: "Điểm số tổng hợp từ tỷ trọng khí, tháng lệnh và số lần thông căn, chỉ nên xem là chỉ báo tương đối.",
-          },
-          {
-            icon: CircleAlert,
-            title: "Dụng thần là gợi ý",
-            text: "Dụng thần và hỷ thần do công cụ đề xuất theo quy tắc cố định, không thay thế phán đoán của người có chuyên môn.",
-          },
-          {
-            icon: BookOpen,
-            title: "Không dùng để quyết định thay bạn",
-            text: "Lá số là một cách nhìn bối cảnh. Các quyết định về nghề nghiệp, sức khỏe hay tài chính vẫn thuộc về bạn.",
-          },
-        ]}
-      />
-
-      <FaqSection
-        items={[
-          {
-            question: "Vì sao cần nhập giờ sinh chính xác?",
-            answer: "Trụ giờ phụ thuộc trực tiếp vào giờ sinh. Lệch một canh giờ có thể đổi trụ giờ và làm thay đổi phần Đại vận.",
-          },
-          {
-            question: "Sinh ở tỉnh khác Hà Nội thì sao?",
-            answer: "Công cụ hiện dùng kinh độ Hà Nội và múi giờ UTC+7 cho toàn quốc. Nếu sinh ở nơi khác múi giờ, kết quả chỉ mang tính tham khảo.",
-          },
-          {
-            question: "Đại vận tính theo tuổi nào?",
-            answer: "Công cụ quy đổi khoảng cách từ ngày sinh tới tiết khí gần nhất theo tỷ lệ ba ngày dân sự tương ứng một năm vận, rồi liệt kê mười chu kỳ.",
-          },
-        ]}
-      />
-
-      <RelatedTools current="/cong-cu-phong-thuy/tu-tru-bat-tu" />
-      <CourseCta note="Muốn luận trọn lá số, bạn cần học thêm quan hệ hợp xung, thập thần, cách cục và điều hậu theo mùa sinh." />
-      <Disclaimer />
-    </>
+    </div>
   );
 }
+
 
 function addDays(base: string, days: number) {
   const [year, month, day] = base.split("-").map(Number);

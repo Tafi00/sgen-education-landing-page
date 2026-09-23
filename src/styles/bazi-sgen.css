@@ -1,0 +1,1201 @@
+/* SGEN Education — Tứ Trụ Bát Tự Stylesheet */
+
+/* Page Wrapper & Atmospheric Cosmic Luxury Background */
+.sgen-tutru-page {
+  position: relative;
+  min-height: 100vh;
+  width: 100%;
+  padding-top: calc(var(--header-h, 92px) + 24px);
+  padding-bottom: 80px;
+  background-color: #f7f4fc;
+  background-image:
+    radial-gradient(circle at 12% 15%, rgba(90, 34, 232, 0.08) 0%, transparent 45%),
+    radial-gradient(circle at 88% 25%, rgba(232, 20, 145, 0.06) 0%, transparent 40%),
+    radial-gradient(circle at 50% 75%, rgba(122, 60, 255, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 20% 85%, rgba(90, 34, 232, 0.04) 0%, transparent 35%);
+  background-attachment: fixed;
+  overflow-x: hidden;
+}
+
+/* Star dust / celestial aura accent overlay */
+.sgen-tutru-page::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: radial-gradient(rgba(122, 60, 255, 0.12) 1px, transparent 1px);
+  background-size: 48px 48px;
+  opacity: 0.35;
+}
+
+.sgen-tutru-container {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 1560px;
+  margin: 0 auto;
+  padding: 0 28px;
+  box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+  .sgen-tutru-page {
+    padding-top: calc(var(--header-h, 76px) + 16px);
+  }
+  .sgen-tutru-container {
+    padding: 0 14px;
+  }
+}
+
+/* SGEN Tool Intro — Bản Mệnh Thư với sắc tím vương giả SGEN */
+.sgen-tool-intro {
+  display: grid;
+  grid-template-columns: minmax(0, 540px) 1fr;
+  grid-template-rows: auto 1fr;
+  min-height: 340px;
+  margin-bottom: 28px;
+  padding: 42px 48px;
+  overflow: hidden;
+  border-radius: 24px;
+  color: #ffffff;
+  background-color: #12082f;
+  background-image:
+    linear-gradient(90deg, #11082c 0%, #180a42 42%, rgba(35, 12, 85, 0.88) 60%, rgba(90, 34, 232, 0.25) 85%),
+    url("/bazi-celestial-bg-v1.jpg");
+  background-position: center right;
+  background-size: cover;
+  border: 1px solid rgba(138, 75, 255, 0.28);
+  box-shadow: 0 20px 50px rgba(18, 8, 47, 0.25);
+  box-sizing: border-box;
+}
+
+.sgen-tool-intro__copy {
+  position: relative;
+  z-index: 2;
+  grid-column: 1;
+}
+
+.sgen-tool-intro__copy h1 {
+  margin: 0 0 14px 0;
+  color: #ffffff;
+  font-size: clamp(2.2rem, 3.6vw, 3.2rem);
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  line-height: 1.15;
+}
+
+.sgen-tool-intro__copy p {
+  margin: 0;
+  max-width: 52ch;
+  color: rgba(242, 233, 255, 0.9);
+  font-size: 0.92rem;
+  line-height: 1.6;
+}
+
+.sgen-tool-intro__highlights {
+  position: relative;
+  z-index: 2;
+  grid-column: 1;
+  grid-row: 2;
+  width: min(100%, 420px);
+  align-self: end;
+  display: grid;
+  gap: 0;
+  margin: 28px 0 0 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid rgba(214, 188, 255, 0.28);
+}
+
+.sgen-tool-intro__highlights li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 38px;
+  border-bottom: 1px solid rgba(214, 188, 255, 0.22);
+  color: #ffffff;
+  font-size: 0.8rem;
+  font-weight: 650;
+  letter-spacing: 0.01em;
+}
+
+.sgen-tool-intro__highlights li svg {
+  color: #ffd166;
+  flex-shrink: 0;
+}
+
+@media (max-width: 960px) {
+  .sgen-tool-intro {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto;
+    min-height: auto;
+    padding: 30px 24px;
+    background-image:
+      linear-gradient(180deg, #11082c 0%, rgba(24, 10, 66, 0.94) 55%, rgba(90, 34, 232, 0.7) 100%),
+      url("/bazi-celestial-bg-v1.jpg");
+    background-position: 70% center;
+  }
+
+  .sgen-tool-intro__copy h1 {
+    font-size: 2.1rem;
+  }
+
+  .sgen-tool-intro__highlights {
+    margin-top: 20px;
+  }
+}
+.sgen-bazi-workspace {
+  display: grid;
+  grid-template-columns: 340px minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+  width: 100%;
+  color: #0b0a46;
+  font-family: var(--font-body, "Be Vietnam Pro", sans-serif);
+}
+
+@media (max-width: 1040px) {
+  .sgen-bazi-workspace {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* LEFT COLUMN — HỒ SƠ MỆNH CHỦ FORM */
+.sgen-bazi-form-card {
+  background: #ffffff;
+  border: 1px solid #e7dbf7;
+  border-radius: 22px;
+  box-shadow: 0 14px 40px rgba(44, 22, 116, 0.08);
+  overflow: hidden;
+  position: static;
+}
+
+@media (min-width: 1041px) {
+  .sgen-bazi-form-card {
+    position: sticky;
+    top: calc(var(--header-h, 98px) + 20px);
+    max-height: calc(100vh - var(--header-h, 98px) - 36px);
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #d1b8f5 transparent;
+  }
+}
+
+.sgen-bazi-form-intro {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-height: 125px;
+  padding: 22px 20px 18px;
+  background: linear-gradient(135deg, #faf7fe 0%, #f3ebfc 100%);
+  border-bottom: 1px solid #ebdff8;
+}
+
+.sgen-bazi-form-intro > span {
+  position: absolute;
+  top: 18px;
+  left: 20px;
+  color: #5a22e8;
+  font-size: 0.74rem;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.sgen-bazi-form-intro > b {
+  position: absolute;
+  top: 12px;
+  right: 18px;
+  color: #bfa6e6;
+  font-family: serif;
+  font-size: 2.1rem;
+  line-height: 1;
+}
+
+.sgen-bazi-form-intro strong {
+  color: #120436;
+  font-family: var(--font-display, "Be Vietnam Pro", sans-serif);
+  font-size: 1.3rem;
+  font-weight: 800;
+  line-height: 1.25;
+  margin-top: 24px;
+}
+
+.sgen-bazi-form-intro p {
+  color: #5a5270;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  margin: 5px 0 0;
+}
+
+.sgen-bazi-form-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 18px 20px 22px;
+  background: #ffffff;
+}
+
+.sgen-bazi-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.sgen-bazi-field > span,
+.sgen-bazi-field legend {
+  color: #2b1a4a;
+  font-size: 0.78rem;
+  font-weight: 750;
+  margin: 0;
+  padding: 0;
+}
+
+.sgen-bazi-field input {
+  height: 44px;
+  padding: 0 12px;
+  border: 1px solid #dfd1f3;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #0b0a46;
+  font-family: inherit;
+  font-size: 0.86rem;
+  box-sizing: border-box;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.sgen-bazi-field input:focus {
+  outline: none;
+  border-color: #5a22e8;
+  box-shadow: 0 0 0 3px rgba(90, 34, 232, 0.16);
+}
+
+.sgen-bazi-field small {
+  color: #695d7f;
+  font-size: 0.72rem;
+  margin-top: 2px;
+}
+
+.sgen-bazi-segmented {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3px;
+  background: #f2e9fc;
+  border: 1px solid #e4d5f7;
+  border-radius: 10px;
+  padding: 3px;
+  height: 44px;
+  box-sizing: border-box;
+}
+
+.sgen-bazi-segmented button {
+  border: 0;
+  border-radius: 8px;
+  color: #615575;
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 700;
+  background: transparent;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+}
+
+.sgen-bazi-segmented button.is-selected {
+  background: #5a22e8;
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(90, 34, 232, 0.25);
+}
+
+.sgen-bazi-location-pill {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  background: #faf6fe;
+  border: 1px solid #ebdff8;
+  border-radius: 10px;
+}
+
+.sgen-bazi-location-pill svg {
+  flex-shrink: 0;
+  color: #7a3cff;
+  margin-top: 2px;
+}
+
+.sgen-bazi-location-pill div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sgen-bazi-location-pill b {
+  color: #2b1a4a;
+  font-size: 0.75rem;
+}
+
+.sgen-bazi-location-pill strong {
+  color: #5a22e8;
+  font-size: 0.84rem;
+}
+
+.sgen-bazi-location-pill small {
+  color: #6f6583;
+  font-size: 0.68rem;
+}
+
+.sgen-bazi-time-settings {
+  border: 1px solid #e6dcf5;
+  border-radius: 10px;
+  background: #faf6fe;
+  overflow: hidden;
+}
+
+.sgen-bazi-time-settings summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  color: #3b2c52;
+  cursor: pointer;
+  font-size: 0.77rem;
+  font-weight: 700;
+  list-style: none;
+}
+
+.sgen-bazi-time-settings summary::-webkit-details-marker {
+  display: none;
+}
+
+.sgen-bazi-time-settings summary svg {
+  color: #7a3cff;
+  flex-shrink: 0;
+}
+
+.sgen-bazi-time-settings summary > span {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.sgen-bazi-time-settings summary small {
+  color: #6d6281;
+  font-size: 0.68rem;
+  font-weight: 400;
+}
+
+.sgen-bazi-time-settings__body {
+  padding: 8px 12px 12px;
+  border-top: 1px solid #ebdff8;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sgen-bazi-time-mode-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  padding: 8px 10px;
+  border: 1px solid #e5daf5;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #382b4e;
+  font-family: inherit;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.sgen-bazi-time-mode-btn.is-selected {
+  border-color: #5a22e8;
+  background: #f4ecfd;
+  color: #5a22e8;
+}
+
+.sgen-bazi-time-mode-btn b {
+  font-size: 0.74rem;
+}
+
+.sgen-bazi-time-mode-btn small {
+  font-size: 0.68rem;
+  color: #635878;
+}
+
+.sgen-bazi-form-action {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 4px;
+  padding-top: 12px;
+  border-top: 1px solid #f0e6fc;
+}
+
+.sgen-bazi-submit-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 48px;
+  border: 0;
+  border-radius: 12px;
+  color: #ffffff;
+  background: linear-gradient(104deg, #e81491 0%, #a31ac9 44%, #5721e8 100%);
+  box-shadow: 0 4px 16px rgba(163, 26, 201, 0.28);
+  font-family: inherit;
+  font-size: 0.92rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.sgen-bazi-submit-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 22px rgba(163, 26, 201, 0.38);
+}
+
+.sgen-bazi-input-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 10px 4px 0;
+  padding: 8px 12px;
+  background: #f2e9fc;
+  border: 1px solid #e5d7f7;
+  border-radius: 10px;
+  color: #5a22e8;
+  font-size: 0.74rem;
+}
+
+/* RIGHT COLUMN — BÁT TỰ RESULTS */
+.sgen-bazi-result-card {
+  background: #ffffff;
+  border: 1px solid #e7dbf7;
+  border-radius: 22px;
+  box-shadow: 0 14px 40px rgba(44, 22, 116, 0.08);
+  overflow: hidden;
+  width: 100%;
+  min-width: 0;
+}
+
+.sgen-bazi-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 16px 24px;
+  background: #ffffff;
+  border-bottom: 1px solid #ebdff8;
+}
+
+.sgen-bazi-toolbar__info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sgen-bazi-toolbar__info span {
+  font-size: 0.72rem;
+  color: #695e80;
+}
+
+.sgen-bazi-toolbar__info strong {
+  font-family: var(--font-display, "Be Vietnam Pro", sans-serif);
+  font-size: 1.22rem;
+  color: #120436;
+}
+
+.sgen-bazi-toolbar__info small {
+  font-size: 0.74rem;
+  color: #5c4e75;
+}
+
+.sgen-bazi-toolbar__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.sgen-bazi-toolbar__actions button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  background: #f5edfd;
+  color: #5a22e8;
+  border: 1px solid #e3d4f7;
+  border-radius: 9px;
+  font-family: inherit;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.sgen-bazi-toolbar__actions button:hover {
+  background: #5a22e8;
+  color: #ffffff;
+  border-color: #5a22e8;
+}
+
+.sgen-bazi-location-strip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 24px;
+  background: #faf6fe;
+  border-bottom: 1px solid #ecdff8;
+  font-size: 0.74rem;
+  color: #52476b;
+}
+
+.sgen-bazi-location-strip svg {
+  color: #7a3cff;
+}
+
+.sgen-bazi-location-strip b {
+  color: #1f0b48;
+}
+
+.sgen-bazi-location-strip span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sgen-bazi-location-strip .sgen-solar-time-pill {
+  margin-left: auto;
+  padding: 4px 10px;
+  background: #f1e6fb;
+  border-radius: 999px;
+  color: #5a22e8;
+  font-weight: 700;
+}
+
+@media (max-width: 768px) {
+  .sgen-bazi-location-strip .sgen-solar-time-pill {
+    margin-left: 0;
+  }
+}
+
+/* VIEW TABS */
+.sgen-bazi-tabs {
+  display: flex;
+  overflow-x: auto;
+  background: #ffffff;
+  border-bottom: 1px solid #ecdff8;
+  padding: 0 16px;
+  scrollbar-width: thin;
+}
+
+.sgen-bazi-tabs button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 18px;
+  color: #615678;
+  background: transparent;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 750;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.sgen-bazi-tabs button:hover {
+  color: #5a22e8;
+}
+
+.sgen-bazi-tabs button.is-selected {
+  color: #5a22e8;
+  background: #f7f0fd;
+  border-bottom-color: #5a22e8;
+}
+
+/* TAB 1: BÁT TỰ PAPER */
+.sgen-bazi-paper {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+@media (max-width: 640px) {
+  .sgen-bazi-paper {
+    padding: 16px;
+  }
+}
+
+.sgen-bazi-paper-header {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 16px;
+  padding: 22px 24px;
+  background: linear-gradient(135deg, #faf7fe 0%, #f4ebfc 100%);
+  border: 1px solid #e6d8f5;
+  border-radius: 18px;
+}
+
+.sgen-bazi-paper-header > div small {
+  color: #7a3cff;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.sgen-bazi-paper-header h2 {
+  color: #17073d;
+  font-family: var(--font-display, "Be Vietnam Pro", sans-serif);
+  font-size: 1.6rem;
+  font-weight: 800;
+  margin: 4px 0 2px;
+}
+
+.sgen-bazi-paper-header p {
+  color: #5a4d6f;
+  font-size: 0.82rem;
+  margin: 0;
+}
+
+.sgen-bazi-seal {
+  color: #5a22e8;
+  font-family: serif;
+  font-size: 1.8rem;
+  line-height: 1;
+  text-align: center;
+}
+
+.sgen-bazi-header-dl {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px;
+  margin: 6px 0 0;
+}
+
+.sgen-bazi-header-dl div {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 10px 12px;
+  background: #ffffff;
+  border: 1px solid #ecdff8;
+  border-radius: 10px;
+}
+
+.sgen-bazi-header-dl dt {
+  color: #6d6182;
+  font-size: 0.7rem;
+}
+
+.sgen-bazi-header-dl dd {
+  color: #15053b;
+  font-size: 0.82rem;
+  font-weight: 750;
+  margin: 0;
+}
+
+/* 4 BANNER CARDS */
+.sgen-bazi-board-banner {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+@media (max-width: 768px) {
+  .sgen-bazi-board-banner {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.sgen-bazi-banner-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px 16px;
+  background: linear-gradient(135deg, #180947 0%, #3a1678 50%, #5a22e8 100%);
+  border-radius: 14px;
+  color: #ffffff;
+  box-shadow: 0 4px 16px rgba(44, 22, 116, 0.12);
+}
+
+.sgen-bazi-banner-card small {
+  color: #c7a4ff;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.sgen-bazi-banner-card b {
+  color: #ffffff;
+  font-size: 1.05rem;
+  font-weight: 800;
+}
+
+.sgen-bazi-banner-card i {
+  color: #e5d7ff;
+  font-size: 0.72rem;
+  font-style: normal;
+}
+
+/* PALACE BOARD (12 ĐỊA CHI) */
+.sgen-bazi-palace-scroll {
+  overflow-x: auto;
+  scrollbar-width: thin;
+  padding-bottom: 6px;
+}
+
+.sgen-bazi-palace-board {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(130px, 1fr));
+  grid-template-rows: repeat(4, minmax(126px, auto));
+  gap: 8px;
+  min-width: 580px;
+}
+
+.sgen-bazi-palace-cell {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 12px;
+  background: #ffffff;
+  border: 1px solid #e4d7f5;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(44, 22, 116, 0.04);
+}
+
+.sgen-bazi-palace-cell header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  color: #5a22e8;
+}
+
+.sgen-bazi-palace-cell header small {
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+.sgen-bazi-palace-cell header strong {
+  font-size: 1.2rem;
+  color: #17073d;
+}
+
+.sgen-bazi-palace-gods {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin: 10px 0;
+}
+
+.sgen-bazi-palace-gods span {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 4px 6px;
+  background: #f4edfd;
+  border-radius: 6px;
+  font-size: 0.72rem;
+  color: #381a6e;
+}
+
+.sgen-bazi-palace-gods small {
+  font-size: 0.6rem;
+  color: #695687;
+}
+
+.sgen-bazi-palace-cell footer {
+  margin-top: auto;
+  font-size: 0.64rem;
+  color: #6e5e82;
+}
+
+.sgen-bazi-palace-center {
+  grid-area: 2 / 2 / 4 / 4;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+  padding: 18px 20px;
+  text-align: center;
+  background: #f7f1fc;
+  border: 1px solid #d5bdf0;
+  border-radius: 16px;
+}
+
+.sgen-bazi-palace-center > small {
+  color: #7a4bb0;
+  font-size: 0.72rem;
+  font-weight: 750;
+  text-transform: uppercase;
+}
+
+.sgen-bazi-palace-center > strong {
+  color: #1b074a;
+  font-family: var(--font-display, "Be Vietnam Pro", sans-serif);
+  font-size: 1.3rem;
+  font-weight: 800;
+}
+
+.sgen-bazi-center-pillars {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.sgen-bazi-center-pillar {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 8px 4px;
+  background: #ffffff;
+  border: 1px solid #ebdff8;
+  border-radius: 9px;
+}
+
+.sgen-bazi-center-pillar small {
+  font-size: 0.64rem;
+  color: #6f5f84;
+}
+
+.sgen-bazi-center-pillar b {
+  font-size: 0.66rem;
+  color: #5a22e8;
+}
+
+.sgen-bazi-center-pillar strong {
+  font-size: 1.15rem;
+  color: #17073d;
+}
+
+.sgen-bazi-center-pillar em {
+  font-style: normal;
+  font-size: 1.05rem;
+  color: #5a22e8;
+}
+
+.sgen-bazi-center-pillar span {
+  font-size: 0.65rem;
+  color: #695e7d;
+}
+
+/* MATRIX TABLE */
+.sgen-bazi-detail-table {
+  border: 1px solid #e4d7f5;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+.sgen-bazi-detail-table summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  background: #fbf8fe;
+  cursor: pointer;
+  font-weight: 750;
+  color: #190847;
+  list-style: none;
+}
+
+.sgen-bazi-detail-table summary::-webkit-details-marker {
+  display: none;
+}
+
+.sgen-bazi-matrix-scroll {
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.sgen-bazi-matrix {
+  display: grid;
+  grid-template-columns: 110px repeat(4, minmax(110px, 1fr));
+  min-width: 550px;
+  border-top: 1px solid #ebdff8;
+}
+
+.sgen-bazi-matrix > * {
+  padding: 11px 12px;
+  border-right: 1px solid #ebdff8;
+  border-bottom: 1px solid #ebdff8;
+  font-size: 0.78rem;
+  text-align: center;
+}
+
+.sgen-bazi-matrix-corner,
+.sgen-bazi-matrix-head,
+.sgen-bazi-matrix-row-label {
+  background: #f6effd;
+  color: #2b1158;
+  font-weight: 800;
+}
+
+.sgen-bazi-matrix-row {
+  display: contents;
+}
+
+/* DESTINY CARDS */
+.sgen-bazi-destiny-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+@media (max-width: 768px) {
+  .sgen-bazi-destiny-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.sgen-bazi-destiny-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 18px 20px;
+  background: #ffffff;
+  border: 1px solid #e5daf5;
+  border-radius: 14px;
+  box-shadow: 0 2px 10px rgba(44, 22, 116, 0.04);
+}
+
+.sgen-bazi-destiny-card small {
+  color: #7a4bb0;
+  font-size: 0.72rem;
+  font-weight: 750;
+  text-transform: uppercase;
+}
+
+.sgen-bazi-destiny-card strong {
+  font-size: 1.25rem;
+  color: #17073d;
+}
+
+.sgen-bazi-destiny-card span {
+  font-size: 0.78rem;
+  color: #55476a;
+  line-height: 1.5;
+}
+
+/* LUCK SUMMARY & TRACK */
+.sgen-bazi-luck-track-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sgen-bazi-luck-summary {
+  padding: 14px 18px;
+  background: #f2e9fc;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  color: #381a6e;
+}
+
+.sgen-bazi-luck-summary b {
+  color: #5a22e8;
+}
+
+.sgen-bazi-luck-track {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 6px 0;
+  scrollbar-width: thin;
+}
+
+.sgen-bazi-luck-cycle-btn {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 0 0 115px;
+  padding: 12px;
+  background: #ffffff;
+  border: 1px solid #e3d4f7;
+  border-radius: 10px;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  transition: all 0.2s;
+}
+
+.sgen-bazi-luck-cycle-btn.is-current {
+  border-color: #5a22e8;
+  background: #f4ecfd;
+}
+
+.sgen-bazi-luck-cycle-btn small {
+  font-size: 0.66rem;
+  color: #695e7d;
+}
+
+.sgen-bazi-luck-cycle-btn strong {
+  font-size: 1.05rem;
+  color: #17073d;
+}
+
+/* RELATIONS CHIPS */
+.sgen-bazi-relations-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 18px 20px;
+  background: #ffffff;
+  border: 1px solid #e5daf5;
+  border-radius: 14px;
+}
+
+.sgen-bazi-relations-wrap > b {
+  font-size: 0.86rem;
+  color: #17073d;
+}
+
+.sgen-bazi-relations-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.sgen-bazi-relation-chip {
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: #f3eefb;
+  color: #43217d;
+  border: 1px solid #e4d7f5;
+}
+
+.sgen-bazi-relation-chip.is-clash,
+.sgen-bazi-relation-chip.is-harm {
+  background: #fdf2f4;
+  color: #c92a2a;
+  border-color: #fcc2d7;
+}
+
+/* ELEMENT COLORS */
+.sgen-el-thuy { color: #175cd3 !important; }
+.sgen-el-moc { color: #108a48 !important; }
+.sgen-el-hoa { color: #d92d20 !important; }
+.sgen-el-tho { color: #b56717 !important; }
+.sgen-el-kim { color: #475467 !important; }
+
+/* TAB PANELS: FORTUNE, ANALYSIS, AI, NOTES */
+.sgen-bazi-tab-panel {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.sgen-bazi-panel-heading {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sgen-bazi-panel-heading small {
+  color: #7a3cff;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.sgen-bazi-panel-heading h3 {
+  color: #17073d;
+  font-family: var(--font-display, "Be Vietnam Pro", sans-serif);
+  font-size: 1.45rem;
+  font-weight: 800;
+  margin: 0;
+}
+
+.sgen-bazi-panel-heading p {
+  color: #554868;
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+/* ELEMENT PROGRESS BARS */
+.sgen-bazi-elements-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 20px;
+  background: #faf7fe;
+  border: 1px solid #ecdff8;
+  border-radius: 14px;
+}
+
+.sgen-bazi-element-row {
+  display: grid;
+  grid-template-columns: 50px 1fr 45px;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.sgen-bazi-bar-track {
+  height: 10px;
+  background: #e9ddf6;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.sgen-bazi-bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #5a22e8, #e81491);
+}
+
+/* AI PROMPT TEXTAREA */
+.sgen-bazi-ai-textarea {
+  width: 100%;
+  padding: 16px;
+  border: 1px solid #dfd1f3;
+  border-radius: 12px;
+  background: #faf8fe;
+  color: #17073d;
+  font-family: monospace;
+  font-size: 0.82rem;
+  line-height: 1.6;
+  box-sizing: border-box;
+}
+
+.sgen-bazi-copy-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  background: #5a22e8;
+  color: #ffffff;
+  border: 0;
+  border-radius: 10px;
+  font-family: inherit;
+  font-weight: 750;
+  font-size: 0.84rem;
+  cursor: pointer;
+  align-self: flex-start;
+  box-shadow: 0 4px 14px rgba(90, 34, 232, 0.25);
+  transition: all 0.2s;
+}
+
+.sgen-bazi-copy-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(90, 34, 232, 0.35);
+}

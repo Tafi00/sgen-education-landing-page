@@ -364,6 +364,38 @@ export function BlogCategoryPage() {
                 ) : null}
               </nav>
 
+              {posts.length ? (
+                <section className="ref-blog-section" aria-labelledby="ref-blog-noi-bat">
+                  <header className="ref-blog-section__head">
+                    <span>{Math.min(posts.length, 6)} bài mới nhất</span>
+                    <h2 id="ref-blog-noi-bat">Bài viết nổi bật</h2>
+                    <p>Những bài được cập nhật gần đây trên toàn bộ chuyên mục.</p>
+                  </header>
+                  <div className="ref-blog-grid">
+                    {[...posts]
+                      .sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime())
+                      .slice(0, 6)
+                      .map((post) => (
+                        <article key={`noi-bat-${post.slug}`}>
+                          <Link className="ref-blog-grid__cover" to={`/blog/${post.slug}`} tabIndex={-1} aria-hidden="true">
+                            <img src={post.cover || FALLBACK_COVER} alt="" loading="lazy" />
+                          </Link>
+                          <small>
+                            {formatDate(post.publishedAt)} · {post.readMinutes} phút đọc
+                          </small>
+                          <h3>
+                            <Link to={`/blog/${post.slug}`}>{post.title}</Link>
+                          </h3>
+                          <p>{post.excerpt}</p>
+                          <Link className="ref-blog-grid__more" to={`/blog/${post.slug}`}>
+                            Đọc tiếp <ArrowRight aria-hidden="true" />
+                          </Link>
+                        </article>
+                      ))}
+                  </div>
+                </section>
+              ) : null}
+
               {visible.map((section) => {
                 const tool = CATEGORY_TOOLS[section.slug];
                 return (
