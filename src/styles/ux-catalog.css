@@ -1,0 +1,162 @@
+/* Khóa học, Free tools và Blog: bố cục danh mục gọn, sáng và dễ quét. */
+.catalog-hero.page-hero {
+  min-height: 420px;
+  align-items: end;
+  padding: 142px 0 62px;
+  background-image: linear-gradient(110deg, rgba(12, 7, 35, .96), rgba(26, 12, 54, .9)), var(--page-dark-bg);
+}
+.catalog-hero .page-hero__copy { max-width: 930px; }
+.catalog-hero .page-hero__copy h1 {
+  max-width: 900px;
+  margin-top: 18px;
+  font-size: clamp(2.5rem, 3.6vw, 4.15rem);
+  line-height: 1.09;
+  letter-spacing: -.035em;
+  text-wrap: balance;
+}
+.catalog-hero .page-hero__copy > p {
+  max-width: 770px;
+  margin-top: 17px;
+  color: #e1d9e9;
+  font-size: 1rem;
+  line-height: 1.65;
+}
+.catalog-hero .page-hero__copy > .page-primary,
+.catalog-hero .page-hero__actions { margin-top: 22px; }
+.catalog-hero .page-hero__actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.catalog-hero .page-primary,
+.catalog-hero .action-button { min-height: 46px; padding: 10px 18px; border-radius: 10px; font-size: 13px; }
+.catalog-content.page-light-section {
+  padding-block: 66px 86px;
+  background: #f8f6f4;
+  scroll-margin-top: 98px;
+}
+.catalog-content__heading { margin-bottom: 25px; }
+.catalog-content__heading > span { color: #7440a7; font-size: 12px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+.catalog-content__heading h2 { margin: 7px 0 8px; color: #271d34; font-family: var(--font-display); font-size: clamp(1.9rem, 2.5vw, 2.8rem); line-height: 1.2; }
+.catalog-content__heading p { margin: 0; color: #665b6d; font-size: 15px; }
+
+/* Danh mục khóa học: tất cả 11 mục hiện cùng một trang, mỗi thẻ đủ chỗ đọc. */
+.ux-course-list .course-toolbar,
+.ux-course-list .blog-toolbar,
+.ux-blog-list .blog-toolbar { background: #fff; border: 1px solid #e7e0e9; border-radius: 14px; box-shadow: 0 5px 18px rgba(43, 25, 58, .04); }
+.ux-course-list .course-toolbar { padding: 13px; }
+.ux-course-list .course-toolbar > label { width: min(100%, 470px); }
+.ux-course-list .blog-toolbar { margin: 0 0 21px; padding: 13px 17px; }
+.ux-course-list .blog-count,
+.ux-blog-list .blog-count { color: #53465c; font-size: 14px; }
+.ux-course-list .course-grid { gap: 20px; }
+.ux-course-list .course-grid article {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+  overflow: hidden;
+  padding: 0;
+  background: #fff;
+  border: 1px solid #e9e1e9;
+  border-radius: 15px;
+  box-shadow: 0 8px 25px rgba(43, 25, 58, .06);
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.ux-course-list .course-grid article:hover { transform: translateY(-3px); box-shadow: 0 14px 30px rgba(43, 25, 58, .11); }
+.ux-course-list .course-grid article > img { width: 100%; height: 190px; padding: 10px 24px; object-fit: contain; background: #1d1634; }
+.ux-course-list .course-grid article .course-card__body { display: flex; flex: 1; flex-direction: column; align-items: flex-start; padding: 19px 20px 20px; }
+.ux-course-list .course-grid article .course-card__category { color: #70419a; font-size: 11px; line-height: 1.35; }
+.ux-course-list .course-grid article .course-card__level { font-size: 11px; }
+.ux-course-list .course-grid h3 { margin: 12px 0 8px; font-size: 19px; line-height: 1.3; }
+.ux-course-list .course-grid h3 a { color: #29203a; text-decoration: none; }
+.ux-course-list .course-grid h3 a:hover { color: #7440a7; }
+.ux-course-list .course-grid article .course-card__summary { color: #62576c; font-size: 14px; line-height: 1.55; }
+.ux-course-list .course-grid article .course-card__meta { margin: 14px 0; color: #48365b; font-size: 13px; }
+.ux-course-list .course-grid article .course-card__cta { min-height: 42px; margin-top: auto; padding: 8px 13px; color: #63348d; background: #f3ecf8; border-radius: 8px; font-size: 13px; text-decoration: none; }
+.ux-course-list .course-grid article .course-card__cta:hover { background: #e8d8f3; }
+
+/* Free tools: mục lục và các form cùng một trục đọc, khoảng trắng rõ giữa nhóm. */
+.ux-free-tools .ref-toc { margin-bottom: 28px; border-radius: 13px; }
+.ux-free-tools .page-section-heading { margin-bottom: 23px; }
+.ux-free-tools .page-section-heading h2 { color: #271d34; font-size: clamp(1.9rem, 2.5vw, 2.8rem); }
+.ux-free-tools .tools-hub__search { max-width: 760px; min-height: 50px; background: #fff; }
+.ux-free-tools .ref-groups { max-width: 1050px; gap: 42px; }
+.ux-free-tools .ref-group__head h3 { font-size: 24px; }
+.ux-free-tools .ref-group__head p { color: #62576c; font-size: 14px; }
+.ux-free-tools .ref-acc { border-color: #e7dee9; box-shadow: 0 5px 15px rgba(43, 25, 58, .04); }
+.ux-free-tools .ref-acc > summary { min-height: 72px; padding-inline: 18px; }
+.ux-free-tools .ref-acc__head b { font-size: 16px; }
+.ux-free-tools .ref-acc__head small { font-size: 13px; line-height: 1.45; }
+.ux-free-tools .ref-acc__form { max-width: 760px; padding: 8px 18px 22px; }
+.ux-free-tools .ref-acc__form .button { width: fit-content; min-width: 170px; padding-inline: 20px; }
+.ux-free-tools .tools-hub__item { background: #fff; border-color: #e7dee9; }
+
+/* Blog: danh sách giống một thư viện biên tập, ảnh cân đối và chữ dễ đọc. */
+.ux-blog-list .blog-toolbar { align-items: center; gap: 16px; padding: 13px; }
+.ux-blog-list .blog-toolbar > label { min-width: 290px; }
+.ux-blog-list .blog-toolbar .category-row { gap: 6px; margin: 0; }
+.ux-blog-list .blog-toolbar .category-row button { min-height: 40px; padding: 8px 12px; border-radius: 8px; font-size: 12px; white-space: nowrap; }
+.ux-blog-list .blog-count { margin: 19px 0; }
+.ux-blog-list .blog-page-grid { gap: 20px; }
+.ux-blog-list .blog-page-grid article { background: #fff; border-color: #e9e1e9; border-radius: 15px; box-shadow: 0 8px 25px rgba(43, 25, 58, .06); transition: transform .2s ease, box-shadow .2s ease; }
+.ux-blog-list .blog-page-grid article:hover { transform: translateY(-3px); box-shadow: 0 14px 30px rgba(43, 25, 58, .11); }
+.ux-blog-list .blog-page-grid img { height: 200px; }
+.ux-blog-list .blog-page-grid article > div { padding: 20px; }
+.ux-blog-list .blog-page-grid small { color: #70419a; font-size: 11px; }
+.ux-blog-list .blog-page-grid h2 { font-size: 20px; }
+.ux-blog-list .blog-page-grid h2 a { color: #29203a; text-decoration: none; }
+.ux-blog-list .blog-page-grid h2 a:hover { color: #7440a7; }
+.ux-blog-list .blog-page-grid p { color: #62576c; font-size: 14px; line-height: 1.6; }
+.ux-blog-list .blog-page-grid article > div > a { min-height: 42px; color: #63348d; font-size: 13px; }
+.ux-blog-list .blog-page-grid article > div > a:last-child { padding: 8px 12px; background: #f3ecf8; border-radius: 8px; text-decoration: none; }
+.ux-blog-list .blog-page-grid article > div > a:last-child:hover { background: #e8d8f3; }
+.ux-blog-hub .ref-chips { margin-bottom: 30px; }
+.ux-blog-hub .ref-blog-section { scroll-margin-top: 125px; }
+
+/* Trang chi tiết giữ nhịp đọc gọn và vùng nhập liệu sáng. */
+.catalog-hero--course-detail.page-hero { min-height: 0; }
+.free-tool-detail-stage .lookup-workspace > header { max-width: 900px; margin-bottom: 32px; }
+.free-tool-detail-stage .lookup-workspace > header h1 { font-size: clamp(2.4rem, 3.5vw, 3.8rem); line-height: 1.1; }
+.free-tool-detail-stage .page-form-card,
+.free-tool-detail-stage .result-preview { color: #2b2138; background: #fffcf9; border-color: #e9deeb; box-shadow: 0 12px 35px rgba(17, 5, 40, .16); }
+.free-tool-detail-stage .page-form-card h2,
+.free-tool-detail-stage .result-preview h2 { color: #2b2138; }
+.free-tool-detail-stage .page-form-card > div:first-child small { color: #7545a2; }
+.free-tool-detail-stage .page-form-card label > span { color: #40324e; }
+.free-tool-detail-stage .page-form-card > p,
+.free-tool-detail-stage .result-preview__empty p,
+.free-tool-detail-stage .result-preview > header p,
+.free-tool-detail-stage .result-preview > header small { color: #665a70; }
+.free-tool-detail-stage .result-preview__empty { min-height: 340px; }
+.free-tool-detail-stage .result-preview .report-grid article { background: #f5f0f7; border-color: #e9deeb; }
+.free-tool-detail-stage .result-preview .report-grid article > span { color: #653193; background: #e9ddf2; }
+.free-tool-detail-stage .result-preview .report-grid article strong { color: #332441; }
+.free-tool-detail-stage .result-preview .report-grid article small { color: #6a5e73; }
+.ux-article.article-detail { padding-top: 122px; }
+.ux-article .article-back { margin-bottom: 26px; }
+.ux-article .article-detail__shell > header { max-width: 850px; }
+.ux-article .article-detail__shell > header h1 { font-size: clamp(2.3rem, 3.7vw, 3.9rem); line-height: 1.13; letter-spacing: -.03em; text-wrap: balance; }
+
+@media (max-width: 1050px) {
+  .ux-course-list .course-grid,
+  .ux-blog-list .blog-page-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ux-blog-list .blog-toolbar { flex-wrap: wrap; }
+}
+@media (max-width: 700px) {
+  .free-tool-detail-stage .lookup-workspace > header h1 { font-size: clamp(2.1rem, 8vw, 3rem); }
+  .free-tool-detail-stage .result-preview__empty { min-height: 240px; }
+  .ux-article .article-detail__shell > header h1 { font-size: clamp(2rem, 8vw, 2.75rem); }
+  .catalog-hero.page-hero { min-height: 0; padding: 116px 0 45px; }
+  .catalog-hero .page-hero__copy h1 { font-size: clamp(2.15rem, 8.8vw, 3.2rem); }
+  .catalog-hero .page-hero__copy > p { font-size: 14px; line-height: 1.6; }
+  .catalog-hero .page-hero__actions { align-items: stretch; }
+  .catalog-hero .page-primary,
+  .catalog-hero .action-button { min-height: 44px; justify-content: center; }
+  .catalog-content.page-light-section { padding-block: 42px 60px; }
+  .ux-course-list .course-grid,
+  .ux-blog-list .blog-page-grid { grid-template-columns: minmax(0, 1fr); }
+  .ux-course-list .course-grid article > img { height: 185px; }
+  .ux-course-list .course-grid article .course-card__body { padding: 17px; }
+  .ux-free-tools .ref-toc { border-radius: 11px; }
+  .ux-free-tools .ref-acc > summary { min-height: 66px; padding-inline: 13px; }
+  .ux-free-tools .ref-acc__form { padding-inline: 13px; }
+  .ux-blog-list .blog-toolbar > label { min-width: 0; width: 100%; }
+  .ux-blog-list .blog-toolbar .category-row { flex-wrap: nowrap; width: 100%; overflow-x: auto; }
+}

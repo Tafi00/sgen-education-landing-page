@@ -24,6 +24,7 @@ import "./styles/ux-cms.css";
 import "./styles/ux-cms-media.css";
 import "./styles/ux-cms-forms.css";
 import "./styles/ux-services.css";
+import "./styles/ux-catalog.css";
 
 const queryClient = new QueryClient({
   defaultOptions: {

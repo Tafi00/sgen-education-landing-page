@@ -1,9 +1,11 @@
-import { useMemo, useState, type CSSProperties } from "react";
+import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import { Link } from "react-router-dom";
 import {
   ArrowRight,
   BookOpen,
   CalendarCheck,
+  ChevronLeft,
+  ChevronRight,
   Check,
   CircleAlert,
   Clock3,
@@ -19,7 +21,7 @@ import { CalendarToolView } from "../../components/fengshui/CalendarToolView";
 import { IChingToolView } from "../../components/fengshui/IChingToolView";
 import MenhThuApp from "../../vendor/menh-thu/app/MenhThuApp";
 import "../../styles/menh-thu-bazi.css";
-import { getDateProfile } from "../../../shared/menh-thu/metaphysics";
+import { getDateProfile, getMonthCalendar, getVietnameseObservances, toDateString } from "../../../shared/menh-thu/metaphysics";
 import { RESULTS_DISCLAIMER } from "../../../shared/lookup-types";
 const COURSE_IMAGE = "/assets/programs/program-home-feng-shui-v2.webp";
 
@@ -424,6 +426,68 @@ function localDateValue() {
   return new Date(now.getTime() - offset).toISOString().slice(0, 10);
 }
 
+function CalendarMonthPanel({ selectedDate, onDateChange, today }: { selectedDate: string; onDateChange: (date: string) => void; today: string }) {
+  const [selectedYear, selectedMonth] = selectedDate.split("-").map(Number);
+  const [view, setView] = useState({ year: selectedYear, monthIndex: selectedMonth - 1 });
+  useEffect(() => {
+    setView({ year: selectedYear, monthIndex: selectedMonth - 1 });
+  }, [selectedYear, selectedMonth]);
+  const month = useMemo(() => getMonthCalendar(view.year, view.monthIndex), [view.year, view.monthIndex]);
+  const days = useMemo(() => Array.from({ length: month.days }, (_, index) => {
+    const day = index + 1;
+    const date = toDateString(view.year, view.monthIndex, day);
+    const profile = getDateProfile(date);
+    const score = profile.energyScore;
+    const quality = score >= 80 ? { key: "excellent", label: "Hoàng đạo tốt", stars: 5 }
+      : score >= 65 ? { key: "good", label: "Hoàng đạo khá", stars: 4 }
+      : score >= 50 ? { key: "normal", label: "Bình thường", stars: 3 }
+      : score >= 30 ? { key: "bad", label: "Xấu", stars: 2 }
+      : { key: "very-bad", label: "Rất xấu", stars: 1 };
+    return { day, date, profile, quality, observance: getVietnameseObservances(date)[0]?.name };
+  }), [month.days, view.year, view.monthIndex]);
+  const moveMonth = (delta: number) => {
+    const next = new Date(Date.UTC(view.year, view.monthIndex + delta, 1));
+    setView({ year: next.getUTCFullYear(), monthIndex: next.getUTCMonth() });
+  };
+
+  return (
+    <section className="xem-ngay-month" aria-label="Lịch chọn ngày tốt xấu">
+      <header className="xem-ngay-month__header">
+        <div><small>Lịch ngày tốt xấu</small><h2>Tháng {view.monthIndex + 1} / {view.year}</h2></div>
+        <div className="xem-ngay-month__nav">
+          <button type="button" onClick={() => moveMonth(-1)} aria-label="Xem tháng trước"><ChevronLeft aria-hidden="true" /></button>
+          <button type="button" onClick={() => moveMonth(1)} aria-label="Xem tháng sau"><ChevronRight aria-hidden="true" /></button>
+        </div>
+      </header>
+      <div className="xem-ngay-month__weekdays" aria-hidden="true">
+        {["Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7", "CN"].map((label) => <span key={label}>{label}</span>)}
+      </div>
+      <div className="xem-ngay-month__grid">
+        {Array.from({ length: month.offset }, (_, index) => <span className="xem-ngay-month__empty" key={`empty-${index}`} />)}
+        {days.map(({ day, date, profile, quality, observance }) => (
+          <button
+            type="button"
+            key={date}
+            className={`xem-ngay-month__day quality-${quality.key}${selectedDate === date ? " is-selected" : ""}${today === date ? " is-today" : ""}`}
+            aria-label={`Ngày ${day}, âm lịch ${profile.lunarDate.day} tháng ${profile.lunarDate.month}, ${quality.label}${observance ? `, ${observance}` : ""}`}
+            aria-pressed={selectedDate === date}
+            onClick={() => onDateChange(date)}
+          >
+            <span className="xem-ngay-month__day-top"><strong>{day}</strong>{today === date && <em>Hôm nay</em>}</span>
+            <span className="xem-ngay-month__lunar">ÂL {profile.lunarDate.day}/{profile.lunarDate.month}</span>
+            <span className="xem-ngay-month__stars" title={quality.label} aria-hidden="true">{"★".repeat(quality.stars)}</span>
+            <small>Trực {profile.dayOfficer} · Sao {profile.lunarMansion}</small>
+            {observance && <span className="xem-ngay-month__observance" title={observance}>{observance}</span>}
+          </button>
+        ))}
+      </div>
+      <div className="xem-ngay-month__legend" aria-label="Chú giải mức độ tốt xấu">
+        <span><i className="quality-excellent" />Tốt</span><span><i className="quality-good" />Khá</span><span><i className="quality-normal" />Bình thường</span><span><i className="quality-bad" />Xấu</span><span><i className="quality-very-bad" />Rất xấu</span>
+      </div>
+    </section>
+  );
+}
+
 /** Trang xem ngày: chọn nhanh ngày, tra cát hung và in bảng mười hai giờ tốt — xấu. */
 export function XemNgayPage() {
   const today = useMemo(localDateValue, []);
@@ -446,7 +510,7 @@ export function XemNgayPage() {
           icon={CalendarCheck}
           title="Xem ngày"
           accent="tốt — xấu theo lịch pháp"
-          description="Chọn ngày dương lịch để tra âm lịch, Can Chi, Thập nhị Trực, Nhị thập bát tú, cát hung tinh và giờ hoàng đạo. Bạn có thể chọn nhanh hôm nay, ngày mai hoặc cộng thêm bảy ngày."
+          description="Chọn ngày dương lịch hoặc âm lịch và giờ muốn xem để tra Can Chi, Thập nhị Trực, Nhị thập bát tú, cát hung tinh cùng mười hai giờ trong ngày."
         />
         <div className="container fengshui-tools">
           <div className="xem-ngay-bar">
@@ -471,60 +535,12 @@ export function XemNgayPage() {
               </button>
             </div>
           </div>
+          <CalendarMonthPanel selectedDate={date} onDateChange={setDate} today={today} />
           <div className="fengshui-workspace is-open">
             <CalendarToolView date={date} onDateChange={setDate} />
           </div>
         </div>
       </section>
-
-      <MethodSection
-        heading="Cát hung của một ngày được tính từ đâu"
-        lead="Công cụ tổng hợp nhiều lớp dữ liệu lịch pháp thay vì dùng một phép tính đơn lẻ."
-        items={[
-          {
-            icon: CalendarCheck,
-            title: "Âm lịch và Can Chi",
-            text: "Ngày dương lịch được quy về âm lịch, từ đó xác định Can Chi của năm, tháng và ngày.",
-          },
-          {
-            icon: Sparkles,
-            title: "Thập nhị Trực và Nhị thập bát tú",
-            text: "Mỗi ngày ứng với một Trực trong mười hai trực và một sao trong hai mươi tám tú, kèm mô tả nên và kỵ.",
-          },
-          {
-            icon: Check,
-            title: "Cát tinh và hung tinh",
-            text: "Công cụ liệt kê các sao tốt và sao xấu chiếu trong ngày để bạn đối chiếu thay vì chỉ nhìn một con số.",
-          },
-          {
-            icon: Clock3,
-            title: "Điểm năng lượng và mười hai giờ",
-            text: "Điểm ngày và điểm từng giờ được tính từ cát/hung thần, Trực, Tú và thần trực; bảng phía trên xếp hạng đủ mười hai giờ.",
-          },
-        ]}
-      />
-
-      <MethodSection
-        heading="Đối chiếu với tuổi của bạn"
-        lead="Khi bạn nhập ngày giờ sinh ở ô tùy chọn, công cụ so trụ năm sinh với trụ ngày để ước lượng mức hợp — xung."
-        items={[
-          {
-            icon: Compass,
-            title: "Hợp tuổi và xung tuổi",
-            text: "Kết quả dựa trên quan hệ Địa chi và Thiên can giữa trụ năm sinh và trụ ngày, kèm tuổi mụ để bạn dễ đối chiếu.",
-          },
-          {
-            icon: CircleAlert,
-            title: "Kết quả chỉ là tương đối",
-            text: "Một ngày bị coi là xung tuổi không có nghĩa mọi việc đều bất lợi; đây là lớp tham khảo trong nhiều yếu tố khác.",
-          },
-          {
-            icon: Printer,
-            title: "In và lưu lại",
-            text: "Nút in dùng chức năng in của trình duyệt, giúp bạn lưu bảng giờ hoặc đối chiếu trước khi chọn thời điểm.",
-          },
-        ]}
-      />
 
       <FaqSection
         items={[

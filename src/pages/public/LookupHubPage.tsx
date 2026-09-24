@@ -89,7 +89,7 @@ export function LookupHubPage() {
               SGEN tổng hợp ba công cụ trong một nơi: tra cứu Thần số học từ họ tên và ngày sinh, trắc nghiệm DISC và MBTI theo khung tham chiếu.
               Mọi kết quả đều kèm phần luận giải dễ hiểu và tuyên bố miễn trừ, giúp bạn có thêm góc nhìn thay vì một lời khuyên tuyệt đối.
             </p>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
+            <div className="page-hero__actions">
               <Link className="page-primary" to="/tra-cuu/than-so-hoc">
                 <Sparkles aria-hidden="true" /> Bắt đầu tra cứu
               </Link>

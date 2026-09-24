@@ -152,28 +152,27 @@ export function BlogListPage() {
 
   return (
     <>
-      <section className="page-hero" style={DARK_STYLE}>
+      <section className="page-hero catalog-hero catalog-hero--blog" style={DARK_STYLE}>
         <div className="container page-hero__inner">
           <div className="page-hero__copy">
             <span className="page-kicker">
               <Sparkles aria-hidden="true" /> Blog SGEN
             </span>
             <h1>
-              <span className="page-hero__title-line">Kiến thức</span>
-              <em className="page-hero__title-line">dùng được</em>
+              <span className="page-hero__title-line">Blog kiến thức</span>
+              <em className="page-hero__title-line">và ứng dụng</em>
             </h1>
             <p>
               Bài viết về Thần số học, ứng dụng thực tiễn, mối quan hệ và phong thủy — viết cho người muốn hiểu nguyên lý trước khi kết luận.
             </p>
-            <Link className="page-primary" to="/blog/kien-thuc">
-              Thư viện kiến thức <ArrowRight aria-hidden="true" />
-            </Link>
+            <div className="page-hero__actions"><a className="page-primary" href="#danh-sach-bai-viet">Đọc bài viết <ArrowRight aria-hidden="true" /></a><Link className="action-button action-button--outline" to="/blog/kien-thuc">Thư viện theo chuyên mục</Link></div>
           </div>
         </div>
       </section>
 
-      <section className="page-light-section ux-blog-list" style={LIGHT_STYLE}>
+      <section className="page-light-section ux-blog-list catalog-content" id="danh-sach-bai-viet" style={{ "--page-light-bg": "none" } as CSSProperties}>
         <div className="container">
+          <div className="catalog-content__heading"><span>Bài viết SGEN</span><h2>Tìm chủ đề bạn quan tâm</h2><p>Lọc theo chuyên mục hoặc tìm một vấn đề cụ thể.</p></div>
           <form
             className="blog-toolbar"
             role="search"
@@ -323,7 +322,7 @@ export function BlogCategoryPage() {
 
   return (
     <>
-      <section className="page-hero" style={DARK_STYLE}>
+      <section className="page-hero catalog-hero catalog-hero--blog-library" style={DARK_STYLE}>
         <div className="container page-hero__inner">
           <div className="page-hero__copy">
             <span className="page-kicker">
@@ -341,7 +340,7 @@ export function BlogCategoryPage() {
         </div>
       </section>
 
-      <section className="page-light-section blog-library ux-blog-hub" style={LIGHT_STYLE}>
+      <section className="page-light-section blog-library ux-blog-hub catalog-content" style={{ "--page-light-bg": "none" } as CSSProperties}>
         <div className="container">
           {isLoading && !posts.length ? (
             <p className="admin-loading">

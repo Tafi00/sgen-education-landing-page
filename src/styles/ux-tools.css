@@ -932,6 +932,395 @@
    10. Xem ngày bổ sung: thông tin ngày, hướng — tuổi, sao chi tiết, giờ chi tiết,
        ghi chú phương pháp. Chỉ thêm khối mới, không đụng rule cũ của người khác.
    --------------------------------------------------------------------------- */
+.calendar-date-tabs {
+  display: flex;
+  gap: 8px;
+  margin: 14px 0 12px;
+}
+
+.calendar-date-tabs button {
+  flex: 1;
+  min-height: 42px;
+  border: 1px solid rgba(176, 126, 228, .35);
+  border-radius: 10px;
+  color: #d8c4ec;
+  background: rgba(255, 255, 255, .05);
+  cursor: pointer;
+}
+
+.calendar-date-tabs button.is-active {
+  color: #fff;
+  background: #7041ac;
+}
+
+.calendar-date-entry,
+.calendar-lunar-entry {
+  display: grid;
+  gap: 10px;
+}
+
+.calendar-date-entry label,
+.calendar-lunar-entry label {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+  color: #d9c5ed;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.calendar-date-entry input:not([type="checkbox"]) {
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  padding: 8px 10px;
+  border: 1px solid rgba(176, 126, 228, .4);
+  border-radius: 9px;
+  color: #241431;
+  background: #fff;
+  color-scheme: light;
+}
+
+.calendar-lunar-entry {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.calendar-lunar-entry .calendar-lunar-leap {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.calendar-date-summary,
+.calendar-date-error {
+  margin: 9px 0 12px;
+  color: #d9c5ed;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.calendar-date-error { color: #ffb0ad; }
+
+.calendar-hours article.is-current {
+  outline: 2px solid #ddaa72;
+  outline-offset: 2px;
+}
+
+/* Trang xem ngày: nhóm kết quả trên nền sáng theo tài liệu tham chiếu. */
+.xem-ngay-page .lookup-workspace > header {
+  max-width: 1040px;
+  margin-bottom: 28px;
+}
+.xem-ngay-page .lookup-workspace > header h1 {
+  max-width: 1000px;
+  margin: 17px auto 0;
+  font-size: clamp(2.35rem, 3.3vw, 3.55rem);
+  line-height: 1.12;
+  letter-spacing: -.035em;
+  text-wrap: balance;
+}
+.xem-ngay-page .lookup-workspace > header h1 em { color: #c47aea; }
+.xem-ngay-page .lookup-workspace > header > p {
+  max-width: 850px;
+  margin: 16px auto 0;
+  color: #ddd1ea;
+  font-size: 1rem;
+  line-height: 1.65;
+}
+.xem-ngay-page .xem-ngay-bar {
+  top: calc(var(--header-h, 96px) + 12px);
+  padding: 11px 16px;
+  border-radius: 12px;
+  box-shadow: 0 8px 22px rgba(12, 3, 40, .16);
+}
+.xem-ngay-page .xem-ngay-bar .category-row { align-items: center; gap: 6px; }
+.xem-ngay-page .xem-ngay-bar .category-row button {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+  height: 44px;
+  min-height: 44px;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 12px;
+  border-radius: 9px;
+  font-size: 13px;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+.xem-ngay-page .xem-ngay-bar .category-row button svg { width: 16px; height: 16px; flex: 0 0 16px; }
+.xem-ngay-page .xem-ngay-bar__current small { font-size: 12px; }
+.xem-ngay-page .xem-ngay-bar__current b { font-size: 15px; }
+.xem-ngay-month {
+  padding: 22px;
+  color: #30213e;
+  background: #fffdfa;
+  border: 1px solid #e8dfd5;
+  border-radius: 16px;
+  box-shadow: 0 12px 28px rgba(34, 20, 48, .12);
+}
+.xem-ngay-month__header,
+.xem-ngay-month__nav,
+.xem-ngay-month__day-top,
+.xem-ngay-month__legend,
+.xem-ngay-month__legend span { display: flex; align-items: center; }
+.xem-ngay-month__header { justify-content: space-between; gap: 16px; margin-bottom: 18px; }
+.xem-ngay-month__header small { color: #8054a2; font-size: 12px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.xem-ngay-month__header h2 { margin: 4px 0 0; color: #30213e; font-family: var(--font-display); font-size: 23px; line-height: 1.3; }
+.xem-ngay-month__nav { gap: 8px; }
+.xem-ngay-month__nav button { width: 42px; height: 42px; display: grid; place-items: center; color: #573577; background: #f4ecf8; border: 1px solid #dfcfe9; border-radius: 10px; cursor: pointer; }
+.xem-ngay-month__nav button:hover { background: #e9daf3; }
+.xem-ngay-month__nav svg { width: 19px; height: 19px; }
+.xem-ngay-month__weekdays,
+.xem-ngay-month__grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 7px; }
+.xem-ngay-month__weekdays { margin-bottom: 7px; }
+.xem-ngay-month__weekdays span { padding: 8px 4px; color: #62556c; background: #f4edf4; border-radius: 7px; font-size: 12px; font-weight: 800; text-align: center; }
+.xem-ngay-month__day { min-width: 0; min-height: 112px; display: grid; align-content: start; gap: 3px; padding: 10px; color: #342740; border: 1px solid #e7dfe6; border-radius: 10px; text-align: left; cursor: pointer; transition: border-color .18s, box-shadow .18s, transform .18s; }
+.xem-ngay-month__day:hover { border-color: #915fc0; box-shadow: 0 4px 13px rgba(86, 51, 113, .13); transform: translateY(-2px); }
+.xem-ngay-month__day:focus-visible { outline: 3px solid #7041ac; outline-offset: 2px; }
+.xem-ngay-month__day.quality-excellent { background: #eaf8ef; }
+.xem-ngay-month__day.quality-good { background: #f2faf1; }
+.xem-ngay-month__day.quality-normal { background: #fffbeb; }
+.xem-ngay-month__day.quality-bad { background: #fff5eb; }
+.xem-ngay-month__day.quality-very-bad { background: #fff0ef; }
+.xem-ngay-month__day.is-selected { border-color: #7744ac; box-shadow: inset 0 0 0 2px #7744ac; }
+.xem-ngay-month__day-top { justify-content: space-between; gap: 3px; }
+.xem-ngay-month__day-top strong { font-size: 19px; line-height: 1.1; }
+.xem-ngay-month__day-top em { color: #6c3f97; font-size: 10px; font-style: normal; font-weight: 800; white-space: nowrap; }
+.xem-ngay-month__lunar { color: #665a6e; font-size: 12px; }
+.xem-ngay-month__stars { color: #b88712; font-size: 13px; letter-spacing: 1px; line-height: 1.1; }
+.xem-ngay-month__day.quality-excellent .xem-ngay-month__stars,
+.xem-ngay-month__day.quality-good .xem-ngay-month__stars { color: #247a4e; }
+.xem-ngay-month__day.quality-very-bad .xem-ngay-month__stars { color: #ad4742; }
+.xem-ngay-month__day > small { overflow: hidden; color: #5c5063; font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
+.xem-ngay-month__observance { overflow: hidden; color: #80531d; font-size: 10px; font-weight: 750; text-overflow: ellipsis; white-space: nowrap; }
+.xem-ngay-month__legend { flex-wrap: wrap; gap: 8px 17px; margin-top: 16px; color: #5d5363; font-size: 12px; }
+.xem-ngay-month__legend span { gap: 5px; }
+.xem-ngay-month__legend i { width: 10px; height: 10px; border-radius: 50%; }
+.xem-ngay-month__legend .quality-excellent { background: #328f60; }
+.xem-ngay-month__legend .quality-good { background: #80b77d; }
+.xem-ngay-month__legend .quality-normal { background: #d8b63d; }
+.xem-ngay-month__legend .quality-bad { background: #e2a065; }
+.xem-ngay-month__legend .quality-very-bad { background: #d36b64; }
+.xem-ngay-page .fengshui-tool-layout--calendar {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: stretch;
+  gap: 18px;
+  padding: 0;
+  color: #312646;
+}
+
+.xem-ngay-page .calendar-top-card,
+.xem-ngay-page .fengshui-tool-layout--calendar > .fengshui-form-card,
+.xem-ngay-page .fengshui-tool-layout--calendar > .calendar-reading {
+  min-width: 0;
+  padding: 22px;
+  color: #312646;
+  background: #fffdfa;
+  border: 1px solid #e8dfd5;
+  border-radius: 16px;
+  box-shadow: 0 12px 28px rgba(34, 20, 48, .12);
+}
+
+.xem-ngay-page .calendar-top-card { align-self: stretch; }
+.xem-ngay-page .calendar-top-card h3 {
+  margin: -22px -22px 17px;
+  padding: 15px 20px;
+  color: #fff;
+  background: #332044;
+  border-radius: 15px 15px 0 0;
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  text-align: center;
+}
+.xem-ngay-page .calendar-top-card dl { display: grid; gap: 11px; margin: 0; }
+.xem-ngay-page .calendar-top-card dl > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 9px;
+  border-bottom: 1px solid #eee8e2;
+}
+.xem-ngay-page .calendar-top-card dt { color: #675c6c; font-size: 14px; line-height: 1.45; }
+.xem-ngay-page .calendar-top-card dd { margin: 0; color: #30213e; font-size: 14px; font-weight: 750; line-height: 1.45; text-align: right; }
+.xem-ngay-page .calendar-top-card--details h3 { background: #695130; }
+.xem-ngay-page .fengshui-tool-layout--calendar > .fengshui-form-card { border-right: 1px solid #e8dfd5; }
+.xem-ngay-page .fengshui-form-card > h3 { color: #2e213c; text-align: center; }
+.xem-ngay-page .fengshui-form-card > h3 { margin: 16px 0 20px; font-size: 1.16rem; line-height: 1.35; }
+.xem-ngay-page .fengshui-form-card .fengshui-kicker { color: #8054a2; }
+.xem-ngay-page .fengshui-form-card label > span,
+.xem-ngay-page .fengshui-form-card label em { color: #584663; }
+.xem-ngay-page .fengshui-form-card .calendar-energy,
+.xem-ngay-page .fengshui-form-card .fengshui-method-note { display: none; }
+.xem-ngay-page .fengshui-form-card .calendar-date-tabs button { color: #5c4671; background: #f6f0fa; }
+.xem-ngay-page .fengshui-form-card .calendar-date-tabs button.is-active { color: #fff; background: #7041ac; }
+.xem-ngay-page .calendar-date-entry label,
+.xem-ngay-page .calendar-lunar-entry label { color: #51425e; }
+.xem-ngay-page .calendar-date-summary { color: #62566e; }
+.xem-ngay-page .calendar-date-tabs button { min-height: 43px; border-radius: 9px; font-size: 14px; font-weight: 750; }
+.xem-ngay-page .calendar-date-entry label,
+.xem-ngay-page .calendar-lunar-entry label,
+.xem-ngay-page .calendar-date-summary { font-size: 14px; }
+.xem-ngay-page .calendar-date-entry input { min-height: 44px; font-size: 14px; }
+.xem-ngay-page .calendar-date-error { color: #ae3836; }
+.xem-ngay-page .calendar-current-pillars { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; margin: 12px 0; }
+.xem-ngay-page .calendar-current-pillars span { display: grid; gap: 3px; padding: 8px 4px; background: #f5eff9; border-radius: 8px; text-align: center; }
+.xem-ngay-page .calendar-current-pillars small { color: #786981; font-size: 12px; }
+.xem-ngay-page .calendar-current-pillars b { color: #342342; font-size: 13px; }
+.xem-ngay-page .calendar-personal-fields { margin-top: 14px; border-top: 1px solid #eee5e0; }
+.xem-ngay-page .calendar-personal-fields summary { padding: 12px 0 3px; color: #69418e; font-size: 14px; font-weight: 800; cursor: pointer; }
+.xem-ngay-page .calendar-personal-fields .fengshui-fields { margin-top: 10px; }
+.xem-ngay-page .calendar-personal-fields .calendar-compatibility { background: #f6f0fa; }
+.xem-ngay-page .calendar-personal-fields .calendar-compatibility b { color: #583875; }
+.xem-ngay-page .fengshui-tool-layout--calendar > .calendar-reading { grid-column: 1 / -1; }
+.xem-ngay-page .calendar-reading h3,
+.xem-ngay-page .calendar-reading h4 { color: #30213e; }
+.xem-ngay-page .calendar-reading p,
+.xem-ngay-page .calendar-reading li,
+.xem-ngay-page .calendar-reading small { color: #62566e; }
+.xem-ngay-page .calendar-reading b,
+.xem-ngay-page .calendar-reading strong,
+.xem-ngay-page .calendar-reading dd { color: #382747; }
+.xem-ngay-page .calendar-reading { font-size: 14px; line-height: 1.55; }
+.xem-ngay-page .calendar-reading h4 { font-size: 17px; line-height: 1.4; }
+.xem-ngay-page .calendar-reading :where(p, li, dt, dd, small, b, strong, span, em) { font-size: 14px; line-height: 1.5; }
+.xem-ngay-page .calendar-reading .fengshui-result-card__heading h3 { font-size: 24px; }
+.xem-ngay-page .calendar-reading article,
+.xem-ngay-page .calendar-reading section,
+.xem-ngay-page .calendar-reading .calendar-info-grid > div { background-color: #faf7f3; border-color: #e9e1d9; }
+.xem-ngay-page .calendar-reading .calendar-stars section.is-good h4 { color: #17633c; }
+.xem-ngay-page .calendar-reading .calendar-stars section.is-bad h4 { color: #9a3735; }
+.xem-ngay-page .calendar-reading .calendar-hours > div:not(.calendar-hour-summary) {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+.xem-ngay-page .calendar-reading .calendar-hours article {
+  gap: 5px;
+  padding: 14px;
+  border: 1px solid #eadfd7;
+  text-align: left;
+}
+.xem-ngay-page .calendar-reading .calendar-hours article.is-auspicious { background: #f0faf3; }
+.xem-ngay-page .calendar-reading .calendar-hours article.is-inauspicious { background: #fff5f2; }
+.xem-ngay-page .calendar-reading .calendar-hour-flags { justify-content: flex-start; }
+.xem-ngay-page .calendar-reading .calendar-hour-flags li { color: #614b70; background: #eee7f1; }
+.xem-ngay-page .calendar-reading .calendar-hour-flags li.is-good,
+.xem-ngay-page .calendar-reading .calendar-hour-flags li.is-noble { color: #196c43; background: #dcefe2; }
+.xem-ngay-page .calendar-reading .calendar-hour-flags li.is-caution,
+.xem-ngay-page .calendar-reading .calendar-hour-flags li.is-void,
+.xem-ngay-page .calendar-reading .calendar-hour-flags li.is-clash { color: #963f37; background: #f9e3dd; }
+.xem-ngay-page .calendar-reading .calendar-hour-advice dt { color: #65576e; }
+.xem-ngay-page .calendar-reading .calendar-hour-advice dd { color: #392d42; }
+.xem-ngay-page .calendar-reading .calendar-hours article b { color: #30213e; }
+.xem-ngay-page .calendar-reading .calendar-hours article span,
+.xem-ngay-page .calendar-reading .calendar-hours article small { color: #67596e; }
+.xem-ngay-page .calendar-reading .calendar-hours article.is-auspicious > strong { color: #17633c; }
+.xem-ngay-page .calendar-reading .calendar-hours article.is-inauspicious > strong { color: #9a3735; }
+.xem-ngay-page .calendar-reading .calendar-hours article.is-current { background-color: #fff1dc; }
+.xem-ngay-page .calendar-section-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 17px 0; }
+.xem-ngay-page .calendar-section-nav a { padding: 9px 13px; color: #533275; background: #f2e9f9; border-radius: 9px; font-size: 13px; font-weight: 700; text-decoration: none; }
+.xem-ngay-page .calendar-section-nav a:hover { background: #e8d8f6; }
+.xem-ngay-page #xem-ngay-thong-tin,
+.xem-ngay-page #xem-ngay-sao,
+.xem-ngay-page #xem-ngay-gio,
+.xem-ngay-page #xem-ngay-viec { scroll-margin-top: 220px; }
+.xem-ngay-page .calendar-reference-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin: 15px 0; }
+.xem-ngay-page .calendar-reference-grid article { padding: 15px; border: 1px solid #e9e1d9; border-radius: 12px; }
+.xem-ngay-page .calendar-reference-grid h4 { margin: 0 0 8px; font-size: 15px; }
+.xem-ngay-page .calendar-reference-grid p { margin: 0 0 5px; color: #4e3068; font-weight: 800; }
+.xem-ngay-page .calendar-reference-grid small { font-size: 13px; }
+.xem-ngay-page .calendar-section-intro { margin: -4px 0 12px; font-size: 14px; }
+.xem-ngay-page .calendar-hours > .calendar-hour-summary { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 9px; margin-bottom: 12px; }
+.xem-ngay-page .calendar-hour-summary article { display: block; padding: 12px; background: #fff !important; border: 1px solid #e9e1d9; text-align: left; }
+.xem-ngay-page .calendar-hour-summary h5 { margin: 0 0 6px; color: #49345c; font-size: 15px; }
+.xem-ngay-page .calendar-hour-summary p { margin: 0; font-size: 14px; line-height: 1.5; }
+.xem-ngay-page .calendar-hours article.is-auspicious > strong,
+.xem-ngay-page .calendar-activities article.is-suitable > strong { color: #237048; }
+.xem-ngay-page .calendar-hours article.is-inauspicious > strong,
+.xem-ngay-page .calendar-activities article.is-avoid > strong { color: #a3413e; }
+.xem-ngay-page .calendar-activities article > div { display: grid; gap: 4px; }
+.xem-ngay-page .calendar-activities article small {
+  overflow: visible;
+  color: #675973;
+  line-height: 1.5;
+  text-overflow: clip;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.xem-ngay-page .calendar-prescriptions span {
+  color: #543d66;
+  background: #f1e9f5;
+  font-size: 13px;
+}
+.xem-ngay-page .calendar-activities article { align-items: start; }
+.xem-ngay-page .calendar-activities article > strong { align-self: start; }
+
+@media (max-width: 1050px) {
+  .xem-ngay-page .fengshui-tool-layout--calendar { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .xem-ngay-page .fengshui-tool-layout--calendar > .fengshui-form-card { grid-column: 1 / -1; grid-row: 1; }
+  .xem-ngay-page .calendar-reference-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .xem-ngay-page .calendar-reading .calendar-hours > div:not(.calendar-hour-summary) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 640px) {
+  .xem-ngay-month { padding: 12px; border-radius: 12px; }
+  .xem-ngay-month__header { margin-bottom: 12px; }
+  .xem-ngay-month__header h2 { font-size: 18px; }
+  .xem-ngay-month__nav button { width: 36px; height: 36px; }
+  .xem-ngay-month__weekdays,
+  .xem-ngay-month__grid { gap: 3px; }
+  .xem-ngay-month__weekdays span { padding: 6px 0; font-size: 10px; }
+  .xem-ngay-month__day { min-height: 67px; gap: 2px; padding: 5px 3px; border-radius: 6px; }
+  .xem-ngay-month__day-top strong { font-size: 15px; }
+  .xem-ngay-month__day-top em { font-size: 8px; }
+  .xem-ngay-month__lunar { font-size: 9px; white-space: nowrap; }
+  .xem-ngay-month__stars { font-size: 9px; letter-spacing: 0; }
+  .xem-ngay-month__day > small,
+  .xem-ngay-month__observance { display: none; }
+  .xem-ngay-month__legend { gap: 5px 9px; margin-top: 12px; font-size: 10px; }
+  .xem-ngay-page .xem-ngay-bar {
+    position: relative;
+    top: auto;
+    gap: 10px;
+    padding: 12px;
+  }
+  .xem-ngay-page .xem-ngay-bar .category-row {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+    overflow: visible;
+  }
+  .xem-ngay-page .xem-ngay-bar .category-row button {
+    min-width: 0;
+    height: 42px;
+    min-height: 42px;
+    padding: 0 5px;
+    font-size: 12px;
+  }
+  .xem-ngay-page .xem-ngay-bar .category-row button svg { width: 15px; height: 15px; }
+  .xem-ngay-page #xem-ngay-thong-tin,
+  .xem-ngay-page #xem-ngay-sao,
+  .xem-ngay-page #xem-ngay-gio,
+  .xem-ngay-page #xem-ngay-viec { scroll-margin-top: 96px; }
+  .xem-ngay-page .fengshui-tool-layout--calendar { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .xem-ngay-page .fengshui-tool-layout--calendar > .fengshui-form-card,
+  .xem-ngay-page .fengshui-tool-layout--calendar > .calendar-reading,
+  .xem-ngay-page .calendar-top-card { grid-column: 1; padding: 17px; }
+  .xem-ngay-page .calendar-top-card h3 { margin: -17px -17px 14px; }
+  .xem-ngay-page .calendar-reference-grid { grid-template-columns: 1fr; }
+  .xem-ngay-page .calendar-hours > .calendar-hour-summary { grid-template-columns: 1fr; }
+  .xem-ngay-page .calendar-reading .calendar-hours > div:not(.calendar-hour-summary) { grid-template-columns: 1fr; }
+  .xem-ngay-page .calendar-current-pillars { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .xem-ngay-page .calendar-activities article { grid-template-columns: 20px minmax(0, 1fr) auto; gap: 8px; }
+  .xem-ngay-page .calendar-activities article > strong { grid-column: 3; grid-row: 1; }
+  .xem-ngay-page .calendar-activities article > div { grid-column: 2; grid-row: 1; }
+}
+
+@media (min-width: 640px) {
+  .calendar-date-entry { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); }
+}
+
 .calendar-info,
 .calendar-guide,
 .calendar-method {

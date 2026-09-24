@@ -40,7 +40,7 @@ import { FieldShell, TextareaField, TextField } from "../../components/form/Fiel
 import { useToast } from "../../components/ui/Toast";
 
 const LEVELS = ["Nền tảng", "Chuyên đề", "Ứng dụng", "Chuyên sâu"];
-const PAGE_SIZE = 9;
+const PAGE_SIZE = 12;
 
 const SORT_OPTIONS = [
   { value: "order", label: "Thứ tự mặc định", field: "order", dir: "asc" },
@@ -258,25 +258,27 @@ export function CoursesListPage() {
 
   return (
     <>
-      <section className="page-hero" style={{ "--page-dark-bg": "url(/assets/backgrounds/cosmic-dark-clean.webp)" } as CSSProperties}>
+      <section className="page-hero catalog-hero catalog-hero--courses" style={{ "--page-dark-bg": "url(/assets/backgrounds/cosmic-dark-clean.webp)" } as CSSProperties}>
         <div className="container page-hero__inner">
           <div className="page-hero__copy">
             <span className="page-kicker">
               <GraduationCap aria-hidden="true" /> Khóa học SGEN
             </span>
             <h1>
-              <span className="page-hero__title-line">Lộ trình học</span>
-              <em className="page-hero__title-line">đúng nhu cầu</em>
+              <span className="page-hero__title-line">11 khóa học</span>
+              <em className="page-hero__title-line">từ nền tảng đến ứng dụng</em>
             </h1>
             <p>
-              Mười một chuyên đề từ nền tảng Thần số học tới phong thủy ứng dụng. Lọc theo cấp độ và nhóm chuyên môn để chọn đúng lớp bắt đầu.
+              Khám phá Thần số học, Sinh trắc vân tay, Kinh Dịch, Tứ trụ và các chuyên đề phong thủy. Chọn lĩnh vực bạn muốn học để xem nội dung từng khóa.
             </p>
+            <a className="page-primary" href="#danh-sach-khoa-hoc">Xem danh sách khóa học <ArrowRight aria-hidden="true" /></a>
           </div>
         </div>
       </section>
 
-      <section className="page-light-section ux-course-list" style={{ "--page-light-bg": "url(/assets/backgrounds/cosmic-light.webp)" } as CSSProperties}>
+      <section className="page-light-section ux-course-list catalog-content" id="danh-sach-khoa-hoc" style={{ "--page-light-bg": "none" } as CSSProperties}>
         <div className="container">
+          <div className="catalog-content__heading"><span>Danh mục đào tạo</span><h2>Chọn khóa học phù hợp</h2><p>Toàn bộ 11 chuyên đề theo đúng danh mục đào tạo của SGEN.</p></div>
           <form
             className="course-toolbar"
             role="search"
@@ -558,7 +560,7 @@ export function CourseDetailPage() {
     <>
       <section
         ref={heroRef}
-        className="page-hero"
+        className="page-hero catalog-hero catalog-hero--course-detail"
         style={{ "--page-dark-bg": "url(/assets/backgrounds/cosmic-dark-clean.webp)" } as CSSProperties}
       >
         <div className="container page-hero__inner">

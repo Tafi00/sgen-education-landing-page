@@ -515,6 +515,7 @@ function QuickToolItem({ item, defaultOpen, forceOpen }: { item: HubQuickItem; d
             required
             icon={<CalendarDays aria-hidden="true" />}
             value={birthDate}
+            onInput={(event) => setBirthDate(event.currentTarget.value)}
             onChange={(event) => setBirthDate(event.target.value)}
           />
         ) : null}
@@ -589,23 +590,20 @@ export function FreeToolsPage() {
 
   return (
     <>
-      <section className="page-hero">
+      <section className="page-hero catalog-hero catalog-hero--tools">
         <div className="container page-hero__inner">
           <div className="page-hero__copy">
             <span className="page-kicker">
               <Calculator aria-hidden="true" /> Kho công cụ SGEN
             </span>
             <h1>
-              Công cụ tra cứu <em>miễn phí, không cần tài khoản</em>
+              Free tools <em>tính nhanh tại chỗ</em>
             </h1>
             <p>
-              Mười hai công cụ Thần số học và ba công cụ phong thủy chạy trực tiếp trên trình duyệt. Mỗi mục mở ra là một form nhỏ tính ngay tại chỗ,
-              kèm giải thích cách tính để bạn kiểm chứng lại kết quả.
+              Chọn công cụ Thần số học hoặc phong thủy, nhập thông tin cần thiết và xem kết quả ngay. Mỗi mục có giải thích cách tính để bạn dễ đối chiếu.
             </p>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
-              <Link className="page-primary" to="/free-tools/chi-so-duong-doi">
-                <Sparkles aria-hidden="true" /> Tính chỉ số Đường đời
-              </Link>
+            <div className="page-hero__actions">
+              <a className="page-primary" href="#nhom-tinh-nhanh"><Sparkles aria-hidden="true" /> Bắt đầu tính nhanh</a>
               <Link className="action-button action-button--outline" to="/tra-cuu/than-so-hoc">
                 Tra cứu bản đồ số học <ArrowRight aria-hidden="true" />
               </Link>
@@ -614,7 +612,7 @@ export function FreeToolsPage() {
         </div>
       </section>
 
-      <section className="page-light-section ux-free-tools" id="tinh-nhanh-chi-so">
+      <section className="page-light-section ux-free-tools catalog-content" id="tinh-nhanh-chi-so">
         <div className="container">
           <nav className="ref-toc" aria-label="Mục lục công cụ">
             <a href="#nhom-tinh-nhanh">
@@ -882,7 +880,7 @@ export function FreeToolDetailPage() {
 
   return (
     <>
-      <section className="page-dark-section" style={FIRST_SECTION_STYLE}>
+      <section className="page-dark-section free-tool-detail-stage" style={FIRST_SECTION_STYLE}>
         <div className="container lookup-workspace">
           <header>
             <span className="page-kicker">
@@ -917,6 +915,7 @@ export function FreeToolDetailPage() {
                 icon={<CalendarDays aria-hidden="true" />}
                 value={birthDate}
                 error={fieldErrors.birthDate}
+                onInput={(event) => setBirthDate(event.currentTarget.value)}
                 onChange={(event) => setBirthDate(event.target.value)}
               />
               {tool.needsMonth ? (

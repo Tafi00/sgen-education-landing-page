@@ -82,7 +82,7 @@ export function SimIntroPage() {
               Thay vì chỉ tra cặp số đẹp, công cụ của SGEN chạy đồng thời năm lớp: quẻ Kinh Dịch, ngũ hành dãy số, âm dương, quan niệm dân gian và đối
               chiếu bản mệnh. Mỗi lớp được báo cáo riêng để bạn thấy dãy số mạnh yếu ở đâu.
             </p>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
+            <div className="page-hero__actions">
               <Link className="page-primary" to="/sim-phong-thuy/boi-sim">
                 <Phone aria-hidden="true" /> Bói sim ngay
               </Link>

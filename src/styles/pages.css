@@ -137,6 +137,29 @@
 .page-primary:hover { transform: translateY(-3px); box-shadow: 0 18px 40px rgba(108, 29, 215, 0.52); }
 .page-primary svg { width: 19px; }
 
+.page-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-top: 30px;
+}
+
+.page-hero__actions .page-primary {
+  margin-top: 0;
+}
+
+.page-hero .action-button--outline {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.55);
+}
+
+.page-hero .action-button--outline:hover {
+  background: rgba(255, 255, 255, 0.18);
+  border-color: #fff;
+}
+
 .page-hero__numbers span {
   position: absolute;
   z-index: 1;
