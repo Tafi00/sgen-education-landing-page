@@ -8,7 +8,7 @@
  */
 import type { CSSProperties } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, CheckCircle2, Info, Mail, MapPin, Phone, Sparkles } from "lucide-react";
+import { ArrowRight, CheckCircle2, Info, Mail, MapPin, Orbit, Phone } from "lucide-react";
 import { useCourses, usePosts, useServices, useSiteSettings } from "../../api/hooks";
 import type { ContentBlock } from "../../data/defaults/types";
 
@@ -78,7 +78,7 @@ function HeroBlock({ props }: { props: Props }) {
         <div className="page-hero__copy">
           {text(props.eyebrow) || text(props.kicker) ? (
             <span className="page-kicker">
-              <Sparkles aria-hidden="true" /> {text(props.eyebrow) || text(props.kicker)}
+              <Orbit aria-hidden="true" /> {text(props.eyebrow) || text(props.kicker)}
             </span>
           ) : null}
           {heading || accent ? (

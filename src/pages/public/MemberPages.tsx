@@ -18,8 +18,8 @@ import {
   Info,
   Loader2,
   LogOut,
+  Orbit,
   ShieldCheck,
-  Sparkles,
   Trash2,
   UserRound,
 } from "lucide-react";
@@ -123,7 +123,7 @@ export function MemberLoginPage() {
       <div className="container login-grid">
         <div className="login-welcome">
           <span className="page-kicker">
-            <Sparkles aria-hidden="true" /> Khu vực thành viên
+            <Orbit aria-hidden="true" /> Khu vực thành viên
           </span>
           <h1>Tài khoản SGEN</h1>
           <p>
@@ -249,7 +249,7 @@ export function MemberRegisterPage() {
       <div className="container login-grid">
         <div className="login-welcome">
           <span className="page-kicker">
-            <Sparkles aria-hidden="true" /> Tài khoản mới
+            <Orbit aria-hidden="true" /> Tài khoản mới
           </span>
           <h1>Đăng ký thành viên</h1>
           <p>Một tài khoản giúp bạn giữ lại kết quả tra cứu, theo dõi đơn hàng và quản lý quyền truy cập nội dung VIP.</p>

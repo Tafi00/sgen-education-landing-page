@@ -1,12 +1,13 @@
 import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import { Link } from "react-router-dom";
 import {
+  ArrowLeftRight,
   ArrowRight,
   BookOpen,
   CalendarCheck,
+  Check,
   ChevronLeft,
   ChevronRight,
-  Check,
   CircleAlert,
   Clock3,
   Coins,
@@ -14,13 +15,11 @@ import {
   LayoutGrid,
   Printer,
   ShieldCheck,
-  Sparkles,
   type LucideIcon,
 } from "lucide-react";
 import { CalendarToolView } from "../../components/fengshui/CalendarToolView";
 import { IChingToolView } from "../../components/fengshui/IChingToolView";
 import MenhThuApp from "../../vendor/menh-thu/app/MenhThuApp";
-import "../../styles/menh-thu-bazi.css";
 import { getDateProfile, getMonthCalendar, getVietnameseObservances, toDateString } from "../../../shared/menh-thu/metaphysics";
 import { RESULTS_DISCLAIMER } from "../../../shared/lookup-types";
 const COURSE_IMAGE = "/assets/programs/program-home-feng-shui-v2.webp";
@@ -339,7 +338,7 @@ export function GieoQuePage() {
             text: "Hào thứ nhất là hào dưới cùng, hào thứ sáu là hào trên cùng, đúng thứ tự an quẻ theo truyền thống.",
           },
           {
-            icon: Sparkles,
+            icon: ArrowLeftRight,
             title: "Hào động và quẻ biến",
             text: "Hào 6 (lão âm) và hào 9 (lão dương) là hào động. Đổi âm dương tại các hào này sẽ cho quẻ biến, thể hiện chiều chuyển dịch.",
           },
@@ -400,6 +399,8 @@ export function GieoQuePage() {
 /** Trang lap Tu Tru Bát Tu dùng truc tiep MenhThuApp voi giao dien Menh Thu nguyên ban, đoi sac tím SGEN. */
 export function TuTruPage() {
   const today = useMemo(localDateValue, []);
+  const cssReady = useMenhThuStylesheet();
+  if (!cssReady) return <div className="bazi-reference-page" aria-busy="true" />;
   return (
     <div className="bazi-reference-page">
       <MenhThuApp
@@ -413,6 +414,30 @@ export function TuTruPage() {
   );
 }
 
+/**
+ * Stylesheet Mệnh Thư (Tailwind preflight, `:root` biến màu/font, `html { font-size: 18px }`) được viết cho app độc lập,
+ * nạp toàn cục sẽ làm lệch typography của mọi trang khác. Chỉ gắn khi trang Tứ Trụ đang mở và gỡ khi rời trang.
+ */
+function useMenhThuStylesheet() {
+  const [ready, setReady] = useState(false);
+  useEffect(() => {
+    let style: HTMLStyleElement | null = null;
+    let cancelled = false;
+    void import("../../styles/menh-thu-bazi.css?inline").then(({ default: css }) => {
+      if (cancelled) return;
+      style = document.createElement("style");
+      style.dataset.scope = "menh-thu";
+      style.textContent = css;
+      document.head.appendChild(style);
+      setReady(true);
+    });
+    return () => {
+      cancelled = true;
+      style?.remove();
+    };
+  }, []);
+  return ready;
+}
 
 function addDays(base: string, days: number) {
   const [year, month, day] = base.split("-").map(Number);

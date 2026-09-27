@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { ArrowRight, Compass, Gift, GraduationCap, Lock, MessageSquareText, ShieldCheck, Sparkles, UsersRound } from "lucide-react";
+import { ArrowRight, Compass, Gift, GraduationCap, Lock, MessageSquareText, Orbit, ShieldCheck, UsersRound } from "lucide-react";
 
 const TOOLS = [
   {
@@ -80,7 +80,7 @@ export function LookupHubPage() {
         <div className="container page-hero__inner">
           <div className="page-hero__copy">
             <span className="page-kicker">
-              <Sparkles aria-hidden="true" /> Tra cứu &amp; trắc nghiệm
+              <Orbit aria-hidden="true" /> Tra cứu &amp; trắc nghiệm
             </span>
             <h1>
               Hiểu mình hơn bằng <em>dữ liệu có phương pháp</em>
@@ -91,7 +91,7 @@ export function LookupHubPage() {
             </p>
             <div className="page-hero__actions">
               <Link className="page-primary" to="/tra-cuu/than-so-hoc">
-                <Sparkles aria-hidden="true" /> Bắt đầu tra cứu
+                Bắt đầu tra cứu <ArrowRight aria-hidden="true" />
               </Link>
               <Link className="action-button action-button--outline" to="/lien-he">
                 <MessageSquareText aria-hidden="true" /> Cần tư vấn riêng

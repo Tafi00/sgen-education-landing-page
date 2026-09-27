@@ -1,6 +1,7 @@
 import { useMemo, useRef, useState, type FormEvent } from "react";
 import {
   ArrowRight,
+  BookOpen,
   CalendarCheck,
   Check,
   CircleAlert,
@@ -8,12 +9,12 @@ import {
   Coins,
   Compass,
   Flame,
+  Gem,
   LayoutGrid,
   Leaf,
   LoaderCircle,
   RotateCcw,
   ShieldCheck,
-  Sparkles,
   Waves,
   X,
 } from "lucide-react";
@@ -73,7 +74,7 @@ const elementIcons: Record<ElementName, typeof Flame> = {
   Mộc: Leaf,
   Hỏa: Flame,
   Thổ: Compass,
-  Kim: Sparkles,
+  Kim: Gem,
   Thủy: Waves,
 };
 
@@ -204,7 +205,7 @@ function IChingTool() {
                 <p>{result.changed.message}</p>
               </article>
             </div>
-            <p className="iching-reading__rule"><Sparkles /> {result.readingRule}</p>
+            <p className="iching-reading__rule"><BookOpen /> {result.readingRule}</p>
             {result.movingDetails.length > 0 && <div className="moving-lines">
               {result.movingDetails.map((line) => <article key={line.position}><b>Hào {line.position} · {line.polarity}</b><span>{line.guidance}</span></article>)}
             </div>}
@@ -265,7 +266,7 @@ function BaziTool() {
           <label><span>Giờ sinh</span><input name="time" type="time" defaultValue="12:00" required /></label>
           <label><span>Vị trí / múi giờ</span><input value="Việt Nam · UTC+7" readOnly /></label>
         </div>
-        <button className="fengshui-primary-action" type="submit"><Sparkles /> Lập lá số</button>
+        <button className="fengshui-primary-action" type="submit">Lập lá số <ArrowRight /></button>
         <p className="fengshui-method-note"><Clock3 /> Giờ sinh được hiệu chỉnh theo kinh độ Hà Nội và phương trình thời gian trước khi an trụ.</p>
         {error && <p className="fengshui-error" role="alert"><CircleAlert /> {error}</p>}
       </form>

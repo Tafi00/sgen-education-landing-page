@@ -111,7 +111,7 @@ export function ConsultationSection() {
             <label className="consultation-field">
               <span className="sr-only">Ngày sinh không bắt buộc</span>
               <CalendarDays aria-hidden="true" />
-              <input name="birthDate" type="text" placeholder="Ngày sinh (không bắt buộc)" onFocus={(event) => { event.currentTarget.type = "date"; }} />
+              <input name="birthDate" type="text" placeholder="Ngày sinh (tùy chọn)" onFocus={(event) => { event.currentTarget.type = "date"; }} />
             </label>
             <label className="consultation-field">
               <span className="sr-only">Email</span>

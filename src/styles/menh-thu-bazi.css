@@ -14318,3 +14318,16 @@ footer.site-footer .site-footer__bottom p {
   padding: 0 !important;
   box-sizing: border-box !important;
 }
+
+/* Chỉ lớp ngoài cùng chừa lề 24px; các lớp lồng bên trong (view-shell, section) chiếm trọn
+   chiều rộng cha — trước đây mỗi lớp tự trừ 48px nên trên mobile nội dung chỉ còn ~246px và tràn. */
+.bazi-reference-page .app-shell .view-shell--bazi,
+.bazi-reference-page .view-shell--bazi .bazi-section.tool-page {
+  width: 100% !important;
+}
+
+@media (max-width: 640px) {
+  .bazi-reference-page .app-shell {
+    width: calc(100% - 28px) !important;
+  }
+}

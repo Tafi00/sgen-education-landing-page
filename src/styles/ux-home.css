@@ -1277,26 +1277,33 @@
 }
 
 .gender-btn {
-  min-height: 44px;
+  min-height: 52px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 8px;
   padding: 8px 14px;
-  color: #2b115b !important;
-  background: rgba(255, 255, 255, 0.85) !important;
-  border: 1px solid rgba(142, 65, 221, 0.35) !important;
-  border-radius: 10px;
-  font-size: 0.88rem;
-  font-weight: 600;
+  color: rgba(255, 255, 255, 0.86) !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(214, 165, 255, 0.28) !important;
+  border-radius: 13px;
+  font-size: 0.9rem;
+  font-weight: 700;
   cursor: pointer;
-  transition: all 180ms ease;
+  transition: background 180ms ease, border-color 180ms ease, color 180ms ease;
+}
+
+.gender-btn svg {
+  width: 17px;
+  height: 17px;
+  flex: 0 0 auto;
+  color: #d7b3ff;
 }
 
 .gender-btn:hover {
-  color: #5a22e8 !important;
-  background: #ffffff !important;
-  border-color: #5a22e8 !important;
+  color: #ffffff !important;
+  background: rgba(255, 255, 255, 0.14) !important;
+  border-color: rgba(214, 165, 255, 0.6) !important;
 }
 
 .gender-btn.is-selected {
@@ -1306,33 +1313,11 @@
   box-shadow: 0 4px 16px rgba(163, 26, 201, 0.45) !important;
 }
 
+.gender-btn.is-selected svg {
+  color: #ffffff;
+}
+
 /* Các tùy chọn tra cứu chuyên sâu (checkboxes) */
-.lookup-options-grid {
-  display: grid;
-  gap: 8px;
-  margin-top: 14px;
-  margin-bottom: 6px;
-  padding: 12px 14px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(214, 165, 255, 0.18);
-  border-radius: 12px;
-}
-
-.lookup-option-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 0.82rem;
-  color: rgba(255, 255, 255, 0.85);
-  cursor: pointer;
-}
-
-.lookup-option-item input[type="checkbox"] {
-  width: 16px;
-  height: 16px;
-  accent-color: var(--violet);
-  cursor: pointer;
-}
 
 @media (max-width: 768px) {
   .lookup-nav-tabs {
@@ -1361,42 +1346,27 @@
 }
 
 .numeral-showcase-card__header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  margin-bottom: 18px;
-  padding-bottom: 14px;
-  border-bottom: 1px solid rgba(214, 165, 255, 0.18);
-}
-
-.numeral-showcase-badge {
-  display: inline-flex;
-  align-items: center;
+  display: grid;
+  justify-items: center;
   gap: 6px;
-  padding: 4px 12px;
-  background: rgba(142, 65, 221, 0.28);
-  border: 1px solid rgba(214, 165, 255, 0.35);
-  border-radius: 999px;
-  color: #d7b3ff;
-  font-size: 0.74rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  margin-bottom: 8px;
+  margin-bottom: 20px;
+  text-align: center;
 }
 
 .numeral-showcase-card__header h3 {
   margin: 0;
   font-family: var(--font-display);
-  font-size: 1.35rem;
+  font-size: clamp(1.2rem, 2vw, 1.5rem);
+  line-height: 1.2;
   text-transform: uppercase;
   color: #fff;
   letter-spacing: -0.02em;
 }
 
-.numeral-showcase-card__header small {
-  color: rgba(235, 215, 255, 0.65);
-  font-size: 0.78rem;
+.numeral-showcase-card__header p {
+  margin: 0;
+  color: rgba(235, 215, 255, 0.7);
+  font-size: 0.88rem;
 }
 
 /* 11 tab số nằm ngang */
@@ -1508,47 +1478,6 @@
   color: rgba(245, 235, 255, 0.85);
 }
 
-.numeral-showcase-traits {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 7px;
-  margin-bottom: 16px;
-}
-
-.numeral-trait-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px 10px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(214, 165, 255, 0.25);
-  border-radius: 999px;
-  font-size: 0.74rem;
-  font-weight: 600;
-  color: #e5ceff;
-}
-
-.numeral-trait-pill svg {
-  color: #38e19e;
-}
-
-.numeral-showcase-hint {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 9px 12px;
-  background: rgba(108, 54, 232, 0.18);
-  border: 1px solid rgba(214, 165, 255, 0.28);
-  border-radius: 11px;
-  color: #d8b8ff;
-  font-size: 0.78rem;
-}
-
-.numeral-showcase-hint svg {
-  color: #c48eff;
-  flex: 0 0 auto;
-}
-
 @media (max-width: 900px) {
   .numeral-showcase-display {
     grid-template-columns: 1fr;
@@ -1556,9 +1485,6 @@
   }
   .numeral-showcase-info {
     align-items: center;
-  }
-  .numeral-showcase-traits {
-    justify-content: center;
   }
 }
 
@@ -1711,24 +1637,6 @@
 }
 
 /* Hộp tùy chọn phân tích chuyên sâu */
-.lookup-options-box {
-  margin-top: 4px;
-  margin-bottom: 14px;
-  padding: 14px 18px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(214, 165, 255, 0.18);
-  border-radius: 14px;
-}
-
-.lookup-options-box__label {
-  display: block;
-  font-size: 0.76rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: #c48eff;
-  margin-bottom: 8px;
-}
 
 /* Nút bấm TRA CỨU NGAY rực rỡ */
 .lookup-submit-btn {

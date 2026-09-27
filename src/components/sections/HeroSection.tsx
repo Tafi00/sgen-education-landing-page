@@ -5,8 +5,8 @@ import {
   Compass,
   HeartHandshake,
   MessageSquare,
+  Orbit,
   ShieldCheck,
-  Sparkles,
   Star,
   Target,
   UserRound,
@@ -45,39 +45,29 @@ const benefits = [
 
 const sections = [
   {
-    num: "01",
     id: "tam-nhin",
     title: "Tầm nhìn giáo dục",
     desc: "Một hệ thống định hướng toàn diện, giáo dục để hiểu và kiểm chứng.",
     icon: Compass,
   },
   {
-    num: "02",
     id: "su-menh",
     title: "Sứ mệnh đồng hành",
     desc: "Rút ngắn khoảng cách từ hiểu đến hành qua lộ trình thực tiễn 4 bước.",
     icon: Target,
   },
   {
-    num: "03",
     id: "gia-tri-cot-loi",
     title: "Giá trị cốt lõi",
     desc: "4 nguyên tắc bất biến định hình cách SGEN đào tạo & tư vấn.",
     icon: HeartHandshake,
   },
   {
-    num: "04",
     id: "lien-he",
     title: "Liên hệ & tư vấn",
     desc: "Kênh trao đổi trực tiếp và nhận tư vấn định hướng miễn phí.",
     icon: MessageSquare,
   },
-];
-
-const floatingNumbers = [
-  { number: "7", cls: "hero__number--1" },
-  { number: "3", cls: "hero__number--3" },
-  { number: "6", cls: "hero__number--6" },
 ];
 
 export function HeroSection() {
@@ -90,17 +80,10 @@ export function HeroSection() {
 
   return (
     <section id="top" className="hero" style={{ "--hero-bg": `url(${cosmicDark})` } as React.CSSProperties}>
-      <div className="hero__numbers" aria-hidden="true">
-        {floatingNumbers.map(({ number, cls }) => (
-          <span key={cls} className={`hero__number ${cls}`}>
-            {number}
-          </span>
-        ))}
-      </div>
 
       <div className="container hero__main">
         <Reveal className="hero__content" direction="right">
-          <SectionBadge dark icon={Sparkles}>
+          <SectionBadge dark icon={Orbit}>
             Học viện SGEN Education
           </SectionBadge>
           <h1>
@@ -166,7 +149,7 @@ export function HeroSection() {
           </p>
 
           <div className="intro-hub-items">
-            {sections.map(({ num, id, title, desc, icon: Icon }) => (
+            {sections.map(({ id, title, desc, icon: Icon }) => (
               <a
                 key={id}
                 href={`#${id}`}
@@ -179,7 +162,6 @@ export function HeroSection() {
               >
                 <span className="intro-hub-item__num">
                   <Icon aria-hidden="true" size={17} />
-                  <span>{num}</span>
                 </span>
                 <div className="intro-hub-item__info">
                   <strong>{title}</strong>

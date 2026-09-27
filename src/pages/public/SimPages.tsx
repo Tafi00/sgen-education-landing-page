@@ -4,11 +4,11 @@ import {
   CircleAlert,
   Compass,
   Flame,
+  GraduationCap,
   Hash,
   Layers,
   Phone,
   Scale,
-  Sparkles,
   Star,
   UsersRound,
   type LucideIcon,
@@ -60,7 +60,7 @@ const APPROACHES = [
     text: "Cộng toàn bộ chữ số để lấy tổng nút hoặc cho điểm rồi xếp loại. Cách này cho con số dễ so sánh, đổi lại một điểm số không nói được dãy số mạnh hay yếu ở khía cạnh nào.",
   },
   {
-    icon: Sparkles,
+    icon: Layers,
     title: "Năm lớp của SGEN",
     text: "Công cụ chạy song song quẻ Kinh Dịch, ngũ hành, âm dương, quan niệm dân gian và đối chiếu bản mệnh, sau đó báo cáo từng lớp để bạn tự cân nhắc.",
   },
@@ -87,7 +87,7 @@ export function SimIntroPage() {
                 <Phone aria-hidden="true" /> Bói sim ngay
               </Link>
               <Link className="action-button action-button--outline" to="/khoa-hoc">
-                <Sparkles aria-hidden="true" /> Học cách luận sim
+                <GraduationCap aria-hidden="true" /> Học cách luận sim
               </Link>
             </div>
           </div>

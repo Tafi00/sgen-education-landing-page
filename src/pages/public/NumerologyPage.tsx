@@ -7,12 +7,17 @@ import {
   Download,
   Hash,
   Loader2,
+  Mars,
   Orbit,
   Printer,
+  Search,
   Share2,
   ShieldCheck,
-  Sparkles,
+  Tag,
   UserRound,
+  Venus,
+  VenusAndMars,
+  type LucideIcon,
 } from "lucide-react";
 import { api, errorMessage } from "../../api/client";
 import { LookupNavTabs } from "../../components/lookup/LookupNavTabs";
@@ -109,15 +114,18 @@ const STEPS = ["Nhập thông tin", "Phân tích", "Nhận kết quả", "Lưu &
 
 type NumerologyReport = LookupResultPayload & { id: string; shareToken?: string };
 
+const GENDER_OPTIONS: { value: "Nam" | "Nữ" | "Khác"; icon: LucideIcon }[] = [
+  { value: "Nam", icon: Mars },
+  { value: "Nữ", icon: Venus },
+  { value: "Khác", icon: VenusAndMars },
+];
+
 export function NumerologyPage() {
   const toast = useToast();
   const [name, setName] = useState("");
   const [birthDate, setBirthDate] = useState("");
   const [commonName, setCommonName] = useState("");
   const [gender, setGender] = useState<"Nam" | "Nữ" | "Khác">("Nam");
-  const [optLove, setOptLove] = useState(true);
-  const [optSim, setOptSim] = useState(false);
-  const [optCareer, setOptCareer] = useState(true);
   const [agreed, setAgreed] = useState(true);
   const [previewNumber, setPreviewNumber] = useState("1");
   const [fieldErrors, setFieldErrors] = useState<{ name?: string; birthDate?: string }>({});
@@ -240,7 +248,7 @@ export function NumerologyPage() {
           <form className="lookup-card lookup-form-center" onSubmit={handleSubmit} noValidate>
             <div className="lookup-form-center__head">
               <span className="lookup-card__badge">
-                <Sparkles aria-hidden="true" size={15} /> Nhập thông tin tra cứu
+                <Orbit aria-hidden="true" size={15} /> Nhập thông tin tra cứu
               </span>
               <h2>Bản đồ Thần số học cá nhân</h2>
               <p>Điền thông tin chính xác để hệ thống phân tích báo cáo chi tiết cho bạn.</p>
@@ -266,7 +274,7 @@ export function NumerologyPage() {
               <label className="field-group">
                 <span>Tên thường dùng <em>(nếu có)</em></span>
                 <span className="field-control">
-                  <Sparkles aria-hidden="true" />
+                  <Tag aria-hidden="true" />
                   <input
                     type="text"
                     placeholder="Ví dụ: Minh Anh, Anna"
@@ -293,35 +301,18 @@ export function NumerologyPage() {
               <div className="field-group">
                 <span>Giới tính</span>
                 <div className="gender-selector">
-                  {(["Nam", "Nữ", "Khác"] as const).map((g) => (
+                  {GENDER_OPTIONS.map(({ value, icon: Icon }) => (
                     <button
-                      key={g}
+                      key={value}
                       type="button"
-                      className={`gender-btn ${gender === g ? "is-selected" : ""}`}
-                      onClick={() => setGender(g)}
+                      className={`gender-btn ${gender === value ? "is-selected" : ""}`}
+                      aria-pressed={gender === value}
+                      onClick={() => setGender(value)}
                     >
-                      {g === "Nam" ? "♂ Nam" : g === "Nữ" ? "♀ Nữ" : "⚧ Khác"}
+                      <Icon aria-hidden="true" /> {value}
                     </button>
                   ))}
                 </div>
-              </div>
-            </div>
-
-            <div className="lookup-options-box">
-              <span className="lookup-options-box__label">Tùy chọn phân tích chuyên sâu:</span>
-              <div className="lookup-options-grid">
-                <label className="lookup-option-item">
-                  <input type="checkbox" checked={optLove} onChange={(e) => setOptLove(e.target.checked)} />
-                  <span>Xem tương hợp tình duyên, hôn nhân</span>
-                </label>
-                <label className="lookup-option-item">
-                  <input type="checkbox" checked={optSim} onChange={(e) => setOptSim(e.target.checked)} />
-                  <span>Xem số điện thoại &amp; số hợp phong thủy</span>
-                </label>
-                <label className="lookup-option-item">
-                  <input type="checkbox" checked={optCareer} onChange={(e) => setOptCareer(e.target.checked)} />
-                  <span>Định hướng sự nghiệp &amp; bài học đường đời</span>
-                </label>
               </div>
             </div>
 
@@ -335,7 +326,7 @@ export function NumerologyPage() {
                 className="lookup-submit-btn"
                 disabled={loading}
               >
-                {loading ? <Loader2 className="spin" aria-hidden="true" size={20} /> : <Sparkles aria-hidden="true" size={20} />}
+                {loading ? <Loader2 className="spin" aria-hidden="true" size={20} /> : <Search aria-hidden="true" size={20} />}
                 <span>{loading ? "Đang giải mã dữ liệu số học…" : "TRA CỨU NGAY"}</span>
               </button>
 
@@ -395,13 +386,8 @@ export function NumerologyPage() {
           ) : (
             <div className="numeral-showcase-card">
               <div className="numeral-showcase-card__header">
-                <div>
-                  <span className="numeral-showcase-badge">
-                    <Sparkles size={14} /> Năng lượng 11 con số Pythagoras
-                  </span>
-                  <h3>Khám phá 11 con số chủ đạo</h3>
-                </div>
-                <small>Bấm chọn từng số để xem năng lượng đặc trưng</small>
+                <h3>Khám phá 11 con số chủ đạo</h3>
+                <p>Chọn một con số để xem năng lượng đặc trưng.</p>
               </div>
 
               <div className="numeral-showcase-tabs" role="tablist" aria-label="Chọn con số thần số học">
@@ -410,6 +396,8 @@ export function NumerologyPage() {
                     key={num}
                     type="button"
                     className={`numeral-showcase-tab ${previewNumber === num ? "is-active" : ""}`}
+                    role="tab"
+                    aria-selected={previewNumber === num}
                     onClick={() => setPreviewNumber(num)}
                   >
                     {num}
@@ -437,18 +425,9 @@ export function NumerologyPage() {
                   </h4>
                   <p>{NUMBER_PREVIEWS[previewNumber].desc}</p>
 
-                  <div className="numeral-showcase-traits">
-                    {NUMBER_PREVIEWS[previewNumber].traits.map((trait) => (
-                      <span key={trait} className="numeral-trait-pill">
-                        <CheckCircle2 size={13} /> {trait}
-                      </span>
-                    ))}
-                  </div>
-
-                  <div className="numeral-showcase-hint">
-                    <Compass size={16} />
-                    <span>Điền thông tin ở form bên trên &amp; bấm &ldquo;TRA CỨU NGAY&rdquo; để mở bản đồ của riêng bạn!</span>
-                  </div>
+                  <p className="numeral-showcase-keywords">
+                    <span>Từ khóa</span> {NUMBER_PREVIEWS[previewNumber].traits.join(" · ")}
+                  </p>
                 </div>
               </div>
             </div>

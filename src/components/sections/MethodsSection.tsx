@@ -51,7 +51,6 @@ export function MethodsSection() {
         />
 
         <div className="methods-grid">
-          <span className="methods-grid__orbit" aria-hidden="true" />
           {methods.map((method, index) => (
             <Reveal as="article" className="method-card" delay={index * 100} key={method.number}>
               <img src={method.image} alt="" loading="lazy" decoding="async" />

@@ -60,7 +60,7 @@ export const defaultPages: DefaultPage[] = [
     slug: "gioi-thieu/tam-nhin",
     title: "Tầm nhìn",
     eyebrow: "Giới thiệu SGEN",
-    accent: "tầm nhìn giáo dục",
+    accent: "khám phá bản thân có phương pháp",
     description: "Trở thành đơn vị giáo dục giúp người Việt dùng công cụ khám phá bản thân một cách có phương pháp, tỉnh táo và có trách nhiệm.",
     blocks: [
       {
@@ -104,7 +104,7 @@ export const defaultPages: DefaultPage[] = [
     slug: "gioi-thieu/su-menh",
     title: "Sứ mệnh",
     eyebrow: "Giới thiệu SGEN",
-    accent: "sứ mệnh đồng hành",
+    accent: "đồng hành từ hiểu đến hành",
     description: "Biến kiến thức phức tạp thành lộ trình học tập dễ hiểu, có thực hành và có cộng đồng đồng hành lâu dài.",
     blocks: [
       {
@@ -149,7 +149,7 @@ export const defaultPages: DefaultPage[] = [
     slug: "gioi-thieu/gia-tri-cot-loi",
     title: "Giá trị cốt lõi",
     eyebrow: "Giới thiệu SGEN",
-    accent: "giá trị giữ vững",
+    accent: "bốn nguyên tắc làm nghề",
     description: "Những nguyên tắc định hình cách SGEN thiết kế chương trình, giảng dạy và tư vấn cho từng học viên.",
     blocks: [
       {

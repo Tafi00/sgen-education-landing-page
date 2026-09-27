@@ -13,10 +13,10 @@ import {
   HeartHandshake,
   LayoutGrid,
   Mountain,
+  Orbit,
   Search,
   ShieldCheck,
   Smile,
-  Sparkles,
   Star,
   Target,
   TrendingUp,
@@ -538,7 +538,7 @@ function QuickToolItem({ item, defaultOpen, forceOpen }: { item: HubQuickItem; d
         ) : null}
 
         <button type="submit" className="button button--primary">
-          <Sparkles aria-hidden="true" /> Tính ngay
+          Tính ngay <ArrowRight aria-hidden="true" />
         </button>
 
         {error ? (
@@ -603,7 +603,7 @@ export function FreeToolsPage() {
               Chọn công cụ Thần số học hoặc phong thủy, nhập thông tin cần thiết và xem kết quả ngay. Mỗi mục có giải thích cách tính để bạn dễ đối chiếu.
             </p>
             <div className="page-hero__actions">
-              <a className="page-primary" href="#nhom-tinh-nhanh"><Sparkles aria-hidden="true" /> Bắt đầu tính nhanh</a>
+              <a className="page-primary" href="#nhom-tinh-nhanh">Bắt đầu tính nhanh <ArrowRight aria-hidden="true" /></a>
               <Link className="action-button action-button--outline" to="/tra-cuu/than-so-hoc">
                 Tra cứu bản đồ số học <ArrowRight aria-hidden="true" />
               </Link>
@@ -733,7 +733,7 @@ export function FreeToolsPage() {
           <div className="ref-lookup-cta">
             <div>
               <span className="page-kicker">
-                <Sparkles aria-hidden="true" /> Tra cứu đầy đủ
+                <Orbit aria-hidden="true" /> Tra cứu đầy đủ
               </span>
               <h2>Tra cứu các chỉ số của bạn ngay</h2>
               <p>
@@ -950,7 +950,7 @@ export function FreeToolDetailPage() {
               ) : null}
 
               <button type="submit" className="button button--primary">
-                <Sparkles aria-hidden="true" /> Tính chỉ số
+                Tính chỉ số <ArrowRight aria-hidden="true" />
               </button>
 
               {error ? (

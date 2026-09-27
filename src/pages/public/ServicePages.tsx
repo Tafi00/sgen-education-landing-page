@@ -20,12 +20,13 @@ import {
   KeyRound,
   Loader2,
   Mail,
+  Orbit,
   PackageCheck,
   Phone,
   QrCode,
   Send,
   ShieldCheck,
-  Sparkles,
+  Star,
   Upload,
   UserRound,
   Users,
@@ -151,7 +152,7 @@ export function ServicesListPage() {
         <div className="container page-hero__inner">
           <div className="page-hero__copy">
             <span className="page-kicker">
-              <Sparkles aria-hidden="true" /> Dịch vụ SGEN
+              <Orbit aria-hidden="true" /> Dịch vụ SGEN
             </span>
             <h1>
               <span className="page-hero__title-line">Đồng hành</span>
@@ -183,7 +184,7 @@ export function ServicesListPage() {
                   <div className="service-card__media">
                     {service.coverImage ? <img src={service.coverImage} alt="" loading="lazy" /> : <PackageCheck aria-hidden="true" />}
                     <span className="service-grid__number">{String(index + 1).padStart(2, "0")}</span>
-                    {service.isFeatured ? <span className="service-card__badge"><Sparkles aria-hidden="true" /> Được chọn nhiều</span> : null}
+                    {service.isFeatured ? <span className="service-card__badge"><Star aria-hidden="true" /> Được chọn nhiều</span> : null}
                   </div>
                   <div className="service-card__meta">{service.durationLabel || "Linh hoạt"}</div>
                   <h3>{service.name}</h3>
@@ -361,7 +362,7 @@ export function ServiceDetailPage() {
               <ArrowLeft aria-hidden="true" /> Tất cả dịch vụ
             </Link>
             <span className="page-kicker">
-              <Sparkles aria-hidden="true" /> {service.durationLabel || "Dịch vụ SGEN"}
+              <Orbit aria-hidden="true" /> {service.durationLabel || "Dịch vụ SGEN"}
             </span>
             <h1>
               <span className="page-hero__title-line">{service.name}</span>

@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import {
   ArrowUp,
+  Bot,
+  Check,
   ChevronRight,
   CircleCheck,
   ClipboardCopy,
@@ -9,7 +11,6 @@ import {
   LibraryBig,
   RotateCcw,
   ShieldCheck,
-  Sparkles,
   type LucideIcon,
 } from "lucide-react";
 import { getHexagram, type HexagramResult } from "../../../shared/menh-thu/metaphysics";
@@ -109,7 +110,7 @@ function ToolIntro({
         <p>{description}</p>
       </div>
       <ul>
-        {highlights.map((item) => <li key={item}><Sparkles size={14} strokeWidth={1.8} />{item}</li>)}
+        {highlights.map((item) => <li key={item}><Check size={14} strokeWidth={2} />{item}</li>)}
       </ul>
     </header>
   );
@@ -367,7 +368,7 @@ export function IChingToolView({ defaultQuestion = "", compact = false }: FengSh
               {question && <div className="question-echo"><small>Câu hỏi đã lập quẻ</small><p>“{question}”</p></div>}
               <section className="iching-ai-panel" aria-labelledby="iching-ai-title">
                 <header>
-                  <span><Sparkles size={18} /></span>
+                  <span><Bot size={18} /></span>
                   <div>
                     <small>Gói dữ liệu dành cho AI</small>
                     <h4 id="iching-ai-title">Hỏi sâu hơn về quẻ này</h4>

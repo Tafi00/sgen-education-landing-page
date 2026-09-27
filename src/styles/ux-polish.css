@@ -1,0 +1,414 @@
+/* ux-polish — đợt rà soát UI tổng: sửa lệch bố cục, style lệch và chi tiết trang trí thừa.
+   Nạp CUỐI CÙNG trong main.tsx nên ghi đè được các lớp ux-* trước đó khi cùng độ ưu tiên. */
+
+/* ---------------------------------------------------------------------------
+   1. Hero trang chủ — cột grid `1fr` bị nội dung (hàng chip cuộn ngang, card 4 trụ cột)
+      kéo rộng tới ~610px trên màn 390px, làm chữ và nút bị cắt ở mép phải.
+   --------------------------------------------------------------------------- */
+@media (max-width: 1100px) {
+  .hero__main {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .hero__content,
+  .hero .lookup-card {
+    min-width: 0;
+  }
+}
+
+.intro-hub-item {
+  min-width: 0;
+}
+
+@media (max-width: 767px) {
+  .intro-hub-item__info small {
+    white-space: normal;
+  }
+}
+
+/* Card "Bốn trụ cột": chỉ giữ icon, bỏ số thứ tự serif trùng vai trò. */
+.intro-hub-item__num {
+  justify-content: center;
+}
+
+/* ---------------------------------------------------------------------------
+   2. Section tối nằm giữa trang — padding-top gốc cộng thêm chiều cao header
+      (chỉ đúng khi là section đầu trang) nên để lại ~150px trống phía trên.
+   --------------------------------------------------------------------------- */
+section + .page-dark-section {
+  padding-top: 86px;
+}
+
+@media (max-width: 800px) {
+  section + .page-dark-section {
+    padding-top: 62px;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   3. Nút phụ trong hero trang con — cùng chiều cao, cỡ chữ, chữ hoa với nút chính.
+   --------------------------------------------------------------------------- */
+.page-hero .action-button--outline {
+  min-height: 54px;
+  padding: 11px 22px;
+  border-radius: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.page-hero__actions .action-button--outline,
+.fengshui-hub__actions .action-button--outline {
+  margin-top: 0;
+}
+
+.fengshui-hub__actions {
+  align-items: center;
+}
+
+/* ---------------------------------------------------------------------------
+   4. Trang chủ — trích dẫn sứ mệnh: bỏ vạch màu một bên trên card bo tròn.
+   --------------------------------------------------------------------------- */
+.mission-quote-box {
+  padding: 30px 44px;
+  border: 1px solid rgba(99, 47, 234, 0.14);
+  border-radius: 20px;
+}
+
+@media (max-width: 767px) {
+  .mission-quote-box {
+    padding: 22px 20px;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   5. Trang chủ — khối tư vấn.
+   --------------------------------------------------------------------------- */
+/* Vạch gradient 108px lơ lửng trên mép card, lệch trái/phải khác nhau giữa hai card. */
+.consultation-copy::before,
+.consultation-form-card::before {
+  display: none;
+}
+
+/* Ô nội dung cao theo hàng grid, nhưng textarea bên trong chỉ cao 100px nên
+   tay nắm resize nằm lơ lửng giữa ô. */
+.consultation-field--textarea textarea {
+  align-self: stretch;
+  height: auto;
+  resize: none;
+}
+
+.consultation-phone {
+  justify-content: flex-start;
+}
+
+/* ---------------------------------------------------------------------------
+   6. Footer — menu chia 2 khối làm khoảng cách giữa "Công cụ phong thủy" và
+      "Khóa học" lớn hơn các dòng khác.
+   --------------------------------------------------------------------------- */
+@media (min-width: 1001px) {
+  .site-footer__nav > div {
+    display: contents;
+  }
+
+  .site-footer__nav {
+    gap: 0;
+  }
+}
+
+.site-footer__contact p > span,
+.site-footer__contact p > a {
+  min-width: 0;
+}
+
+/* ---------------------------------------------------------------------------
+   7. Trang Liên hệ — thông tin liên hệ dạng danh sách dọc (thay cho lưới ô nhỏ
+      làm số điện thoại bị cắt và địa chỉ vỡ dòng từng chữ).
+   --------------------------------------------------------------------------- */
+.contact-card {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  align-self: start;
+}
+
+.contact-card__title {
+  margin: 0;
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+}
+
+.contact-list {
+  display: grid;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.contact-list li + li {
+  border-top: 1px solid #eee7f6;
+}
+
+.contact-list__item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 14px 4px;
+  color: inherit;
+  text-decoration: none;
+}
+
+a.contact-list__item {
+  border-radius: 12px;
+  transition: background 160ms ease;
+}
+
+a.contact-list__item:hover {
+  background: #f7f2fd;
+}
+
+.contact-list__icon {
+  display: inline-grid;
+  flex: 0 0 auto;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  color: var(--violet);
+  background: #f2ebfd;
+  border-radius: 12px;
+}
+
+.contact-list__icon svg {
+  width: 19px;
+  height: 19px;
+}
+
+.contact-list__text {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.contact-list__text small {
+  color: var(--ink-soft);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.contact-list__text strong {
+  color: var(--ink);
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.contact-card__company {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding-top: 14px;
+  color: var(--ink-soft);
+  font-size: 0.85rem;
+  border-top: 1px solid #eee7f6;
+}
+
+.contact-card__company svg {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+  color: var(--violet);
+}
+
+/* ---------------------------------------------------------------------------
+   8. Trang 404 — nút phụ dùng style admin (nền trắng, cao 84px) trên nền tối.
+   --------------------------------------------------------------------------- */
+.not-found-page__actions {
+  align-items: center;
+}
+
+.not-found-page__actions .page-primary {
+  margin-top: 0;
+}
+
+.not-found-page__actions .button--ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 54px;
+  padding: 11px 22px;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 12px;
+  box-shadow: none;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.not-found-page__actions .button--ghost:hover {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: #fff;
+}
+
+.not-found-page__actions svg {
+  width: 18px;
+  height: 18px;
+}
+
+@media (max-width: 560px) {
+  .not-found-page__actions > a {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   9. Blog — tag dính sát nút "Đọc tiếp" ở card dài nhất; phân trang dính lưới.
+   --------------------------------------------------------------------------- */
+.post-card .detail-tags {
+  margin-bottom: 16px;
+}
+
+.blog-pagination {
+  justify-content: center;
+  margin-top: 36px;
+}
+
+/* ---------------------------------------------------------------------------
+   10. Dịch vụ — bảng so sánh: tiêu đề cột và nút đăng ký bị bẻ dòng.
+   --------------------------------------------------------------------------- */
+.service-compare__table thead th,
+.service-compare__table td[data-label="Đăng ký"] .button {
+  white-space: nowrap;
+}
+
+/* ---------------------------------------------------------------------------
+   11. Số thứ tự "01, 02…" trên card — dùng Georgia serif lẫn giữa bộ chữ sans
+       hình học của site. Đồng bộ về font hiển thị, chữ số đều độ rộng.
+       (Giữ serif cho phần minh họa con số nghệ thuật ở trang tra cứu.)
+   --------------------------------------------------------------------------- */
+.method-card__number,
+.tool-card__number,
+.mission-stage-card__number,
+.values-landing-card__number,
+.service-grid__number,
+.article-list article > span,
+.service-related__image span {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+}
+
+/* ---------------------------------------------------------------------------
+   12. Card nội dung trang con (Tầm nhìn, FAQ, công cụ) — min-height 300px cố định
+       để lại khoảng trống lớn dưới đoạn mô tả ngắn. Lưới đã tự kéo các card
+       cùng hàng bằng nhau nên không cần chiều cao tối thiểu.
+   --------------------------------------------------------------------------- */
+.value-grid article,
+.service-grid article {
+  min-height: 0;
+}
+
+.value-grid article h3 + p {
+  margin-top: 10px;
+}
+
+.service-grid article > p {
+  margin-bottom: 22px;
+}
+
+/* ---------------------------------------------------------------------------
+   13. Drawer menu mobile — danh sách rộng hơn drawer (tràn phải), nút "Tổng quan…"
+       chữ sáng trên nền sáng, và 8 menu con luôn bung hết làm drawer dài vài màn hình.
+       Menu con giờ thu gọn, mở bằng nút mũi tên cạnh tên mục.
+   --------------------------------------------------------------------------- */
+@media (max-width: 1240px) {
+  .site-nav__list,
+  .site-nav__item,
+  .site-nav__trigger,
+  .site-nav__dropdown {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .site-nav__trigger > a {
+    min-width: 0;
+    white-space: normal;
+    text-align: left;
+  }
+
+  .site-nav__dropdown a {
+    white-space: normal;
+  }
+
+  .site-nav .site-nav__dropdown a.site-nav__dropdown-all {
+    color: #4a1fb8;
+  }
+
+  .site-nav__item.has-children:not(.is-open) .site-nav__dropdown {
+    display: none;
+  }
+
+  .site-nav__toggle > svg {
+    width: 20px;
+    height: 20px;
+    opacity: 0.8;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   14. Trang Tra cứu — khối "11 con số" (bố cục đầu khối sửa trực tiếp trong ux-home.css).
+   --------------------------------------------------------------------------- */
+/* Nút chọn số là UI, không phải minh họa — dùng font hiển thị như các số khác. */
+.numeral-showcase-tab {
+  font-family: var(--font-display) !important;
+  font-variant-numeric: tabular-nums;
+}
+
+.numeral-showcase-keywords {
+  margin: 0 !important;
+  color: #e5ceff !important;
+  font-size: 0.88rem !important;
+  font-weight: 600;
+}
+
+.numeral-showcase-keywords span {
+  margin-right: 6px;
+  color: rgba(235, 215, 255, 0.6);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 600px) {
+  .numeral-showcase-card {
+    padding: 22px 16px;
+  }
+
+  /* 11 số trên mobile: nút 44px (đủ vùng chạm), 2 hàng căn giữa. */
+  .numeral-showcase-tabs {
+    gap: 10px !important;
+    padding-bottom: 12px !important;
+    margin-bottom: 8px !important;
+  }
+
+  .numeral-showcase-tab {
+    width: 44px !important;
+    height: 44px !important;
+    min-width: 44px !important;
+    font-size: 1rem !important;
+  }
+
+  .numeral-showcase-art {
+    min-height: 0 !important;
+  }
+
+  .numeral-showcase-img {
+    max-height: 180px !important;
+  }
+}

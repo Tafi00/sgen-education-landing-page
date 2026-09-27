@@ -17,10 +17,10 @@ import {
   Loader2,
   Mail,
   MapPin,
+  Orbit,
   Phone,
   Send,
   ShieldCheck,
-  Sparkles,
   UserRound,
 } from "lucide-react";
 import { api, errorMessage } from "../../api/client";
@@ -79,7 +79,7 @@ function ContentPage({ slug, children }: { slug: string; children?: ReactNode })
               </nav>
             ) : null}
             <span className="page-kicker">
-              <Sparkles aria-hidden="true" /> {page.eyebrow}
+              <Orbit aria-hidden="true" /> {page.eyebrow}
             </span>
             <h1>
               <span className="page-hero__title-line">{page.title}</span>
@@ -224,7 +224,7 @@ export function ContactPage() {
         <div className="container page-hero__inner">
           <div className="page-hero__copy">
             <span className="page-kicker">
-              <Sparkles aria-hidden="true" /> {page?.eyebrow ?? "Kết nối với SGEN"}
+              <Orbit aria-hidden="true" /> {page?.eyebrow ?? "Kết nối với SGEN"}
             </span>
             <h1>
               <span className="page-hero__title-line">{page?.title ?? "Liên hệ"}</span>
@@ -324,33 +324,36 @@ export function ContactPage() {
               </div>
             </form>
 
-            <aside className="admin-card">
-              <div className="admin-panel__head">
-                <h2>Thông tin liên hệ</h2>
-              </div>
-              <div className="admin-quick-grid">
+            <aside className="admin-card contact-card">
+              <h2 className="contact-card__title">Thông tin liên hệ</h2>
+              <ul className="contact-list">
                 {contactRows.map((row) => {
                   const Icon = row.icon;
                   const body = (
                     <>
-                      <span>
-                        <Icon aria-hidden="true" /> {row.label}
+                      <span className="contact-list__icon">
+                        <Icon aria-hidden="true" />
                       </span>
-                      <small>{row.value}</small>
+                      <span className="contact-list__text">
+                        <small>{row.label}</small>
+                        <strong>{row.value}</strong>
+                      </span>
                     </>
                   );
-                  return row.href ? (
-                    <a className="admin-quick" href={row.href} key={row.label}>
-                      {body}
-                    </a>
-                  ) : (
-                    <div className="admin-quick" key={row.label}>
-                      {body}
-                    </div>
+                  return (
+                    <li key={row.label}>
+                      {row.href ? (
+                        <a className="contact-list__item" href={row.href}>
+                          {body}
+                        </a>
+                      ) : (
+                        <div className="contact-list__item">{body}</div>
+                      )}
+                    </li>
                   );
                 })}
-              </div>
-              <p className="admin-hint">
+              </ul>
+              <p className="contact-card__company">
                 <Info aria-hidden="true" /> {settings.contact.company}
               </p>
             </aside>

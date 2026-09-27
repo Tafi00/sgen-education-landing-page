@@ -24,10 +24,10 @@ import {
   ListTree,
   Loader2,
   Mail,
+  Orbit,
   Search,
   Share2,
   ShieldCheck,
-  Sparkles,
   User,
 } from "lucide-react";
 import { usePost, usePosts, useSiteSettings } from "../../api/hooks";
@@ -58,7 +58,7 @@ function postAuthor(post: DefaultPost) {
 
 function ArticleCard({ post }: { post: DefaultPost }) {
   return (
-    <article>
+    <article className="post-card">
       <img src={post.cover || FALLBACK_COVER} alt="" loading="lazy" />
       <div>
         <small>
@@ -156,7 +156,7 @@ export function BlogListPage() {
         <div className="container page-hero__inner">
           <div className="page-hero__copy">
             <span className="page-kicker">
-              <Sparkles aria-hidden="true" /> Blog SGEN
+              <Orbit aria-hidden="true" /> Blog SGEN
             </span>
             <h1>
               <span className="page-hero__title-line">Blog kiến thức</span>
@@ -240,7 +240,7 @@ export function BlogListPage() {
           )}
 
           {totalPages > 1 ? (
-            <div className="category-row" role="navigation" aria-label="Phân trang bài viết">
+            <div className="category-row blog-pagination" role="navigation" aria-label="Phân trang bài viết">
               <button type="button" className="button button--ghost" disabled={page <= 1} onClick={() => update({ page: page - 1 })}>
                 Trước
               </button>
@@ -493,7 +493,7 @@ export function BlogCategoryPage() {
               <section className="ref-about" aria-labelledby="ref-about-heading">
                 <div className="ref-about__copy">
                   <span className="page-kicker">
-                    <Sparkles aria-hidden="true" /> SGEN Education
+                    <Orbit aria-hidden="true" /> SGEN Education
                   </span>
                   <h2 id="ref-about-heading">Học Thần số học theo cách dùng được</h2>
                   <p>

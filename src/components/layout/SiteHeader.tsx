@@ -165,17 +165,20 @@ export function SiteHeader() {
               >
                 {item.children ? (
                   <>
-                    <button
-                      type="button"
-                      className="site-nav__trigger"
-                      aria-expanded={openGroup === item.label}
-                      onClick={() => setOpenGroup((current) => (current === item.label ? null : item.label))}
-                    >
-                      <NavLink to={item.href} end={item.href === "/"} className={({ isActive }) => (isActive ? "is-active" : "")} onClick={(event) => event.stopPropagation()}>
+                    <div className="site-nav__trigger">
+                      <NavLink to={item.href} end={item.href === "/"} className={({ isActive }) => (isActive ? "is-active" : "")}>
                         {item.label}
                       </NavLink>
-                      <ChevronDown aria-hidden="true" />
-                    </button>
+                      <button
+                        type="button"
+                        className="site-nav__toggle"
+                        aria-expanded={openGroup === item.label}
+                        aria-label={`Mở menu ${item.label}`}
+                        onClick={() => setOpenGroup((current) => (current === item.label ? null : item.label))}
+                      >
+                        <ChevronDown aria-hidden="true" />
+                      </button>
+                    </div>
                     <div className="site-nav__dropdown">
                       <Link to={item.href} className="site-nav__dropdown-all" onClick={closeMenu}>
                         Tổng quan {item.label}

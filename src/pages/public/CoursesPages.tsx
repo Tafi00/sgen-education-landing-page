@@ -24,11 +24,11 @@ import {
   Loader2,
   Mail,
   MonitorSmartphone,
+  Orbit,
   Phone,
   Search,
   Send,
   ShieldCheck,
-  Sparkles,
   UserRound,
   X,
 } from "lucide-react";
@@ -569,7 +569,7 @@ export function CourseDetailPage() {
               <ArrowLeft aria-hidden="true" /> Tất cả khóa học
             </Link>
             <span className="page-kicker">
-              <Sparkles aria-hidden="true" /> {categoryName(course.categorySlug)} · {course.level}
+              <Orbit aria-hidden="true" /> {categoryName(course.categorySlug)} · {course.level}
             </span>
             <h1>
               <span className="page-hero__title-line">{course.title}</span>

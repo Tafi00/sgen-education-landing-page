@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import {
+  ArrowRight,
+  Bot,
   CalendarDays,
   ChevronRight,
   CircleAlert,
@@ -14,7 +16,6 @@ import {
   PencilLine,
   Printer,
   SlidersHorizontal,
-  Sparkles,
 } from "lucide-react";
 import {
   getAnnualPillar,
@@ -365,8 +366,8 @@ export function BaziToolView({ compact = false }: BaziToolViewProps) {
               </label>
 
               <button className="sgen-bazi-submit-btn" type="submit">
-                <Sparkles size={18} />
                 <span>Lập lá số Bát Tự</span>
+                <ArrowRight size={18} />
               </button>
             </div>
 
@@ -473,7 +474,7 @@ export function BaziToolView({ compact = false }: BaziToolViewProps) {
                 className={view === "ai" ? "is-selected" : ""}
                 onClick={() => setView("ai")}
               >
-                <Sparkles size={15} /> Tổng kết AI
+                <Bot size={15} /> Tổng kết AI
               </button>
               <button
                 type="button"

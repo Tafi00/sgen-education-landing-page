@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { ChevronRight, Globe, Mail, MapPin } from "lucide-react";
+import { ChevronRight, Clock3, Globe, Mail, MapPin } from "lucide-react";
 import { FOOTER_NAV } from "../../app/nav";
 import { useSiteSettings } from "../../api/hooks";
 
@@ -13,16 +13,13 @@ export function SiteFooter() {
         <div className="site-footer__brand">
           <img src={settings.brand.logoLight} alt={settings.brand.name} decoding="async" />
           <p>{settings.brand.tagline}</p>
-          <div className="site-footer__social">
-            {settings.socials.facebook ? (
+          {settings.socials.facebook ? (
+            <div className="site-footer__social">
               <a href={settings.socials.facebook} target="_blank" rel="noreferrer" aria-label="Facebook SGEN">
                 <Globe aria-hidden="true" />
               </a>
-            ) : null}
-            <a href={`mailto:${settings.contact.email}`} aria-label="Gửi email cho SGEN">
-              <Mail aria-hidden="true" />
-            </a>
-          </div>
+            </div>
+          ) : null}
         </div>
 
         <div className="site-footer__contact">
@@ -37,7 +34,7 @@ export function SiteFooter() {
             <Mail aria-hidden="true" /> <a href={`mailto:${settings.contact.email}`}>{settings.contact.email}</a>
           </p>
           <p>
-            Giờ làm việc: {settings.contact.workingHours}
+            <Clock3 aria-hidden="true" /> <span>Giờ làm việc: {settings.contact.workingHours}</span>
           </p>
         </div>
 
