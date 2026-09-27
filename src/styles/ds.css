@@ -13,7 +13,7 @@
    --------------------------------------------------------------------------- */
 :root,
 .tone-light,
-:is(.admin-card, .page-form-card, .course-card, .service-card, .consultation-form-card, .lookup-card--light) {
+:is(.page-light-section, .admin-card, .page-form-card, .course-card, .service-card, .consultation-form-card, .lookup-card--light) {
   --ds-heading: var(--ink);
   --ds-text: var(--ink-soft);
   --ds-eyebrow: var(--violet);
@@ -440,8 +440,6 @@
 }
 
 @media (max-width: 1024px) {
-  .card-grid[style*="--cols: 4"] > *,
-  .card-grid[style*="--cols:4"] > *,
   .card-grid > * {
     flex-basis: calc((100% - var(--gap)) / 2);
   }
@@ -800,5 +798,21 @@
 
   .tool-header__lead {
     font-size: 0.94rem;
+  }
+}
+
+/* Nút trong bảng so sánh dịch vụ không xuống dòng. */
+.service-compare__table .btn {
+  white-space: nowrap;
+}
+
+/* Hero trang chủ trên mobile: 2 nút cùng một hàng, chữ không bẻ dòng. */
+@media (max-width: 767px) {
+  .hero__actions > .btn {
+    flex: 1 1 0;
+    min-width: 0;
+    padding-inline: 10px;
+    font-size: 0.74rem;
+    white-space: nowrap;
   }
 }

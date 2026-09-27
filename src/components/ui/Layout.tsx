@@ -164,17 +164,20 @@ type CalloutProps = {
   children: ReactNode;
   tone?: "info" | "warning";
   className?: string;
+  /** Dùng role="alert" cho thông báo lỗi của form. */
+  role?: "alert" | "status" | "note";
 };
 
-export function Callout({ icon: Icon = ShieldCheck, title, children, tone = "info", className = "" }: CalloutProps) {
+export function Callout({ icon: Icon = ShieldCheck, title, children, tone = "info", className = "", role = "note" }: CalloutProps) {
+  const Tag = role === "note" ? "aside" : "div";
   return (
-    <aside className={`callout callout--${tone} ${className}`.trim()}>
+    <Tag className={`callout callout--${tone} ${className}`.trim()} role={role === "note" ? undefined : role}>
       <Icon aria-hidden="true" />
       <div>
         {title ? <strong>{title}</strong> : null}
         <div className="callout__body">{children}</div>
       </div>
-    </aside>
+    </Tag>
   );
 }
 
