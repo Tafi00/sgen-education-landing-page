@@ -21,9 +21,8 @@ import { CalendarToolView } from "../../components/fengshui/CalendarToolView";
 import { IChingToolView } from "../../components/fengshui/IChingToolView";
 import MenhThuApp from "../../vendor/menh-thu/app/MenhThuApp";
 import { getDateProfile, getMonthCalendar, getVietnameseObservances, toDateString } from "../../../shared/menh-thu/metaphysics";
-import { RESULTS_DISCLAIMER } from "../../../shared/lookup-types";
 import { ButtonLink, ButtonRow } from "../../components/ui/Button";
-import { PageHero, ToolHeader } from "../../components/ui/Layout";
+import { Callout, CardGrid, Faq, FeatureCard, PageHero, Steps, ToolHeader } from "../../components/ui/Layout";
 import { SectionHeading } from "../../components/ui/SectionHeading";
 const COURSE_IMAGE = "/assets/programs/program-home-feng-shui-v2.webp";
 
@@ -66,15 +65,13 @@ function MethodSection({ heading, lead, items }: { heading: string; lead: string
     <section className="page-dark-section">
       <div className="container">
         <SectionHeading eyebrow="Phương pháp luận giải" title={heading} description={lead} />
-        <div className="value-grid">
-          {items.map(({ icon: Icon, title, text }) => (
-            <article key={title}>
-              <Icon aria-hidden="true" />
-              <h3>{title}</h3>
+        <CardGrid>
+          {items.map(({ icon, title, text }) => (
+            <FeatureCard key={title} icon={icon} title={title}>
               <p>{text}</p>
-            </article>
+            </FeatureCard>
           ))}
-        </div>
+        </CardGrid>
       </div>
     </section>
   );
@@ -85,14 +82,7 @@ function FaqSection({ items }: { items: { question: string; answer: string }[] }
     <section className="page-dark-section">
       <div className="container">
         <SectionHeading eyebrow="Câu hỏi thường gặp" title="Giải đáp nhanh trước khi tra cứu" />
-        <div className="value-grid">
-          {items.map((item) => (
-            <article key={item.question}>
-              <h3>{item.question}</h3>
-              <p>{item.answer}</p>
-            </article>
-          ))}
-        </div>
+        <Faq items={items} />
       </div>
     </section>
   );
@@ -104,17 +94,17 @@ function RelatedTools({ current }: { current: string }) {
     <section className="page-light-section">
       <div className="container">
         <SectionHeading eyebrow="Đi tiếp" title="Hai công cụ phong thủy còn lại" />
-        <div className="service-grid">
+        <CardGrid>
           {others.map((tool) => (
-            <article key={tool.href}>
-              <h3>{tool.title}</h3>
+            <FeatureCard
+              key={tool.href}
+              title={tool.title}
+              footer={<Link className="card-link" to={tool.href}>Mở công cụ <ArrowRight aria-hidden="true" /></Link>}
+            >
               <p>{tool.text}</p>
-              <Link to={tool.href}>
-                Mở công cụ <ArrowRight aria-hidden="true" />
-              </Link>
-            </article>
+            </FeatureCard>
           ))}
-        </div>
+        </CardGrid>
       </div>
     </section>
   );
@@ -142,26 +132,11 @@ function CourseCta({ note }: { note?: string }) {
           </div>
           <img src={COURSE_IMAGE} alt="Khóa học phong thủy ứng dụng của SGEN Education" loading="lazy" decoding="async" />
         </div>
-        {note ? <p className="report-note"><BookOpen aria-hidden="true" /> {note}</p> : null}
-      </div>
-    </section>
-  );
-}
-
-function Disclaimer() {
-  return (
-    <section className="page-dark-section fengshui-disclaimer-section">
-      <div className="container">
-        <div className="privacy-banner">
-          <ShieldCheck aria-hidden="true" />
-          <div>
-            <strong>Tuyên bố miễn trừ</strong>
-            <span>
-              {RESULTS_DISCLAIMER} Các chỉ báo phong thủy, lịch pháp là quan niệm văn hóa truyền thống, không phải kết luận khoa học về vận mệnh
-              và không thay thế quyết định của bạn.
-            </span>
-          </div>
-        </div>
+        {note ? (
+          <Callout icon={BookOpen}>
+            <p>{note}</p>
+          </Callout>
+        ) : null}
       </div>
     </section>
   );
@@ -188,33 +163,19 @@ export function FengShuiHubPage() {
       <section className="page-light-section">
         <div className="container">
           <SectionHeading eyebrow="Ba công cụ" title="Chọn công cụ theo câu hỏi của bạn" description="Mỗi công cụ trả lời một nhóm câu hỏi khác nhau và đều chạy trực tiếp trên trình duyệt của bạn." />
-          <div className="service-grid">
-            {TOOL_LINKS.map((tool, index) => {
-              const Icon = tool.icon;
-              return (
-                <article key={tool.href}>
-                  <span className="service-grid__number">{String(index + 1).padStart(2, "0")}</span>
-                  <Icon aria-hidden="true" />
-                  <h3>{tool.title}</h3>
-                  <p>{tool.text}</p>
-                  <Link to={tool.href}>
-                    Mở công cụ <ArrowRight aria-hidden="true" />
-                  </Link>
-                </article>
-              );
-            })}
-          </div>
-          <div className="process-card">
-            <h2>Quy trình luận giải của SGEN</h2>
-            <div>
-              {["Chọn công cụ", "Nhập dữ liệu", "Đọc chỉ báo", "Đối chiếu thực tế"].map((step, index) => (
-                <span key={step}>
-                  <b>{index + 1}</b>
-                  {step}
-                </span>
-              ))}
-            </div>
-          </div>
+          <CardGrid>
+            {TOOL_LINKS.map((tool) => (
+              <FeatureCard
+                key={tool.href}
+                icon={tool.icon}
+                title={tool.title}
+                footer={<Link className="card-link" to={tool.href}>Mở công cụ <ArrowRight aria-hidden="true" /></Link>}
+              >
+                <p>{tool.text}</p>
+              </FeatureCard>
+            ))}
+          </CardGrid>
+          <Steps title="Quy trình luận giải của SGEN" steps={["Chọn công cụ", "Nhập dữ liệu", "Đọc chỉ báo", "Đối chiếu thực tế"]} />
         </div>
       </section>
 
@@ -238,34 +199,30 @@ export function FengShuiHubPage() {
       <section className="page-light-section">
         <div className="container">
           <SectionHeading eyebrow="Kết hợp thêm" title="Bổ sung góc nhìn từ sim số và thần số học" description="Ba công cụ phong thủy chỉ là một phần trong hệ thống tra cứu của SGEN. Bạn có thể kết hợp thêm các lớp phân tích khác." />
-          <div className="service-grid">
-            <article>
-              <h3>Bói sim phong thủy</h3>
+          <CardGrid>
+            <FeatureCard
+              title="Bói sim phong thủy"
+              footer={<Link className="card-link" to="/sim-phong-thuy">Xem cách luận sim <ArrowRight aria-hidden="true" /></Link>}
+            >
               <p>Luận số điện thoại theo năm lớp: quẻ Kinh Dịch, ngũ hành dãy số, âm dương, quan niệm dân gian và đối chiếu bản mệnh.</p>
-              <Link to="/sim-phong-thuy">
-                Xem cách luận sim <ArrowRight aria-hidden="true" />
-              </Link>
-            </article>
-            <article>
-              <h3>Công cụ thần số học miễn phí</h3>
+            </FeatureCard>
+            <FeatureCard
+              title="Công cụ thần số học miễn phí"
+              footer={<Link className="card-link" to="/free-tools">Mở Free tools <ArrowRight aria-hidden="true" /></Link>}
+            >
               <p>Mười hai công cụ tính nhanh chỉ số từ họ tên và ngày sinh, mỗi công cụ đều ghi rõ cách tính.</p>
-              <Link to="/free-tools">
-                Mở Free tools <ArrowRight aria-hidden="true" />
-              </Link>
-            </article>
-            <article>
-              <h3>Tra cứu Thần số học đầy đủ</h3>
+            </FeatureCard>
+            <FeatureCard
+              title="Tra cứu Thần số học đầy đủ"
+              footer={<Link className="card-link" to="/tra-cuu/than-so-hoc">Tra cứu ngay <ArrowRight aria-hidden="true" /></Link>}
+            >
               <p>Nhập họ tên và ngày sinh một lần để xem trọn bộ tám chỉ số kèm phần luận giải chi tiết.</p>
-              <Link to="/tra-cuu/than-so-hoc">
-                Tra cứu ngay <ArrowRight aria-hidden="true" />
-              </Link>
-            </article>
-          </div>
+            </FeatureCard>
+          </CardGrid>
         </div>
       </section>
 
       <CourseCta />
-      <Disclaimer />
     </>
   );
 }
@@ -357,7 +314,6 @@ export function GieoQuePage() {
 
       <RelatedTools current="/cong-cu-phong-thuy/gieo-que-kinh-dich" />
       <CourseCta note="Kinh Dịch là hệ thống ký hiệu cổ, cần thời gian học mới luận được đầy đủ quẻ thể, quẻ dụng và quan hệ hào vị." />
-      <Disclaimer />
     </>
   );
 }
@@ -552,7 +508,6 @@ export function XemNgayPage() {
 
       <RelatedTools current="/cong-cu-phong-thuy/xem-ngay" />
       <CourseCta note="Lịch pháp Việt Nam kết hợp âm dương lịch và tiết khí; nắm nguyên lý sẽ giúp bạn đọc bảng ngày — giờ chính xác hơn." />
-      <Disclaimer />
     </div>
   );
 }

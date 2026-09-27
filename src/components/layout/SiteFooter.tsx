@@ -54,10 +54,6 @@ export function SiteFooter() {
                 <ChevronRight aria-hidden="true" />
               </Link>
             ))}
-            <Link to="/admin">
-              Quản trị nội dung
-              <ChevronRight aria-hidden="true" />
-            </Link>
           </div>
         </nav>
       </div>

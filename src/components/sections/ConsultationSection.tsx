@@ -18,6 +18,8 @@ const cosmicLight = "/assets/backgrounds/cosmic-light.webp";
 import { IconOrb } from "../ui/IconOrb";
 import { Reveal } from "../ui/Reveal";
 import { Eyebrow } from "../ui/Eyebrow";
+import { Button } from "../ui/Button";
+import { TextareaField, TextField } from "../form/Field";
 
 const benefits = [
   {
@@ -102,36 +104,25 @@ export function ConsultationSection() {
         <Reveal className="consultation-form-card" direction="left" delay={100}>
           <h3><MessageSquareText aria-hidden="true" /> Nhận tư vấn miễn phí</h3>
           <p className="consultation-form-card__intro">Để lại thông tin, SGEN sẽ liên hệ và tư vấn lộ trình phù hợp với bạn.</p>
-          <form onSubmit={handleSubmit}>
-            <label className="consultation-field consultation-field--name">
-              <span className="sr-only">Họ và tên</span>
-              <UserRound aria-hidden="true" />
-              <input name="name" placeholder="Họ và tên" autoComplete="name" required />
-            </label>
-            <label className="consultation-field">
-              <span className="sr-only">Ngày sinh không bắt buộc</span>
-              <CalendarDays aria-hidden="true" />
-              <input name="birthDate" type="text" placeholder="Ngày sinh (tùy chọn)" onFocus={(event) => { event.currentTarget.type = "date"; }} />
-            </label>
-            <label className="consultation-field">
-              <span className="sr-only">Email</span>
-              <Mail aria-hidden="true" />
-              <input name="email" type="email" placeholder="Email" autoComplete="email" required />
-            </label>
-            <label className="consultation-field consultation-field--phone">
-              <span className="sr-only">Điện thoại</span>
-              <Phone aria-hidden="true" />
-              <input name="phone" type="tel" placeholder="Điện thoại" autoComplete="tel" pattern="[0-9+ .-]{9,15}" required />
-            </label>
-            <label className="consultation-field consultation-field--textarea">
-              <span className="sr-only">Nội dung cần tư vấn</span>
-              <MessageSquareText aria-hidden="true" />
-              <textarea name="message" placeholder="Nội dung" rows={3} />
-            </label>
-            <button type="submit" className={`consultation-form-card__submit ${sent ? "is-sent" : ""}`} disabled={sending}>
+          <form className="form-grid" onSubmit={handleSubmit}>
+            <TextField label="Họ và tên" name="name" autoComplete="name" required icon={<UserRound aria-hidden="true" />} placeholder="Nguyễn Văn A" />
+            <TextField label="Ngày sinh (không bắt buộc)" name="birthDate" type="date" icon={<CalendarDays aria-hidden="true" />} />
+            <TextField label="Email" name="email" type="email" autoComplete="email" required icon={<Mail aria-hidden="true" />} placeholder="ban@email.com" />
+            <TextField
+              label="Điện thoại"
+              name="phone"
+              type="tel"
+              autoComplete="tel"
+              pattern="[0-9+ .-]{9,15}"
+              required
+              icon={<Phone aria-hidden="true" />}
+              placeholder="09xx xxx xxx"
+            />
+            <TextareaField label="Nội dung cần tư vấn" name="message" rows={4} wide placeholder="Bạn muốn tìm hiểu khóa học hay dịch vụ nào?" />
+            <Button variant="primary" type="submit" block className="form-grid__wide" disabled={sending}>
               {sending ? <Loader2 className="spin" aria-hidden="true" /> : sent ? <CheckCircle2 aria-hidden="true" /> : <Send aria-hidden="true" />}
-              <span>{sending ? "Đang gửi…" : sent ? "Đã gửi đăng ký" : "Gửi đăng ký"}</span>
-            </button>
+              {sending ? "Đang gửi…" : sent ? "Đã gửi đăng ký" : "Gửi đăng ký"}
+            </Button>
             <p className={`consultation-form-card__status ${sent ? "is-visible" : ""} ${error ? "is-error" : ""}`} role="status">
               {error ? (
                 <>

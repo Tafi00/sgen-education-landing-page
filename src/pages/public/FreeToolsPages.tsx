@@ -29,7 +29,7 @@ import { SelectField, TextField } from "../../components/form/Field";
 import { calculateNumerologyReport, type NumerologyMetricKey, type NumerologyReport } from "../../../shared/numerology";
 import { RESULTS_DISCLAIMER } from "../../../shared/lookup-types";
 import { Button, ButtonAnchor, ButtonLink, ButtonRow } from "../../components/ui/Button";
-import { PageHero, ToolHeader } from "../../components/ui/Layout";
+import { Callout, CardGrid, Faq, FeatureCard, PageHero, ToolHeader } from "../../components/ui/Layout";
 import { Eyebrow } from "../../components/ui/Eyebrow";
 import { SectionHeading } from "../../components/ui/SectionHeading";
 
@@ -732,78 +732,39 @@ export function FreeToolsPage() {
 
           <div className="ref-faq">
             <SectionHeading eyebrow="Đôi lời chia sẻ" title="Câu hỏi thường gặp về Thần số học" />
-            <div className="ref-acc-list">
-              <details className="ref-acc">
-                <summary>
-                  <span className="ref-acc__icon">
-                    <BookOpen aria-hidden="true" />
-                  </span>
-                  <span className="ref-acc__head">
-                    <b>Thần số học là gì?</b>
-                    <small>Lĩnh vực nghiên cứu ý nghĩa các con số gắn với con người</small>
-                  </span>
-                  <ChevronDown className="ref-acc__caret" aria-hidden="true" />
-                </summary>
-                <div className="ref-acc__form">
-                  <p>
-                    Thần số học (nhân số học) là lĩnh vực nghiên cứu và giải mã con người trong phạm trù huyền học, đi sâu vào ý nghĩa và mối liên hệ
-                    giữa các chữ số với cá nhân. Hệ Pythagoras chỉ dùng các số tự nhiên 1–9 cùng hai số bậc thầy 11 và 22; số nhiều chữ số được rút
-                    gọn về một trong các giá trị này.
-                  </p>
-                </div>
-              </details>
-              <details className="ref-acc">
-                <summary>
-                  <span className="ref-acc__icon">
-                    <Target aria-hidden="true" />
-                  </span>
-                  <span className="ref-acc__head">
-                    <b>Khám phá bản thân theo nhân số học</b>
-                    <small>Điểm mạnh, điểm yếu và nhu cầu nội tâm từ ngày sinh và họ tên</small>
-                  </span>
-                  <ChevronDown className="ref-acc__caret" aria-hidden="true" />
-                </summary>
-                <div className="ref-acc__form">
-                  <p>
-                    Từ ngày sinh và họ tên khai sinh, hệ thống suy ra các chỉ số mô tả tài năng, phản ứng cảm xúc, cách đối nhân xử thế và nhịp thời
-                    gian của một người. Bạn có thể dùng các chỉ số này để nhận diện điểm mạnh cần phát huy, điểm yếu cần điều chỉnh và các mốc phù
-                    hợp cho quyết định lớn — xem như gợi ý suy ngẫm, không phải chỉ thị hành động.
-                  </p>
-                </div>
-              </details>
-              <details className="ref-acc">
-                <summary>
-                  <span className="ref-acc__icon">
-                    <ShieldCheck aria-hidden="true" />
-                  </span>
-                  <span className="ref-acc__head">
-                    <b>Dữ liệu của tôi có được lưu lại không?</b>
-                    <small>Các phép tính chạy trên trình duyệt của bạn</small>
-                  </span>
-                  <ChevronDown className="ref-acc__caret" aria-hidden="true" />
-                </summary>
-                <div className="ref-acc__form">
-                  <p>
-                    Không. Các công cụ trong trang này tính trực tiếp trên trình duyệt; họ tên và ngày sinh chỉ được gửi lên máy chủ khi bạn chủ động
-                    bấm lưu hoặc chia sẻ báo cáo ở trang tra cứu đầy đủ.
-                  </p>
-                </div>
-              </details>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="page-dark-section">
-        <div className="container">
-          <div className="privacy-banner">
-            <ShieldCheck aria-hidden="true" />
-            <div>
-              <strong>Nguyên tắc sử dụng công cụ</strong>
-              <span>
-                {RESULTS_DISCLAIMER} Các phép tính số học và phong thủy được thực hiện trên máy của bạn; SGEN không lưu dữ liệu khi bạn chưa bấm gửi.
-              </span>
-            </div>
+            <Faq
+              items={[
+                {
+                  question: "Thần số học là gì?",
+                  answer: (
+                    <p>
+                      Thần số học (nhân số học) là lĩnh vực nghiên cứu và giải mã con người trong phạm trù huyền học, đi sâu vào ý nghĩa và mối liên hệ
+                      giữa các chữ số với cá nhân. Hệ Pythagoras chỉ dùng các số tự nhiên 1–9 cùng hai số bậc thầy 11 và 22; số nhiều chữ số được rút
+                      gọn về một trong các giá trị này.
+                    </p>
+                  ),
+                },
+                {
+                  question: "Khám phá bản thân theo nhân số học",
+                  answer: (
+                    <p>
+                      Từ ngày sinh và họ tên khai sinh, hệ thống suy ra các chỉ số mô tả tài năng, phản ứng cảm xúc, cách đối nhân xử thế và nhịp thời
+                      gian của một người. Bạn có thể dùng các chỉ số này để nhận diện điểm mạnh cần phát huy, điểm yếu cần điều chỉnh và các mốc phù
+                      hợp cho quyết định lớn — xem như gợi ý suy ngẫm, không phải chỉ thị hành động.
+                    </p>
+                  ),
+                },
+                {
+                  question: "Dữ liệu của tôi có được lưu lại không?",
+                  answer: (
+                    <p>
+                      Không. Các công cụ trong trang này tính trực tiếp trên trình duyệt; họ tên và ngày sinh chỉ được gửi lên máy chủ khi bạn chủ động
+                      bấm lưu hoặc chia sẻ báo cáo ở trang tra cứu đầy đủ.
+                    </p>
+                  ),
+                },
+              ]}
+            />
           </div>
         </div>
       </section>
@@ -929,13 +890,9 @@ export function FreeToolDetailPage() {
               </Button>
 
               {error ? (
-                <div className="privacy-banner" role="alert">
-                  <ShieldCheck aria-hidden="true" />
-                  <div>
-                    <strong>Không thể tính chỉ số</strong>
-                    <span>{error}</span>
-                  </div>
-                </div>
+                <Callout tone="warning" role="alert" title="Không thể tính chỉ số">
+                  {error}
+                </Callout>
               ) : null}
 
               <p>
@@ -966,13 +923,7 @@ export function FreeToolDetailPage() {
                       </article>
                     ))}
                   </div>
-                  <div className="privacy-banner">
-                    <ShieldCheck aria-hidden="true" />
-                    <div>
-                      <strong>Lưu ý quan trọng</strong>
-                      <span>{RESULTS_DISCLAIMER}</span>
-                    </div>
-                  </div>
+                  <Callout title="Lưu ý quan trọng">{RESULTS_DISCLAIMER}</Callout>
                 </div>
               ) : (
                 <div className="result-preview section--dark">
@@ -991,44 +942,51 @@ export function FreeToolDetailPage() {
       <section className="page-dark-section">
         <div className="container">
           <SectionHeading eyebrow="Phương pháp luận giải" title="Cách công cụ tính chỉ số này" />
-          <div className="value-grid">
+          <CardGrid>
             {tool.method.map((item) => (
-              <article key={item.title}>
-                <BookOpen aria-hidden="true" />
-                <h3>{item.title}</h3>
+              <FeatureCard key={item.title} icon={BookOpen} title={item.title}>
                 <p>{item.text}</p>
-              </article>
+              </FeatureCard>
             ))}
-          </div>
+          </CardGrid>
         </div>
       </section>
 
       <section className="page-light-section">
         <div className="container">
           <SectionHeading eyebrow="Đọc tiếp" title="Kết hợp thêm công cụ khác" />
-          <div className="service-grid">
-            <article>
-              <h3>Tra cứu bản đồ số học đầy đủ</h3>
+          <CardGrid>
+            <FeatureCard
+              title="Tra cứu bản đồ số học đầy đủ"
+              footer={
+                <Link className="card-link" to="/tra-cuu/than-so-hoc">
+                  Tra cứu ngay <ArrowRight aria-hidden="true" />
+                </Link>
+              }
+            >
               <p>Nhập họ tên và ngày sinh một lần để xem toàn bộ bản đồ số học kèm phần luận giải chi tiết.</p>
-              <Link to="/tra-cuu/than-so-hoc">
-                Tra cứu ngay <ArrowRight aria-hidden="true" />
-              </Link>
-            </article>
-            <article>
-              <h3>Danh mục Free tools</h3>
+            </FeatureCard>
+            <FeatureCard
+              title="Danh mục Free tools"
+              footer={
+                <Link className="card-link" to="/free-tools">
+                  Về trang Free tools <ArrowRight aria-hidden="true" />
+                </Link>
+              }
+            >
               <p>Xem lại toàn bộ mười hai công cụ số học và ba công cụ phong thủy đang có trên SGEN.</p>
-              <Link to="/free-tools">
-                Về trang Free tools <ArrowRight aria-hidden="true" />
-              </Link>
-            </article>
-            <article>
-              <h3>Học để tự luận giải</h3>
+            </FeatureCard>
+            <FeatureCard
+              title="Học để tự luận giải"
+              footer={
+                <Link className="card-link" to="/khoa-hoc">
+                  Xem khóa học <ArrowRight aria-hidden="true" />
+                </Link>
+              }
+            >
               <p>Khóa học Thần số học hướng dẫn cách tính và đọc các chỉ số theo trình tự có hệ thống.</p>
-              <Link to="/khoa-hoc">
-                Xem khóa học <ArrowRight aria-hidden="true" />
-              </Link>
-            </article>
-          </div>
+            </FeatureCard>
+          </CardGrid>
         </div>
       </section>
     </>

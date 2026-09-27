@@ -27,10 +27,9 @@ import {
   Orbit,
   Search,
   Share2,
-  ShieldCheck,
   User,
 } from "lucide-react";
-import { usePost, usePosts, useSiteSettings } from "../../api/hooks";
+import { usePost, usePosts } from "../../api/hooks";
 import { useToast } from "../../components/ui/Toast";
 import { POST_CATEGORY_NAMES } from "../../data/defaults/types";
 import type { DefaultPost } from "../../data/defaults/types";
@@ -495,7 +494,6 @@ export function BlogCategoryPage() {
 export function BlogDetailPage() {
   const { slug = "" } = useParams<{ slug: string }>();
   const { post, related, isLoading, notFound } = usePost(slug);
-  const { settings } = useSiteSettings();
   const { posts: allPosts } = usePosts({ pageSize: 50 });
   const toast = useToast();
   const [activeId, setActiveId] = useState("");
@@ -691,14 +689,6 @@ export function BlogDetailPage() {
               </Link>
             </div>
           </aside>
-        </div>
-
-        <div className="privacy-banner">
-          <ShieldCheck aria-hidden="true" />
-          <div>
-            <strong>Lưu ý về nội dung</strong>
-            <span>{settings.legal.disclaimer}</span>
-          </div>
         </div>
 
         {prevPost || nextPost ? (

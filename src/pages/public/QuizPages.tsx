@@ -1,9 +1,8 @@
-import { Link } from "react-router-dom";
 import { Brain, GraduationCap, ListChecks, MessageSquareText, Route, ShieldCheck } from "lucide-react";
 import { QuizRunner } from "../../components/lookup/QuizRunner";
 import { LookupNavTabs } from "../../components/lookup/LookupNavTabs";
 import { ButtonLink } from "../../components/ui/Button";
-import { ToolHeader } from "../../components/ui/Layout";
+import { CardGrid, FeatureCard, ToolHeader } from "../../components/ui/Layout";
 import { SectionHeading } from "../../components/ui/SectionHeading";
 
 const cosmicDarkClean = "/assets/backgrounds/cosmic-dark-clean.webp";
@@ -67,14 +66,14 @@ function QuizPage({ config }: { config: QuizPageConfig }) {
             </div>
           </div>
 
-          <div className="service-grid" style={{ marginTop: 28 }}>
-            {config.methods.map((method, index) => (
-              <article key={method.title}>
-                <span className="service-grid__number">{String(index + 1).padStart(2, "0")}</span>
-                <h3>{method.title}</h3>
-                <p>{method.text}</p>
-              </article>
-            ))}
+          <div style={{ marginTop: 28 }}>
+            <CardGrid>
+              {config.methods.map((method) => (
+                <FeatureCard key={method.title} title={method.title}>
+                  <p>{method.text}</p>
+                </FeatureCard>
+              ))}
+            </CardGrid>
           </div>
 
           <div style={{ display: "flex", flexWrap: "wrap", gap: 12, marginTop: 28 }}>

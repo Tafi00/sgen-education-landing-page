@@ -816,3 +816,70 @@
     white-space: nowrap;
   }
 }
+
+/* Bảng so sánh gói dịch vụ: trên mobile các card gói ngay phía trên đã đủ thông tin,
+   bảng chuyển thành card sẽ lặp lại y hệt — chỉ hiện từ tablet trở lên. */
+@media (max-width: 767px) {
+  .service-compare {
+    display: none;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   13. Form chung — lưới 2 cột cho TextField; field--wide / form-grid__wide chiếm cả hàng.
+       Chiều cao ô nhập thống nhất 52px cho mọi form public.
+   --------------------------------------------------------------------------- */
+:root {
+  --field-height: 52px;
+  --field-radius: 12px;
+}
+
+.field__control {
+  min-height: var(--field-height);
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.form-grid > .field--wide,
+.form-grid > .form-grid__wide,
+.form-grid > p {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 560px) {
+  .form-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.lookup-submit-wrap {
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+:is(a, button).lookup-submit {
+  min-width: min(100%, 300px);
+}
+
+.field__checkbox {
+  color: var(--field-label);
+}
+
+.form-grid > *,
+.field,
+.field__control {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.field__control input[type="date"] {
+  min-width: 0;
+  -webkit-appearance: none;
+  appearance: none;
+}

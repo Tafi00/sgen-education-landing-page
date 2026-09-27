@@ -40,7 +40,7 @@ import { FieldShell, TextareaField, TextField } from "../../components/form/Fiel
 import { useToast } from "../../components/ui/Toast";
 import { Button, ButtonAnchor, ButtonLink, ButtonRow } from "../../components/ui/Button";
 import { Pagination } from "../../components/ui/Pagination";
-import { PageHero } from "../../components/ui/Layout";
+import { Faq, PageHero } from "../../components/ui/Layout";
 import { SectionHeading } from "../../components/ui/SectionHeading";
 
 const LEVELS = ["Nền tảng", "Chuyên đề", "Ứng dụng", "Chuyên sâu"];
@@ -653,7 +653,9 @@ export function CourseDetailPage() {
           <div className="article-list">
             {course.outcomes.map((outcome, index) => (
               <article key={`${outcome}-${index}`}>
-                <span>{String(index + 1).padStart(2, "0")}</span>
+                <span>
+                  <CheckCircle2 aria-hidden="true" />
+                </span>
                 <div>
                   <h3>{outcome}</h3>
                 </div>
@@ -665,7 +667,9 @@ export function CourseDetailPage() {
           <div className="article-list">
             {course.forWhom.map((audience, index) => (
               <article key={`${audience}-${index}`}>
-                <span>{String(index + 1).padStart(2, "0")}</span>
+                <span>
+                  <UserRound aria-hidden="true" />
+                </span>
                 <div>
                   <h3>{audience}</h3>
                 </div>
@@ -676,17 +680,7 @@ export function CourseDetailPage() {
           {course.faqs.length ? (
             <>
               <SectionHeading eyebrow="Giải đáp" title="Câu hỏi thường gặp" />
-              <div className="article-list">
-                {course.faqs.map((faq, index) => (
-                  <article key={`${faq.question}-${index}`}>
-                    <span>{String(index + 1).padStart(2, "0")}</span>
-                    <div>
-                      <h3>{faq.question}</h3>
-                      <p>{faq.answer}</p>
-                    </div>
-                  </article>
-                ))}
-              </div>
+              <Faq items={course.faqs.map((faq) => ({ question: faq.question, answer: <p>{faq.answer}</p> }))} />
             </>
           ) : null}
 

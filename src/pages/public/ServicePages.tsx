@@ -36,7 +36,7 @@ import { useService, useServices, useSiteSettings } from "../../api/hooks";
 import { FieldShell, TextField } from "../../components/form/Field";
 import { useToast } from "../../components/ui/Toast";
 import { Button, ButtonAnchor, ButtonLink, ButtonRow } from "../../components/ui/Button";
-import { PageHero } from "../../components/ui/Layout";
+import { Callout, PageHero, Steps } from "../../components/ui/Layout";
 import { SectionHeading } from "../../components/ui/SectionHeading";
 
 const DARK_STYLE = { "--page-dark-bg": "url(/assets/backgrounds/cosmic-dark-clean.webp)" } as CSSProperties;
@@ -169,11 +169,10 @@ export function ServicesListPage() {
             </p>
           ) : services.length ? (
             <div className="service-grid">
-              {services.map((service, index) => (
+              {services.map((service) => (
                 <article className={`service-card${service.isFeatured ? " service-card--featured" : ""}`} key={service.slug}>
                   <div className="service-card__media">
                     {service.coverImage ? <img src={service.coverImage} alt="" loading="lazy" /> : <PackageCheck aria-hidden="true" />}
-                    <span className="service-grid__number">{String(index + 1).padStart(2, "0")}</span>
                     {service.isFeatured ? <span className="service-card__badge"><Star aria-hidden="true" /> Được chọn nhiều</span> : null}
                   </div>
                   <div className="service-card__meta">{service.durationLabel || "Linh hoạt"}</div>
@@ -190,9 +189,9 @@ export function ServicesListPage() {
                       </li>
                     ))}
                   </ul>
-                  <Link to={`/dich-vu/${service.slug}`} aria-label={`Xem chi tiết ${service.name}`}>
+                  <ButtonLink variant="primary" block to={`/dich-vu/${service.slug}`} aria-label={`Xem chi tiết ${service.name}`}>
                     Xem gói dịch vụ <ArrowRight aria-hidden="true" />
-                  </Link>
+                  </ButtonLink>
                 </article>
               ))}
             </div>
@@ -245,23 +244,10 @@ export function ServicesListPage() {
             </div>
           ) : null}
 
-          <div className="process-card">
-            <h2>Đăng ký trong 4 bước</h2>
-            <div>
-              <span>
-                <b>1</b> Chọn gói phù hợp
-              </span>
-              <span>
-                <b>2</b> Điền thông tin liên hệ
-              </span>
-              <span>
-                <b>3</b> Chuyển khoản theo mã QR
-              </span>
-              <span>
-                <b>4</b> Gửi biên lai và chờ xác nhận
-              </span>
-            </div>
-          </div>
+          <Steps
+            title="Đăng ký trong 4 bước"
+            steps={["Chọn gói phù hợp", "Điền thông tin liên hệ", "Chuyển khoản theo mã QR", "Gửi biên lai và chờ xác nhận"]}
+          />
         </div>
       </section>
     </>
@@ -464,32 +450,13 @@ export function ServiceDetailPage() {
             </>
           ) : null}
 
-          <div className="process-card">
-            <h2>Quy trình mua gói dịch vụ</h2>
-            <div>
-              <span>
-                <b>1</b> Điền thông tin đặt mua
-              </span>
-              <span>
-                <b>2</b> Chuyển khoản theo mã đơn
-              </span>
-              <span>
-                <b>3</b> Tải biên lai chuyển khoản
-              </span>
-              <span>
-                <b>4</b> Nhận quyền sau khi xác nhận
-              </span>
-            </div>
-          </div>
+          <Steps
+            title="Quy trình mua gói dịch vụ"
+            steps={["Điền thông tin đặt mua", "Chuyển khoản theo mã đơn", "Tải biên lai chuyển khoản", "Nhận quyền sau khi xác nhận"]}
+          />
 
           {settings.legal.disclaimer.trim() ? (
-            <div className="privacy-banner">
-              <ShieldCheck aria-hidden="true" />
-              <div>
-                <strong>Lưu ý quan trọng</strong>
-                <span>{settings.legal.disclaimer}</span>
-              </div>
-            </div>
+            <Callout title="Lưu ý quan trọng">{settings.legal.disclaimer}</Callout>
           ) : null}
 
           {otherServices.length ? (
@@ -503,11 +470,10 @@ export function ServiceDetailPage() {
                 <Link to="/dich-vu">Xem tất cả gói <ArrowRight aria-hidden="true" /></Link>
               </header>
               <div className="service-grid service-related__grid">
-                {otherServices.map((item, index) => (
+                {otherServices.map((item) => (
                   <article className="service-related__card" key={item.slug}>
                     <div className="service-related__image">
                       {item.coverImage ? <img src={item.coverImage} alt="" loading="lazy" /> : <PackageCheck aria-hidden="true" />}
-                      <span>{String(index + 1).padStart(2, "0")}</span>
                     </div>
                     <div className="service-related__body">
                     <span className="service-related__duration">{item.durationLabel || "Linh hoạt"}</span>

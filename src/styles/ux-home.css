@@ -1277,16 +1277,16 @@
 }
 
 .gender-btn {
-  min-height: 52px;
+  min-height: var(--field-height, 52px);
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 8px 14px;
-  color: rgba(255, 255, 255, 0.86) !important;
-  background: rgba(255, 255, 255, 0.08) !important;
-  border: 1px solid rgba(214, 165, 255, 0.28) !important;
-  border-radius: 13px;
+  padding: 8px 12px;
+  color: var(--field-text);
+  background: var(--field-bg);
+  border: 1px solid var(--field-border);
+  border-radius: var(--field-radius);
   font-size: 0.9rem;
   font-weight: 700;
   cursor: pointer;
@@ -1297,20 +1297,18 @@
   width: 17px;
   height: 17px;
   flex: 0 0 auto;
-  color: #d7b3ff;
+  color: var(--violet);
 }
 
 .gender-btn:hover {
-  color: #ffffff !important;
-  background: rgba(255, 255, 255, 0.14) !important;
-  border-color: rgba(214, 165, 255, 0.6) !important;
+  border-color: var(--field-border-strong);
 }
 
 .gender-btn.is-selected {
-  color: #ffffff !important;
-  background: var(--gradient-cta) !important;
-  border-color: transparent !important;
-  box-shadow: 0 4px 16px rgba(163, 26, 201, 0.45) !important;
+  color: #ffffff;
+  background: var(--gradient-cta);
+  border-color: transparent;
+  box-shadow: 0 4px 16px rgba(163, 26, 201, 0.35);
 }
 
 .gender-btn.is-selected svg {

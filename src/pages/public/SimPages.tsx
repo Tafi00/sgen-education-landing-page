@@ -15,33 +15,33 @@ import {
 } from "lucide-react";
 import SimPhongThuyView from "../../components/fengshui/SimPhongThuyView";
 import { ButtonLink, ButtonRow } from "../../components/ui/Button";
-import { PageHero } from "../../components/ui/Layout";
+import { Callout, CardGrid, FeatureCard, PageHero } from "../../components/ui/Layout";
 import { SectionHeading } from "../../components/ui/SectionHeading";
 
 const LAYERS: { icon: LucideIcon; title: string; text: string }[] = [
   {
     icon: Hash,
-    title: "1. Quẻ Kinh Dịch",
+    title: "Quẻ Kinh Dịch",
     text: "Sáu chữ số cuối của dãy số được quy thành sáu hào để lập quẻ chủ; hào động và quẻ biến cho biết chiều vận động của dãy số.",
   },
   {
     icon: Layers,
-    title: "2. Ngũ hành dãy số",
+    title: "Ngũ hành dãy số",
     text: "Từng chữ số được quy về hành theo bảng Lạc Thư — Hà Đồ, sau đó đếm mức hiện diện và xác định hành vượng, hành khuyết.",
   },
   {
     icon: Scale,
-    title: "3. Âm dương",
+    title: "Âm dương",
     text: "Số chẵn thuộc âm, số lẻ thuộc dương. Tỷ lệ âm — dương cho biết dãy số thiên về tĩnh hay động và mức cân bằng.",
   },
   {
     icon: UsersRound,
-    title: "4. Quan niệm dân gian",
+    title: "Quan niệm dân gian",
     text: "Các cặp và cụm số quen thuộc trong cách luận phổ thông được đối chiếu như một lớp tham khảo, có ghi rõ chứ không dùng như kết luận.",
   },
   {
     icon: Compass,
-    title: "5. Đối chiếu bản mệnh",
+    title: "Đối chiếu bản mệnh",
     text: "Nếu bạn nhập ngày giờ sinh, hệ thống xác định Nhật chủ và các hành tương sinh để đo mức phù hợp giữa dãy số và bản mệnh.",
   },
 ];
@@ -89,82 +89,64 @@ export function SimIntroPage() {
       <section className="page-light-section">
         <div className="container">
           <SectionHeading eyebrow="Năm lớp phân tích" title="Một dãy số, năm góc nhìn độc lập" description="Mỗi lớp có quy tắc riêng và được chấm điểm riêng, sau đó mới tổng hợp thành điểm chung của dãy số." />
-          <div className="service-grid">
-            {LAYERS.map((layer, index) => {
-              const Icon = layer.icon;
-              return (
-                <article key={layer.title}>
-                  <span className="service-grid__number">{String(index + 1).padStart(2, "0")}</span>
-                  <Icon aria-hidden="true" />
-                  <h3>{layer.title}</h3>
-                  <p>{layer.text}</p>
-                </article>
-              );
-            })}
-          </div>
+          <CardGrid>
+            {LAYERS.map((layer) => (
+              <FeatureCard key={layer.title} icon={layer.icon} title={layer.title}>
+                <p>{layer.text}</p>
+              </FeatureCard>
+            ))}
+          </CardGrid>
         </div>
       </section>
 
       <section className="page-dark-section">
         <div className="container">
           <SectionHeading eyebrow="So sánh cách luận" title="Các cách luận sim phổ biến và điểm khác biệt" description="Không có cách nào là chân lý tuyệt đối. Bảng dưới đây nêu ưu điểm và giới hạn để bạn chọn cách đọc phù hợp nhu cầu." />
-          <div className="value-grid">
-            {APPROACHES.map((approach) => {
-              const Icon = approach.icon;
-              return (
-                <article key={approach.title}>
-                  <Icon aria-hidden="true" />
-                  <h3>{approach.title}</h3>
-                  <p>{approach.text}</p>
-                </article>
-              );
-            })}
-          </div>
+          <CardGrid>
+            {APPROACHES.map((approach) => (
+              <FeatureCard key={approach.title} icon={approach.icon} title={approach.title}>
+                <p>{approach.text}</p>
+              </FeatureCard>
+            ))}
+          </CardGrid>
         </div>
       </section>
 
       <section className="page-dark-section">
         <div className="container">
-          <div className="privacy-banner">
-            <CircleAlert aria-hidden="true" />
-            <div>
-              <strong>Cảnh báo quan trọng: mỗi trường phái luận một khác</strong>
-              <span>
-                Cùng một số điện thoại, người luận theo cặp số có thể khen đẹp trong khi người luận theo ngũ hành lại thấy chưa hợp mệnh. Kết quả của
-                SGEN là một hệ phương pháp có ghi rõ quy tắc, không phải chân lý chung cho mọi trường phái. Hãy xem đây là thông tin tham khảo và
-                không dùng để quyết định thay bạn.
-              </span>
-            </div>
-          </div>
+          <Callout icon={CircleAlert} title="Cảnh báo quan trọng: mỗi trường phái luận một khác">
+            <p>
+              Cùng một số điện thoại, người luận theo cặp số có thể khen đẹp trong khi người luận theo ngũ hành lại thấy chưa hợp mệnh. Kết quả của
+              SGEN là một hệ phương pháp có ghi rõ quy tắc, không phải chân lý chung cho mọi trường phái. Hãy xem đây là thông tin tham khảo và
+              không dùng để quyết định thay bạn.
+            </p>
+          </Callout>
         </div>
       </section>
 
       <section className="page-light-section">
         <div className="container">
           <SectionHeading eyebrow="Nên làm gì tiếp" title="Từ điểm số tới hành động cụ thể" />
-          <div className="service-grid">
-            <article>
-              <h3>Bói sim miễn phí</h3>
+          <CardGrid>
+            <FeatureCard
+              title="Bói sim miễn phí"
+              footer={<Link className="card-link" to="/sim-phong-thuy/boi-sim">Mở công cụ <ArrowRight aria-hidden="true" /></Link>}
+            >
               <p>Nhập số điện thoại để nhận báo cáo đầy đủ năm lớp, kèm gợi ý cách đọc từng chỉ báo.</p>
-              <Link to="/sim-phong-thuy/boi-sim">
-                Mở công cụ <ArrowRight aria-hidden="true" />
-              </Link>
-            </article>
-            <article>
-              <h3>Học cách luận sim</h3>
+            </FeatureCard>
+            <FeatureCard
+              title="Học cách luận sim"
+              footer={<Link className="card-link" to="/khoa-hoc">Xem khóa học <ArrowRight aria-hidden="true" /></Link>}
+            >
               <p>Khóa học Phong thủy sim số hướng dẫn nền tảng ngũ hành, âm dương và cách luận có hệ thống.</p>
-              <Link to="/khoa-hoc">
-                Xem khóa học <ArrowRight aria-hidden="true" />
-              </Link>
-            </article>
-            <article>
-              <h3>Kết hợp công cụ khác</h3>
+            </FeatureCard>
+            <FeatureCard
+              title="Kết hợp công cụ khác"
+              footer={<Link className="card-link" to="/cong-cu-phong-thuy">Xem công cụ phong thủy <ArrowRight aria-hidden="true" /></Link>}
+            >
               <p>Đối chiếu thêm Tứ Trụ Bát Tự hoặc xem ngày để có bối cảnh rộng hơn cho quyết định của bạn.</p>
-              <Link to="/cong-cu-phong-thuy">
-                Xem công cụ phong thủy <ArrowRight aria-hidden="true" />
-              </Link>
-            </article>
-          </div>
+            </FeatureCard>
+          </CardGrid>
         </div>
       </section>
     </>

@@ -5,7 +5,8 @@ import { useToast } from "../ui/Toast";
 import { ResultBlocks } from "./ResultBlocks";
 import type { LookupResultPayload } from "../../../shared/lookup-types";
 import type { QuizPublicSet } from "../../../shared/quiz/types";
-import { Button } from "../ui/Button";
+import { Button, ButtonLink, ButtonRow } from "../ui/Button";
+import { Callout } from "../ui/Layout";
 
 const PAGE_SIZE = 5;
 
@@ -57,6 +58,7 @@ export function QuizRunner({ quizKey, title, description }: QuizRunnerProps) {
       setSubmitError("");
     } catch (caught) {
       setQuiz(null);
+      console.error("[QuizRunner] Không tải được bài trắc nghiệm:", errorMessage(caught), caught);
       setLoadError(errorMessage(caught));
     } finally {
       setLoading(false);
@@ -172,12 +174,16 @@ export function QuizRunner({ quizKey, title, description }: QuizRunnerProps) {
       <div className="result-preview section--dark">
         <div className="result-preview__empty">
           <AlertTriangle aria-hidden="true" />
-          <h2>Chưa tải được đề trắc nghiệm</h2>
-          <p>{loadError || "Bộ câu hỏi chưa sẵn sàng."}</p>
-          <p>Đề được quản lý trong cơ sở dữ liệu nên cần được nhập (seed) hoặc xuất bản trước khi làm bài.</p>
-          <Button variant="primary" onClick={() => void loadQuiz()}>
-            <RotateCcw aria-hidden="true" /> Thử lại
-          </Button>
+          <h2>Chưa tải được bài trắc nghiệm</h2>
+          <p>Hệ thống đang bận hoặc bài trắc nghiệm đang được cập nhật. Bạn thử lại sau ít phút, hoặc liên hệ SGEN để được hỗ trợ.</p>
+          <ButtonRow align="center">
+            <Button variant="primary" onClick={() => void loadQuiz()}>
+              <RotateCcw aria-hidden="true" /> Thử lại
+            </Button>
+            <ButtonLink variant="secondary" to="/lien-he">
+              Liên hệ SGEN
+            </ButtonLink>
+          </ButtonRow>
         </div>
       </div>
     );
@@ -188,13 +194,9 @@ export function QuizRunner({ quizKey, title, description }: QuizRunnerProps) {
       <div>
         <ResultBlocks payload={result} />
         {submitError ? (
-          <div className="privacy-banner" role="alert">
-            <AlertTriangle aria-hidden="true" />
-            <div>
-              <strong>Lưu ý</strong>
-              <span>{submitError}</span>
-            </div>
-          </div>
+          <Callout icon={AlertTriangle} tone="warning" role="alert" title="Lưu ý">
+            {submitError}
+          </Callout>
         ) : null}
         <div style={{ display: "flex", flexWrap: "wrap", gap: 12, marginTop: 20 }}>
           <Button variant="secondary" onClick={restart}>
@@ -309,13 +311,9 @@ export function QuizRunner({ quizKey, title, description }: QuizRunnerProps) {
       </div>
 
       {submitError ? (
-        <div className="privacy-banner" role="alert">
-          <AlertTriangle aria-hidden="true" />
-          <div>
-            <strong>Không chấm được kết quả</strong>
-            <span>{submitError}</span>
-          </div>
-        </div>
+        <Callout icon={AlertTriangle} tone="warning" role="alert" title="Không chấm được kết quả">
+          {submitError}
+        </Callout>
       ) : null}
     </div>
   );

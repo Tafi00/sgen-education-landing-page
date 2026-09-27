@@ -1,5 +1,6 @@
 import { useEffect, useState, type ReactNode } from "react";
-import { Check, ShieldCheck } from "lucide-react";
+import { Check } from "lucide-react";
+import { Callout } from "../ui/Layout";
 import { RESULTS_DISCLAIMER, type LookupResultPayload, type ResultBlock, type VerdictTone } from "../../../shared/lookup-types";
 
 /** Màu thanh tiến độ / điểm nhấn theo sắc thái verdict do API trả về. */
@@ -502,13 +503,7 @@ export function ResultBlocks({ payload, actions }: ResultBlocksProps) {
         </div>
       </div>
 
-      <div className="privacy-banner">
-        <ShieldCheck aria-hidden="true" />
-        <div>
-          <strong>Lưu ý quan trọng</strong>
-          <span>{disclaimer}</span>
-        </div>
-      </div>
+      <Callout title="Lưu ý quan trọng">{disclaimer}</Callout>
     </section>
   );
 }

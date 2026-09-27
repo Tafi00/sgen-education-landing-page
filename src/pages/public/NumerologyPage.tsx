@@ -25,7 +25,9 @@ import { ResultBlocks } from "../../components/lookup/ResultBlocks";
 import { useToast } from "../../components/ui/Toast";
 import type { LookupResultPayload } from "../../../shared/lookup-types";
 import { Button, ButtonAnchor } from "../../components/ui/Button";
-import { ToolHeader } from "../../components/ui/Layout";
+import { Callout, ToolHeader } from "../../components/ui/Layout";
+import { CheckboxField, FieldShell, TextField } from "../../components/form/Field";
+import { Eyebrow } from "../../components/ui/Eyebrow";
 
 const cosmicDarkClean = "/assets/backgrounds/cosmic-dark-clean.webp";
 
@@ -245,60 +247,40 @@ export function NumerologyPage() {
         <div className="lookup-form-center-wrap">
           <form className="lookup-card lookup-form-center" onSubmit={handleSubmit} noValidate>
             <div className="lookup-form-center__head">
-              <span className="lookup-card__badge">
-                <Orbit aria-hidden="true" size={15} /> Nhập thông tin tra cứu
-              </span>
+              <Eyebrow variant="pill" icon={Orbit}>Nhập thông tin tra cứu</Eyebrow>
               <h2>Bản đồ Thần số học cá nhân</h2>
               <p>Điền thông tin chính xác để hệ thống phân tích báo cáo chi tiết cho bạn.</p>
             </div>
 
-            <div className="lookup-form-fields-grid">
-              <label className="field-group">
-                <span>Họ và tên khai sinh *</span>
-                <span className={`field-control ${fieldErrors.name ? "is-error" : ""}`}>
-                  <UserRound aria-hidden="true" />
-                  <input
-                    type="text"
-                    required
-                    autoComplete="name"
-                    placeholder="Ví dụ: NGUYỄN VĂN A"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                  />
-                </span>
-                {fieldErrors.name ? <small className="field-error-text">{fieldErrors.name}</small> : null}
-              </label>
-
-              <label className="field-group">
-                <span>Tên thường dùng <em>(nếu có)</em></span>
-                <span className="field-control">
-                  <Tag aria-hidden="true" />
-                  <input
-                    type="text"
-                    placeholder="Ví dụ: Minh Anh, Anna"
-                    value={commonName}
-                    onChange={(e) => setCommonName(e.target.value)}
-                  />
-                </span>
-              </label>
-
-              <label className="field-group">
-                <span>Ngày/tháng/năm sinh dương lịch *</span>
-                <span className={`field-control ${fieldErrors.birthDate ? "is-error" : ""}`}>
-                  <CalendarDays aria-hidden="true" />
-                  <input
-                    type="date"
-                    required
-                    value={birthDate}
-                    onChange={(e) => setBirthDate(e.target.value)}
-                  />
-                </span>
-                {fieldErrors.birthDate ? <small className="field-error-text">{fieldErrors.birthDate}</small> : null}
-              </label>
-
-              <div className="field-group">
-                <span>Giới tính</span>
-                <div className="gender-selector">
+            <div className="form-grid">
+              <TextField
+                label="Họ và tên khai sinh"
+                required
+                autoComplete="name"
+                placeholder="Ví dụ: NGUYỄN VĂN A"
+                icon={<UserRound aria-hidden="true" />}
+                value={name}
+                error={fieldErrors.name}
+                onChange={(e) => setName(e.target.value)}
+              />
+              <TextField
+                label="Tên thường dùng (nếu có)"
+                placeholder="Ví dụ: Minh Anh, Anna"
+                icon={<Tag aria-hidden="true" />}
+                value={commonName}
+                onChange={(e) => setCommonName(e.target.value)}
+              />
+              <TextField
+                label="Ngày sinh dương lịch"
+                type="date"
+                required
+                icon={<CalendarDays aria-hidden="true" />}
+                value={birthDate}
+                error={fieldErrors.birthDate}
+                onChange={(e) => setBirthDate(e.target.value)}
+              />
+              <FieldShell label="Giới tính">
+                <div className="gender-selector" role="group" aria-label="Giới tính">
                   {GENDER_OPTIONS.map(({ value, icon: Icon }) => (
                     <button
                       key={value}
@@ -311,36 +293,29 @@ export function NumerologyPage() {
                     </button>
                   ))}
                 </div>
-              </div>
+              </FieldShell>
+              <CheckboxField
+                className="form-grid__wide"
+                checked={agreed}
+                onChange={(e) => setAgreed(e.target.checked)}
+                label="Tôi đồng ý để hệ thống SGEN phân tích dữ liệu theo trường phái Pythagoras."
+              />
             </div>
 
-            <label className="page-check">
-              <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} />
-              <span>Tôi đồng ý để hệ thống SGEN phân tích dữ liệu theo trường phái Pythagoras.</span>
-            </label>
             <div className="lookup-submit-wrap">
-              <button
-                type="submit"
-                className="lookup-submit-btn"
-                disabled={loading}
-              >
-                {loading ? <Loader2 className="spin" aria-hidden="true" size={20} /> : <Search aria-hidden="true" size={20} />}
-                <span>{loading ? "Đang giải mã dữ liệu số học…" : "TRA CỨU NGAY"}</span>
-              </button>
-
+              <Button variant="primary" type="submit" className="lookup-submit" disabled={loading}>
+                {loading ? <Loader2 className="spin" aria-hidden="true" /> : <Search aria-hidden="true" />}
+                {loading ? "Đang giải mã dữ liệu số học…" : "Tra cứu ngay"}
+              </Button>
               <p className="lookup-card__privacy">
-                <ShieldCheck aria-hidden="true" /> Miễn phí tra cứu 100% · Dữ liệu bảo mật tuyệt đối · Kết quả theo hệ Pythagoras chuẩn hóa
+                <ShieldCheck aria-hidden="true" /> Miễn phí tra cứu · Dữ liệu được bảo mật · Kết quả theo hệ Pythagoras chuẩn hóa
               </p>
             </div>
 
             {error ? (
-              <div className="privacy-banner" role="alert">
-                <AlertTriangle aria-hidden="true" />
-                <div>
-                  <strong>Không thể phân tích</strong>
-                  <span>{error}</span>
-                </div>
-              </div>
+              <Callout icon={AlertTriangle} tone="warning" role="alert" title="Không thể phân tích">
+                {error}
+              </Callout>
             ) : null}
           </form>
         </div>

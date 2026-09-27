@@ -29,7 +29,7 @@ import { BlockRenderer } from "../../components/content/BlockRenderer";
 import { FieldShell, TextareaField, TextField } from "../../components/form/Field";
 import { useToast } from "../../components/ui/Toast";
 import { Button, ButtonAnchor, ButtonLink } from "../../components/ui/Button";
-import { PageHero } from "../../components/ui/Layout";
+import { CardGrid, FeatureCard, PageHero } from "../../components/ui/Layout";
 import { SectionHeading } from "../../components/ui/SectionHeading";
 
 const DARK_STYLE = { "--page-dark-bg": "url(/assets/backgrounds/cosmic-dark-clean.webp)" } as CSSProperties;
@@ -99,40 +99,48 @@ export function AboutHubPage() {
       <section className="page-light-section" style={LIGHT_STYLE}>
         <div className="container">
           <SectionHeading eyebrow="Đi tiếp" title="Bốn hướng tìm hiểu về SGEN" />
-          <div className="service-grid">
-            <article>
-              <span className="service-grid__number">01</span>
-              <h3>Tầm nhìn</h3>
+          <CardGrid>
+            <FeatureCard
+              title="Tầm nhìn"
+              footer={
+                <Link className="card-link" to="/gioi-thieu/tam-nhin">
+                  Đọc tầm nhìn <ArrowRight aria-hidden="true" />
+                </Link>
+              }
+            >
               <p>Định hướng dài hạn và cách SGEN đặt công cụ khám phá bản thân vào đúng vị trí.</p>
-              <Link to="/gioi-thieu/tam-nhin">
-                Đọc tầm nhìn <ArrowRight aria-hidden="true" />
-              </Link>
-            </article>
-            <article>
-              <span className="service-grid__number">02</span>
-              <h3>Sứ mệnh</h3>
+            </FeatureCard>
+            <FeatureCard
+              title="Sứ mệnh"
+              footer={
+                <Link className="card-link" to="/gioi-thieu/su-menh">
+                  Đọc sứ mệnh <ArrowRight aria-hidden="true" />
+                </Link>
+              }
+            >
               <p>Vì sao SGEN tồn tại và cách chúng tôi rút ngắn khoảng cách từ hiểu đến hành.</p>
-              <Link to="/gioi-thieu/su-menh">
-                Đọc sứ mệnh <ArrowRight aria-hidden="true" />
-              </Link>
-            </article>
-            <article>
-              <span className="service-grid__number">03</span>
-              <h3>Giá trị cốt lõi</h3>
+            </FeatureCard>
+            <FeatureCard
+              title="Giá trị cốt lõi"
+              footer={
+                <Link className="card-link" to="/gioi-thieu/gia-tri-cot-loi">
+                  Đọc giá trị <ArrowRight aria-hidden="true" />
+                </Link>
+              }
+            >
               <p>Những nguyên tắc định hình cách SGEN thiết kế chương trình và tư vấn học viên.</p>
-              <Link to="/gioi-thieu/gia-tri-cot-loi">
-                Đọc giá trị <ArrowRight aria-hidden="true" />
-              </Link>
-            </article>
-            <article>
-              <span className="service-grid__number">04</span>
-              <h3>Liên hệ</h3>
+            </FeatureCard>
+            <FeatureCard
+              title="Liên hệ"
+              footer={
+                <Link className="card-link" to="/lien-he">
+                  Đi tới liên hệ <ArrowRight aria-hidden="true" />
+                </Link>
+              }
+            >
               <p>Gửi câu hỏi về khóa học, dịch vụ tư vấn hoặc hợp tác đào tạo cho đội ngũ SGEN.</p>
-              <Link to="/lien-he">
-                Đi tới liên hệ <ArrowRight aria-hidden="true" />
-              </Link>
-            </article>
-          </div>
+            </FeatureCard>
+          </CardGrid>
         </div>
       </section>
     </ContentPage>
@@ -383,32 +391,38 @@ export function ContactPage() {
       <section className="page-light-section" style={LIGHT_STYLE}>
         <div className="container">
           <SectionHeading eyebrow="Định hướng" title="Tìm hiểu thêm trước khi liên hệ" />
-          <div className="service-grid">
-            <article>
-              <span className="service-grid__number">01</span>
-              <h3>Khóa học</h3>
+          <CardGrid>
+            <FeatureCard
+              title="Khóa học"
+              footer={
+                <Link className="card-link" to="/khoa-hoc">
+                  Xem khóa học <ArrowRight aria-hidden="true" />
+                </Link>
+              }
+            >
               <p>Xem 11 chuyên đề theo cấp độ và nhóm chuyên môn để chọn lớp phù hợp.</p>
-              <Link to="/khoa-hoc">
-                Xem khóa học <ArrowRight aria-hidden="true" />
-              </Link>
-            </article>
-            <article>
-              <span className="service-grid__number">02</span>
-              <h3>Dịch vụ</h3>
+            </FeatureCard>
+            <FeatureCard
+              title="Dịch vụ"
+              footer={
+                <Link className="card-link" to="/dich-vu">
+                  Xem dịch vụ <ArrowRight aria-hidden="true" />
+                </Link>
+              }
+            >
               <p>Ba gói đồng hành: VIP Thần số học, trọn đời và định hướng nghề nghiệp.</p>
-              <Link to="/dich-vu">
-                Xem dịch vụ <ArrowRight aria-hidden="true" />
-              </Link>
-            </article>
-            <article>
-              <span className="service-grid__number">03</span>
-              <h3>Giá trị & sứ mệnh</h3>
+            </FeatureCard>
+            <FeatureCard
+              title="Giá trị & sứ mệnh"
+              footer={
+                <Link className="card-link" to="/gioi-thieu/gia-tri-cot-loi">
+                  Đọc giá trị <ArrowRight aria-hidden="true" />
+                </Link>
+              }
+            >
               <p>Cách SGEN làm nghề, giới hạn của công cụ và trách nhiệm với người học.</p>
-              <Link to="/gioi-thieu/gia-tri-cot-loi">
-                Đọc giá trị <ArrowRight aria-hidden="true" />
-              </Link>
-            </article>
-          </div>
+            </FeatureCard>
+          </CardGrid>
         </div>
       </section>
     </>

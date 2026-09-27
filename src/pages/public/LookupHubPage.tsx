@@ -1,12 +1,11 @@
 import { Link } from "react-router-dom";
 import { ArrowRight, Compass, Gift, GraduationCap, Lock, MessageSquareText, Orbit, ShieldCheck, UsersRound } from "lucide-react";
 import { ButtonLink, ButtonRow } from "../../components/ui/Button";
-import { PageHero } from "../../components/ui/Layout";
+import { CardGrid, FeatureCard, PageHero } from "../../components/ui/Layout";
 import { SectionHeading } from "../../components/ui/SectionHeading";
 
 const TOOLS = [
   {
-    number: "01",
     title: "Tra cứu Thần số học",
     href: "/tra-cuu/than-so-hoc",
     description:
@@ -14,7 +13,6 @@ const TOOLS = [
     action: "Tra cứu ngay",
   },
   {
-    number: "02",
     title: "Trắc nghiệm DISC",
     href: "/tra-cuu/disc",
     description:
@@ -22,7 +20,6 @@ const TOOLS = [
     action: "Làm bài DISC",
   },
   {
-    number: "03",
     title: "Trắc nghiệm MBTI",
     href: "/tra-cuu/mbti",
     description:
@@ -96,18 +93,21 @@ export function LookupHubPage() {
       <section className="page-light-section">
         <div className="container">
           <SectionHeading eyebrow="Ba công cụ chính" title="Chọn đúng công cụ cho câu hỏi của bạn" description="Mỗi công cụ trả lời một nhóm câu hỏi khác nhau. Bạn có thể làm lần lượt hoặc chỉ chọn phần đang quan tâm." />
-          <div className="service-grid">
+          <CardGrid>
             {TOOLS.map((tool) => (
-              <article key={tool.href}>
-                <span className="service-grid__number">{tool.number}</span>
-                <h3>{tool.title}</h3>
+              <FeatureCard
+                key={tool.href}
+                title={tool.title}
+                footer={
+                  <Link className="card-link" to={tool.href}>
+                    {tool.action} <ArrowRight aria-hidden="true" />
+                  </Link>
+                }
+              >
                 <p>{tool.description}</p>
-                <Link to={tool.href}>
-                  {tool.action} <ArrowRight aria-hidden="true" />
-                </Link>
-              </article>
+              </FeatureCard>
             ))}
-          </div>
+          </CardGrid>
         </div>
       </section>
 
@@ -128,39 +128,35 @@ export function LookupHubPage() {
       <section className="page-dark-section">
         <div className="container">
           <SectionHeading eyebrow="Miễn phí và nội dung trả phí" title="Rõ ràng ngay từ đầu" description="Phần lớn nội dung nền tảng miễn phí. Các gói trả phí chỉ mở sâu hơn phần luận giải và tư vấn cá nhân." />
-          <div className="value-grid">
-            {POLICIES.map((policy) => {
-              const Icon = policy.icon;
-              return (
-                <article key={policy.title}>
-                  <Icon aria-hidden="true" />
-                  <h3>{policy.title}</h3>
-                  <p>{policy.text}</p>
-                </article>
-              );
-            })}
-          </div>
+          <CardGrid>
+            {POLICIES.map((policy) => (
+              <FeatureCard key={policy.title} icon={policy.icon} title={policy.title}>
+                <p>{policy.text}</p>
+              </FeatureCard>
+            ))}
+          </CardGrid>
         </div>
       </section>
 
       <section className="page-dark-section">
         <div className="container">
           <SectionHeading eyebrow="Cần người đồng hành?" title="Đọc kết quả là bước đầu, hành động mới là đích" description="Nếu bạn muốn biến các chỉ số thành kế hoạch cụ thể, SGEN có khóa học và buổi tư vấn định hướng phù hợp với từng nhóm tính cách." />
-          <div className="value-grid">
-            {CTAS.map((cta) => {
-              const Icon = cta.icon;
-              return (
-                <article key={cta.href}>
-                  <Icon aria-hidden="true" />
-                  <h3>{cta.title}</h3>
-                  <p>{cta.text}</p>
-                  <ButtonLink variant="secondary" to={cta.href}>
-                    {cta.action}
-                  </ButtonLink>
-                </article>
-              );
-            })}
-          </div>
+          <CardGrid>
+            {CTAS.map((cta) => (
+              <FeatureCard
+                key={cta.href}
+                icon={cta.icon}
+                title={cta.title}
+                footer={
+                  <Link className="card-link" to={cta.href}>
+                    {cta.action} <ArrowRight aria-hidden="true" />
+                  </Link>
+                }
+              >
+                <p>{cta.text}</p>
+              </FeatureCard>
+            ))}
+          </CardGrid>
         </div>
       </section>
     </>

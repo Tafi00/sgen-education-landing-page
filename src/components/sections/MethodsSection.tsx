@@ -10,19 +10,16 @@ import { SectionHeading } from "../ui/SectionHeading";
 const methods = [
   {
     image: methodPythagoras,
-    number: "01",
     title: "Thần số học Pythagoras",
     description: "Nhận diện tính cách, tài năng, điểm mạnh và những bài học cốt lõi.",
   },
   {
     image: methodIkigai,
-    number: "02",
     title: "Biểu đồ Ikigai",
     description: "Kết nối điều bạn yêu, điều bạn giỏi và giá trị có thể tạo ra.",
   },
   {
     image: methodLifePath,
-    number: "03",
     title: "Tiến trình cuộc đời",
     description: "Nhìn rõ các giai đoạn, cơ hội và thời điểm chuyển mình quan trọng.",
   },
@@ -51,9 +48,8 @@ export function MethodsSection() {
 
         <div className="methods-grid">
           {methods.map((method, index) => (
-            <Reveal as="article" className="method-card" delay={index * 100} key={method.number}>
+            <Reveal as="article" className="method-card" delay={index * 100} key={method.title}>
               <img src={method.image} alt="" loading="lazy" decoding="async" />
-              <span className="method-card__number">{method.number}</span>
               <h3>{method.title}</h3>
               <p>{method.description}</p>
             </Reveal>

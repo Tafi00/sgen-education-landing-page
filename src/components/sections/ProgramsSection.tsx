@@ -41,7 +41,6 @@ export function ProgramsSection() {
                 <img src={program.image} alt={`Minh họa ${program.title}`} loading="lazy" decoding="async" />
               </div>
               <div className="program-card__body">
-                <span className="program-card__number">{String(index + 1).padStart(2, "0")}</span>
                 <h3>{program.title}</h3>
                 <p>{program.description}</p>
                 <a href="/khoa-hoc">Xem khóa học <ArrowRight aria-hidden="true" /></a>

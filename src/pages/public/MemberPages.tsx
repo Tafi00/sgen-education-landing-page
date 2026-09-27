@@ -19,6 +19,7 @@ import {
   Loader2,
   LogOut,
   Orbit,
+  Receipt,
   ShieldCheck,
   Trash2,
   UserRound,
@@ -30,7 +31,7 @@ import { FieldShell, TextField } from "../../components/form/Field";
 import { useToast } from "../../components/ui/Toast";
 import { LOOKUP_LABELS } from "../../../shared/lookup-types";
 import { Button } from "../../components/ui/Button";
-import { PageHero } from "../../components/ui/Layout";
+import { Callout, PageHero } from "../../components/ui/Layout";
 import { Eyebrow } from "../../components/ui/Eyebrow";
 
 const DARK_STYLE = { "--page-dark-bg": "url(/assets/backgrounds/cosmic-dark-clean.webp)" } as CSSProperties;
@@ -521,9 +522,11 @@ export function MemberAccountPage() {
               </p>
             ) : reports.data?.items.length ? (
               <div className="article-list">
-                {reports.data.items.map((report, index) => (
+                {reports.data.items.map((report) => (
                   <article key={report._id}>
-                    <span>{String(index + 1).padStart(2, "0")}</span>
+                    <span>
+                      <History aria-hidden="true" />
+                    </span>
                     <div>
                       <small>
                         {lookupLabel(report.type)} · {formatDate(report.createdAt)}
@@ -555,9 +558,11 @@ export function MemberAccountPage() {
               </p>
             ) : orders.data?.items.length ? (
               <div className="article-list">
-                {orders.data.items.map((order, index) => (
+                {orders.data.items.map((order) => (
                   <article key={order._id}>
-                    <span>{String(index + 1).padStart(2, "0")}</span>
+                    <span>
+                      <Receipt aria-hidden="true" />
+                    </span>
                     <div>
                       <small>
                         {order.code} · {formatDate(order.createdAt)} · {formatPrice(order.amount)}
@@ -589,15 +594,9 @@ export function MemberAccountPage() {
 
       <section className="page-dark-section" style={DARK_STYLE}>
         <div className="container">
-          <div className="privacy-banner">
-            <ShieldCheck aria-hidden="true" />
-            <div>
-              <strong>Quyền riêng tư dữ liệu</strong>
-              <span>
-                {settings.legal.disclaimer} Bạn có thể yêu cầu xoá toàn bộ dữ liệu cá nhân bất cứ lúc nào bằng nút “Xoá dữ liệu cá nhân” phía trên.
-              </span>
-            </div>
-          </div>
+          <Callout title="Quyền riêng tư dữ liệu">
+            {settings.legal.disclaimer} Bạn có thể yêu cầu xoá toàn bộ dữ liệu cá nhân bất cứ lúc nào bằng nút “Xoá dữ liệu cá nhân” phía trên.
+          </Callout>
         </div>
       </section>
 

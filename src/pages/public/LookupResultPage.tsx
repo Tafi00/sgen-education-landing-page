@@ -1,11 +1,12 @@
 import { useEffect } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { AlertTriangle, ArrowLeft, Download, Loader2, ShieldCheck } from "lucide-react";
+import { AlertTriangle, ArrowLeft, Download, Loader2 } from "lucide-react";
 import { api, errorMessage } from "../../api/client";
 import { ResultBlocks } from "../../components/lookup/ResultBlocks";
 import type { LookupResultPayload } from "../../../shared/lookup-types";
 import { ButtonAnchor, ButtonLink } from "../../components/ui/Button";
+import { Callout } from "../../components/ui/Layout";
 
 type StoredReport = { _id: string; type: string; title: string; createdAt: string; result: LookupResultPayload };
 
@@ -64,13 +65,9 @@ export function LookupResultPage() {
                 }
               />
             </div>
-            <div className="privacy-banner">
-              <ShieldCheck aria-hidden="true" />
-              <div>
-                <strong>Link chia sẻ có thời hạn</strong>
-                <span>Liên kết này chỉ mở được khi còn token hợp lệ. Bạn có thể tra cứu lại bất cứ lúc nào để tạo link mới.</span>
-              </div>
-            </div>
+            <Callout title="Link chia sẻ có thời hạn">
+              Liên kết này chỉ mở được khi còn token hợp lệ. Bạn có thể tra cứu lại bất cứ lúc nào để tạo link mới.
+            </Callout>
           </>
         ) : null}
       </div>

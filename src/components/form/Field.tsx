@@ -183,3 +183,17 @@ export function ImageField({ label, value, onChange, hint, error, wide }: ImageF
     </FieldShell>
   );
 }
+
+type CheckboxFieldProps = Omit<InputHTMLAttributes<HTMLInputElement>, "type"> & {
+  label: ReactNode;
+};
+
+/** Ô tích chuẩn (đồng ý điều khoản, tùy chọn bật/tắt). */
+export function CheckboxField({ label, className = "", ...props }: CheckboxFieldProps) {
+  return (
+    <label className={`field__checkbox ${className}`.trim()}>
+      <input type="checkbox" {...props} />
+      <span>{label}</span>
+    </label>
+  );
+}

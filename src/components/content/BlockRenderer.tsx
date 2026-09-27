@@ -8,11 +8,11 @@
  */
 import type { CSSProperties } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, CheckCircle2, Info, Mail, MapPin, Orbit, Phone } from "lucide-react";
+import { ArrowRight, CheckCircle2, Info, MapPin, Orbit } from "lucide-react";
 import { useCourses, usePosts, useServices, useSiteSettings } from "../../api/hooks";
 import type { ContentBlock } from "../../data/defaults/types";
 import { ButtonAnchor, ButtonLink } from "../ui/Button";
-import { PageHero } from "../ui/Layout";
+import { Callout, CardGrid, Faq, FeatureCard, PageHero } from "../ui/Layout";
 import { SectionHeading } from "../ui/SectionHeading";
 
 type Props = Record<string, unknown>;
@@ -154,20 +154,23 @@ function CardsBlock({ props }: { props: Props }) {
     <section className="page-light-section ux-block" style={LIGHT_STYLE}>
       <div className="container">
         <Heading kicker={text(props.eyebrow)} heading={text(props.heading)} light />
-        <div className="service-grid">
+        <CardGrid>
           {items.map((item, index) => (
-            <article key={`${item.title}-${index}`}>
-              <span className="service-grid__number">{String(index + 1).padStart(2, "0")}</span>
-              {item.title ? <h3>{item.title}</h3> : null}
-              {item.body ? <p>{item.body}</p> : null}
-              {item.href ? (
-                <Link to={item.href}>
-                  {item.hrefLabel || "Tìm hiểu"} <ArrowRight aria-hidden="true" />
-                </Link>
-              ) : null}
-            </article>
+            <FeatureCard
+              key={`${item.title}-${index}`}
+              title={item.title || item.body}
+              footer={
+                item.href ? (
+                  <Link className="card-link" to={item.href}>
+                    {item.hrefLabel || "Tìm hiểu"} <ArrowRight aria-hidden="true" />
+                  </Link>
+                ) : undefined
+              }
+            >
+              {item.title && item.body ? <p>{item.body}</p> : null}
+            </FeatureCard>
           ))}
-        </div>
+        </CardGrid>
       </div>
     </section>
   );
@@ -183,14 +186,13 @@ function ValuesBlock({ props }: { props: Props }) {
     <section className="page-dark-section ux-block" style={DARK_STYLE}>
       <div className="container">
         <Heading kicker={text(props.eyebrow)} heading={text(props.heading)} />
-        <div className="value-grid">
+        <CardGrid>
           {items.map((item, index) => (
-            <article key={`${item.title}-${index}`}>
-              {item.title ? <h3>{item.title}</h3> : null}
-              {item.body ? <p>{item.body}</p> : null}
-            </article>
+            <FeatureCard key={`${item.title}-${index}`} title={item.title || item.body}>
+              {item.title && item.body ? <p>{item.body}</p> : null}
+            </FeatureCard>
           ))}
-        </div>
+        </CardGrid>
       </div>
     </section>
   );
@@ -225,24 +227,14 @@ function TimelineBlock({ props }: { props: Props }) {
 function FaqBlock({ props }: { props: Props }) {
   const items = itemList(props.items)
     .map((item) => ({ question: text(item.question) || text(item.title), answer: text(item.answer) || text(item.text) }))
-    .filter((item) => item.question || item.answer);
+    .filter((item) => item.question && item.answer);
   if (!items.length) return null;
 
   return (
     <section className="page-light-section ux-block" style={LIGHT_STYLE}>
       <div className="container">
         <Heading kicker={text(props.eyebrow) || "Giải đáp"} heading={text(props.heading)} light />
-        <div className="article-list">
-          {items.map((item, index) => (
-            <article key={`${item.question}-${index}`}>
-              <span>{String(index + 1).padStart(2, "0")}</span>
-              <div>
-                {item.question ? <h3>{item.question}</h3> : null}
-                {item.answer ? <p>{item.answer}</p> : null}
-              </div>
-            </article>
-          ))}
-        </div>
+        <Faq items={items.map((item) => ({ question: item.question, answer: <p>{item.answer}</p> }))} />
       </div>
     </section>
   );
@@ -304,23 +296,17 @@ function ContactInfoBlock({ props }: { props: Props }) {
     <section className="page-light-section ux-block" style={LIGHT_STYLE}>
       <div className="container">
         <Heading kicker={text(props.eyebrow) || "Liên hệ"} heading={text(props.heading) || "Thông tin liên hệ"} light />
-        <div className="service-grid">
-          {rows.map((row, index) => (
-            <article key={row.label}>
-              <span className="service-grid__number">{String(index + 1).padStart(2, "0")}</span>
-              <h3>{row.label}</h3>
+        <CardGrid>
+          {rows.map((row) => (
+            <FeatureCard key={row.label} title={row.label}>
               <p>{row.href ? <a href={row.href}>{row.value}</a> : row.value}</p>
-            </article>
+            </FeatureCard>
           ))}
-        </div>
+        </CardGrid>
         {text(props.note) ? (
-          <div className="privacy-banner">
-            <Info aria-hidden="true" />
-            <div>
-              <strong>Lưu ý</strong>
-              <span>{text(props.note)}</span>
-            </div>
-          </div>
+          <Callout icon={Info} title="Lưu ý">
+            {text(props.note)}
+          </Callout>
         ) : null}
       </div>
     </section>
@@ -462,9 +448,8 @@ function ServicesBlock({ props }: { props: Props }) {
       <div className="container">
         <Heading kicker={text(props.eyebrow) || "Dịch vụ"} heading={text(props.heading) || "Gói dịch vụ của SGEN"} light />
         <div className="service-grid">
-          {services.map((service, index) => (
+          {services.map((service) => (
             <article key={service.slug}>
-              <span className="service-grid__number">{String(index + 1).padStart(2, "0")}</span>
               <h3>{service.name}</h3>
               <p>{service.tagline}</p>
               <p>
