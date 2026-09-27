@@ -28,6 +28,9 @@ import { usePage, useSiteSettings } from "../../api/hooks";
 import { BlockRenderer } from "../../components/content/BlockRenderer";
 import { FieldShell, TextareaField, TextField } from "../../components/form/Field";
 import { useToast } from "../../components/ui/Toast";
+import { Button, ButtonAnchor, ButtonLink } from "../../components/ui/Button";
+import { PageHero } from "../../components/ui/Layout";
+import { SectionHeading } from "../../components/ui/SectionHeading";
 
 const DARK_STYLE = { "--page-dark-bg": "url(/assets/backgrounds/cosmic-dark-clean.webp)" } as CSSProperties;
 const LIGHT_STYLE = { "--page-light-bg": "url(/assets/backgrounds/cosmic-light.webp)" } as CSSProperties;
@@ -54,9 +57,9 @@ function ContentPage({ slug, children }: { slug: string; children?: ReactNode })
           <AlertTriangle aria-hidden="true" />
           <h2>Không tìm thấy trang</h2>
           <p>Trang này chưa được xuất bản hoặc đã đổi đường dẫn. Bạn quay lại trang giới thiệu để tiếp tục.</p>
-          <Link className="page-primary" to="/gioi-thieu">
+          <ButtonLink variant="primary" to="/gioi-thieu">
             Về trang giới thiệu
-          </Link>
+          </ButtonLink>
         </div>
       </section>
     );
@@ -66,29 +69,24 @@ function ContentPage({ slug, children }: { slug: string; children?: ReactNode })
 
   return (
     <>
-      <section className="page-hero" style={DARK_STYLE}>
-        <div className="container page-hero__inner">
-          <div className="page-hero__copy">
-            {isSubPage ? (
-              <nav className="ux-breadcrumb" aria-label="Đường dẫn trang">
-                <Link to="/">Trang chủ</Link>
-                <span aria-hidden="true">/</span>
-                <Link to="/gioi-thieu">Giới thiệu</Link>
-                <span aria-hidden="true">/</span>
-                <span aria-current="page">{page.title}</span>
-              </nav>
-            ) : null}
-            <span className="page-kicker">
-              <Orbit aria-hidden="true" /> {page.eyebrow}
-            </span>
-            <h1>
-              <span className="page-hero__title-line">{page.title}</span>
-              {page.accent ? <em className="page-hero__title-line">{page.accent}</em> : null}
-            </h1>
-            {page.description ? <p>{page.description}</p> : null}
-          </div>
-        </div>
-      </section>
+      <PageHero
+        eyebrow={page.eyebrow}
+        eyebrowIcon={Orbit}
+        title={page.title}
+        accent={page.accent}
+        description={page.description}
+        before={
+          isSubPage ? (
+            <nav className="ux-breadcrumb" aria-label="Đường dẫn trang">
+              <Link to="/">Trang chủ</Link>
+              <span aria-hidden="true">/</span>
+              <Link to="/gioi-thieu">Giới thiệu</Link>
+              <span aria-hidden="true">/</span>
+              <span aria-current="page">{page.title}</span>
+            </nav>
+          ) : null
+        }
+      />
       <BlockRenderer blocks={page.blocks} />
       {children}
     </>
@@ -100,10 +98,7 @@ export function AboutHubPage() {
     <ContentPage slug="gioi-thieu">
       <section className="page-light-section" style={LIGHT_STYLE}>
         <div className="container">
-          <header className="page-section-heading page-section-heading--light">
-            <span>Đi tiếp</span>
-            <h2>Bốn hướng tìm hiểu về SGEN</h2>
-          </header>
+          <SectionHeading eyebrow="Đi tiếp" title="Bốn hướng tìm hiểu về SGEN" />
           <div className="service-grid">
             <article>
               <span className="service-grid__number">01</span>
@@ -220,31 +215,17 @@ export function ContactPage() {
 
   return (
     <>
-      <section className="page-hero" style={DARK_STYLE}>
-        <div className="container page-hero__inner">
-          <div className="page-hero__copy">
-            <span className="page-kicker">
-              <Orbit aria-hidden="true" /> {page?.eyebrow ?? "Kết nối với SGEN"}
-            </span>
-            <h1>
-              <span className="page-hero__title-line">{page?.title ?? "Liên hệ"}</span>
-              {page?.accent ? <em className="page-hero__title-line">{page.accent}</em> : null}
-            </h1>
-            <p>
-              {page?.description ??
-                "Gửi câu hỏi về khóa học, dịch vụ tư vấn hoặc hợp tác đào tạo. Đội ngũ SGEN phản hồi trong giờ làm việc."}
-            </p>
-          </div>
-        </div>
-      </section>
+      <PageHero
+        eyebrow={page?.eyebrow ?? "Kết nối với SGEN"}
+        eyebrowIcon={Orbit}
+        title={page?.title ?? "Liên hệ"}
+        accent={page?.accent}
+        description={page?.description ?? "Gửi câu hỏi về khóa học, dịch vụ tư vấn hoặc hợp tác đào tạo. Đội ngũ SGEN phản hồi trong giờ làm việc."}
+      />
 
       <section className="page-light-section ux-contact" style={LIGHT_STYLE}>
         <div className="container">
-          <header className="page-section-heading page-section-heading--light">
-            <span>Trao đổi với SGEN</span>
-            <h2>Gửi câu hỏi cho đội ngũ</h2>
-            <p>Điền thông tin bên dưới hoặc liên hệ trực tiếp qua hotline, email trong giờ làm việc.</p>
-          </header>
+          <SectionHeading eyebrow="Trao đổi với SGEN" title="Gửi câu hỏi cho đội ngũ" description="Điền thông tin bên dưới hoặc liên hệ trực tiếp qua hotline, email trong giờ làm việc." />
 
           <div className="lookup-workspace__grid">
             <form className="admin-card" onSubmit={submit}>
@@ -313,10 +294,10 @@ export function ContactPage() {
                   </p>
                 ) : null}
 
-                <button className="button button--primary" type="submit" disabled={submitting}>
+                <Button variant="primary" type="submit" disabled={submitting}>
                   {submitting ? <Loader2 className="spin" aria-hidden="true" /> : <Send aria-hidden="true" />}
                   {submitting ? "Đang gửi…" : "Gửi liên hệ"}
-                </button>
+                </Button>
 
                 <p className="admin-hint">
                   <ShieldCheck aria-hidden="true" /> Thông tin chỉ dùng cho mục đích tư vấn, không chia sẻ cho bên thứ ba.
@@ -363,10 +344,7 @@ export function ContactPage() {
 
       <section className="page-light-section ux-contact" style={LIGHT_STYLE}>
         <div className="container">
-          <header className="page-section-heading page-section-heading--light">
-            <span>Bản đồ</span>
-            <h2>Văn phòng SGEN Education</h2>
-          </header>
+          <SectionHeading eyebrow="Bản đồ" title="Văn phòng SGEN Education" />
           {mapEmbed ? (
             mapEmbed.trim().startsWith("<") ? (
               <div dangerouslySetInnerHTML={{ __html: mapEmbed }} />
@@ -385,14 +363,14 @@ export function ContactPage() {
                 <strong>Bản đồ đang được cập nhật</strong>
                 {officeAddress ? <p>{officeAddress}</p> : <p>Địa chỉ văn phòng sẽ sớm được cập nhật tại đây.</p>}
                 {officeAddress ? (
-                  <a
-                    className="button button--primary"
+                  <ButtonAnchor
+                    variant="primary"
                     href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(officeAddress)}`}
                     target="_blank"
                     rel="noreferrer"
                   >
                     Chỉ đường <ArrowRight aria-hidden="true" />
-                  </a>
+                  </ButtonAnchor>
                 ) : null}
               </div>
             </div>
@@ -404,10 +382,7 @@ export function ContactPage() {
 
       <section className="page-light-section" style={LIGHT_STYLE}>
         <div className="container">
-          <header className="page-section-heading page-section-heading--light">
-            <span>Định hướng</span>
-            <h2>Tìm hiểu thêm trước khi liên hệ</h2>
-          </header>
+          <SectionHeading eyebrow="Định hướng" title="Tìm hiểu thêm trước khi liên hệ" />
           <div className="service-grid">
             <article>
               <span className="service-grid__number">01</span>

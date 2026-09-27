@@ -35,6 +35,9 @@ import { api, errorMessage } from "../../api/client";
 import { useService, useServices, useSiteSettings } from "../../api/hooks";
 import { FieldShell, TextField } from "../../components/form/Field";
 import { useToast } from "../../components/ui/Toast";
+import { Button, ButtonAnchor, ButtonLink, ButtonRow } from "../../components/ui/Button";
+import { PageHero } from "../../components/ui/Layout";
+import { SectionHeading } from "../../components/ui/SectionHeading";
 
 const DARK_STYLE = { "--page-dark-bg": "url(/assets/backgrounds/cosmic-dark-clean.webp)" } as CSSProperties;
 const LIGHT_STYLE = { "--page-light-bg": "url(/assets/backgrounds/cosmic-light.webp)" } as CSSProperties;
@@ -131,12 +134,12 @@ function PaymentPanel({ payment, amount, code, viewToken }: { payment: PaymentIn
           </p>
         )}
         <div className="admin-page__actions">
-          <Link className="button button--primary" to={`/dich-vu/don-hang/${code}${viewToken ? `?token=${viewToken}` : ""}`}>
+          <ButtonLink variant="primary" to={`/dich-vu/don-hang/${code}${viewToken ? `?token=${viewToken}` : ""}`}>
             Xem trạng thái đơn <ArrowRight aria-hidden="true" />
-          </Link>
-          <Link className="button button--ghost" to="/dich-vu">
+          </ButtonLink>
+          <ButtonLink variant="secondary" to="/dich-vu">
             Về danh sách dịch vụ
-          </Link>
+          </ButtonLink>
         </div>
       </div>
     </div>
@@ -148,30 +151,17 @@ export function ServicesListPage() {
 
   return (
     <>
-      <section className="page-hero" style={DARK_STYLE}>
-        <div className="container page-hero__inner">
-          <div className="page-hero__copy">
-            <span className="page-kicker">
-              <Orbit aria-hidden="true" /> Dịch vụ SGEN
-            </span>
-            <h1>
-              <span className="page-hero__title-line">Đồng hành</span>
-              <em className="page-hero__title-line">theo từng mục tiêu</em>
-            </h1>
-            <p>
-              Ba gói dịch vụ cho ba nhu cầu khác nhau: đi sâu cùng chuyên gia, sở hữu học liệu trọn đời hoặc một buổi định hướng nghề nghiệp.
-            </p>
-          </div>
-        </div>
-      </section>
+      <PageHero
+        eyebrow="Dịch vụ SGEN"
+        eyebrowIcon={Orbit}
+        title="Đồng hành"
+        accent="theo từng mục tiêu"
+        description="Ba gói dịch vụ cho ba nhu cầu khác nhau: đi sâu cùng chuyên gia, sở hữu học liệu trọn đời hoặc một buổi định hướng nghề nghiệp."
+      />
 
       <section className="page-light-section ux-service" style={LIGHT_STYLE}>
         <div className="container">
-          <header className="page-section-heading page-section-heading--light">
-            <span>Gói dịch vụ</span>
-            <h2>Chọn hình thức đồng hành phù hợp</h2>
-            <p>Xem nhanh thời lượng, quyền lợi và mức giá để chọn gói phù hợp với mục tiêu của bạn.</p>
-          </header>
+          <SectionHeading eyebrow="Gói dịch vụ" title="Chọn hình thức đồng hành phù hợp" description="Xem nhanh thời lượng, quyền lợi và mức giá để chọn gói phù hợp với mục tiêu của bạn." />
 
           {isLoading && !services.length ? (
             <p className="admin-loading">
@@ -211,9 +201,9 @@ export function ServicesListPage() {
               <Info aria-hidden="true" />
               <h2>Chưa có gói dịch vụ nào</h2>
               <p>Danh sách gói đang được cập nhật. Bạn liên hệ SGEN để được tư vấn trực tiếp.</p>
-              <Link className="page-primary" to="/lien-he">
+              <ButtonLink variant="primary" to="/lien-he">
                 Liên hệ tư vấn <ArrowRight aria-hidden="true" />
-              </Link>
+              </ButtonLink>
             </div>
           )}
 
@@ -244,9 +234,9 @@ export function ServicesListPage() {
                       <td data-label="Thời lượng">{service.durationLabel || "Đang cập nhật"}</td>
                       <td data-label="Quyền lợi chính">{service.deliverables.slice(0, 3).join(" · ") || "Đang cập nhật"}</td>
                       <td data-label="Đăng ký">
-                        <Link className="button button--ghost" to={`/dich-vu/${service.slug}`}>
+                        <ButtonLink variant="secondary" size="sm" to={`/dich-vu/${service.slug}`}>
                           {service.ctaLabel || "Xem chi tiết"} <ArrowRight aria-hidden="true" />
-                        </Link>
+                        </ButtonLink>
                       </td>
                     </tr>
                   ))}
@@ -310,9 +300,9 @@ export function ServiceDetailPage() {
           <AlertTriangle aria-hidden="true" />
           <h2>Không tìm thấy gói dịch vụ</h2>
           <p>Gói này có thể đã được đổi đường dẫn hoặc tạm ẩn. Bạn xem lại danh sách gói dịch vụ đang mở bán.</p>
-          <Link className="page-primary" to="/dich-vu">
+          <ButtonLink variant="primary" to="/dich-vu">
             <ArrowLeft aria-hidden="true" /> Về danh sách dịch vụ
-          </Link>
+          </ButtonLink>
         </div>
       </section>
     );
@@ -355,25 +345,18 @@ export function ServiceDetailPage() {
 
   return (
     <>
-      <section className="page-hero" style={DARK_STYLE}>
-        <div className="container page-hero__inner">
-          <div className="page-hero__copy">
-            <Link className="article-back" to="/dich-vu">
+      <PageHero
+        eyebrow={service.durationLabel || "Dịch vụ SGEN"}
+        eyebrowIcon={Orbit}
+        title={service.name}
+        description={service.tagline}
+        before={<Link className="article-back" to="/dich-vu">
               <ArrowLeft aria-hidden="true" /> Tất cả dịch vụ
-            </Link>
-            <span className="page-kicker">
-              <Orbit aria-hidden="true" /> {service.durationLabel || "Dịch vụ SGEN"}
-            </span>
-            <h1>
-              <span className="page-hero__title-line">{service.name}</span>
-            </h1>
-            <p>{service.tagline}</p>
-            <a className="page-primary" href="#dat-mua">
+            </Link>}
+        actions={<ButtonRow><ButtonAnchor variant="primary" href="#dat-mua">
               {service.ctaLabel || "Đặt mua"} <ArrowRight aria-hidden="true" />
-            </a>
-          </div>
-        </div>
-      </section>
+            </ButtonAnchor></ButtonRow>}
+      />
 
       <section className="page-light-section ux-service" style={LIGHT_STYLE}>
         <div className="container">
@@ -437,10 +420,7 @@ export function ServiceDetailPage() {
             </div>
           ) : null}
 
-          <header className="page-section-heading page-section-heading--light">
-            <span>Mô tả</span>
-            <h2>Gói dịch vụ bao gồm</h2>
-          </header>
+          <SectionHeading eyebrow="Mô tả" title="Gói dịch vụ bao gồm" />
           <div className="story-copy">
             <p>{service.description}</p>
           </div>
@@ -459,10 +439,7 @@ export function ServiceDetailPage() {
 
           {service.audience.length ? (
             <>
-              <header className="page-section-heading page-section-heading--light">
-                <span>Đối tượng</span>
-                <h2>Phù hợp với ai</h2>
-              </header>
+              <SectionHeading eyebrow="Đối tượng" title="Phù hợp với ai" />
               <div className="article-list">
                 {service.audience.map((item) => (
                   <article key={item}>
@@ -480,10 +457,7 @@ export function ServiceDetailPage() {
 
           {settings.legal.refundPolicy.trim() ? (
             <>
-              <header className="page-section-heading page-section-heading--light">
-                <span>Chính sách</span>
-                <h2>Chính sách hoàn tiền</h2>
-              </header>
+              <SectionHeading eyebrow="Chính sách" title="Chính sách hoàn tiền" />
               <div className="story-copy">
                 <p>{settings.legal.refundPolicy}</p>
               </div>
@@ -557,11 +531,7 @@ export function ServiceDetailPage() {
 
       <section className="page-light-section ux-service" style={LIGHT_STYLE}>
         <div className="container" id="dat-mua">
-          <header className="page-section-heading page-section-heading--light">
-            <span>Đặt mua</span>
-            <h2>Hoàn tất đăng ký</h2>
-            <p>Sau khi gửi, hệ thống tạo mã đơn và hiển thị hướng dẫn chuyển khoản kèm mã QR.</p>
-          </header>
+          <SectionHeading eyebrow="Đặt mua" title="Hoàn tất đăng ký" description="Sau khi gửi, hệ thống tạo mã đơn và hiển thị hướng dẫn chuyển khoản kèm mã QR." />
 
           {purchaseDisabled ? (
             <div className="admin-alerts">
@@ -619,10 +589,10 @@ export function ServiceDetailPage() {
                     </p>
                   ) : null}
 
-                  <button className="button button--primary" type="submit" disabled={submitting}>
+                  <Button variant="primary" type="submit" disabled={submitting}>
                     {submitting ? <Loader2 className="spin" aria-hidden="true" /> : <Send aria-hidden="true" />}
                     {submitting ? "Đang tạo đơn…" : `Đặt mua ${service.name}`}
-                  </button>
+                  </Button>
 
                   <p className="admin-hint">
                     <ShieldCheck aria-hidden="true" /> SGEN không lưu thông tin thẻ hay tài khoản ngân hàng của bạn.
@@ -728,23 +698,17 @@ export function OrderStatusPage() {
               <Info aria-hidden="true" /> Bạn cần mở đúng liên kết có token mà hệ thống trả về khi tạo đơn, hoặc đăng nhập bằng tài khoản đã dùng để đặt mua.
             </p>
             <div className="admin-page__actions">
-              <Link className="button button--primary" to="/dang-nhap">
+              <ButtonLink variant="primary" to="/dang-nhap">
                 Đăng nhập tài khoản
-              </Link>
-              <Link className="button button--ghost" to="/lien-he">
+              </ButtonLink>
+              <ButtonLink variant="secondary" to="/lien-he">
                 Liên hệ SGEN
-              </Link>
+              </ButtonLink>
             </div>
           </div>
         ) : order ? (
           <>
-            <header className="page-section-heading page-section-heading--light">
-              <span>Đơn hàng {order.code}</span>
-              <h1>{order.serviceName}</h1>
-              <p>
-                Tạo lúc {formatDateTime(order.createdAt)} · Số tiền {formatPrice(order.amount)} · <StatusBadge status={order.status} />
-              </p>
-            </header>
+            <SectionHeading eyebrow={<>Đơn hàng {order.code}</>} title={order.serviceName} description={<>Tạo lúc {formatDateTime(order.createdAt)} · Số tiền {formatPrice(order.amount)} · <StatusBadge status={order.status} /></>} as="h1" />
 
             {order.status === "paid" ? (
               <div className="admin-alerts">
@@ -798,10 +762,10 @@ export function OrderStatusPage() {
                     </p>
                   ) : null}
 
-                  <button className="button button--primary" type="submit" disabled={uploading || order.status !== "pending"}>
+                  <Button variant="primary" type="submit" disabled={uploading || order.status !== "pending"}>
                     {uploading ? <Loader2 className="spin" aria-hidden="true" /> : <Upload aria-hidden="true" />}
                     {uploading ? "Đang tải lên…" : "Gửi biên lai"}
-                  </button>
+                  </Button>
                 </div>
               </form>
 
@@ -846,21 +810,21 @@ export function OrderStatusPage() {
 
             <div className="detail-actions">
               {settings.brand.hotline ? (
-                <a className="button button--ghost" href={`tel:${settings.brand.hotline.replace(/[^\d+]/g, "")}`}>
+                <ButtonAnchor variant="secondary" href={`tel:${settings.brand.hotline.replace(/[^\d+]/g, "")}`}>
                   <Phone aria-hidden="true" /> Hotline {settings.brand.hotline}
-                </a>
+                </ButtonAnchor>
               ) : null}
               {settings.contact.email ? (
-                <a
-                  className="button button--ghost"
+                <ButtonAnchor
+                  variant="secondary"
                   href={`mailto:${settings.contact.email}?subject=${encodeURIComponent(`Hỗ trợ đơn hàng ${order.code}`)}`}
                 >
                   <Mail aria-hidden="true" /> Email hỗ trợ
-                </a>
+                </ButtonAnchor>
               ) : null}
-              <Link className="button button--ghost" to="/lien-he">
+              <ButtonLink variant="secondary" to="/lien-he">
                 Trang liên hệ <ArrowRight aria-hidden="true" />
-              </Link>
+              </ButtonLink>
             </div>
           </>
         ) : null}

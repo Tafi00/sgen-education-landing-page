@@ -5,6 +5,7 @@ import { AlertTriangle, ArrowLeft, Download, Loader2, ShieldCheck } from "lucide
 import { api, errorMessage } from "../../api/client";
 import { ResultBlocks } from "../../components/lookup/ResultBlocks";
 import type { LookupResultPayload } from "../../../shared/lookup-types";
+import { ButtonAnchor, ButtonLink } from "../../components/ui/Button";
 
 type StoredReport = { _id: string; type: string; title: string; createdAt: string; result: LookupResultPayload };
 
@@ -41,9 +42,9 @@ export function LookupResultPage() {
             <AlertTriangle aria-hidden="true" />
             <h2>Không mở được kết quả</h2>
             <p>{errorMessage(query.error)}</p>
-            <Link className="page-primary" to="/tra-cuu">
+            <ButtonLink variant="primary" to="/tra-cuu">
               Tra cứu lại
-            </Link>
+            </ButtonLink>
           </div>
         ) : query.data ? (
           <>
@@ -52,13 +53,13 @@ export function LookupResultPage() {
                 payload={query.data.report.result}
                 actions={
                   query.data.report.type === "numerology" ? (
-                    <a
-                      className="action-button action-button--gradient"
+                    <ButtonAnchor
+                      variant="primary"
                       href={`/api/lookups/${id}/pdf?token=${encodeURIComponent(token)}`}
                       download
                     >
                       <Download aria-hidden="true" /> Tải PDF
-                    </a>
+                    </ButtonAnchor>
                   ) : undefined
                 }
               />

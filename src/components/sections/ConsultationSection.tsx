@@ -17,7 +17,7 @@ import {
 const cosmicLight = "/assets/backgrounds/cosmic-light.webp";
 import { IconOrb } from "../ui/IconOrb";
 import { Reveal } from "../ui/Reveal";
-import { SectionBadge } from "../ui/SectionBadge";
+import { Eyebrow } from "../ui/Eyebrow";
 
 const benefits = [
   {
@@ -76,7 +76,7 @@ export function ConsultationSection() {
     >
       <div className="container consultation-grid">
         <Reveal className="consultation-copy" direction="right">
-          <SectionBadge icon={CalendarCheck}>Liên hệ & Đăng ký tư vấn</SectionBadge>
+          <Eyebrow variant="pill" icon={CalendarCheck}>Liên hệ & Đăng ký tư vấn</Eyebrow>
           <h2><span>Sẵn sàng hôm nay</span><span>Vững bước tương lai</span></h2>
           <div className="consultation-copy__divider"><span><MessageSquareText /></span></div>
           <p>Liên hệ với chúng tôi để được tư vấn và hỗ trợ miễn phí.</p>

@@ -11,6 +11,9 @@ import { Link } from "react-router-dom";
 import { ArrowRight, CheckCircle2, Info, Mail, MapPin, Orbit, Phone } from "lucide-react";
 import { useCourses, usePosts, useServices, useSiteSettings } from "../../api/hooks";
 import type { ContentBlock } from "../../data/defaults/types";
+import { ButtonAnchor, ButtonLink } from "../ui/Button";
+import { PageHero } from "../ui/Layout";
+import { SectionHeading } from "../ui/SectionHeading";
 
 type Props = Record<string, unknown>;
 
@@ -53,15 +56,9 @@ function formatDate(value: string) {
   return parsed.toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit", year: "numeric" });
 }
 
-function Heading({ kicker, heading, body, light = false }: { kicker?: string; heading?: string; body?: string; light?: boolean }) {
+function Heading({ kicker, heading, body }: { kicker?: string; heading?: string; body?: string; light?: boolean }) {
   if (!kicker && !heading && !body) return null;
-  return (
-    <header className={`page-section-heading${light ? " page-section-heading--light" : ""}`}>
-      {kicker ? <span>{kicker}</span> : null}
-      {heading ? <h2>{heading}</h2> : null}
-      {body ? <p>{body}</p> : null}
-    </header>
-  );
+  return <SectionHeading eyebrow={kicker} title={heading} description={body} />;
 }
 
 function HeroBlock({ props }: { props: Props }) {
@@ -73,29 +70,20 @@ function HeroBlock({ props }: { props: Props }) {
   if (!heading && !body) return null;
 
   return (
-    <section className="page-hero" style={DARK_STYLE}>
-      <div className="container page-hero__inner">
-        <div className="page-hero__copy">
-          {text(props.eyebrow) || text(props.kicker) ? (
-            <span className="page-kicker">
-              <Orbit aria-hidden="true" /> {text(props.eyebrow) || text(props.kicker)}
-            </span>
-          ) : null}
-          {heading || accent ? (
-            <h1>
-              {heading ? <span className="page-hero__title-line">{heading}</span> : null}
-              {accent ? <em className="page-hero__title-line">{accent}</em> : null}
-            </h1>
-          ) : null}
-          {body ? <p>{body}</p> : null}
-          {primaryLabel && primaryHref ? (
-            <Link className="page-primary" to={primaryHref}>
-              {primaryLabel} <ArrowRight aria-hidden="true" />
-            </Link>
-          ) : null}
-        </div>
-      </div>
-    </section>
+    <PageHero
+      eyebrow={text(props.eyebrow) || text(props.kicker) || undefined}
+      eyebrowIcon={Orbit}
+      title={heading}
+      accent={accent || undefined}
+      description={body || undefined}
+      actions={
+        primaryLabel && primaryHref ? (
+          <ButtonLink variant="primary" to={primaryHref}>
+            {primaryLabel} <ArrowRight aria-hidden="true" />
+          </ButtonLink>
+        ) : undefined
+      }
+    />
   );
 }
 
@@ -275,14 +263,14 @@ function CtaBlock({ props }: { props: Props }) {
         <Heading kicker={text(props.eyebrow) || "Bước tiếp theo"} heading={heading} body={body} />
         <div className="admin-page__actions">
           {primaryLabel && primaryHref ? (
-            <Link className="page-primary" to={primaryHref}>
+            <ButtonLink variant="primary" to={primaryHref}>
               {primaryLabel} <ArrowRight aria-hidden="true" />
-            </Link>
+            </ButtonLink>
           ) : null}
           {secondaryLabel && secondaryHref ? (
-            <Link className="page-primary" to={secondaryHref}>
+            <ButtonLink variant="secondary" to={secondaryHref}>
               {secondaryLabel} <ArrowRight aria-hidden="true" />
-            </Link>
+            </ButtonLink>
           ) : null}
         </div>
       </div>
@@ -363,14 +351,14 @@ function MapBlock({ props }: { props: Props }) {
               <strong>Bản đồ đang được cập nhật</strong>
               {address ? <p>{address}</p> : <p>Địa chỉ văn phòng sẽ sớm được cập nhật tại đây.</p>}
               {address ? (
-                <a
-                  className="button button--primary"
+                <ButtonAnchor
+                  variant="primary"
                   href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`}
                   target="_blank"
                   rel="noreferrer"
                 >
                   Chỉ đường <ArrowRight aria-hidden="true" />
-                </a>
+                </ButtonAnchor>
               ) : null}
             </div>
           </div>
@@ -419,9 +407,9 @@ function CoursesBlock({ props }: { props: Props }) {
             );
           })}
         </div>
-        <Link className="page-primary" to="/khoa-hoc">
+        <ButtonLink variant="primary" to="/khoa-hoc">
           Xem tất cả khóa học <ArrowRight aria-hidden="true" />
-        </Link>
+        </ButtonLink>
       </div>
     </section>
   );
@@ -457,9 +445,9 @@ function PostsBlock({ props }: { props: Props }) {
             <Info aria-hidden="true" /> Chưa có bài viết nào được đăng.
           </p>
         )}
-        <Link className="page-primary" to="/blog">
+        <ButtonLink variant="primary" to="/blog">
           Xem tất cả bài viết <ArrowRight aria-hidden="true" />
-        </Link>
+        </ButtonLink>
       </div>
     </section>
   );

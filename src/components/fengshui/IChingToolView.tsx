@@ -16,6 +16,7 @@ import {
 import { getHexagram, type HexagramResult } from "../../../shared/menh-thu/metaphysics";
 import { ICHING_DOCUMENT_READINGS } from "./iching-document-readings";
 import "../../styles/iching-tool.css";
+import { Button } from "../ui/Button";
 
 export type FengShuiToolViewProps = {
   /** Câu hỏi gợi ý cho lần gieo đầu tiên. Chỉ dùng làm giá trị khởi tạo. */
@@ -377,9 +378,9 @@ export function IChingToolView({ defaultQuestion = "", compact = false }: FengSh
                 </header>
                 <textarea aria-label="Nội dung câu hỏi và dữ liệu quẻ dành cho AI" readOnly value={aiPrompt} rows={7} />
                 <div className="iching-ai-actions">
-                  <button type="button" className="button button--secondary" onClick={copyIChingForAi}>
+                  <Button variant="secondary" size="sm" onClick={copyIChingForAi}>
                     <ClipboardCopy size={16} /><span>{copiedAi ? "Đã chép" : "Chép cho AI"}</span>
-                  </button>
+                  </Button>
                 </div>
                 <p className="iching-ai-note">AI chỉ hỗ trợ diễn giải và suy xét; không thay thế quyết định chuyên môn hoặc bảo đảm một kết quả tương lai.</p>
               </section>

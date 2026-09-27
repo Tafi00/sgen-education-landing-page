@@ -1,0 +1,804 @@
+/* ==========================================================================
+   SGEN design system — nguồn style duy nhất cho các component trong
+   src/components/ui (Button, Eyebrow, SectionHeading, PageHero, Section,
+   CardGrid/FeatureCard, Steps, Faq, Callout).
+   Nạp cuối trong main.tsx. Class dùng tên riêng (btn, eyebrow, section-head,
+   page-banner, ds-section, feature-card…) nên không dính các lớp ghi đè cũ.
+   ========================================================================== */
+
+/* ---------------------------------------------------------------------------
+   1. Token theo nền. Mặc định là nền sáng; khối tối đặt .tone-dark (hoặc là
+      một trong các khối tối cũ bên dưới). Khối trắng lồng trong nền tối đặt
+      .tone-light để lấy lại màu nền sáng.
+   --------------------------------------------------------------------------- */
+:root,
+.tone-light,
+:is(.admin-card, .page-form-card, .course-card, .service-card, .consultation-form-card, .lookup-card--light) {
+  --ds-heading: var(--ink);
+  --ds-text: var(--ink-soft);
+  --ds-eyebrow: var(--violet);
+  --ds-accent: #a33be0;
+  --ds-surface: #ffffff;
+  --ds-surface-border: rgba(78, 42, 150, 0.13);
+  --ds-surface-shadow: 0 10px 30px rgba(44, 22, 116, 0.08);
+  --ds-icon-bg: #f1eafd;
+  --ds-icon-fg: var(--violet);
+  --ds-divider: rgba(87, 48, 167, 0.12);
+  --ds-pill-fg: var(--violet);
+  --ds-pill-bg: rgba(255, 255, 255, 0.75);
+  --ds-pill-border: rgba(108, 54, 232, 0.35);
+  --ds-btn2-fg: var(--violet);
+  --ds-btn2-bg: #ffffff;
+  --ds-btn2-border: rgba(90, 34, 232, 0.35);
+  --ds-btn2-hover-bg: #f7f2ff;
+  --ds-btn2-hover-border: var(--violet);
+  --ds-soft-fg: var(--violet);
+  --ds-soft-bg: #f1eafd;
+  --ds-soft-hover-bg: #e6d9fb;
+}
+
+.tone-dark,
+:is(
+  .hero,
+  .page-hero,
+  .page-dark-section,
+  .section--dark,
+  .login-stage,
+  .article-detail,
+  .numerology-lookup-page,
+  .featured-course,
+  .process-card,
+  .lookup-page__hero,
+  .tool-assurance,
+  .program-path,
+  .site-footer
+) {
+  --ds-heading: #ffffff;
+  --ds-text: rgba(236, 227, 255, 0.78);
+  --ds-eyebrow: #d69cff;
+  --ds-accent: #d58cff;
+  --ds-surface: rgba(28, 10, 78, 0.6);
+  --ds-surface-border: rgba(206, 153, 255, 0.32);
+  --ds-surface-shadow: none;
+  --ds-icon-bg: rgba(142, 65, 221, 0.28);
+  --ds-icon-fg: #e0c2ff;
+  --ds-divider: rgba(214, 165, 255, 0.18);
+  --ds-pill-fg: #d7b3ff;
+  --ds-pill-bg: rgba(40, 12, 95, 0.54);
+  --ds-pill-border: rgba(214, 165, 255, 0.5);
+  --ds-btn2-fg: #ffffff;
+  --ds-btn2-bg: rgba(255, 255, 255, 0.08);
+  --ds-btn2-border: rgba(255, 255, 255, 0.42);
+  --ds-btn2-hover-bg: rgba(255, 255, 255, 0.16);
+  --ds-btn2-hover-border: #ffffff;
+  --ds-soft-fg: #ffffff;
+  --ds-soft-bg: rgba(255, 255, 255, 0.1);
+  --ds-soft-hover-bg: rgba(255, 255, 255, 0.18);
+  /* Nhãn/gợi ý của TextField trên nền tối. */
+  --field-label: #ece3ff;
+  --field-hint: #c6b8e4;
+}
+
+/* ---------------------------------------------------------------------------
+   2. Button — 1 hệ duy nhất: primary / secondary / soft / danger; md / sm / icon.
+      `:is(a, button)` nâng độ ưu tiên để thắng các rule cũ kiểu `.khoi a`.
+   --------------------------------------------------------------------------- */
+:is(a, button).btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 52px;
+  margin: 0;
+  padding: 10px 24px;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  font-family: var(--font-body);
+  font-size: 0.84rem;
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: 0.03em;
+  text-align: center;
+  text-decoration: none;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease, border-color 180ms ease, color 180ms ease;
+}
+
+:is(a, button).btn svg {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+  transition: transform 180ms ease;
+}
+
+:is(a, button).btn:hover:not(:disabled) svg:last-child:not(:first-child) {
+  transform: translateX(3px);
+}
+
+:is(a, button).btn:focus-visible {
+  outline: 3px solid rgba(198, 160, 255, 0.7);
+  outline-offset: 3px;
+}
+
+:is(a, button).btn:disabled,
+:is(a, button).btn[aria-disabled="true"] {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+:is(a, button).btn--primary {
+  color: #ffffff;
+  background: var(--gradient-cta);
+  box-shadow: 0 10px 26px rgba(108, 29, 215, 0.32);
+}
+
+:is(a, button).btn--primary:hover:not(:disabled) {
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 14px 32px rgba(108, 29, 215, 0.45);
+}
+
+:is(a, button).btn--secondary {
+  color: var(--ds-btn2-fg);
+  background: var(--ds-btn2-bg);
+  border-color: var(--ds-btn2-border);
+}
+
+:is(a, button).btn--secondary:hover:not(:disabled) {
+  color: var(--ds-btn2-fg);
+  background: var(--ds-btn2-hover-bg);
+  border-color: var(--ds-btn2-hover-border);
+}
+
+:is(a, button).btn--soft {
+  color: var(--ds-soft-fg);
+  background: var(--ds-soft-bg);
+}
+
+:is(a, button).btn--soft:hover:not(:disabled) {
+  color: var(--ds-soft-fg);
+  background: var(--ds-soft-hover-bg);
+}
+
+:is(a, button).btn--danger {
+  color: #b42318;
+  background: #ffffff;
+  border-color: rgba(180, 35, 24, 0.35);
+}
+
+:is(a, button).btn--danger:hover:not(:disabled) {
+  background: #fef3f2;
+  border-color: #b42318;
+}
+
+:is(a, button).btn--sm {
+  min-height: 44px;
+  padding: 8px 16px;
+  border-radius: 10px;
+  font-size: 0.76rem;
+}
+
+:is(a, button).btn--sm svg {
+  width: 16px;
+  height: 16px;
+}
+
+:is(a, button).btn--icon {
+  width: 44px;
+  min-height: 44px;
+  padding: 0;
+  border-radius: 10px;
+}
+
+:is(a, button).btn--block {
+  width: 100%;
+}
+
+.btn[aria-current="page"] {
+  color: #ffffff;
+  background: var(--gradient-cta);
+  border-color: transparent;
+}
+
+.btn-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.btn-row--center {
+  justify-content: center;
+}
+
+@media (max-width: 560px) {
+  .btn-row > .btn {
+    flex: 1 1 100%;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   3. Eyebrow
+   --------------------------------------------------------------------------- */
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--ds-eyebrow);
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  line-height: 1.3;
+  text-transform: uppercase;
+}
+
+.eyebrow svg {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+}
+
+.eyebrow--pill {
+  padding: 7px 16px;
+  color: var(--ds-pill-fg);
+  background: var(--ds-pill-bg);
+  border: 1px solid var(--ds-pill-border);
+  border-radius: 999px;
+}
+
+/* ---------------------------------------------------------------------------
+   4. SectionHeading
+   --------------------------------------------------------------------------- */
+.section-head {
+  display: grid;
+  justify-items: start;
+  gap: 10px;
+  max-width: 860px;
+  margin: 0 0 36px;
+}
+
+.section-head--center {
+  justify-items: center;
+  margin-inline: auto;
+  text-align: center;
+}
+
+.section-head :is(h1, h2, h3) {
+  margin: 0;
+  color: var(--ds-heading);
+  font-family: var(--font-display);
+  font-size: clamp(1.75rem, 3vw, 2.75rem);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+
+.section-head :is(h1, h2, h3) :is(em, span) {
+  color: var(--ds-accent);
+  font-style: normal;
+}
+
+.section-head > p {
+  max-width: 720px;
+  margin: 2px 0 0;
+  color: var(--ds-text);
+  font-size: 1rem;
+  line-height: 1.65;
+}
+
+@media (max-width: 767px) {
+  .section-head {
+    margin-bottom: 24px;
+  }
+
+  .section-head :is(h1, h2, h3) {
+    font-size: clamp(1.5rem, 7vw, 2rem);
+  }
+
+  .section-head > p {
+    font-size: 0.94rem;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   5. PageHero (page-banner)
+   --------------------------------------------------------------------------- */
+.page-banner {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  align-items: end;
+  min-height: 440px;
+  padding: calc(var(--header-h, 96px) + 56px) 0 64px;
+  color: #ffffff;
+  background-color: #090331;
+  background-image: linear-gradient(110deg, rgba(8, 3, 34, 0.94), rgba(26, 10, 70, 0.72)), var(--banner-bg);
+  background-position: center;
+  background-size: cover;
+}
+
+.page-banner::after {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(circle at 74% 40%, rgba(184, 71, 255, 0.2), transparent 30%);
+  content: "";
+}
+
+.page-banner__inner {
+  display: grid;
+  justify-items: start;
+  gap: 18px;
+}
+
+.page-banner--center .page-banner__inner {
+  justify-items: center;
+  text-align: center;
+}
+
+.page-banner h1 {
+  max-width: 960px;
+  margin: 2px 0 0;
+  color: #ffffff;
+  font-family: var(--font-display);
+  font-size: clamp(2.4rem, 4.2vw, 4.25rem);
+  font-weight: 800;
+  line-height: 1.06;
+  letter-spacing: -0.035em;
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+
+.page-banner h1 > span,
+.page-banner h1 > em {
+  display: block;
+}
+
+.page-banner h1 > em {
+  color: #d58cff;
+  font-style: normal;
+}
+
+.page-banner__lead {
+  max-width: 740px;
+  margin: 0;
+  color: rgba(236, 227, 255, 0.82);
+  font-size: 1.05rem;
+  line-height: 1.65;
+}
+
+.page-banner__actions {
+  margin-top: 8px;
+}
+
+@media (max-width: 767px) {
+  .page-banner {
+    min-height: 0;
+    padding: calc(var(--header-h, 76px) + 36px) 0 44px;
+  }
+
+  .page-banner__inner {
+    gap: 14px;
+  }
+
+  .page-banner h1 {
+    font-size: clamp(1.9rem, 8.5vw, 2.6rem);
+  }
+
+  .page-banner__lead {
+    font-size: 0.96rem;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   6. Section
+   --------------------------------------------------------------------------- */
+.ds-section {
+  position: relative;
+  padding-block: clamp(56px, 7vw, 96px);
+}
+
+.ds-section--compact {
+  padding-block: clamp(32px, 4vw, 56px);
+}
+
+.ds-section--light {
+  background: #f8f5ff;
+}
+
+.ds-section--plain {
+  background: #ffffff;
+}
+
+.ds-section--dark {
+  color: #ffffff;
+  background-color: #0a0433;
+  background-image: linear-gradient(135deg, rgba(4, 1, 30, 0.25), rgba(27, 7, 80, 0.5)), url(/assets/backgrounds/cosmic-dark-clean.webp);
+  background-position: center;
+  background-size: cover;
+}
+
+/* ---------------------------------------------------------------------------
+   7. CardGrid + FeatureCard
+   --------------------------------------------------------------------------- */
+.card-grid {
+  --gap: 18px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--gap);
+}
+
+.card-grid > * {
+  flex: 0 1 calc((100% - (var(--cols) - 1) * var(--gap)) / var(--cols));
+  min-width: 0;
+}
+
+@media (max-width: 1024px) {
+  .card-grid[style*="--cols: 4"] > *,
+  .card-grid[style*="--cols:4"] > *,
+  .card-grid > * {
+    flex-basis: calc((100% - var(--gap)) / 2);
+  }
+}
+
+@media (max-width: 640px) {
+  .card-grid > * {
+    flex-basis: 100%;
+  }
+}
+
+.feature-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 26px;
+  background: var(--ds-surface);
+  border: 1px solid var(--ds-surface-border);
+  border-radius: 18px;
+  box-shadow: var(--ds-surface-shadow);
+}
+
+.feature-card__icon {
+  display: inline-grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  color: var(--ds-icon-fg);
+  background: var(--ds-icon-bg);
+  border-radius: 12px;
+}
+
+.feature-card__icon svg {
+  width: 22px;
+  height: 22px;
+}
+
+.feature-card h3 {
+  margin: 4px 0 0;
+  color: var(--ds-heading);
+  font-family: var(--font-display);
+  font-size: 1.02rem;
+  font-weight: 800;
+  line-height: 1.35;
+  text-transform: uppercase;
+}
+
+.feature-card__body {
+  color: var(--ds-text);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.feature-card__body > :first-child {
+  margin-top: 0;
+}
+
+.feature-card__body > :last-child {
+  margin-bottom: 0;
+}
+
+.feature-card__footer {
+  margin-top: auto;
+  padding-top: 14px;
+  border-top: 1px solid var(--ds-divider);
+}
+
+/* Liên kết dạng chữ ở chân card: "MỞ CÔNG CỤ →" */
+.card-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--ds-eyebrow);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.card-link svg {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+  transition: transform 180ms ease;
+}
+
+.card-link:hover svg {
+  transform: translateX(3px);
+}
+
+@media (max-width: 640px) {
+  .feature-card {
+    padding: 20px;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   8. Steps
+   --------------------------------------------------------------------------- */
+.steps {
+  margin-top: 28px;
+  padding: 28px;
+  color: #ffffff;
+  background: linear-gradient(135deg, #2a0d6e, #150646);
+  border: 1px solid rgba(206, 153, 255, 0.3);
+  border-radius: 20px;
+}
+
+.steps__title {
+  margin: 0 0 18px;
+  color: #ffffff;
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.steps__list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.steps__list li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(214, 165, 255, 0.22);
+  border-radius: 14px;
+}
+
+.steps__num {
+  display: inline-grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  flex: 0 0 auto;
+  color: #ffffff;
+  background: var(--gradient-cta);
+  border-radius: 50%;
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.steps__text {
+  font-size: 0.88rem;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+@media (max-width: 640px) {
+  .steps {
+    padding: 20px;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   9. Faq
+   --------------------------------------------------------------------------- */
+.faq {
+  display: grid;
+  gap: 10px;
+}
+
+.faq__item {
+  background: var(--ds-surface);
+  border: 1px solid var(--ds-surface-border);
+  border-radius: 14px;
+  box-shadow: var(--ds-surface-shadow);
+}
+
+.faq__item > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 56px;
+  padding: 14px 20px;
+  color: var(--ds-heading);
+  font-weight: 700;
+  line-height: 1.4;
+  list-style: none;
+  cursor: pointer;
+}
+
+.faq__item > summary::-webkit-details-marker {
+  display: none;
+}
+
+.faq__item > summary svg {
+  width: 20px;
+  height: 20px;
+  flex: 0 0 auto;
+  color: var(--ds-eyebrow);
+  transition: transform 180ms ease;
+}
+
+.faq__item[open] > summary svg {
+  transform: rotate(180deg);
+}
+
+.faq__answer {
+  padding: 0 20px 18px;
+  color: var(--ds-text);
+  font-size: 0.92rem;
+  line-height: 1.65;
+}
+
+.faq__answer > :first-child {
+  margin-top: 0;
+}
+
+.faq__answer > :last-child {
+  margin-bottom: 0;
+}
+
+/* ---------------------------------------------------------------------------
+   10. Callout
+   --------------------------------------------------------------------------- */
+.callout {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px 20px;
+  color: var(--ds-text);
+  background: var(--ds-surface);
+  border: 1px solid var(--ds-surface-border);
+  border-radius: 14px;
+}
+
+.callout > svg {
+  width: 22px;
+  height: 22px;
+  flex: 0 0 auto;
+  margin-top: 1px;
+  color: var(--ds-eyebrow);
+}
+
+.callout strong {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--ds-heading);
+}
+
+.callout__body {
+  font-size: 0.88rem;
+  line-height: 1.6;
+}
+
+.callout__body > :first-child {
+  margin-top: 0;
+}
+
+.callout__body > :last-child {
+  margin-bottom: 0;
+}
+
+.callout--warning > svg {
+  color: #f5a524;
+}
+
+/* ---------------------------------------------------------------------------
+   11. Pagination
+   --------------------------------------------------------------------------- */
+.pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 36px;
+}
+
+.pagination__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pagination__gap {
+  color: var(--ds-text);
+}
+
+/* ---------------------------------------------------------------------------
+   12. ToolHeader
+   --------------------------------------------------------------------------- */
+.tool-header {
+  display: grid;
+  justify-items: center;
+  gap: 14px;
+  max-width: 880px;
+  margin: 0 auto 32px;
+  text-align: center;
+}
+
+.tool-header h1 {
+  margin: 0;
+  color: #ffffff;
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 3.6vw, 3.4rem);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+
+.tool-header h1 em {
+  color: #d58cff;
+  font-style: normal;
+}
+
+.tool-header__lead {
+  max-width: 720px;
+  margin: 0;
+  color: rgba(236, 227, 255, 0.8);
+  font-size: 1rem;
+  line-height: 1.65;
+}
+
+.tool-header__note {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 8px;
+  max-width: 700px;
+  margin: 0;
+  color: rgba(236, 227, 255, 0.66);
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.tool-header__note svg {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+  margin-top: 2px;
+  color: #38e19e;
+}
+
+@media (max-width: 767px) {
+  .tool-header {
+    gap: 12px;
+    margin-bottom: 22px;
+  }
+
+  .tool-header h1 {
+    font-size: clamp(1.7rem, 8vw, 2.3rem);
+  }
+
+  .tool-header__lead {
+    font-size: 0.94rem;
+  }
+}

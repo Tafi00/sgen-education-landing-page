@@ -1,30 +1,24 @@
 import type { ReactNode } from "react";
-import type { LucideIcon } from "lucide-react";
-import { Reveal } from "./Reveal";
-import { SectionBadge } from "./SectionBadge";
+import { Eyebrow } from "./Eyebrow";
 
 type SectionHeadingProps = {
-  eyebrow: string;
+  eyebrow?: ReactNode;
   title: ReactNode;
-  description?: string;
-  icon?: LucideIcon;
-  dark?: boolean;
+  description?: ReactNode;
   align?: "left" | "center";
+  /** Cấp tiêu đề; mặc định h2. */
+  as?: "h1" | "h2" | "h3";
+  id?: string;
+  className?: string;
 };
 
-export function SectionHeading({
-  eyebrow,
-  title,
-  description,
-  icon,
-  dark = false,
-  align = "center",
-}: SectionHeadingProps) {
+/** Tiêu đề section chuẩn: eyebrow + tiêu đề + mô tả. Màu theo nền sáng/tối của section chứa nó. */
+export function SectionHeading({ eyebrow, title, description, align = "left", as: Tag = "h2", id, className = "" }: SectionHeadingProps) {
   return (
-    <Reveal className={`section-heading section-heading--${align} ${dark ? "section-heading--dark" : ""}`}>
-      <SectionBadge icon={icon} dark={dark}>{eyebrow}</SectionBadge>
-      <h2>{title}</h2>
+    <header className={`section-head section-head--${align} ${className}`.trim()}>
+      {eyebrow ? <Eyebrow>{eyebrow}</Eyebrow> : null}
+      <Tag id={id}>{title}</Tag>
       {description ? <p>{description}</p> : null}
-    </Reveal>
+    </header>
   );
 }

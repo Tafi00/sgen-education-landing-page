@@ -40,11 +40,10 @@ export function CoreValuesSection() {
     >
       <div className="container">
         <SectionHeading
+          align="center"
           eyebrow="Nguyên tắc làm nghề"
           title="4 Giá trị cốt lõi SGEN luôn giữ vững"
           description="Những nguyên tắc định hình cách SGEN thiết kế chương trình, giảng dạy và tư vấn cho từng học viên."
-          icon={HeartHandshake}
-          dark
         />
 
         <div className="values-landing-grid">

@@ -1,10 +1,10 @@
-import { BriefcaseBusiness, HeartHandshake, Info, Star, Telescope, UserRound } from "lucide-react";
+import { ArrowRight, BriefcaseBusiness, Info, Star, Telescope, UserRound } from "lucide-react";
 const cosmicLight = "/assets/backgrounds/cosmic-light.webp";
 const pythagoras = "/assets/illustrations/pythagoras-cosmic.webp";
 import { IconOrb } from "../ui/IconOrb";
 import { Reveal } from "../ui/Reveal";
-import { SectionBadge } from "../ui/SectionBadge";
-import { SparkleButton } from "../ui/GradientButton";
+import { ButtonAnchor } from "../ui/Button";
+import { Eyebrow } from "../ui/Eyebrow";
 
 const values = [
   { icon: UserRound, label: "Đào tạo chuyên sâu" },
@@ -21,7 +21,7 @@ export function AboutSection() {
     >
       <div className="container about-grid">
         <Reveal className="about-copy" direction="right">
-          <SectionBadge icon={Info}>Vài dòng giới thiệu</SectionBadge>
+          <Eyebrow variant="pill" icon={Info}>Vài dòng giới thiệu</Eyebrow>
           <h2>Học viện<br /><span>SGEN Education</span></h2>
           <p>
             SGEN Education đào tạo và tư vấn ứng dụng trong Thần số học, Sinh trắc vân tay và các chuyên đề Phong thủy đời sống, giúp học viên hiểu mình, cải thiện lựa chọn và kiến tạo môi trường sống hài hòa.
@@ -36,7 +36,9 @@ export function AboutSection() {
             ))}
           </div>
 
-          <SparkleButton
+          <ButtonAnchor
+            variant="primary"
+            block
             href="#tam-nhin"
             onClick={(e) => {
               e.preventDefault();
@@ -44,8 +46,8 @@ export function AboutSection() {
               document.getElementById("tam-nhin")?.scrollIntoView({ behavior: "smooth", block: "start" });
             }}
           >
-            Khám phá tầm nhìn & sứ mệnh
-          </SparkleButton>
+            Khám phá tầm nhìn & sứ mệnh <ArrowRight aria-hidden="true" />
+          </ButtonAnchor>
         </Reveal>
 
         <Reveal className="pythagoras-card" direction="left" delay={100}>

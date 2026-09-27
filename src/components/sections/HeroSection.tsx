@@ -9,12 +9,12 @@ import {
   ShieldCheck,
   Star,
   Target,
-  UserRound,
 } from "lucide-react";
 const cosmicDark = "/assets/backgrounds/cosmic-dark.webp";
 import { IconOrb } from "../ui/IconOrb";
 import { Reveal } from "../ui/Reveal";
-import { SectionBadge } from "../ui/SectionBadge";
+import { ButtonAnchor } from "../ui/Button";
+import { Eyebrow } from "../ui/Eyebrow";
 
 const trustItems = [
   { icon: ShieldCheck, label: "Chuẩn phương pháp" },
@@ -83,9 +83,9 @@ export function HeroSection() {
 
       <div className="container hero__main">
         <Reveal className="hero__content" direction="right">
-          <SectionBadge dark icon={Orbit}>
+          <Eyebrow variant="pill" icon={Orbit}>
             Học viện SGEN Education
-          </SectionBadge>
+          </Eyebrow>
           <h1>
             Giới thiệu<br />
             <span>SGEN Education</span>
@@ -97,8 +97,8 @@ export function HeroSection() {
           </p>
 
           <div className="hero__actions">
-            <a
-              className="hero__action hero__action--primary"
+            <ButtonAnchor
+              variant="primary"
               href="#tam-nhin"
               onClick={(e) => {
                 e.preventDefault();
@@ -108,9 +108,9 @@ export function HeroSection() {
             >
               <span>Khám phá SGEN</span>
               <ArrowDown aria-hidden="true" size={17} />
-            </a>
-            <a
-              className="hero__action hero__action--secondary"
+            </ButtonAnchor>
+            <ButtonAnchor
+              variant="secondary"
               href="#lien-he"
               onClick={(e) => {
                 e.preventDefault();
@@ -120,7 +120,7 @@ export function HeroSection() {
             >
               <span>Liên hệ tư vấn</span>
               <ArrowRight aria-hidden="true" size={17} />
-            </a>
+            </ButtonAnchor>
           </div>
 
           <div className="hero__trust-list">

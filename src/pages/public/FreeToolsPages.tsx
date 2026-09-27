@@ -28,6 +28,10 @@ import {
 import { SelectField, TextField } from "../../components/form/Field";
 import { calculateNumerologyReport, type NumerologyMetricKey, type NumerologyReport } from "../../../shared/numerology";
 import { RESULTS_DISCLAIMER } from "../../../shared/lookup-types";
+import { Button, ButtonAnchor, ButtonLink, ButtonRow } from "../../components/ui/Button";
+import { PageHero, ToolHeader } from "../../components/ui/Layout";
+import { Eyebrow } from "../../components/ui/Eyebrow";
+import { SectionHeading } from "../../components/ui/SectionHeading";
 
 type FreeToolMetric = { value: string; label: string; note: string };
 
@@ -537,9 +541,9 @@ function QuickToolItem({ item, defaultOpen, forceOpen }: { item: HubQuickItem; d
           />
         ) : null}
 
-        <button type="submit" className="button button--primary">
+        <Button type="submit" variant="primary">
           Tính ngay <ArrowRight aria-hidden="true" />
-        </button>
+        </Button>
 
         {error ? (
           <p className="ref-acc__error" role="alert">
@@ -590,27 +594,17 @@ export function FreeToolsPage() {
 
   return (
     <>
-      <section className="page-hero catalog-hero catalog-hero--tools">
-        <div className="container page-hero__inner">
-          <div className="page-hero__copy">
-            <span className="page-kicker">
-              <Calculator aria-hidden="true" /> Kho công cụ SGEN
-            </span>
-            <h1>
-              Free tools <em>tính nhanh tại chỗ</em>
-            </h1>
-            <p>
-              Chọn công cụ Thần số học hoặc phong thủy, nhập thông tin cần thiết và xem kết quả ngay. Mỗi mục có giải thích cách tính để bạn dễ đối chiếu.
-            </p>
-            <div className="page-hero__actions">
-              <a className="page-primary" href="#nhom-tinh-nhanh">Bắt đầu tính nhanh <ArrowRight aria-hidden="true" /></a>
-              <Link className="action-button action-button--outline" to="/tra-cuu/than-so-hoc">
+      <PageHero
+        eyebrow="Kho công cụ SGEN"
+        eyebrowIcon={Calculator}
+        title="Free tools"
+        accent="tính nhanh tại chỗ"
+        description="Chọn công cụ Thần số học hoặc phong thủy, nhập thông tin cần thiết và xem kết quả ngay. Mỗi mục có giải thích cách tính để bạn dễ đối chiếu."
+        actions={<ButtonRow><ButtonAnchor variant="primary" href="#nhom-tinh-nhanh">Bắt đầu tính nhanh <ArrowRight aria-hidden="true" /></ButtonAnchor>
+              <ButtonLink variant="secondary" to="/tra-cuu/than-so-hoc">
                 Tra cứu bản đồ số học <ArrowRight aria-hidden="true" />
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
+              </ButtonLink></ButtonRow>}
+      />
 
       <section className="page-light-section ux-free-tools catalog-content" id="tinh-nhanh-chi-so">
         <div className="container">
@@ -629,11 +623,7 @@ export function FreeToolsPage() {
             </a>
           </nav>
 
-          <div className="page-section-heading page-section-heading--light">
-            <span>Kho công cụ</span>
-            <h2>Chọn công cụ theo nhu cầu</h2>
-            <p>Mở từng mục để tính ngay tại chỗ, hoặc gõ tên công cụ để lọc nhanh danh sách bên dưới.</p>
-          </div>
+          <SectionHeading eyebrow="Kho công cụ" title="Chọn công cụ theo nhu cầu" description="Mở từng mục để tính ngay tại chỗ, hoặc gõ tên công cụ để lọc nhanh danh sách bên dưới." />
 
           <label className="tools-hub__search">
             <Search aria-hidden="true" />
@@ -655,9 +645,9 @@ export function FreeToolsPage() {
             <div className="tools-hub__empty">
               <Search aria-hidden="true" />
               <p>Không tìm thấy công cụ nào khớp với &ldquo;{query}&rdquo;.</p>
-              <button type="button" className="action-button action-button--outline" onClick={() => setQuery("")}>
+              <Button variant="secondary" onClick={() => setQuery("")}>
                 Xoá từ khoá
-              </button>
+              </Button>
             </div>
           ) : (
             <div className="ref-groups">
@@ -709,11 +699,7 @@ export function FreeToolsPage() {
 
       <section className="page-light-section ux-free-numbers" id="y-nghia-cac-con-so">
         <div className="container">
-          <div className="page-section-heading page-section-heading--light">
-            <span>Ý nghĩa các con số</span>
-            <h2>Ý nghĩa các con số trong Thần số học Pythagoras</h2>
-            <p>Từ 1 đến 9 cùng hai số bậc thầy 11 và 22 — mỗi con số là một nhóm năng lượng riêng trong bản đồ số học.</p>
-          </div>
+          <SectionHeading eyebrow="Ý nghĩa các con số" title="Ý nghĩa các con số trong Thần số học Pythagoras" description="Từ 1 đến 9 cùng hai số bậc thầy 11 và 22 — mỗi con số là một nhóm năng lượng riêng trong bản đồ số học." />
           <div className="ref-number-grid">
             {NUMBER_MEANINGS.map((entry) => (
               <Link className="ref-number" to="/#y-nghia-con-so" key={entry.number}>
@@ -732,25 +718,20 @@ export function FreeToolsPage() {
         <div className="container">
           <div className="ref-lookup-cta">
             <div>
-              <span className="page-kicker">
-                <Orbit aria-hidden="true" /> Tra cứu đầy đủ
-              </span>
+              <Eyebrow variant="pill" icon={Orbit}>Tra cứu đầy đủ</Eyebrow>
               <h2>Tra cứu các chỉ số của bạn ngay</h2>
               <p>
                 Các công cụ trên chỉ tính một chỉ số mỗi lần. Nhập họ tên và ngày sinh một lần để xem báo cáo đầy đủ 20 chỉ số, 4 biểu đồ và phần
                 luận giải chi tiết — vẫn miễn phí và không cần tài khoản.
               </p>
             </div>
-            <Link className="page-primary" to="/tra-cuu/than-so-hoc">
+            <ButtonLink variant="primary" to="/tra-cuu/than-so-hoc">
               Tra cứu ngay <ArrowRight aria-hidden="true" />
-            </Link>
+            </ButtonLink>
           </div>
 
           <div className="ref-faq">
-            <div className="page-section-heading page-section-heading--light">
-              <span>Đôi lời chia sẻ</span>
-              <h2>Câu hỏi thường gặp về Thần số học</h2>
-            </div>
+            <SectionHeading eyebrow="Đôi lời chia sẻ" title="Câu hỏi thường gặp về Thần số học" />
             <div className="ref-acc-list">
               <details className="ref-acc">
                 <summary>
@@ -838,9 +819,9 @@ function ToolNotFound() {
           <Search aria-hidden="true" />
           <h3>Không tìm thấy công cụ này</h3>
           <p>Đường dẫn có thể đã thay đổi. Bạn hãy chọn lại công cụ trong danh mục Free tools của SGEN.</p>
-          <Link className="page-primary" to="/free-tools">
+          <ButtonLink variant="primary" to="/free-tools">
             Về trang Free tools <ArrowRight aria-hidden="true" />
-          </Link>
+          </ButtonLink>
         </div>
       </div>
     </section>
@@ -882,13 +863,7 @@ export function FreeToolDetailPage() {
     <>
       <section className="page-dark-section free-tool-detail-stage" style={FIRST_SECTION_STYLE}>
         <div className="container lookup-workspace">
-          <header>
-            <span className="page-kicker">
-              <tool.icon aria-hidden="true" /> Free tool
-            </span>
-            <h1>{tool.title}</h1>
-            <p>{tool.summary}</p>
-          </header>
+          <ToolHeader eyebrow="Free tool" eyebrowIcon={tool.icon} title={tool.title} description={tool.summary} />
 
           <div className="lookup-workspace__grid">
             <form className="page-form-card" onSubmit={handleSubmit} noValidate>
@@ -949,9 +924,9 @@ export function FreeToolDetailPage() {
                 </label>
               ) : null}
 
-              <button type="submit" className="button button--primary">
+              <Button type="submit" variant="primary">
                 Tính chỉ số <ArrowRight aria-hidden="true" />
-              </button>
+              </Button>
 
               {error ? (
                 <div className="privacy-banner" role="alert">
@@ -1015,10 +990,7 @@ export function FreeToolDetailPage() {
 
       <section className="page-dark-section">
         <div className="container">
-          <div className="page-section-heading">
-            <span>Phương pháp luận giải</span>
-            <h2>Cách công cụ tính chỉ số này</h2>
-          </div>
+          <SectionHeading eyebrow="Phương pháp luận giải" title="Cách công cụ tính chỉ số này" />
           <div className="value-grid">
             {tool.method.map((item) => (
               <article key={item.title}>
@@ -1033,10 +1005,7 @@ export function FreeToolDetailPage() {
 
       <section className="page-light-section">
         <div className="container">
-          <div className="page-section-heading page-section-heading--light">
-            <span>Đọc tiếp</span>
-            <h2>Kết hợp thêm công cụ khác</h2>
-          </div>
+          <SectionHeading eyebrow="Đọc tiếp" title="Kết hợp thêm công cụ khác" />
           <div className="service-grid">
             <article>
               <h3>Tra cứu bản đồ số học đầy đủ</h3>

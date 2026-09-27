@@ -1,5 +1,6 @@
 import { Link, isRouteErrorResponse, useRouteError } from "react-router-dom";
 import { AlertTriangle, Home, RefreshCw } from "lucide-react";
+import { Button, ButtonAnchor, ButtonLink } from "../components/ui/Button";
 
 /** Trang lỗi dùng chung: thay màn hình trắng "Unexpected Application Error" của React Router. */
 export function RouteErrorPage() {
@@ -26,18 +27,18 @@ export function RouteErrorPage() {
           {status}: {detail}
         </code>
         <div className="route-error__actions">
-          <button type="button" className="page-primary" onClick={() => window.location.reload()}>
+          <Button variant="primary" onClick={() => window.location.reload()}>
             <RefreshCw aria-hidden="true" /> Tải lại trang
-          </button>
-          <Link className="button button--ghost" to="/">
+          </Button>
+          <ButtonLink variant="secondary" to="/">
             <Home aria-hidden="true" /> Về trang chủ
-          </Link>
-          <Link className="button button--ghost" to="/tra-cuu">
+          </ButtonLink>
+          <ButtonLink variant="secondary" to="/tra-cuu">
             Tra cứu thần số học
-          </Link>
-          <a className="button button--ghost" href="tel:0903891839">
+          </ButtonLink>
+          <ButtonAnchor variant="secondary" href="tel:0903891839">
             Gọi SGEN: 0903.891.839
-          </a>
+          </ButtonAnchor>
         </div>
       </div>
     </section>

@@ -1,5 +1,8 @@
 import { Link } from "react-router-dom";
 import { ArrowRight, Compass, Gift, GraduationCap, Lock, MessageSquareText, Orbit, ShieldCheck, UsersRound } from "lucide-react";
+import { ButtonLink, ButtonRow } from "../../components/ui/Button";
+import { PageHero } from "../../components/ui/Layout";
+import { SectionHeading } from "../../components/ui/SectionHeading";
 
 const TOOLS = [
   {
@@ -76,38 +79,23 @@ const CTAS = [
 export function LookupHubPage() {
   return (
     <>
-      <section className="page-hero">
-        <div className="container page-hero__inner">
-          <div className="page-hero__copy">
-            <span className="page-kicker">
-              <Orbit aria-hidden="true" /> Tra cứu &amp; trắc nghiệm
-            </span>
-            <h1>
-              Hiểu mình hơn bằng <em>dữ liệu có phương pháp</em>
-            </h1>
-            <p>
-              SGEN tổng hợp ba công cụ trong một nơi: tra cứu Thần số học từ họ tên và ngày sinh, trắc nghiệm DISC và MBTI theo khung tham chiếu.
-              Mọi kết quả đều kèm phần luận giải dễ hiểu và tuyên bố miễn trừ, giúp bạn có thêm góc nhìn thay vì một lời khuyên tuyệt đối.
-            </p>
-            <div className="page-hero__actions">
-              <Link className="page-primary" to="/tra-cuu/than-so-hoc">
+      <PageHero
+        eyebrow="Tra cứu &amp; trắc nghiệm"
+        eyebrowIcon={Orbit}
+        title="Hiểu mình hơn bằng"
+        accent="dữ liệu có phương pháp"
+        description="SGEN tổng hợp ba công cụ trong một nơi: tra cứu Thần số học từ họ tên và ngày sinh, trắc nghiệm DISC và MBTI theo khung tham chiếu. Mọi kết quả đều kèm phần luận giải dễ hiểu và tuyên bố miễn trừ, giúp bạn có thêm góc nhìn thay vì một lời khuyên tuyệt đối."
+        actions={<ButtonRow><ButtonLink variant="primary" to="/tra-cuu/than-so-hoc">
                 Bắt đầu tra cứu <ArrowRight aria-hidden="true" />
-              </Link>
-              <Link className="action-button action-button--outline" to="/lien-he">
+              </ButtonLink>
+              <ButtonLink variant="secondary" to="/lien-he">
                 <MessageSquareText aria-hidden="true" /> Cần tư vấn riêng
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
+              </ButtonLink></ButtonRow>}
+      />
 
       <section className="page-light-section">
         <div className="container">
-          <div className="page-section-heading page-section-heading--light">
-            <span>Ba công cụ chính</span>
-            <h2>Chọn đúng công cụ cho câu hỏi của bạn</h2>
-            <p>Mỗi công cụ trả lời một nhóm câu hỏi khác nhau. Bạn có thể làm lần lượt hoặc chỉ chọn phần đang quan tâm.</p>
-          </div>
+          <SectionHeading eyebrow="Ba công cụ chính" title="Chọn đúng công cụ cho câu hỏi của bạn" description="Mỗi công cụ trả lời một nhóm câu hỏi khác nhau. Bạn có thể làm lần lượt hoặc chỉ chọn phần đang quan tâm." />
           <div className="service-grid">
             {TOOLS.map((tool) => (
               <article key={tool.href}>
@@ -125,11 +113,7 @@ export function LookupHubPage() {
 
       <section className="page-dark-section" id="quy-trinh">
         <div className="container">
-          <div className="page-section-heading">
-            <span>Quy trình bốn bước</span>
-            <h2>Minh bạch từ lúc nhập liệu tới khi chia sẻ</h2>
-            <p>Bạn luôn biết dữ liệu đi tới đâu và kết quả được lưu trong bao lâu.</p>
-          </div>
+          <SectionHeading eyebrow="Quy trình bốn bước" title="Minh bạch từ lúc nhập liệu tới khi chia sẻ" description="Bạn luôn biết dữ liệu đi tới đâu và kết quả được lưu trong bao lâu." />
           <div className="lookup-steps">
             {STEPS.map((step, index) => (
               <div className={index === 0 ? "is-active" : ""} key={step}>
@@ -143,11 +127,7 @@ export function LookupHubPage() {
 
       <section className="page-dark-section">
         <div className="container">
-          <div className="page-section-heading">
-            <span>Miễn phí và nội dung trả phí</span>
-            <h2>Rõ ràng ngay từ đầu</h2>
-            <p>Phần lớn nội dung nền tảng miễn phí. Các gói trả phí chỉ mở sâu hơn phần luận giải và tư vấn cá nhân.</p>
-          </div>
+          <SectionHeading eyebrow="Miễn phí và nội dung trả phí" title="Rõ ràng ngay từ đầu" description="Phần lớn nội dung nền tảng miễn phí. Các gói trả phí chỉ mở sâu hơn phần luận giải và tư vấn cá nhân." />
           <div className="value-grid">
             {POLICIES.map((policy) => {
               const Icon = policy.icon;
@@ -165,11 +145,7 @@ export function LookupHubPage() {
 
       <section className="page-dark-section">
         <div className="container">
-          <div className="page-section-heading">
-            <span>Cần người đồng hành?</span>
-            <h2>Đọc kết quả là bước đầu, hành động mới là đích</h2>
-            <p>Nếu bạn muốn biến các chỉ số thành kế hoạch cụ thể, SGEN có khóa học và buổi tư vấn định hướng phù hợp với từng nhóm tính cách.</p>
-          </div>
+          <SectionHeading eyebrow="Cần người đồng hành?" title="Đọc kết quả là bước đầu, hành động mới là đích" description="Nếu bạn muốn biến các chỉ số thành kế hoạch cụ thể, SGEN có khóa học và buổi tư vấn định hướng phù hợp với từng nhóm tính cách." />
           <div className="value-grid">
             {CTAS.map((cta) => {
               const Icon = cta.icon;
@@ -178,9 +154,9 @@ export function LookupHubPage() {
                   <Icon aria-hidden="true" />
                   <h3>{cta.title}</h3>
                   <p>{cta.text}</p>
-                  <Link className="action-button action-button--outline" to={cta.href}>
+                  <ButtonLink variant="secondary" to={cta.href}>
                     {cta.action}
-                  </Link>
+                  </ButtonLink>
                 </article>
               );
             })}

@@ -40,10 +40,10 @@ export function MissionSection() {
     >
       <div className="container">
         <SectionHeading
+          align="center"
           eyebrow="Sứ mệnh đồng hành"
           title="Đồng hành từ hiểu đến hành"
           description="Biến kiến thức phức tạp thành lộ trình học tập dễ hiểu, có thực hành và có cộng đồng đồng hành lâu dài."
-          icon={Target}
         />
 
         <div className="mission-stages-grid">

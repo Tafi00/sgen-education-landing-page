@@ -29,6 +29,9 @@ import { ConfirmDialog } from "../../components/admin/ConfirmDialog";
 import { FieldShell, TextField } from "../../components/form/Field";
 import { useToast } from "../../components/ui/Toast";
 import { LOOKUP_LABELS } from "../../../shared/lookup-types";
+import { Button } from "../../components/ui/Button";
+import { PageHero } from "../../components/ui/Layout";
+import { Eyebrow } from "../../components/ui/Eyebrow";
 
 const DARK_STYLE = { "--page-dark-bg": "url(/assets/backgrounds/cosmic-dark-clean.webp)" } as CSSProperties;
 const LIGHT_STYLE = { "--page-light-bg": "url(/assets/backgrounds/cosmic-light.webp)" } as CSSProperties;
@@ -122,9 +125,7 @@ export function MemberLoginPage() {
     <section className="login-stage ux-member" style={DARK_STYLE}>
       <div className="container login-grid">
         <div className="login-welcome">
-          <span className="page-kicker">
-            <Orbit aria-hidden="true" /> Khu vực thành viên
-          </span>
+          <Eyebrow variant="pill" icon={Orbit}>Khu vực thành viên</Eyebrow>
           <h1>Tài khoản SGEN</h1>
           <p>
             Đăng nhập để xem lại kết quả tra cứu đã lưu, theo dõi đơn hàng và quản lý quyền truy cập nội dung VIP của bạn.
@@ -185,10 +186,10 @@ export function MemberLoginPage() {
               </p>
             ) : null}
 
-            <button className="button button--primary" type="submit" disabled={submitting}>
+            <Button variant="primary" type="submit" disabled={submitting}>
               {submitting ? <Loader2 className="spin" aria-hidden="true" /> : <UserRound aria-hidden="true" />}
               {submitting ? "Đang đăng nhập…" : "Đăng nhập"}
-            </button>
+            </Button>
           </div>
 
           <footer>
@@ -248,9 +249,7 @@ export function MemberRegisterPage() {
     <section className="login-stage ux-member" style={DARK_STYLE}>
       <div className="container login-grid">
         <div className="login-welcome">
-          <span className="page-kicker">
-            <Orbit aria-hidden="true" /> Tài khoản mới
-          </span>
+          <Eyebrow variant="pill" icon={Orbit}>Tài khoản mới</Eyebrow>
           <h1>Đăng ký thành viên</h1>
           <p>Một tài khoản giúp bạn giữ lại kết quả tra cứu, theo dõi đơn hàng và quản lý quyền truy cập nội dung VIP.</p>
           <div>
@@ -341,10 +340,10 @@ export function MemberRegisterPage() {
               </p>
             ) : null}
 
-            <button className="button button--primary" type="submit" disabled={submitting}>
+            <Button variant="primary" type="submit" disabled={submitting}>
               {submitting ? <Loader2 className="spin" aria-hidden="true" /> : <UserRound aria-hidden="true" />}
               {submitting ? "Đang tạo tài khoản…" : "Tạo tài khoản"}
-            </button>
+            </Button>
           </div>
 
           <footer>
@@ -445,20 +444,13 @@ export function MemberAccountPage() {
 
   return (
     <>
-      <section className="page-hero" style={DARK_STYLE}>
-        <div className="container page-hero__inner">
-          <div className="page-hero__copy">
-            <span className="page-kicker">
-              <UserRound aria-hidden="true" /> Khu vực thành viên
-            </span>
-            <h1>
-              <span className="page-hero__title-line">{member.name}</span>
-              <em className="page-hero__title-line">tài khoản của tôi</em>
-            </h1>
-            <p>{member.email}</p>
-          </div>
-        </div>
-      </section>
+      <PageHero
+        eyebrow="Khu vực thành viên"
+        eyebrowIcon={UserRound}
+        title={member.name}
+        accent="tài khoản của tôi"
+        description={member.email}
+      />
 
       <section className="page-light-section ux-account" style={LIGHT_STYLE}>
         <div className="container">
@@ -478,12 +470,12 @@ export function MemberAccountPage() {
                 </div>
               </div>
               <div className="admin-page__actions">
-                <button className="button button--ghost" type="button" onClick={() => void logout()} disabled={busy}>
+                <Button variant="secondary" type="button" onClick={() => void logout()} disabled={busy}>
                   <LogOut aria-hidden="true" /> Đăng xuất
-                </button>
-                <button className="button button--danger" type="button" onClick={() => setConfirmDelete(true)}>
+                </Button>
+                <Button variant="danger" type="button" onClick={() => setConfirmDelete(true)}>
                   <Trash2 aria-hidden="true" /> Xoá dữ liệu cá nhân
-                </button>
+                </Button>
               </div>
               <p className="admin-hint">
                 <Info aria-hidden="true" /> Xoá dữ liệu cá nhân sẽ gỡ tài khoản, lịch sử tra cứu và quyền truy cập nội dung của bạn.

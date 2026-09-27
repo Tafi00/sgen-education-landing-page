@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Binary, ChevronDown, ChevronUp, Lightbulb, Orbit, Rocket, ShieldCheck, UserRound } from "lucide-react";
+import { ArrowRight, ChevronDown, ChevronUp, Lightbulb, Orbit, Rocket, ShieldCheck, UserRound } from "lucide-react";
 const cosmicDarkClean = "/assets/backgrounds/cosmic-dark-clean.webp";
 const numeralOne = "/assets/illustrations/numeral-1-cosmic.webp";
 const numeralTwo = "/assets/illustrations/numeral-2-cosmic.webp";
@@ -14,7 +14,7 @@ const numeralEleven = "/assets/illustrations/numeral-11-cosmic.webp";
 const numeralTwentyTwo = "/assets/illustrations/numeral-22-cosmic.webp";
 import { Reveal } from "../ui/Reveal";
 import { SectionHeading } from "../ui/SectionHeading";
-import { SparkleButton } from "../ui/GradientButton";
+import { ButtonLink } from "../ui/Button";
 
 const numberData = {
   "1": { title: "Người tiên phong", subtitle: "Độc lập — Sáng tạo", description: "Số 1 đại diện cho tinh thần đổi mới, sự tự tin và khả năng dẫn dắt. Khi phát huy đúng năng lượng, bạn có thể biến ý tưởng thành hành động tích cực.", traits: ["Táo bạo", "Sáng tạo", "Độc lập", "Kiên định"] },
@@ -134,11 +134,10 @@ export function NumbersSection() {
     >
       <div className="container">
         <SectionHeading
+          align="center"
           eyebrow="Khám phá năng lượng con số"
           title="Ý nghĩa các con số trong thần số học Pythagoras"
           description="Hiểu đúng năng lượng từng con số để sống đúng với bản chất và sứ mệnh của bạn."
-          icon={Binary}
-          dark
         />
 
         <Reveal className="number-tabs" direction="none">
@@ -216,7 +215,9 @@ export function NumbersSection() {
                 );
               })}
             </div>
-            <SparkleButton>Xem luận giải chi tiết</SparkleButton>
+            <ButtonLink variant="primary" to="/tra-cuu">
+              Tra cứu bản đồ của bạn <ArrowRight aria-hidden="true" />
+            </ButtonLink>
           </div>
         </Reveal>
       </div>

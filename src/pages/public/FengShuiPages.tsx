@@ -22,6 +22,9 @@ import { IChingToolView } from "../../components/fengshui/IChingToolView";
 import MenhThuApp from "../../vendor/menh-thu/app/MenhThuApp";
 import { getDateProfile, getMonthCalendar, getVietnameseObservances, toDateString } from "../../../shared/menh-thu/metaphysics";
 import { RESULTS_DISCLAIMER } from "../../../shared/lookup-types";
+import { ButtonLink, ButtonRow } from "../../components/ui/Button";
+import { PageHero, ToolHeader } from "../../components/ui/Layout";
+import { SectionHeading } from "../../components/ui/SectionHeading";
 const COURSE_IMAGE = "/assets/programs/program-home-feng-shui-v2.webp";
 
 /** Header của site là `position: fixed` cao 98px, nên section đầu trang công cụ cần chừa thêm khoảng đệm. */
@@ -50,18 +53,10 @@ const TOOL_LINKS: { href: string; title: string; text: string; icon: LucideIcon 
 
 type MethodItem = { icon: LucideIcon; title: string; text: string };
 
-function ToolHero({ kicker, icon: Icon, title, accent, description }: { kicker: string; icon: LucideIcon; title: string; accent: string; description: string }) {
+function ToolHero({ kicker, icon, title, accent, description }: { kicker: string; icon: LucideIcon; title: string; accent: string; description: string }) {
   return (
-    <div className="container lookup-workspace">
-      <header>
-        <span className="page-kicker">
-          <Icon aria-hidden="true" /> {kicker}
-        </span>
-        <h1>
-          {title} <em>{accent}</em>
-        </h1>
-        <p>{description}</p>
-      </header>
+    <div className="container">
+      <ToolHeader eyebrow={kicker} eyebrowIcon={icon} title={title} accent={accent} description={description} />
     </div>
   );
 }
@@ -70,11 +65,7 @@ function MethodSection({ heading, lead, items }: { heading: string; lead: string
   return (
     <section className="page-dark-section">
       <div className="container">
-        <div className="page-section-heading">
-          <span>Phương pháp luận giải</span>
-          <h2>{heading}</h2>
-          <p>{lead}</p>
-        </div>
+        <SectionHeading eyebrow="Phương pháp luận giải" title={heading} description={lead} />
         <div className="value-grid">
           {items.map(({ icon: Icon, title, text }) => (
             <article key={title}>
@@ -93,10 +84,7 @@ function FaqSection({ items }: { items: { question: string; answer: string }[] }
   return (
     <section className="page-dark-section">
       <div className="container">
-        <div className="page-section-heading">
-          <span>Câu hỏi thường gặp</span>
-          <h2>Giải đáp nhanh trước khi tra cứu</h2>
-        </div>
+        <SectionHeading eyebrow="Câu hỏi thường gặp" title="Giải đáp nhanh trước khi tra cứu" />
         <div className="value-grid">
           {items.map((item) => (
             <article key={item.question}>
@@ -115,10 +103,7 @@ function RelatedTools({ current }: { current: string }) {
   return (
     <section className="page-light-section">
       <div className="container">
-        <div className="page-section-heading page-section-heading--light">
-          <span>Đi tiếp</span>
-          <h2>Hai công cụ phong thủy còn lại</h2>
-        </div>
+        <SectionHeading eyebrow="Đi tiếp" title="Hai công cụ phong thủy còn lại" />
         <div className="service-grid">
           {others.map((tool) => (
             <article key={tool.href}>
@@ -186,38 +171,23 @@ function Disclaimer() {
 export function FengShuiHubPage() {
   return (
     <>
-      <section className="page-hero">
-        <div className="container page-hero__inner">
-          <div className="page-hero__copy">
-            <span className="page-kicker">
-              <Compass aria-hidden="true" /> Công cụ phong thủy
-            </span>
-            <h1>
-              Ba công cụ tra cứu <em>phong thủy ứng dụng</em>
-            </h1>
-            <p>
-              SGEN tổng hợp ba công cụ miễn phí: gieo quẻ Kinh Dịch, lập Tứ Trụ Bát Tự và xem ngày theo lịch pháp Việt Nam. Mỗi công cụ trình bày
-              rõ dữ liệu đầu vào, thuật toán đang dùng và phần luận giải để bạn chủ động đối chiếu.
-            </p>
-            <div className="fengshui-hub__actions">
-              <Link className="page-primary" to="/cong-cu-phong-thuy/gieo-que-kinh-dich">
+      <PageHero
+        eyebrow="Công cụ phong thủy"
+        eyebrowIcon={Compass}
+        title="Ba công cụ tra cứu"
+        accent="phong thủy ứng dụng"
+        description="SGEN tổng hợp ba công cụ miễn phí: gieo quẻ Kinh Dịch, lập Tứ Trụ Bát Tự và xem ngày theo lịch pháp Việt Nam. Mỗi công cụ trình bày rõ dữ liệu đầu vào, thuật toán đang dùng và phần luận giải để bạn chủ động đối chiếu."
+        actions={<ButtonRow><ButtonLink variant="primary" to="/cong-cu-phong-thuy/gieo-que-kinh-dich">
                 <Coins aria-hidden="true" /> Gieo quẻ ngay
-              </Link>
-              <Link className="action-button action-button--outline" to="/cong-cu-phong-thuy/xem-ngay">
+              </ButtonLink>
+              <ButtonLink variant="secondary" to="/cong-cu-phong-thuy/xem-ngay">
                 <CalendarCheck aria-hidden="true" /> Xem ngày tốt
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
+              </ButtonLink></ButtonRow>}
+      />
 
       <section className="page-light-section">
         <div className="container">
-          <div className="page-section-heading page-section-heading--light">
-            <span>Ba công cụ</span>
-            <h2>Chọn công cụ theo câu hỏi của bạn</h2>
-            <p>Mỗi công cụ trả lời một nhóm câu hỏi khác nhau và đều chạy trực tiếp trên trình duyệt của bạn.</p>
-          </div>
+          <SectionHeading eyebrow="Ba công cụ" title="Chọn công cụ theo câu hỏi của bạn" description="Mỗi công cụ trả lời một nhóm câu hỏi khác nhau và đều chạy trực tiếp trên trình duyệt của bạn." />
           <div className="service-grid">
             {TOOL_LINKS.map((tool, index) => {
               const Icon = tool.icon;
@@ -267,11 +237,7 @@ export function FengShuiHubPage() {
 
       <section className="page-light-section">
         <div className="container">
-          <div className="page-section-heading page-section-heading--light">
-            <span>Kết hợp thêm</span>
-            <h2>Bổ sung góc nhìn từ sim số và thần số học</h2>
-            <p>Ba công cụ phong thủy chỉ là một phần trong hệ thống tra cứu của SGEN. Bạn có thể kết hợp thêm các lớp phân tích khác.</p>
-          </div>
+          <SectionHeading eyebrow="Kết hợp thêm" title="Bổ sung góc nhìn từ sim số và thần số học" description="Ba công cụ phong thủy chỉ là một phần trong hệ thống tra cứu của SGEN. Bạn có thể kết hợp thêm các lớp phân tích khác." />
           <div className="service-grid">
             <article>
               <h3>Bói sim phong thủy</h3>

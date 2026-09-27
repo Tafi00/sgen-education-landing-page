@@ -1,4 +1,4 @@
-import { ArrowRight, BookOpen, Tag } from "lucide-react";
+import { ArrowRight, Tag } from "lucide-react";
 const cosmicLight = "/assets/backgrounds/cosmic-light.webp";
 import { blogPosts } from "../../data/blog";
 import { Reveal } from "../ui/Reveal";
@@ -15,10 +15,10 @@ export function BlogSection() {
     >
       <div className="container">
         <SectionHeading
+          align="center"
           eyebrow="Blog SGEN Education"
           title="Kiến thức thú vị trong thần số học Pythagoras"
           description="Khám phá, hiểu sâu và ứng dụng Thần số học vào cuộc sống mỗi ngày."
-          icon={BookOpen}
         />
 
         <div className="blog-grid">

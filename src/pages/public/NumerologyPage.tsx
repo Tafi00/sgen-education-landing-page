@@ -24,6 +24,8 @@ import { LookupNavTabs } from "../../components/lookup/LookupNavTabs";
 import { ResultBlocks } from "../../components/lookup/ResultBlocks";
 import { useToast } from "../../components/ui/Toast";
 import type { LookupResultPayload } from "../../../shared/lookup-types";
+import { Button, ButtonAnchor } from "../../components/ui/Button";
+import { ToolHeader } from "../../components/ui/Layout";
 
 const cosmicDarkClean = "/assets/backgrounds/cosmic-dark-clean.webp";
 
@@ -222,17 +224,13 @@ export function NumerologyPage() {
       <div className="container numerology-hero-container">
         <LookupNavTabs activeKey="numerology" />
 
-        <header className="numerology-header">
-          <span className="page-kicker">
-            <Hash aria-hidden="true" /> Tra cứu Thần số học Pythagoras
-          </span>
-          <h1>
-            Giải mã <em>bản đồ số học cuộc đời</em>
-          </h1>
-          <p className="numerology-header__desc">
-            Khám phá 20 chỉ số định hướng, 4 đỉnh cao cuộc đời và tiềm năng tiềm ẩn từ họ tên và ngày sinh theo hệ
-            Pythagoras chuẩn hóa.
-          </p>
+        <ToolHeader
+          eyebrow="Tra cứu Thần số học Pythagoras"
+          eyebrowIcon={Hash}
+          title="Giải mã"
+          accent="bản đồ số học cuộc đời"
+          description="Khám phá 20 chỉ số định hướng, 4 đỉnh cao cuộc đời và tiềm năng tiềm ẩn từ họ tên và ngày sinh theo hệ Pythagoras chuẩn hóa."
+        >
           <div className="lookup-steps">
             {STEPS.map((step, index) => (
               <div className={index === activeStep ? "is-active" : ""} key={step}>
@@ -241,7 +239,7 @@ export function NumerologyPage() {
               </div>
             ))}
           </div>
-        </header>
+        </ToolHeader>
 
         {/* Khối Form Tra Cứu trung tâm cân đối */}
         <div className="lookup-form-center-wrap">
@@ -355,25 +353,25 @@ export function NumerologyPage() {
                 payload={payload}
                 actions={
                   <>
-                    <button
+                    <Button
                       type="button"
-                      className="action-button action-button--gradient"
+                      variant="primary"
                       onClick={() => void saveResult()}
                     >
                       <Share2 aria-hidden="true" /> Lưu kết quả
-                    </button>
+                    </Button>
                     {reportRef ? (
-                      <a
-                        className="action-button"
+                      <ButtonAnchor
+                        variant="secondary"
                         href={`/api/lookups/${reportRef.id}/pdf?token=${encodeURIComponent(reportRef.token)}`}
                         download
                       >
                         <Download aria-hidden="true" /> Tải PDF
-                      </a>
+                      </ButtonAnchor>
                     ) : null}
-                    <button type="button" className="action-button" onClick={() => window.print()}>
+                    <Button variant="secondary" onClick={() => window.print()}>
                       <Printer aria-hidden="true" /> In báo cáo
-                    </button>
+                    </Button>
                   </>
                 }
               />

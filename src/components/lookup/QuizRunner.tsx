@@ -5,6 +5,7 @@ import { useToast } from "../ui/Toast";
 import { ResultBlocks } from "./ResultBlocks";
 import type { LookupResultPayload } from "../../../shared/lookup-types";
 import type { QuizPublicSet } from "../../../shared/quiz/types";
+import { Button } from "../ui/Button";
 
 const PAGE_SIZE = 5;
 
@@ -174,9 +175,9 @@ export function QuizRunner({ quizKey, title, description }: QuizRunnerProps) {
           <h2>Chưa tải được đề trắc nghiệm</h2>
           <p>{loadError || "Bộ câu hỏi chưa sẵn sàng."}</p>
           <p>Đề được quản lý trong cơ sở dữ liệu nên cần được nhập (seed) hoặc xuất bản trước khi làm bài.</p>
-          <button type="button" className="action-button action-button--gradient" onClick={() => void loadQuiz()}>
+          <Button variant="primary" onClick={() => void loadQuiz()}>
             <RotateCcw aria-hidden="true" /> Thử lại
-          </button>
+          </Button>
         </div>
       </div>
     );
@@ -196,9 +197,9 @@ export function QuizRunner({ quizKey, title, description }: QuizRunnerProps) {
           </div>
         ) : null}
         <div style={{ display: "flex", flexWrap: "wrap", gap: 12, marginTop: 20 }}>
-          <button type="button" className="action-button action-button--outline" onClick={restart}>
+          <Button variant="secondary" onClick={restart}>
             <RotateCcw aria-hidden="true" /> Làm lại
-          </button>
+          </Button>
         </div>
       </div>
     );
@@ -288,22 +289,22 @@ export function QuizRunner({ quizKey, title, description }: QuizRunnerProps) {
       </div>
 
       <div className="quiz-actions">
-        <button
+        <Button
           type="button"
-          className="action-button action-button--outline"
+          variant="secondary"
           disabled={currentPage === 0}
           onClick={() => setPageIndex((prev) => Math.max(0, prev - 1))}
         >
           Bước trước
-        </button>
+        </Button>
         {currentPage < totalPages - 1 ? (
-          <button type="button" className="action-button action-button--gradient" onClick={goNext}>
+          <Button variant="primary" onClick={goNext}>
             Tiếp tục
-          </button>
+          </Button>
         ) : (
-          <button type="button" className="action-button action-button--gradient" disabled={submitting} onClick={() => void submit()}>
+          <Button variant="primary" disabled={submitting} onClick={() => void submit()}>
             {submitting ? "Đang chấm điểm…" : "Xem kết quả"}
-          </button>
+          </Button>
         )}
       </div>
 

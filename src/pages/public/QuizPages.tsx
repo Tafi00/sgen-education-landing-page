@@ -2,6 +2,9 @@ import { Link } from "react-router-dom";
 import { Brain, GraduationCap, ListChecks, MessageSquareText, Route, ShieldCheck } from "lucide-react";
 import { QuizRunner } from "../../components/lookup/QuizRunner";
 import { LookupNavTabs } from "../../components/lookup/LookupNavTabs";
+import { ButtonLink } from "../../components/ui/Button";
+import { ToolHeader } from "../../components/ui/Layout";
+import { SectionHeading } from "../../components/ui/SectionHeading";
 
 const cosmicDarkClean = "/assets/backgrounds/cosmic-dark-clean.webp";
 
@@ -36,19 +39,12 @@ function QuizPage({ config }: { config: QuizPageConfig }) {
       <div className="container numerology-hero-container">
         <LookupNavTabs activeKey={config.quizKey} />
 
-        <header className="numerology-header">
-          <span className="page-kicker">
-            <Brain aria-hidden="true" /> {config.kicker}
-          </span>
-          <h1>
-            {config.title} <em>{config.accent}</em>
-          </h1>
-          <p className="numerology-header__desc">{config.lead}</p>
-          <p style={{ margin: "0 auto", fontSize: ".82rem", color: "rgba(255,255,255,.68)", maxWidth: 700 }}>
-            <ShieldCheck aria-hidden="true" style={{ width: 16, verticalAlign: "-2px", marginRight: 6, color: "#38e19e" }} />
+        <ToolHeader eyebrow={config.kicker} eyebrowIcon={Brain} title={config.title} accent={config.accent} description={config.lead}>
+          <p className="tool-header__note">
+            <ShieldCheck aria-hidden="true" />
             Bài trắc nghiệm tham chiếu khung {config.quizKey === "disc" ? "DISC" : "MBTI"}, không phải công cụ chẩn đoán tâm lý hay đánh giá năng lực.
           </p>
-        </header>
+        </ToolHeader>
 
         <div className="lookup-workspace" style={{ marginTop: 28 }}>
           <QuizRunner quizKey={config.quizKey} title={config.runnerTitle} description={config.runnerDescription} />
@@ -57,11 +53,7 @@ function QuizPage({ config }: { config: QuizPageConfig }) {
 
       <section className="page-light-section">
         <div className="container">
-          <div className="page-section-heading page-section-heading--light">
-            <span>Phương pháp &amp; lưu ý</span>
-            <h2>Phương pháp và giới hạn cần biết</h2>
-            <p>Bài trắc nghiệm dùng khung tham chiếu quốc tế đã được Việt hoá, không hứa hẹn kết quả cố định và không thay thế đánh giá chuyên môn.</p>
-          </div>
+          <SectionHeading eyebrow="Phương pháp &amp; lưu ý" title="Phương pháp và giới hạn cần biết" description="Bài trắc nghiệm dùng khung tham chiếu quốc tế đã được Việt hoá, không hứa hẹn kết quả cố định và không thay thế đánh giá chuyên môn." />
 
           <div className="process-card">
             <h2>{config.groupsTitle}</h2>
@@ -86,15 +78,15 @@ function QuizPage({ config }: { config: QuizPageConfig }) {
           </div>
 
           <div style={{ display: "flex", flexWrap: "wrap", gap: 12, marginTop: 28 }}>
-            <Link className="page-primary" to="/khoa-hoc">
+            <ButtonLink variant="primary" to="/khoa-hoc">
               <GraduationCap aria-hidden="true" /> Xem khóa học liên quan
-            </Link>
-            <Link className="action-button action-button--outline" to="/lien-he">
+            </ButtonLink>
+            <ButtonLink variant="secondary" to="/lien-he">
               <MessageSquareText aria-hidden="true" /> Đặt tư vấn 1:1
-            </Link>
-            <Link className="action-button action-button--outline" to="/tra-cuu">
+            </ButtonLink>
+            <ButtonLink variant="secondary" to="/tra-cuu">
               <Route aria-hidden="true" /> Về trang tra cứu
-            </Link>
+            </ButtonLink>
           </div>
         </div>
       </section>

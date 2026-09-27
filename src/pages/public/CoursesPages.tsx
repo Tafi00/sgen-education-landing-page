@@ -38,6 +38,10 @@ import { COURSE_CATEGORY_NAMES, type DefaultCourse } from "../../data/defaults/t
 import { BlockRenderer } from "../../components/content/BlockRenderer";
 import { FieldShell, TextareaField, TextField } from "../../components/form/Field";
 import { useToast } from "../../components/ui/Toast";
+import { Button, ButtonAnchor, ButtonLink, ButtonRow } from "../../components/ui/Button";
+import { Pagination } from "../../components/ui/Pagination";
+import { PageHero } from "../../components/ui/Layout";
+import { SectionHeading } from "../../components/ui/SectionHeading";
 
 const LEVELS = ["Nền tảng", "Chuyên đề", "Ứng dụng", "Chuyên sâu"];
 const PAGE_SIZE = 12;
@@ -172,12 +176,12 @@ function CourseFilterPopover({
             </label>
           </div>
           <footer>
-            <button type="button" className="button button--ghost" onClick={onClear}>
+            <Button variant="secondary" onClick={onClear}>
               Xoá bộ lọc
-            </button>
-            <button type="button" className="button button--primary" onClick={() => setOpen(false)}>
+            </Button>
+            <Button variant="primary" onClick={() => setOpen(false)}>
               Xong
-            </button>
+            </Button>
           </footer>
         </div>
       ) : null}
@@ -200,9 +204,9 @@ function CourseCard({ course }: { course: DefaultCourse }) {
         </h3>
         <p className="course-card__summary">{course.summary}</p>
         <p className="course-card__meta">{[durationLabel(course), priceLabel(course.price)].filter(Boolean).join(" · ")}</p>
-        <Link className="button button--ghost course-card__cta" to={`/khoa-hoc/${course.slug}`}>
+        <ButtonLink variant="soft" size="sm" block className="course-card__cta" to={`/khoa-hoc/${course.slug}`}>
           Xem chi tiết <ArrowRight aria-hidden="true" />
-        </Link>
+        </ButtonLink>
       </div>
     </article>
   );
@@ -258,27 +262,18 @@ export function CoursesListPage() {
 
   return (
     <>
-      <section className="page-hero catalog-hero catalog-hero--courses" style={{ "--page-dark-bg": "url(/assets/backgrounds/cosmic-dark-clean.webp)" } as CSSProperties}>
-        <div className="container page-hero__inner">
-          <div className="page-hero__copy">
-            <span className="page-kicker">
-              <GraduationCap aria-hidden="true" /> Khóa học SGEN
-            </span>
-            <h1>
-              <span className="page-hero__title-line">11 khóa học</span>
-              <em className="page-hero__title-line">từ nền tảng đến ứng dụng</em>
-            </h1>
-            <p>
-              Khám phá Thần số học, Sinh trắc vân tay, Kinh Dịch, Tứ trụ và các chuyên đề phong thủy. Chọn lĩnh vực bạn muốn học để xem nội dung từng khóa.
-            </p>
-            <a className="page-primary" href="#danh-sach-khoa-hoc">Xem danh sách khóa học <ArrowRight aria-hidden="true" /></a>
-          </div>
-        </div>
-      </section>
+      <PageHero
+        eyebrow="Khóa học SGEN"
+        eyebrowIcon={GraduationCap}
+        title="11 khóa học"
+        accent="từ nền tảng đến ứng dụng"
+        description="Khám phá Thần số học, Sinh trắc vân tay, Kinh Dịch, Tứ trụ và các chuyên đề phong thủy. Chọn lĩnh vực bạn muốn học để xem nội dung từng khóa."
+        actions={<ButtonRow><ButtonAnchor variant="primary" href="#danh-sach-khoa-hoc">Xem danh sách khóa học <ArrowRight aria-hidden="true" /></ButtonAnchor></ButtonRow>}
+      />
 
       <section className="page-light-section ux-course-list catalog-content" id="danh-sach-khoa-hoc" style={{ "--page-light-bg": "none" } as CSSProperties}>
         <div className="container">
-          <div className="catalog-content__heading"><span>Danh mục đào tạo</span><h2>Chọn khóa học phù hợp</h2><p>Toàn bộ 11 chuyên đề theo đúng danh mục đào tạo của SGEN.</p></div>
+          <SectionHeading eyebrow="Danh mục đào tạo" title="Chọn khóa học phù hợp" description="Toàn bộ 11 chuyên đề theo đúng danh mục đào tạo của SGEN." />
           <form
             className="course-toolbar"
             role="search"
@@ -345,45 +340,18 @@ export function CoursesListPage() {
                   : "Danh sách khóa học đang được cập nhật. Vui lòng quay lại sau hoặc liên hệ SGEN để được tư vấn."}
               </p>
               {hasFilters ? (
-                <button type="button" className="button button--primary" onClick={() => setParams(new URLSearchParams())}>
+                <Button variant="primary" onClick={() => setParams(new URLSearchParams())}>
                   Xoá toàn bộ bộ lọc
-                </button>
+                </Button>
               ) : (
-                <Link className="page-primary" to="/lien-he">
+                <ButtonLink variant="primary" to="/lien-he">
                   Liên hệ tư vấn <ArrowRight aria-hidden="true" />
-                </Link>
+                </ButtonLink>
               )}
             </div>
           )}
 
-          {totalPages > 1 ? (
-            <div className="category-row" role="navigation" aria-label="Phân trang khóa học">
-              <button type="button" className="button button--ghost" disabled={page <= 1} onClick={() => update({ page: page - 1 })}>
-                Trước
-              </button>
-              {Array.from({ length: totalPages }, (_, index) => index + 1)
-                .filter((number) => number === 1 || number === totalPages || Math.abs(number - page) <= 1)
-                .map((number) => (
-                <button
-                  type="button"
-                  key={number}
-                  className={`button ${number === page ? "button--primary" : "button--ghost"}`}
-                  aria-current={number === page ? "page" : undefined}
-                  onClick={() => update({ page: number })}
-                >
-                  {number}
-                </button>
-              ))}
-              <button
-                type="button"
-                className="button button--ghost"
-                disabled={page >= totalPages}
-                onClick={() => update({ page: page + 1 })}
-              >
-                Sau
-              </button>
-            </div>
-          ) : null}
+          <Pagination page={page} totalPages={totalPages} onChange={(next) => update({ page: next })} label="Phân trang khóa học" />
         </div>
       </section>
     </>
@@ -473,9 +441,9 @@ export function CourseDetailPage() {
           <AlertTriangle aria-hidden="true" />
           <h2>Không tìm thấy khóa học</h2>
           <p>Đường dẫn có thể đã thay đổi sau khi SGEN cập nhật danh mục. Bạn xem lại toàn bộ danh sách khóa học để chọn lớp phù hợp.</p>
-          <Link className="page-primary" to="/khoa-hoc">
+          <ButtonLink variant="primary" to="/khoa-hoc">
             <ArrowLeft aria-hidden="true" /> Về danh sách khóa học
-          </Link>
+          </ButtonLink>
         </div>
       </section>
     );
@@ -558,39 +526,34 @@ export function CourseDetailPage() {
 
   return (
     <>
-      <section
+      <PageHero
         ref={heroRef}
-        className="page-hero catalog-hero catalog-hero--course-detail"
-        style={{ "--page-dark-bg": "url(/assets/backgrounds/cosmic-dark-clean.webp)" } as CSSProperties}
+        eyebrow={`${categoryName(course.categorySlug)} · ${course.level}`}
+        eyebrowIcon={Orbit}
+        title={course.title}
+        description={course.summary}
+        before={
+          <Link className="article-back" to="/khoa-hoc">
+            <ArrowLeft aria-hidden="true" /> Tất cả khóa học
+          </Link>
+        }
+        actions={
+          <ButtonAnchor variant="primary" href="#dang-ky">
+            Đăng ký tư vấn <ArrowRight aria-hidden="true" />
+          </ButtonAnchor>
+        }
       >
-        <div className="container page-hero__inner">
-          <div className="page-hero__copy">
-            <Link className="article-back" to="/khoa-hoc">
-              <ArrowLeft aria-hidden="true" /> Tất cả khóa học
-            </Link>
-            <span className="page-kicker">
-              <Orbit aria-hidden="true" /> {categoryName(course.categorySlug)} · {course.level}
-            </span>
-            <h1>
-              <span className="page-hero__title-line">{course.title}</span>
-            </h1>
-            <p>{course.summary}</p>
-            {quickFacts.length ? (
-              <div className="detail-meta">
-                {quickFacts.map((fact, index) => (
-                  <span key={`${fact.label}-${index}`}>
-                    {fact.icon}
-                    {fact.label}
-                  </span>
-                ))}
-              </div>
-            ) : null}
-            <a className="page-primary" href="#dang-ky">
-              Đăng ký tư vấn <ArrowRight aria-hidden="true" />
-            </a>
+        {quickFacts.length ? (
+          <div className="detail-meta">
+            {quickFacts.map((fact, index) => (
+              <span key={`${fact.label}-${index}`}>
+                {fact.icon}
+                {fact.label}
+              </span>
+            ))}
           </div>
-        </div>
-      </section>
+        ) : null}
+      </PageHero>
 
       <section
         className="page-light-section ux-course-detail"
@@ -605,37 +568,37 @@ export function CourseDetailPage() {
                   <small>{durationLabel(course) || course.mode}</small>
                 </span>
                 <div className="detail-sticky__row">
-                  <button type="button" className="button button--primary detail-sticky__cta" onClick={scrollToForm}>
+                  <Button variant="primary" className="detail-sticky__cta" onClick={scrollToForm}>
                     <GraduationCap aria-hidden="true" /> Đăng ký tư vấn
-                  </button>
+                  </Button>
                   {hotline ? (
-                    <a className="button button--ghost detail-sticky__icon" href={hotlineHref} aria-label={`Gọi hotline ${hotline}`}>
+                    <ButtonAnchor variant="secondary" size="icon" className="detail-sticky__icon" href={hotlineHref} aria-label={`Gọi hotline ${hotline}`}>
                       <Phone aria-hidden="true" />
-                    </a>
+                    </ButtonAnchor>
                   ) : null}
-                  <button
+                  <Button
                     type="button"
-                    className="button button--ghost detail-sticky__icon"
+                    variant="secondary" size="icon" className="detail-sticky__icon"
                     onClick={copyLink}
                     aria-label="Sao chép liên kết để chia sẻ khóa học"
                   >
                     <Copy aria-hidden="true" />
-                  </button>
+                  </Button>
                 </div>
               </>
             ) : (
               <div className="detail-share">
-                <button type="button" className="button button--primary" onClick={scrollToForm}>
+                <Button variant="primary" onClick={scrollToForm}>
                   <GraduationCap aria-hidden="true" /> Đăng ký tư vấn
-                </button>
+                </Button>
                 {hotline ? (
-                  <a className="button button--ghost" href={hotlineHref}>
+                  <ButtonAnchor variant="secondary" href={hotlineHref}>
                     <Phone aria-hidden="true" /> {hotline}
-                  </a>
+                  </ButtonAnchor>
                 ) : null}
-                <button type="button" className="button button--ghost" onClick={copyLink}>
+                <Button variant="secondary" onClick={copyLink}>
                   <Copy aria-hidden="true" /> Sao chép liên kết
-                </button>
+                </Button>
               </div>
             )}
           </div>
@@ -673,10 +636,7 @@ export function CourseDetailPage() {
         style={{ "--page-light-bg": "url(/assets/backgrounds/cosmic-light.webp)" } as CSSProperties}
       >
         <div className="container">
-          <header className="page-section-heading page-section-heading--light">
-            <span>Đề cương</span>
-            <h2>Nội dung chương trình</h2>
-          </header>
+          <SectionHeading eyebrow="Đề cương" title="Nội dung chương trình" />
           <div className="article-list">
             {course.syllabus.map((item, index) => (
               <article key={`${item.title}-${index}`}>
@@ -689,10 +649,7 @@ export function CourseDetailPage() {
             ))}
           </div>
 
-          <header className="page-section-heading page-section-heading--light">
-            <span>Kết quả</span>
-            <h2>Sau khóa học bạn nhận được gì</h2>
-          </header>
+          <SectionHeading eyebrow="Kết quả" title="Sau khóa học bạn nhận được gì" />
           <div className="article-list">
             {course.outcomes.map((outcome, index) => (
               <article key={`${outcome}-${index}`}>
@@ -704,10 +661,7 @@ export function CourseDetailPage() {
             ))}
           </div>
 
-          <header className="page-section-heading page-section-heading--light">
-            <span>Đối tượng</span>
-            <h2>Khóa học phù hợp với ai</h2>
-          </header>
+          <SectionHeading eyebrow="Đối tượng" title="Khóa học phù hợp với ai" />
           <div className="article-list">
             {course.forWhom.map((audience, index) => (
               <article key={`${audience}-${index}`}>
@@ -721,10 +675,7 @@ export function CourseDetailPage() {
 
           {course.faqs.length ? (
             <>
-              <header className="page-section-heading page-section-heading--light">
-                <span>Giải đáp</span>
-                <h2>Câu hỏi thường gặp</h2>
-              </header>
+              <SectionHeading eyebrow="Giải đáp" title="Câu hỏi thường gặp" />
               <div className="article-list">
                 {course.faqs.map((faq, index) => (
                   <article key={`${faq.question}-${index}`}>
@@ -741,11 +692,7 @@ export function CourseDetailPage() {
 
           {related.length ? (
             <>
-              <header className="page-section-heading page-section-heading--light">
-                <span>Cùng nhóm</span>
-                <h2>Khóa học cùng nhóm</h2>
-                <p>Những chuyên đề cùng nhóm {categoryName(course.categorySlug)} bạn có thể học tiếp.</p>
-              </header>
+              <SectionHeading eyebrow="Cùng nhóm" title="Khóa học cùng nhóm" description={<>Những chuyên đề cùng nhóm {categoryName(course.categorySlug)} bạn có thể học tiếp.</>} />
               <div className="course-grid">
                 {related.map((item) => (
                   <CourseCard course={item} key={item.slug} />
@@ -761,11 +708,7 @@ export function CourseDetailPage() {
         style={{ "--page-light-bg": "url(/assets/backgrounds/cosmic-light.webp)" } as CSSProperties}
       >
         <div className="container" id="dang-ky">
-          <header className="page-section-heading page-section-heading--light">
-            <span>Đăng ký</span>
-            <h2>Nhận tư vấn lộ trình học</h2>
-            <p>Để lại thông tin, đội ngũ SGEN sẽ liên hệ xác nhận lịch học và học phí trong giờ làm việc.</p>
-          </header>
+          <SectionHeading eyebrow="Đăng ký" title="Nhận tư vấn lộ trình học" description="Để lại thông tin, đội ngũ SGEN sẽ liên hệ xác nhận lịch học và học phí trong giờ làm việc." />
 
           <div className="lookup-workspace__grid">
             <form className="admin-card" onSubmit={submit}>
@@ -828,10 +771,10 @@ export function CourseDetailPage() {
                   </p>
                 ) : null}
 
-                <button className="button button--primary" type="submit" disabled={submitting}>
+                <Button variant="primary" type="submit" disabled={submitting}>
                   {submitting ? <Loader2 className="spin" aria-hidden="true" /> : <Send aria-hidden="true" />}
                   {submitting ? "Đang gửi…" : "Gửi đăng ký"}
-                </button>
+                </Button>
 
                 <p className="admin-hint">
                   <ShieldCheck aria-hidden="true" /> Thông tin chỉ dùng cho mục đích tư vấn, không chia sẻ cho bên thứ ba.
@@ -848,12 +791,12 @@ export function CourseDetailPage() {
                   <Info aria-hidden="true" /> Nếu cần trao đổi nhanh, bạn gọi hotline hoặc gửi email, SGEN phản hồi trong giờ làm việc.
                 </p>
                 <div className="admin-page__actions">
-                  <Link className="button button--ghost" to="/lien-he">
+                  <ButtonLink variant="secondary" to="/lien-he">
                     Trang liên hệ <ArrowRight aria-hidden="true" />
-                  </Link>
-                  <Link className="button button--ghost" to="/khoa-hoc">
+                  </ButtonLink>
+                  <ButtonLink variant="secondary" to="/khoa-hoc">
                     Xem khóa học khác
-                  </Link>
+                  </ButtonLink>
                 </div>
               </div>
             </aside>

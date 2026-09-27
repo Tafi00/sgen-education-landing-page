@@ -14,6 +14,9 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import SimPhongThuyView from "../../components/fengshui/SimPhongThuyView";
+import { ButtonLink, ButtonRow } from "../../components/ui/Button";
+import { PageHero } from "../../components/ui/Layout";
+import { SectionHeading } from "../../components/ui/SectionHeading";
 
 const LAYERS: { icon: LucideIcon; title: string; text: string }[] = [
   {
@@ -69,38 +72,23 @@ const APPROACHES = [
 export function SimIntroPage() {
   return (
     <>
-      <section className="page-hero">
-        <div className="container page-hero__inner">
-          <div className="page-hero__copy">
-            <span className="page-kicker">
-              <Phone aria-hidden="true" /> Phong thủy sim số điện thoại
-            </span>
-            <h1>
-              Luận sim theo <em>năm lớp phân tích</em>
-            </h1>
-            <p>
-              Thay vì chỉ tra cặp số đẹp, công cụ của SGEN chạy đồng thời năm lớp: quẻ Kinh Dịch, ngũ hành dãy số, âm dương, quan niệm dân gian và đối
-              chiếu bản mệnh. Mỗi lớp được báo cáo riêng để bạn thấy dãy số mạnh yếu ở đâu.
-            </p>
-            <div className="page-hero__actions">
-              <Link className="page-primary" to="/sim-phong-thuy/boi-sim">
+      <PageHero
+        eyebrow="Phong thủy sim số điện thoại"
+        eyebrowIcon={Phone}
+        title="Luận sim theo"
+        accent="năm lớp phân tích"
+        description="Thay vì chỉ tra cặp số đẹp, công cụ của SGEN chạy đồng thời năm lớp: quẻ Kinh Dịch, ngũ hành dãy số, âm dương, quan niệm dân gian và đối chiếu bản mệnh. Mỗi lớp được báo cáo riêng để bạn thấy dãy số mạnh yếu ở đâu."
+        actions={<ButtonRow><ButtonLink variant="primary" to="/sim-phong-thuy/boi-sim">
                 <Phone aria-hidden="true" /> Bói sim ngay
-              </Link>
-              <Link className="action-button action-button--outline" to="/khoa-hoc">
+              </ButtonLink>
+              <ButtonLink variant="secondary" to="/khoa-hoc">
                 <GraduationCap aria-hidden="true" /> Học cách luận sim
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
+              </ButtonLink></ButtonRow>}
+      />
 
       <section className="page-light-section">
         <div className="container">
-          <div className="page-section-heading page-section-heading--light">
-            <span>Năm lớp phân tích</span>
-            <h2>Một dãy số, năm góc nhìn độc lập</h2>
-            <p>Mỗi lớp có quy tắc riêng và được chấm điểm riêng, sau đó mới tổng hợp thành điểm chung của dãy số.</p>
-          </div>
+          <SectionHeading eyebrow="Năm lớp phân tích" title="Một dãy số, năm góc nhìn độc lập" description="Mỗi lớp có quy tắc riêng và được chấm điểm riêng, sau đó mới tổng hợp thành điểm chung của dãy số." />
           <div className="service-grid">
             {LAYERS.map((layer, index) => {
               const Icon = layer.icon;
@@ -119,11 +107,7 @@ export function SimIntroPage() {
 
       <section className="page-dark-section">
         <div className="container">
-          <div className="page-section-heading">
-            <span>So sánh cách luận</span>
-            <h2>Các cách luận sim phổ biến và điểm khác biệt</h2>
-            <p>Không có cách nào là chân lý tuyệt đối. Bảng dưới đây nêu ưu điểm và giới hạn để bạn chọn cách đọc phù hợp nhu cầu.</p>
-          </div>
+          <SectionHeading eyebrow="So sánh cách luận" title="Các cách luận sim phổ biến và điểm khác biệt" description="Không có cách nào là chân lý tuyệt đối. Bảng dưới đây nêu ưu điểm và giới hạn để bạn chọn cách đọc phù hợp nhu cầu." />
           <div className="value-grid">
             {APPROACHES.map((approach) => {
               const Icon = approach.icon;
@@ -157,10 +141,7 @@ export function SimIntroPage() {
 
       <section className="page-light-section">
         <div className="container">
-          <div className="page-section-heading page-section-heading--light">
-            <span>Nên làm gì tiếp</span>
-            <h2>Từ điểm số tới hành động cụ thể</h2>
-          </div>
+          <SectionHeading eyebrow="Nên làm gì tiếp" title="Từ điểm số tới hành động cụ thể" />
           <div className="service-grid">
             <article>
               <h3>Bói sim miễn phí</h3>

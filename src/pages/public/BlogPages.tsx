@@ -34,6 +34,11 @@ import { usePost, usePosts, useSiteSettings } from "../../api/hooks";
 import { useToast } from "../../components/ui/Toast";
 import { POST_CATEGORY_NAMES } from "../../data/defaults/types";
 import type { DefaultPost } from "../../data/defaults/types";
+import { Button, ButtonAnchor, ButtonLink, ButtonRow } from "../../components/ui/Button";
+import { Pagination } from "../../components/ui/Pagination";
+import { PageHero } from "../../components/ui/Layout";
+import { Eyebrow } from "../../components/ui/Eyebrow";
+import { SectionHeading } from "../../components/ui/SectionHeading";
 
 const PAGE_SIZE = 9;
 const DARK_STYLE = { "--page-dark-bg": "url(/assets/backgrounds/cosmic-dark-clean.webp)" } as CSSProperties;
@@ -77,9 +82,9 @@ function ArticleCard({ post }: { post: DefaultPost }) {
             ))}
           </div>
         ) : null}
-        <Link className="button button--ghost" to={`/blog/${post.slug}`}>
+        <ButtonLink variant="soft" size="sm" to={`/blog/${post.slug}`}>
           Đọc tiếp <ArrowRight aria-hidden="true" />
-        </Link>
+        </ButtonLink>
       </div>
     </article>
   );
@@ -152,27 +157,18 @@ export function BlogListPage() {
 
   return (
     <>
-      <section className="page-hero catalog-hero catalog-hero--blog" style={DARK_STYLE}>
-        <div className="container page-hero__inner">
-          <div className="page-hero__copy">
-            <span className="page-kicker">
-              <Orbit aria-hidden="true" /> Blog SGEN
-            </span>
-            <h1>
-              <span className="page-hero__title-line">Blog kiến thức</span>
-              <em className="page-hero__title-line">và ứng dụng</em>
-            </h1>
-            <p>
-              Bài viết về Thần số học, ứng dụng thực tiễn, mối quan hệ và phong thủy — viết cho người muốn hiểu nguyên lý trước khi kết luận.
-            </p>
-            <div className="page-hero__actions"><a className="page-primary" href="#danh-sach-bai-viet">Đọc bài viết <ArrowRight aria-hidden="true" /></a><Link className="action-button action-button--outline" to="/blog/kien-thuc">Thư viện theo chuyên mục</Link></div>
-          </div>
-        </div>
-      </section>
+      <PageHero
+        eyebrow="Blog SGEN"
+        eyebrowIcon={Orbit}
+        title="Blog kiến thức"
+        accent="và ứng dụng"
+        description="Bài viết về Thần số học, ứng dụng thực tiễn, mối quan hệ và phong thủy — viết cho người muốn hiểu nguyên lý trước khi kết luận."
+        actions={<ButtonRow><ButtonAnchor variant="primary" href="#danh-sach-bai-viet">Đọc bài viết <ArrowRight aria-hidden="true" /></ButtonAnchor><ButtonLink variant="secondary" to="/blog/kien-thuc">Thư viện theo chuyên mục</ButtonLink></ButtonRow>}
+      />
 
       <section className="page-light-section ux-blog-list catalog-content" id="danh-sach-bai-viet" style={{ "--page-light-bg": "none" } as CSSProperties}>
         <div className="container">
-          <div className="catalog-content__heading"><span>Bài viết SGEN</span><h2>Tìm chủ đề bạn quan tâm</h2><p>Lọc theo chuyên mục hoặc tìm một vấn đề cụ thể.</p></div>
+          <SectionHeading eyebrow="Bài viết SGEN" title="Tìm chủ đề bạn quan tâm" description="Lọc theo chuyên mục hoặc tìm một vấn đề cụ thể." />
           <form
             className="blog-toolbar"
             role="search"
@@ -228,40 +224,18 @@ export function BlogListPage() {
                   : "Nội dung đang được biên tập. Bạn có thể xem thư viện kiến thức hoặc quay lại sau."}
               </p>
               {hasFilters ? (
-                <button type="button" className="button button--primary" onClick={() => setParams(new URLSearchParams())}>
+                <Button variant="primary" onClick={() => setParams(new URLSearchParams())}>
                   Xoá bộ lọc
-                </button>
+                </Button>
               ) : (
-                <Link className="page-primary" to="/blog/kien-thuc">
+                <ButtonLink variant="primary" to="/blog/kien-thuc">
                   Thư viện kiến thức <ArrowRight aria-hidden="true" />
-                </Link>
+                </ButtonLink>
               )}
             </div>
           )}
 
-          {totalPages > 1 ? (
-            <div className="category-row blog-pagination" role="navigation" aria-label="Phân trang bài viết">
-              <button type="button" className="button button--ghost" disabled={page <= 1} onClick={() => update({ page: page - 1 })}>
-                Trước
-              </button>
-              {Array.from({ length: totalPages }, (_, index) => index + 1)
-                .filter((number) => number === 1 || number === totalPages || Math.abs(number - page) <= 1)
-                .map((number) => (
-                  <button
-                    type="button"
-                    key={number}
-                    className={`button ${number === page ? "button--primary" : "button--ghost"}`}
-                    aria-current={number === page ? "page" : undefined}
-                    onClick={() => update({ page: number })}
-                  >
-                    {number}
-                  </button>
-                ))}
-              <button type="button" className="button button--ghost" disabled={page >= totalPages} onClick={() => update({ page: page + 1 })}>
-                Sau
-              </button>
-            </div>
-          ) : null}
+          <Pagination page={page} totalPages={totalPages} onChange={(next) => update({ page: next })} label="Phân trang bài viết" />
         </div>
       </section>
     </>
@@ -322,23 +296,16 @@ export function BlogCategoryPage() {
 
   return (
     <>
-      <section className="page-hero catalog-hero catalog-hero--blog-library" style={DARK_STYLE}>
-        <div className="container page-hero__inner">
-          <div className="page-hero__copy">
-            <span className="page-kicker">
-              <Library aria-hidden="true" /> Thư viện kiến thức
-            </span>
-            <h1>
-              <span className="page-hero__title-line">Toàn bộ bài viết</span>
-              <em className="page-hero__title-line">theo chuyên mục</em>
-            </h1>
-            <p>Bốn chuyên mục xếp theo mạch từ nền tảng tới ứng dụng. Mỗi chuyên mục có bài nổi bật, danh sách bài viết và công cụ để bạn áp dụng ngay.</p>
-            <Link className="page-primary" to="/blog">
+      <PageHero
+        eyebrow="Thư viện kiến thức"
+        eyebrowIcon={Library}
+        title="Toàn bộ bài viết"
+        accent="theo chuyên mục"
+        description="Bốn chuyên mục xếp theo mạch từ nền tảng tới ứng dụng. Mỗi chuyên mục có bài nổi bật, danh sách bài viết và công cụ để bạn áp dụng ngay."
+        actions={<ButtonRow><ButtonLink variant="primary" to="/blog">
               Danh sách dạng lưới <ArrowRight aria-hidden="true" />
-            </Link>
-          </div>
-        </div>
-      </section>
+            </ButtonLink></ButtonRow>}
+      />
 
       <section className="page-light-section blog-library ux-blog-hub catalog-content" style={{ "--page-light-bg": "none" } as CSSProperties}>
         <div className="container">
@@ -450,12 +417,12 @@ export function BlogCategoryPage() {
                           <span>{tool.note}</span>
                         </div>
                         <div className="ref-blog-cta__actions">
-                          <Link className="page-primary" to={tool.to}>
+                          <ButtonLink variant="primary" to={tool.to}>
                             {tool.label} <ArrowRight aria-hidden="true" />
-                          </Link>
-                          <Link className="action-button action-button--outline" to={`/blog?category=${section.slug}`}>
+                          </ButtonLink>
+                          <ButtonLink variant="secondary" to={`/blog?category=${section.slug}`}>
                             Xem thêm bài viết về {section.name} <ArrowRight aria-hidden="true" />
-                          </Link>
+                          </ButtonLink>
                         </div>
                       </div>
                     ) : null}
@@ -492,9 +459,7 @@ export function BlogCategoryPage() {
 
               <section className="ref-about" aria-labelledby="ref-about-heading">
                 <div className="ref-about__copy">
-                  <span className="page-kicker">
-                    <Orbit aria-hidden="true" /> SGEN Education
-                  </span>
+                  <Eyebrow variant="pill" icon={Orbit}>SGEN Education</Eyebrow>
                   <h2 id="ref-about-heading">Học Thần số học theo cách dùng được</h2>
                   <p>
                     SGEN Education xây thư viện kiến thức và bộ công cụ tra cứu miễn phí cho người muốn hiểu nguyên lý trước khi kết luận. Mỗi bài viết đều
@@ -606,9 +571,9 @@ export function BlogDetailPage() {
           <AlertTriangle aria-hidden="true" />
           <h2>Không tìm thấy bài viết</h2>
           <p>Bài viết có thể đã được đổi đường dẫn hoặc tạm ẩn. Bạn xem lại danh sách blog để tìm nội dung tương tự.</p>
-          <Link className="page-primary" to="/blog">
+          <ButtonLink variant="primary" to="/blog">
             <ArrowLeft aria-hidden="true" /> Về trang blog
-          </Link>
+          </ButtonLink>
         </div>
       </section>
     );

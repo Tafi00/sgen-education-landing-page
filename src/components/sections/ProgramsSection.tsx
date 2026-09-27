@@ -1,4 +1,4 @@
-import { ArrowRight, Layers3 } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 const cosmicLight = "/assets/backgrounds/cosmic-light.webp";
 const programFingerprint = "/assets/programs/program-fingerprint-v2.webp";
 const programHome = "/assets/programs/program-home-feng-shui-v2.webp";
@@ -8,7 +8,7 @@ const programRelationship = "/assets/programs/program-relationship-v2.webp";
 const programYinHome = "/assets/programs/program-yin-home-v2.webp";
 import { Reveal } from "../ui/Reveal";
 import { SectionHeading } from "../ui/SectionHeading";
-import { SparkleButton } from "../ui/GradientButton";
+import { ButtonLink } from "../ui/Button";
 
 const programs = [
   { image: programNumerology, title: "Thần số học", description: "Khám phá bản thân, các chỉ số và bản đồ cuộc đời." },
@@ -31,7 +31,6 @@ export function ProgramsSection() {
           eyebrow="Chương trình đào tạo & tư vấn"
           title="6 chuyên đề ứng dụng cùng SGEN"
           description="Kiến thức hệ thống, hướng dẫn thực hành và giải pháp phù hợp cho từng nhu cầu."
-          icon={Layers3}
           align="left"
         />
 
@@ -52,7 +51,9 @@ export function ProgramsSection() {
         </div>
 
         <Reveal className="programs-section__cta" delay={120}>
-          <SparkleButton href="/khoa-hoc">Xem tất cả 11 khóa học</SparkleButton>
+          <ButtonLink variant="primary" to="/khoa-hoc">
+            Xem tất cả 11 khóa học <ArrowRight aria-hidden="true" />
+          </ButtonLink>
         </Reveal>
       </div>
     </section>

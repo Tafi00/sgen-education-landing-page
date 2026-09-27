@@ -1,7 +1,6 @@
 import { lazy, Suspense, useState } from "react";
 import {
   ArrowRight,
-  Calculator,
   CalendarDays,
   ChartNoAxesCombined,
   Heart,
@@ -72,10 +71,10 @@ export function ToolsSection() {
     >
       <div className="container">
         <SectionHeading
+          align="center"
           eyebrow={sectionCopy.eyebrow}
           title={sectionCopy.title}
           description={sectionCopy.description}
-          icon={Calculator}
         />
 
         <Reveal className="tools-tabs" direction="none">

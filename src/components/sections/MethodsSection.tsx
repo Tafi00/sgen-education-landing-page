@@ -1,4 +1,4 @@
-import { BriefcaseBusiness, Compass, GraduationCap, MoveRight, Star } from "lucide-react";
+import { BriefcaseBusiness, GraduationCap, MoveRight, Star } from "lucide-react";
 const cosmicDarkClean = "/assets/backgrounds/cosmic-dark-clean.webp";
 const methodIkigai = "/assets/methods/method-ikigai.webp";
 const methodLifePath = "/assets/methods/method-life-path.webp";
@@ -43,11 +43,10 @@ export function MethodsSection() {
     >
       <div className="container">
         <SectionHeading
+          align="center"
           eyebrow="Tầm nhìn & phương pháp"
           title="Một hệ thống định hướng toàn diện"
           description="SGEN hướng tới trở thành tổ chức hàng đầu Việt Nam trong tìm kiếm và đào tạo tài năng, tư vấn định hướng giáo dục và định hướng nghề nghiệp."
-          icon={Compass}
-          dark
         />
 
         <div className="methods-grid">
