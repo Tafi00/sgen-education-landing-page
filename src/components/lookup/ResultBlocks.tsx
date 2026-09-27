@@ -1,7 +1,8 @@
-import { useEffect, useState, type ReactNode } from "react";
+import { Fragment, type ReactNode, useEffect, useState } from "react";
 import { Check } from "lucide-react";
 import { Callout } from "../ui/Layout";
 import { RESULTS_DISCLAIMER, type LookupResultPayload, type ResultBlock, type VerdictTone } from "../../../shared/lookup-types";
+import { structureParagraphs } from "../../../shared/report-text";
 
 /** Màu thanh tiến độ / điểm nhấn theo sắc thái verdict do API trả về. */
 const TONE_COLOR: Record<VerdictTone, string> = {
@@ -100,6 +101,21 @@ function ScoreBlock({ block }: { block: Extract<ResultBlock, { kind: "score" }> 
   );
 }
 
+/** Đoạn văn báo cáo: tách tiêu đề in hoa bị dính trong nội dung gốc thành tiêu đề con thật. */
+function ReportProse({ paragraphs, leadFirst = false }: { paragraphs: readonly string[]; leadFirst?: boolean }) {
+  const items = structureParagraphs(paragraphs);
+  return (
+    <div className="report-prose">
+      {items.map((item, index) => (
+        <Fragment key={index}>
+          {item.heading ? <h4 className="report-prose__heading">{item.heading}</h4> : null}
+          <p className={leadFirst && index === 0 ? "report-prose__lead" : undefined}>{item.text}</p>
+        </Fragment>
+      ))}
+    </div>
+  );
+}
+
 /** Khối Thư ngỏ Pythagoras với chân dung phát sáng và phong cách thư trang trọng. */
 function PythagorasLetterBlock({ block }: { block: Extract<ResultBlock, { kind: "text" }> }) {
   return (
@@ -111,11 +127,7 @@ function PythagorasLetterBlock({ block }: { block: Extract<ResultBlock, { kind: 
         </div>
         <h2>{block.heading}</h2>
         <div className="pythagoras-card__body">
-          {block.paragraphs.map((paragraph, index) => (
-            <p key={index} className={index === 0 ? "pythagoras-card__lead" : undefined}>
-              {paragraph}
-            </p>
-          ))}
+          <ReportProse paragraphs={block.paragraphs} leadFirst />
         </div>
         <div className="pythagoras-card__footer">
           <div className="pythagoras-card__sign">
@@ -147,9 +159,7 @@ function TextBlock({ block }: { block: Extract<ResultBlock, { kind: "text" }> })
   return (
     <section>
       {block.heading ? <h2>{block.heading}</h2> : null}
-      {block.paragraphs.map((paragraph, index) => (
-        <p key={index}>{paragraph}</p>
-      ))}
+      <ReportProse paragraphs={block.paragraphs} />
       {block.bullets?.length ? (
         <ul>
           {block.bullets.map((bullet, index) => (
@@ -244,9 +254,11 @@ function MetricDetailBlock({ block }: { block: Extract<ResultBlock, { kind: "met
   return (
     <div className="metric-detail">
       {block.heading ? <h2>{block.heading}</h2> : null}
-      {block.intro?.map((paragraph, index) => (
-        <p className="metric-detail__intro" key={`intro-${index}`}>{paragraph}</p>
-      ))}
+      {block.intro?.length ? (
+        <div className="metric-detail__intro">
+          <ReportProse paragraphs={block.intro} />
+        </div>
+      ) : null}
       {block.items.map((item, index) => {
         const asset = numeralAsset(item.value);
         return (
@@ -256,9 +268,7 @@ function MetricDetailBlock({ block }: { block: Extract<ResultBlock, { kind: "met
               <h3>{item.label}</h3>
               <strong>{item.value}</strong>
             </header>
-            {item.paragraphs.map((paragraph, paragraphIndex) => (
-              <p key={paragraphIndex}>{paragraph}</p>
-            ))}
+            <ReportProse paragraphs={item.paragraphs} />
           </article>
         );
       })}

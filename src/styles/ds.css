@@ -1080,3 +1080,59 @@
     position: static;
   }
 }
+
+/* ---------------------------------------------------------------------------
+   15. ReportProse — văn bản dài trong báo cáo tra cứu: cỡ chữ đọc được,
+       dòng không quá dài, tiêu đề con tách khỏi đoạn văn.
+   --------------------------------------------------------------------------- */
+.report-prose {
+  max-width: 72ch;
+}
+
+.report-prose > p {
+  margin: 0 0 1em;
+  font-size: 1rem;
+  line-height: 1.75;
+}
+
+.report-prose > p:last-child {
+  margin-bottom: 0;
+}
+
+.report-prose > .report-prose__lead {
+  font-size: 1.06rem;
+  font-weight: 500;
+}
+
+.report-prose__heading {
+  margin: 1.8em 0 0.6em;
+  color: var(--ds-eyebrow);
+  font-family: var(--font-display);
+  font-size: 0.86rem;
+  font-weight: 800;
+  line-height: 1.4;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.report-prose > .report-prose__heading:first-child {
+  margin-top: 0;
+}
+
+@media (max-width: 767px) {
+  .report-prose > p {
+    font-size: 0.95rem;
+    line-height: 1.7;
+  }
+}
+
+/* Thư ngỏ trên mobile: bỏ lớp đệm lồng nhau (44px + 16px mỗi bên) để cột chữ đủ rộng. */
+@media (max-width: 767px) {
+  .result-preview .pythagoras-card {
+    padding: 22px 18px !important;
+  }
+
+  .result-preview .pythagoras-card__content {
+    padding-inline: 0 !important;
+  }
+}
