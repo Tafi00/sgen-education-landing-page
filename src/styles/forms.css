@@ -333,7 +333,6 @@
 }
 
 .page-dark-section .detail-meta,
-.page-hero .detail-meta,
 .article-detail .detail-meta {
   color: rgba(244, 239, 255, 0.78);
 }
@@ -493,8 +492,8 @@
   display: grid;
   gap: 6px;
   padding: 16px 18px;
-  background: #fff;
-  border: 1px solid var(--field-border);
+  background: var(--ds-surface);
+  border: 1px solid var(--ds-surface-border);
   border-radius: 14px;
   transition: border-color 160ms ease, transform 160ms ease;
 }
@@ -505,7 +504,7 @@
 }
 
 .pager-links small {
-  color: var(--ink-soft);
+  color: var(--ds-eyebrow);
   font-size: 0.72rem;
   font-weight: 700;
   text-transform: uppercase;
@@ -513,17 +512,12 @@
 }
 
 .pager-links strong {
-  color: var(--ink);
+  color: var(--ds-heading);
   font-size: 0.92rem;
   line-height: 1.45;
 }
 
 /* Mục lục bài viết: trạng thái đang đọc. */
-.article-toc a.is-active {
-  color: #5a22e8;
-  font-weight: 800;
-}
-
 /* Trình soạn khối nội dung trong CMS. */
 .block-editor {
   display: grid;

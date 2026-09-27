@@ -151,8 +151,8 @@ export function MemberLoginPage() {
             <p>Dùng email đã đăng ký để tiếp tục.</p>
           </header>
 
-          <div className="admin-form">
-            <div className="admin-form__grid">
+          <div className="form-stack">
+            <div className="form-grid">
               <TextField
                 label="Email"
                 type="email"
@@ -182,7 +182,7 @@ export function MemberLoginPage() {
             </div>
 
             {formError ? (
-              <p className="admin-error">
+              <p className="form-error">
                 <AlertTriangle aria-hidden="true" /> {formError}
               </p>
             ) : null}
@@ -273,8 +273,8 @@ export function MemberRegisterPage() {
             <p>Chỉ cần email và mật khẩu, bạn có thể bổ sung thông tin sau.</p>
           </header>
 
-          <div className="admin-form">
-            <div className="admin-form__grid">
+          <div className="form-stack">
+            <div className="form-grid">
               <TextField
                 label="Họ và tên"
                 required
@@ -336,7 +336,7 @@ export function MemberRegisterPage() {
             </FieldShell>
 
             {formError ? (
-              <p className="admin-error">
+              <p className="form-error">
                 <AlertTriangle aria-hidden="true" /> {formError}
               </p>
             ) : null}
@@ -414,7 +414,7 @@ export function MemberAccountPage() {
     return (
       <section className="page-light-section" style={LIGHT_STYLE}>
         <div className="container">
-          <p className="admin-loading">
+          <p className="state-loading">
             <Loader2 className="spin" aria-hidden="true" /> Đang kiểm tra phiên đăng nhập…
           </p>
         </div>
@@ -427,7 +427,7 @@ export function MemberAccountPage() {
       <>
         <section className="page-light-section" style={LIGHT_STYLE}>
           <div className="container">
-            <div className="admin-alerts">
+            <div className="alert-list">
               <article className="is-info">
                 <Info aria-hidden="true" />
                 <div>
@@ -456,21 +456,21 @@ export function MemberAccountPage() {
       <section className="page-light-section ux-account" style={LIGHT_STYLE}>
         <div className="container">
           <div className="lookup-workspace__grid">
-            <div className="admin-card">
-              <div className="admin-panel__head">
+            <div className="panel">
+              <div className="panel__head">
                 <h2>Hồ sơ</h2>
               </div>
-              <div className="admin-quick-grid">
-                <div className="admin-quick">
+              <div className="tile-grid">
+                <div className="tile">
                   Họ và tên
                   <small>{member.name}</small>
                 </div>
-                <div className="admin-quick">
+                <div className="tile">
                   Email
                   <small>{member.email}</small>
                 </div>
               </div>
-              <div className="admin-page__actions">
+              <div className="action-row">
                 <Button variant="secondary" type="button" onClick={() => void logout()} disabled={busy}>
                   <LogOut aria-hidden="true" /> Đăng xuất
                 </Button>
@@ -478,20 +478,20 @@ export function MemberAccountPage() {
                   <Trash2 aria-hidden="true" /> Xoá dữ liệu cá nhân
                 </Button>
               </div>
-              <p className="admin-hint">
+              <p className="form-hint">
                 <Info aria-hidden="true" /> Xoá dữ liệu cá nhân sẽ gỡ tài khoản, lịch sử tra cứu và quyền truy cập nội dung của bạn.
               </p>
             </div>
 
-            <div className="admin-card">
-              <div className="admin-panel__head">
+            <div className="panel">
+              <div className="panel__head">
                 <h2>Quyền VIP</h2>
                 <Link to="/dich-vu">Xem gói dịch vụ</Link>
               </div>
               {entitlements.length ? (
-                <div className="admin-quick-grid">
+                <div className="tile-grid">
                   {entitlements.map((entitlement, index) => (
-                    <div className="admin-quick" key={entitlement._id ?? `${entitlement.type}-${index}`}>
+                    <div className="tile" key={entitlement._id ?? `${entitlement.type}-${index}`}>
                       <span>
                         <Crown aria-hidden="true" /> {ENTITLEMENT_LABELS[entitlement.type] ?? entitlement.type}
                       </span>
@@ -505,19 +505,19 @@ export function MemberAccountPage() {
                   ))}
                 </div>
               ) : (
-                <p className="admin-hint">
+                <p className="form-hint">
                   <Info aria-hidden="true" /> Tài khoản chưa có quyền VIP. Bạn có thể đặt mua gói dịch vụ để mở khoá nội dung chuyên sâu.
                 </p>
               )}
             </div>
           </div>
 
-          <div className="admin-card">
-            <div className="admin-panel__head">
+          <div className="panel">
+            <div className="panel__head">
               <h2>Lịch sử tra cứu</h2>
             </div>
             {reports.isLoading ? (
-              <p className="admin-loading">
+              <p className="state-loading">
                 <Loader2 className="spin" aria-hidden="true" /> Đang tải lịch sử…
               </p>
             ) : reports.data?.items.length ? (
@@ -541,19 +541,19 @@ export function MemberAccountPage() {
                 ))}
               </div>
             ) : (
-              <p className="admin-hint">
+              <p className="form-hint">
                 <Info aria-hidden="true" /> Chưa có kết quả tra cứu nào gắn với tài khoản này.{" "}
                 <Link to="/tra-cuu">Bắt đầu tra cứu</Link>
               </p>
             )}
           </div>
 
-          <div className="admin-card">
-            <div className="admin-panel__head">
+          <div className="panel">
+            <div className="panel__head">
               <h2>Đơn hàng</h2>
             </div>
             {orders.isLoading ? (
-              <p className="admin-loading">
+              <p className="state-loading">
                 <Loader2 className="spin" aria-hidden="true" /> Đang tải đơn hàng…
               </p>
             ) : orders.data?.items.length ? (
@@ -584,7 +584,7 @@ export function MemberAccountPage() {
                 ))}
               </div>
             ) : (
-              <p className="admin-hint">
+              <p className="form-hint">
                 <Info aria-hidden="true" /> Bạn chưa có đơn hàng nào. <Link to="/dich-vu">Xem các gói dịch vụ</Link>
               </p>
             )}

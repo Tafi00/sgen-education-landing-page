@@ -42,7 +42,7 @@ function ContentPage({ slug, children }: { slug: string; children?: ReactNode })
     return (
       <section className="page-light-section">
         <div className="container">
-          <p className="admin-loading">
+          <p className="state-loading">
             <Loader2 className="spin" aria-hidden="true" /> Đang tải nội dung…
           </p>
         </div>
@@ -236,9 +236,9 @@ export function ContactPage() {
           <SectionHeading eyebrow="Trao đổi với SGEN" title="Gửi câu hỏi cho đội ngũ" description="Điền thông tin bên dưới hoặc liên hệ trực tiếp qua hotline, email trong giờ làm việc." />
 
           <div className="lookup-workspace__grid">
-            <form className="admin-card" onSubmit={submit}>
-              <div className="admin-form">
-                <div className="admin-form__grid">
+            <form className="panel" onSubmit={submit}>
+              <div className="form-stack">
+                <div className="form-grid">
                   <TextField
                     label="Họ và tên"
                     required
@@ -291,13 +291,13 @@ export function ContactPage() {
                 />
 
                 {formError ? (
-                  <p className="admin-error">
+                  <p className="form-error">
                     <AlertTriangle aria-hidden="true" /> {formError}
                   </p>
                 ) : null}
 
                 {sent ? (
-                  <p className="admin-hint">
+                  <p className="form-hint">
                     <ShieldCheck aria-hidden="true" /> SGEN đã nhận thông tin và sẽ liên hệ lại trong giờ làm việc.
                   </p>
                 ) : null}
@@ -307,13 +307,13 @@ export function ContactPage() {
                   {submitting ? "Đang gửi…" : "Gửi liên hệ"}
                 </Button>
 
-                <p className="admin-hint">
+                <p className="form-hint">
                   <ShieldCheck aria-hidden="true" /> Thông tin chỉ dùng cho mục đích tư vấn, không chia sẻ cho bên thứ ba.
                 </p>
               </div>
             </form>
 
-            <aside className="admin-card contact-card">
+            <aside className="panel contact-card">
               <h2 className="contact-card__title">Thông tin liên hệ</h2>
               <ul className="contact-list">
                 {contactRows.map((row) => {

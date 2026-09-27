@@ -35,7 +35,7 @@ export function LookupResultPage() {
         </Link>
 
         {query.isLoading ? (
-          <p className="admin-loading">
+          <p className="state-loading">
             <Loader2 className="spin" aria-hidden="true" /> Đang tải kết quả…
           </p>
         ) : query.isError ? (

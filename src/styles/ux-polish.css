@@ -48,23 +48,6 @@ section + .page-dark-section {
 /* ---------------------------------------------------------------------------
    3. Nút phụ trong hero trang con — cùng chiều cao, cỡ chữ, chữ hoa với nút chính.
    --------------------------------------------------------------------------- */
-.page-hero .action-button--outline {
-  min-height: 54px;
-  padding: 11px 22px;
-  border-radius: 12px;
-  font-weight: 800;
-  text-transform: uppercase;
-}
-
-.page-hero__actions .action-button--outline,
-.fengshui-hub__actions .action-button--outline {
-  margin-top: 0;
-}
-
-.fengshui-hub__actions {
-  align-items: center;
-}
-
 /* ---------------------------------------------------------------------------
    4. Trang chủ — trích dẫn sứ mệnh: bỏ vạch màu một bên trên card bo tròn.
    --------------------------------------------------------------------------- */
@@ -91,12 +74,6 @@ section + .page-dark-section {
 
 /* Ô nội dung cao theo hàng grid, nhưng textarea bên trong chỉ cao 100px nên
    tay nắm resize nằm lơ lửng giữa ô. */
-.consultation-field--textarea textarea {
-  align-self: stretch;
-  height: auto;
-  resize: none;
-}
-
 .consultation-phone {
   justify-content: flex-start;
 }
@@ -225,45 +202,6 @@ a.contact-list__item:hover {
 /* ---------------------------------------------------------------------------
    8. Trang 404 — nút phụ dùng style admin (nền trắng, cao 84px) trên nền tối.
    --------------------------------------------------------------------------- */
-.not-found-page__actions {
-  align-items: center;
-}
-
-.not-found-page__actions .page-primary {
-  margin-top: 0;
-}
-
-.not-found-page__actions .button--ghost {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  min-height: 54px;
-  padding: 11px 22px;
-  color: #fff;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  border-radius: 12px;
-  box-shadow: none;
-  font-weight: 800;
-  text-transform: uppercase;
-}
-
-.not-found-page__actions .button--ghost:hover {
-  background: rgba(255, 255, 255, 0.16);
-  border-color: #fff;
-}
-
-.not-found-page__actions svg {
-  width: 18px;
-  height: 18px;
-}
-
-@media (max-width: 560px) {
-  .not-found-page__actions > a {
-    width: 100%;
-    justify-content: center;
-  }
-}
 
 /* ---------------------------------------------------------------------------
    9. Blog — tag dính sát nút "Đọc tiếp" ở card dài nhất; phân trang dính lưới.
@@ -271,12 +209,6 @@ a.contact-list__item:hover {
 .post-card .detail-tags {
   margin-bottom: 16px;
 }
-
-.blog-pagination {
-  justify-content: center;
-  margin-top: 36px;
-}
-
 /* ---------------------------------------------------------------------------
    10. Dịch vụ — bảng so sánh: tiêu đề cột và nút đăng ký bị bẻ dòng.
    --------------------------------------------------------------------------- */
@@ -290,11 +222,8 @@ a.contact-list__item:hover {
        hình học của site. Đồng bộ về font hiển thị, chữ số đều độ rộng.
        (Giữ serif cho phần minh họa con số nghệ thuật ở trang tra cứu.)
    --------------------------------------------------------------------------- */
-.method-card__number,
 .tool-card__number,
 .mission-stage-card__number,
-.values-landing-card__number,
-.service-grid__number,
 .article-list article > span,
 .service-related__image span {
   font-family: var(--font-display);
@@ -308,15 +237,9 @@ a.contact-list__item:hover {
        để lại khoảng trống lớn dưới đoạn mô tả ngắn. Lưới đã tự kéo các card
        cùng hàng bằng nhau nên không cần chiều cao tối thiểu.
    --------------------------------------------------------------------------- */
-.value-grid article,
 .service-grid article {
   min-height: 0;
 }
-
-.value-grid article h3 + p {
-  margin-top: 10px;
-}
-
 .service-grid article > p {
   margin-bottom: 22px;
 }

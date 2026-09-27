@@ -1,41 +1,8 @@
-/* Khóa học, Free tools và Blog: bố cục danh mục gọn, sáng và dễ quét. */
-.catalog-hero.page-hero {
-  min-height: 420px;
-  align-items: end;
-  padding: 142px 0 62px;
-  background-image: linear-gradient(110deg, rgba(12, 7, 35, .96), rgba(26, 12, 54, .9)), var(--page-dark-bg);
-}
-.catalog-hero .page-hero__copy { max-width: 930px; }
-.catalog-hero .page-hero__copy h1 {
-  max-width: 900px;
-  margin-top: 18px;
-  font-size: clamp(2.5rem, 3.6vw, 4.15rem);
-  line-height: 1.09;
-  letter-spacing: -.035em;
-  text-wrap: balance;
-}
-.catalog-hero .page-hero__copy > p {
-  max-width: 770px;
-  margin-top: 17px;
-  color: #e1d9e9;
-  font-size: 1rem;
-  line-height: 1.65;
-}
-.catalog-hero .page-hero__copy > .page-primary,
-.catalog-hero .page-hero__actions { margin-top: 22px; }
-.catalog-hero .page-hero__actions { display: flex; flex-wrap: wrap; gap: 10px; }
-.catalog-hero .page-primary,
-.catalog-hero .action-button { min-height: 46px; padding: 10px 18px; border-radius: 10px; font-size: 13px; }
-.catalog-content.page-light-section {
+/* Khóa học, Free tools và Blog: bố cục danh mục gọn, sáng và dễ quét. */.catalog-content.page-light-section {
   padding-block: 66px 86px;
   background: #f8f6f4;
   scroll-margin-top: 98px;
 }
-.catalog-content__heading { margin-bottom: 25px; }
-.catalog-content__heading > span { color: #7440a7; font-size: 12px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
-.catalog-content__heading h2 { margin: 7px 0 8px; color: #271d34; font-family: var(--font-display); font-size: clamp(1.9rem, 2.5vw, 2.8rem); line-height: 1.2; }
-.catalog-content__heading p { margin: 0; color: #665b6d; font-size: 15px; }
-
 /* Danh mục khóa học: tất cả 11 mục hiện cùng một trang, mỗi thẻ đủ chỗ đọc. */
 .ux-course-list .course-toolbar,
 .ux-course-list .blog-toolbar,
@@ -73,10 +40,7 @@
 .ux-course-list .course-grid article .course-card__cta:hover { background: #e8d8f3; }
 
 /* Free tools: mục lục và các form cùng một trục đọc, khoảng trắng rõ giữa nhóm. */
-.ux-free-tools .ref-toc { margin-bottom: 28px; border-radius: 13px; }
-.ux-free-tools .page-section-heading { margin-bottom: 23px; }
-.ux-free-tools .page-section-heading h2 { color: #271d34; font-size: clamp(1.9rem, 2.5vw, 2.8rem); }
-.ux-free-tools .tools-hub__search { max-width: 760px; min-height: 50px; background: #fff; }
+.ux-free-tools .ref-toc { margin-bottom: 28px; border-radius: 13px; }.ux-free-tools .tools-hub__search { max-width: 760px; min-height: 50px; background: #fff; }
 .ux-free-tools .ref-groups { max-width: 1050px; gap: 42px; }
 .ux-free-tools .ref-group__head h3 { font-size: 24px; }
 .ux-free-tools .ref-group__head p { color: #62576c; font-size: 14px; }
@@ -110,9 +74,7 @@
 .ux-blog-hub .ref-chips { margin-bottom: 30px; }
 .ux-blog-hub .ref-blog-section { scroll-margin-top: 125px; }
 
-/* Trang chi tiết giữ nhịp đọc gọn và vùng nhập liệu sáng. */
-.catalog-hero--course-detail.page-hero { min-height: 0; }
-.free-tool-detail-stage .lookup-workspace > header { max-width: 900px; margin-bottom: 32px; }
+/* Trang chi tiết giữ nhịp đọc gọn và vùng nhập liệu sáng. */.free-tool-detail-stage .lookup-workspace > header { max-width: 900px; margin-bottom: 32px; }
 .free-tool-detail-stage .lookup-workspace > header h1 { font-size: clamp(2.4rem, 3.5vw, 3.8rem); line-height: 1.1; }
 .free-tool-detail-stage .page-form-card,
 .free-tool-detail-stage .result-preview { color: #2b2138; background: #fffcf9; border-color: #e9deeb; box-shadow: 0 12px 35px rgba(17, 5, 40, .16); }
@@ -142,14 +104,7 @@
 @media (max-width: 700px) {
   .free-tool-detail-stage .lookup-workspace > header h1 { font-size: clamp(2.1rem, 8vw, 3rem); }
   .free-tool-detail-stage .result-preview__empty { min-height: 240px; }
-  .ux-article .article-detail__shell > header h1 { font-size: clamp(2rem, 8vw, 2.75rem); }
-  .catalog-hero.page-hero { min-height: 0; padding: 116px 0 45px; }
-  .catalog-hero .page-hero__copy h1 { font-size: clamp(2.15rem, 8.8vw, 3.2rem); }
-  .catalog-hero .page-hero__copy > p { font-size: 14px; line-height: 1.6; }
-  .catalog-hero .page-hero__actions { align-items: stretch; }
-  .catalog-hero .page-primary,
-  .catalog-hero .action-button { min-height: 44px; justify-content: center; }
-  .catalog-content.page-light-section { padding-block: 42px 60px; }
+  .ux-article .article-detail__shell > header h1 { font-size: clamp(2rem, 8vw, 2.75rem); }  .catalog-content.page-light-section { padding-block: 42px 60px; }
   .ux-course-list .course-grid,
   .ux-blog-list .blog-page-grid { grid-template-columns: minmax(0, 1fr); }
   .ux-course-list .course-grid article > img { height: 185px; }

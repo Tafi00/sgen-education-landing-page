@@ -1,12 +1,13 @@
-import { lazy } from "react";
+import { lazy, Suspense } from "react";
 import { Outlet, createBrowserRouter, useMatches } from "react-router-dom";
 import { useEffect } from "react";
-import { AdminLayout } from "../layouts/AdminLayout";
 import { PublicLayout } from "../layouts/PublicLayout";
 import { HomePage } from "../pages/public/HomePage";
 import { NotFoundPage } from "../pages/public/NotFoundPage";
 import { LookupResultPage } from "../pages/public/LookupResultPage";
 import { RouteErrorPage } from "./RouteError";
+
+const AdminLayout = lazy(() => import("../layouts/AdminLayout").then((module) => ({ default: module.AdminLayout })));
 
 /** Tải theo nhu cầu: trang chủ giữ bundle nhỏ, các trang khác tải khi truy cập. */
 const PublicAboutHubPage = lazy(() => import("../pages/public/AboutPages").then((module) => ({ default: module.AboutHubPage })));
@@ -134,13 +135,21 @@ export const router = createBrowserRouter([
   },
   {
     path: "/admin/dang-nhap",
-    element: <A_AdminLoginPage_AdminLoginPage />,
+    element: (
+      <Suspense fallback={null}>
+        <A_AdminLoginPage_AdminLoginPage />
+      </Suspense>
+    ),
     errorElement: <RouteErrorPage />,
     handle: handle("Đăng nhập quản trị"),
   },
   {
     path: "/admin",
-    element: <AdminLayout />,
+    element: (
+      <Suspense fallback={null}>
+        <AdminLayout />
+      </Suspense>
+    ),
     errorElement: <RouteErrorPage />,
     children: [
       { index: true, element: <A_DashboardPage_DashboardPage />, handle: handle("Bảng điều khiển") },

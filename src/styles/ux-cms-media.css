@@ -172,17 +172,7 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-}
-
-.media-check input,
-.data-table__select input {
-  width: 18px;
-  height: 18px;
-  accent-color: #7a3cff;
-  cursor: pointer;
-}
-
-.admin-media-card__alt {
+}.admin-media-card__alt {
   display: grid;
   gap: 4px;
   font-size: 0.72rem;
@@ -460,14 +450,7 @@
   font-weight: 600;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.media-picker .data-table__footer {
-  padding: 0;
-  border-top: 0;
-}
-
-/* ── Điều chỉnh cho màn hình nhỏ ──────────────────────────────────────── */
+}/* ── Điều chỉnh cho màn hình nhỏ ──────────────────────────────────────── */
 @media (max-width: 720px) {
   .media-picker {
     max-height: 94vh;

@@ -37,11 +37,6 @@
   border-radius: 0 0 999px 999px;
   content: "";
 }
-
-.consultation-copy .section-badge {
-  align-self: flex-start;
-}
-
 .consultation-copy h2 {
   margin: 24px 0 0;
   font-family: var(--font-display);
@@ -187,79 +182,6 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
 }
-
-.consultation-field {
-  min-height: 58px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 0 16px;
-  background: var(--field-bg);
-  border: 1px solid var(--field-border);
-  border-radius: 12px;
-  color-scheme: light;
-  transition: border-color 180ms ease, box-shadow 180ms ease, background 180ms ease;
-}
-
-.consultation-field:focus-within {
-  background: var(--field-bg);
-  border-color: var(--field-focus);
-  box-shadow: 0 0 0 3px rgba(90, 34, 232, 0.16);
-}
-
-.consultation-field svg {
-  width: 20px;
-  color: #7a6aa8;
-}
-
-.consultation-field input,
-.consultation-field textarea {
-  width: 100%;
-  min-width: 0;
-  padding: 12px 0;
-  color: var(--ink);
-  background: transparent;
-  border: 0;
-  outline: 0;
-  resize: vertical;
-}
-
-.consultation-field--textarea {
-  grid-column: 1 / -1;
-  align-items: flex-start;
-  min-height: 150px;
-}
-
-.consultation-field--textarea svg {
-  margin-top: 14px;
-}
-
-.consultation-form-card__submit {
-  grid-column: 1 / -1;
-  min-height: 58px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  color: #fff;
-  background: var(--gradient-cta);
-  border-radius: 12px;
-  box-shadow: 0 14px 30px rgba(100, 27, 214, 0.26);
-  font-weight: 700;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: transform 200ms ease, background 200ms ease, box-shadow 200ms ease;
-}
-
-.consultation-form-card__submit:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 17px 36px rgba(100, 27, 214, 0.38);
-}
-
-.consultation-form-card__submit.is-sent {
-  background: linear-gradient(105deg, #2f9d78, #266fca);
-}
-
 .consultation-form-card__status {
   grid-column: 1 / -1;
   max-height: 0;
@@ -450,9 +372,4 @@
   body:has(.detail-sticky.is-visible) .scroll-top {
     bottom: calc(var(--sticky-cta-h, 88px) + 14px);
   }
-}
-
-.consultation-field input::placeholder,
-.consultation-field textarea::placeholder {
-  color: var(--field-placeholder);
 }

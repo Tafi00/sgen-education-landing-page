@@ -253,7 +253,7 @@ function CtaBlock({ props }: { props: Props }) {
     <section className="page-dark-section ux-block" style={DARK_STYLE}>
       <div className="container">
         <Heading kicker={text(props.eyebrow) || "Bước tiếp theo"} heading={heading} body={body} />
-        <div className="admin-page__actions">
+        <div className="action-row">
           {primaryLabel && primaryHref ? (
             <ButtonLink variant="primary" to={primaryHref}>
               {primaryLabel} <ArrowRight aria-hidden="true" />
@@ -363,7 +363,7 @@ function CoursesBlock({ props }: { props: Props }) {
       <section className="page-light-section ux-block" style={LIGHT_STYLE}>
         <div className="container">
           <Heading kicker="Khóa học" heading={text(props.heading) || "Khóa học tại SGEN"} light />
-          <p className="admin-hint">
+          <p className="form-hint">
             <Info aria-hidden="true" /> Danh sách khóa học đang được cập nhật.
           </p>
         </div>
@@ -427,7 +427,7 @@ function PostsBlock({ props }: { props: Props }) {
             ))}
           </div>
         ) : (
-          <p className="admin-hint">
+          <p className="form-hint">
             <Info aria-hidden="true" /> Chưa có bài viết nào được đăng.
           </p>
         )}

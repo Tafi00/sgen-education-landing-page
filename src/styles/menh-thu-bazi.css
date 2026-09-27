@@ -14331,3 +14331,26 @@ footer.site-footer .site-footer__bottom p {
     width: calc(100% - 28px) !important;
   }
 }
+
+/* Mobile: thanh công cụ lá số xếp dọc — tên người xem một hàng đủ rộng, nhóm nút xuống dưới.
+   Trước đây 2 cột (64px + nút) làm "Lá số của An Nhiên" xuống dòng từng chữ. */
+@media (max-width: 640px) {
+  .bazi-reference-page .chart-toolbar.chart-toolbar--bazi {
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 12px !important;
+  }
+
+  .bazi-reference-page .chart-toolbar.chart-toolbar--bazi > div:first-child {
+    grid-template-columns: auto minmax(0, 1fr) !important;
+    align-items: baseline;
+    column-gap: 8px;
+  }
+}
+
+/* Dưới 1100px bố cục chỉ còn 1 cột: khung cấu hình không dính nữa, tránh che lá số khi cuộn. */
+@media (max-width: 1099px) {
+  .bazi-reference-page .bazi-inline-config {
+    position: static !important;
+    top: auto !important;
+  }
+}

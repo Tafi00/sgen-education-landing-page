@@ -13,7 +13,7 @@
    --------------------------------------------------------------------------- */
 :root,
 .tone-light,
-:is(.page-light-section, .admin-card, .page-form-card, .course-card, .service-card, .consultation-form-card, .lookup-card--light) {
+:is(.page-light-section, .panel, .page-form-card, .course-card, .service-card, .consultation-form-card, .lookup-card--light) {
   --ds-heading: var(--ink);
   --ds-text: var(--ink-soft);
   --ds-eyebrow: var(--violet);
@@ -194,7 +194,9 @@
 }
 
 :is(a, button).btn--block {
-  width: 100%;
+  display: flex;
+  width: auto;
+  align-self: stretch;
 }
 
 .btn[aria-current="page"] {
@@ -840,7 +842,7 @@
 
 .form-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
   gap: 16px;
 }
 
@@ -882,4 +884,199 @@
   min-width: 0;
   -webkit-appearance: none;
   appearance: none;
+}
+
+/* ---------------------------------------------------------------------------
+   14. Khối giao diện dùng lại trên trang public (trước đây mượn class admin-*):
+       panel, panel__head, form-stack, form-hint, form-error, state-loading,
+       tile-grid/tile, action-row, alert-list, back-link.
+   --------------------------------------------------------------------------- */
+.panel {
+  padding: 22px;
+  background: var(--ds-surface);
+  border: 1px solid var(--ds-surface-border);
+  border-radius: 18px;
+  box-shadow: var(--ds-surface-shadow);
+}
+
+.panel__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.panel__head h2 {
+  margin: 0;
+  color: var(--ds-heading);
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+}
+
+.panel__head a {
+  color: var(--ds-eyebrow);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.form-stack {
+  display: grid;
+  gap: 18px;
+}
+
+.form-hint,
+.form-error,
+.state-loading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: 0.86rem;
+  line-height: 1.5;
+}
+
+.form-hint,
+.state-loading {
+  color: var(--ds-text);
+}
+
+.form-error {
+  color: #b02047;
+}
+
+.form-hint svg,
+.form-error svg,
+.state-loading svg {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+}
+
+.tile-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 10px;
+}
+
+.tile {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  gap: 10px;
+  padding: 14px;
+  color: var(--ds-heading);
+  background: #faf9ff;
+  border: 1px solid var(--ds-surface-border);
+  border-radius: 12px;
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+
+.tile > svg {
+  width: 20px;
+  height: 20px;
+  color: var(--violet);
+}
+
+.tile > span {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.tile small {
+  color: var(--ds-text);
+  font-size: 0.76rem;
+  font-weight: 500;
+}
+
+.action-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.alert-list {
+  display: grid;
+  gap: 10px;
+}
+
+.alert-list article {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-size: 0.84rem;
+}
+
+.alert-list .is-warn {
+  color: #7a4b00;
+  background: #fff6e6;
+  border: 1px solid #f2d9a8;
+}
+
+.alert-list .is-danger {
+  color: #8d1039;
+  background: #fff0f4;
+  border: 1px solid #f5c2d3;
+}
+
+.alert-list .is-info {
+  color: #21356b;
+  background: #eef3ff;
+  border: 1px solid #cddcff;
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--ds-text);
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.back-link svg {
+  width: 15px;
+  height: 15px;
+}
+
+/* Hộp "Áp dụng vào chính bạn" cạnh bài viết — cùng tông với nền của trang bài viết. */
+.article-cta {
+  position: sticky;
+  top: calc(var(--header-h, 96px) + 16px);
+  display: grid;
+  gap: 12px;
+  padding: 22px;
+  background: var(--ds-surface);
+  border: 1px solid var(--ds-surface-border);
+  border-radius: 18px;
+}
+
+.article-cta h2 {
+  margin: 0;
+  color: var(--ds-heading);
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  line-height: 1.3;
+  text-transform: uppercase;
+}
+
+.article-cta p {
+  margin: 0 0 4px;
+  color: var(--ds-text);
+  font-size: 0.88rem;
+  line-height: 1.6;
+}
+
+@media (max-width: 1024px) {
+  .article-cta {
+    position: static;
+  }
 }

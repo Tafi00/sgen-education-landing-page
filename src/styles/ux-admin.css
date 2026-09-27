@@ -76,13 +76,7 @@
   height: 18px;
 }
 
-/* Nhãn bọc checkbox chọn dòng (bảng desktop giữ nguyên kích thước). */
-.data-table__check {
-  display: grid;
-  place-items: center;
-}
-
-/* ---------------------------------------------------------------------------
+/* Nhãn bọc checkbox chọn dòng (bảng desktop giữ nguyên kích thước). *//* ---------------------------------------------------------------------------
    Sidebar quản trị trên mobile (<1080px): lớp phủ mờ bấm để đóng.
    --------------------------------------------------------------------------- */
 
@@ -160,66 +154,7 @@
    --------------------------------------------------------------------------- */
 
 @media (max-width: 767px) {
-  /* Bảng dữ liệu dạng thẻ: nhãn cột 12px, vùng chạm checkbox và phân trang. */
-  .data-table--cards tbody td {
-    grid-template-columns: 104px minmax(0, 1fr);
-    padding: 8px 0;
-    font-size: 0.84rem;
-  }
-
-  .data-table--cards tbody td::before {
-    font-size: 12px;
-    line-height: 1.4;
-  }
-
-  .data-table--cards tbody td.data-table__select {
-    align-items: center;
-    min-height: 44px;
-  }
-
-  .data-table--cards tbody td.data-table__select input {
-    width: 22px;
-    height: 22px;
-  }
-
-  /* Nhãn bọc checkbox: cả ô 44×44 đều bấm được, không chỉ riêng ô vuông 22px. */
-  .data-table--cards tbody td.data-table__select .data-table__check {
-    width: 44px;
-    height: 44px;
-    margin-left: auto;
-    cursor: pointer;
-  }
-
-  .data-table--cards tbody tr:active {
-    background: #faf9ff;
-  }
-
-  /* Ô trạng thái (đang tải / lỗi / rỗng) không dùng lưới nhãn–giá trị. */
-  .data-table--cards tbody td.data-table__state {
-    display: block;
-    padding: 40px 16px !important;
-  }
-
-  .data-table--cards tbody td.data-table__state::before {
-    content: none;
-  }
-
-  .data-table__footer {
-    display: grid;
-    gap: 10px;
-  }
-
-  .data-table__pager {
-    justify-content: space-between;
-    width: 100%;
-  }
-
-  .data-table__pager button {
-    width: 44px;
-    height: 44px;
-  }
-
-  /* Header trang: nhãn và nút xếp dọc, nút "Thêm mới" rộng toàn phần. */
+  /* Bảng dữ liệu dạng thẻ: nhãn cột 12px, vùng chạm checkbox và phân trang. *//* Nhãn bọc checkbox: cả ô 44×44 đều bấm được, không chỉ riêng ô vuông 22px. *//* Ô trạng thái (đang tải / lỗi / rỗng) không dùng lưới nhãn–giá trị. *//* Header trang: nhãn và nút xếp dọc, nút "Thêm mới" rộng toàn phần. */
   .admin-page__header {
     flex-direction: column;
     align-items: stretch;

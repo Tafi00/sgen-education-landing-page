@@ -29,6 +29,7 @@ import { api, errorMessage } from "../api/client";
 import { useAdminSession } from "../admin/useAdminSession";
 import { RESOURCES } from "../admin/resources";
 import { useToast } from "../components/ui/Toast";
+import "../admin/styles";
 
 type NavItem = { to: string; label: string; icon: typeof LayoutDashboard; roles?: ("admin" | "editor")[] };
 type NavGroup = { title: string; items: NavItem[] };

@@ -693,12 +693,6 @@
   border-radius: 20px;
   box-shadow: 0 18px 44px rgba(40, 16, 108, 0.22);
 }
-
-.ref-lookup-cta .page-kicker {
-  color: rgba(255, 255, 255, 0.82);
-  border-color: rgba(255, 255, 255, 0.28);
-}
-
 .ref-lookup-cta h2 {
   margin: 10px 0 8px;
   font-family: var(--font-display);
@@ -712,12 +706,6 @@
   font-size: max(12px, 0.9rem);
   line-height: 1.65;
 }
-
-.ref-lookup-cta .page-primary {
-  align-self: center;
-  justify-self: start;
-}
-
 .ref-faq {
   margin-top: 34px;
 }
@@ -812,46 +800,6 @@
     overflow-wrap: anywhere;
   }
 }
-.fengshui-hub__actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-top: 30px;
-}
-
-.fengshui-hub__actions > a {
-  display: inline-flex;
-  min-height: 54px;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  margin: 0;
-  padding: 12px 20px;
-  border-radius: 12px;
-  font-size: .9rem;
-  line-height: 1.2;
-  text-decoration: none;
-}
-
-.fengshui-hub__actions .action-button--outline {
-  color: #fff;
-  background: rgba(255, 255, 255, .1);
-  border-color: rgba(255, 255, 255, .48);
-}
-
-.fengshui-hub__actions .action-button--outline:hover {
-  background: rgba(255, 255, 255, .18);
-  border-color: #fff;
-}
-
-.fengshui-hub__actions svg {
-  width: 18px;
-  height: 18px;
-}
-
-@media (max-width: 480px) {
-  .fengshui-hub__actions > a { width: 100%; }
-}
 .page-dark-section.fengshui-course-section {
   padding-bottom: 24px;
 }
@@ -859,17 +807,5 @@
 .fengshui-course-section .featured-course {
   margin-bottom: 0;
 }
-
-.page-dark-section.fengshui-disclaimer-section {
-  padding-top: 0;
-  padding-bottom: 64px;
-}
-
-.fengshui-disclaimer-section .privacy-banner {
-  margin-top: 0;
-}
-
 @media (max-width: 800px) {
-  .page-dark-section.fengshui-course-section { padding-bottom: 20px; }
-  .page-dark-section.fengshui-disclaimer-section { padding-top: 0; padding-bottom: 40px; }
-}
+  .page-dark-section.fengshui-course-section { padding-bottom: 20px; }}

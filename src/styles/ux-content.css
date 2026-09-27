@@ -199,19 +199,11 @@
   .ux-block .container *:first-child {
     margin-top: 0;
   }
-
-  .ux-block .page-section-heading,
-  .ux-block .page-section-heading:last-child {
-    margin-bottom: 18px;
-  }
-
   /* Card / timeline / stats của khối CMS xếp 1 cột. */
   .ux-block .service-grid,
-  .ux-block .value-grid,
   .ux-block .story-stats,
   .ux-block .course-grid,
-  .ux-block .blog-page-grid,
-  .ux-block .journey-line {
+  .ux-block .blog-page-grid {
     grid-template-columns: minmax(0, 1fr);
   }
 
@@ -247,29 +239,6 @@
     margin-top: 4px;
     font-size: 0.82rem;
   }
-
-  .ux-course-detail .page-section-heading,
-  .ux-service .page-section-heading {
-    margin-bottom: 20px;
-  }
-
-  .ux-course-detail .page-section-heading h2 {
-    margin-top: 8px;
-    font-size: 1.05rem;
-    line-height: 1.35;
-  }
-
-  .ux-course-detail .page-section-heading > span,
-  .ux-service .page-section-heading > span {
-    font-size: max(12px, 0.72rem);
-  }
-
-  .ux-service .page-section-heading h2 {
-    margin-top: 8px;
-    font-size: 1.15rem;
-    line-height: 1.35;
-  }
-
   .ux-service .process-card {
     margin-top: 22px;
     padding: 22px 18px;
@@ -442,37 +411,6 @@
 }
 
 /* Khối “Công cụ liên quan” đổi sang nền sáng cho khớp tông trang bài viết. */
-.article-detail__layout aside > .ux-article-tools {
-  color: var(--ink);
-  background: #fff;
-  border-color: #e2d8ff;
-  backdrop-filter: none;
-}
-
-.article-detail__layout aside > .ux-article-tools span {
-  color: var(--violet);
-}
-
-.article-detail__layout aside > .ux-article-tools h2 {
-  color: var(--ink);
-}
-
-.article-detail__layout aside > .ux-article-tools p {
-  color: var(--ink-soft);
-}
-
-.article-detail__layout aside > .ux-article-tools a {
-  color: #43208f;
-  background: #f4f0ff;
-  border: 1px solid #dcd0ff;
-}
-
-.article-detail__layout aside > .ux-article-tools a:first-of-type {
-  color: #fff;
-  background: var(--gradient-cta);
-  border: 0;
-}
-
 /* Danh sách blog mobile: 1 cột, meta 1 dòng, tối đa 1 chip tag. */
 @media (max-width: 767px) {
   .ux-blog-list .blog-toolbar {
@@ -579,14 +517,6 @@
 .service-compare__table td strong {
   color: var(--ink);
 }
-
-.service-compare__price {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 6px;
-}
-
 .service-compare__table tr:last-child th,
 .service-compare__table tr:last-child td {
   border-bottom: 0;
@@ -730,15 +660,11 @@
 }
 
 @media (max-width: 767px) {
-  .ux-contact .page-section-heading {
-    margin-bottom: 20px;
-  }
-
-  .ux-contact .admin-quick-grid {
+  .ux-contact .tile-grid {
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .ux-contact .admin-quick {
+  .ux-contact .tile {
     min-height: 44px;
   }
 
@@ -757,11 +683,11 @@
     padding: 22px 16px;
   }
 
-  .ux-member .login-card .admin-form {
+  .ux-member .login-card .form-stack {
     gap: 14px;
   }
 
-  .ux-member .login-card .admin-form__grid {
+  .ux-member .login-card .form-grid {
     gap: 12px;
   }
 
@@ -782,7 +708,7 @@
     font-size: max(12px, 0.74rem);
   }
 
-  .ux-member .login-card .admin-error {
+  .ux-member .login-card .form-error {
     margin: 0;
     font-size: max(12px, 0.76rem);
   }
@@ -792,7 +718,7 @@
     justify-content: center;
   }
 
-  .ux-account .admin-page__actions {
+  .ux-account .action-row {
     flex-wrap: nowrap;
     gap: 8px;
     padding-bottom: 4px;
@@ -800,7 +726,7 @@
     scrollbar-width: thin;
   }
 
-  .ux-account .admin-page__actions > * {
+  .ux-account .action-row > * {
     flex: 0 0 auto;
   }
 }
@@ -815,7 +741,6 @@
     font-size: 12.5px !important;
   }
 
-  .course-card__title a,
   .blog-card a,
   .blog-page-grid article > a {
     display: inline-flex;
@@ -838,7 +763,7 @@
 /* Bổ sung: link "quay lại" ở đầu trang chi tiết cũng cần vùng chạm 44px trên mobile. */
 @media (max-width: 767px) {
   .article-back,
-  .page-body .admin-back {
+  .page-body .back-link {
     display: inline-flex;
     min-height: 44px;
     align-items: center;
@@ -847,10 +772,7 @@
 
 /* Bổ sung: link trong cây chuyên mục blog (trang /blog/kien-thuc) đủ vùng chạm trên mobile. */
 @media (max-width: 767px) {
-  .blog-library aside a,
-  .blog-category-tree a,
-  .blog-page aside a,
-  .blog-categories a {
+  .blog-library aside a {
     display: flex;
     min-height: 44px;
     align-items: center;

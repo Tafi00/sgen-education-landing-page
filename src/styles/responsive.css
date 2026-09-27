@@ -214,15 +214,6 @@
 .field-control {
   min-height: 44px;
 }
-
-.lookup-card__options {
-  margin-block: 0;
-}
-
-.lookup-card__submit {
-  min-height: 52px;
-}
-
 .tools-section,
 .numbers-section {
   padding-block: 42px;
@@ -341,19 +332,6 @@
 .consultation-form-card form {
   gap: 11px;
 }
-
-.consultation-field {
-  min-height: 48px;
-}
-
-.consultation-field--textarea {
-  min-height: 84px;
-}
-
-.consultation-form-card__submit {
-  min-height: 54px;
-}
-
 .site-footer__grid {
   padding-top: 30px;
   padding-bottom: 20px;
@@ -408,18 +386,11 @@
   .tools-tabs {
     margin-bottom: 26px;
   }
-
-  .tools-section .section-badge {
-    padding-inline: 24px;
-    font-size: 0.95rem;
-  }
-
   .tools-tabs button {
     min-height: 70px;
   }
 
-  .tools-grid,
-  .tools-section__more {
+  .tools-grid {
     width: min(100%, 1280px);
     margin-inline: auto;
   }
@@ -592,20 +563,7 @@
   .consultation-form-card form {
     flex: 1;
     grid-template-rows: repeat(2, 58px) minmax(150px, 1fr) 58px auto;
-  }
-
-  .consultation-field {
-    min-height: 58px;
-  }
-
-  .consultation-field--textarea {
-    min-height: 150px;
-  }
-
-  .consultation-form-card__submit {
-    min-height: 58px;
-  }
-}
+  }}
 
 @media (max-width: 1200px) {
   .section-heading {
@@ -743,8 +701,7 @@
   }
 
   .tool-card > a,
-  .program-card a,
-  .tools-section__more a {
+  .program-card a {
     min-height: 44px;
   }
 
@@ -881,14 +838,6 @@
     margin-top: 12px;
     font-size: 0.94rem;
   }
-
-  .section-badge {
-    max-width: 100%;
-    min-height: 36px;
-    padding: 6px 13px;
-    font-size: 0.7rem;
-  }
-
   .reveal,
   .reveal--left,
   .reveal--right,
@@ -1007,20 +956,6 @@
     margin-top: 0;
     font-size: 0.78rem;
   }
-
-  .lookup-card__options label {
-    align-items: flex-start;
-    line-height: 1.4;
-  }
-
-  .hero__number {
-    opacity: 0.48;
-  }
-
-  .hero__numbers {
-    display: none;
-  }
-
   .hero__benefits {
     gap: 10px;
     padding-block: 20px;
@@ -1119,13 +1054,6 @@
     min-height: 44px;
     font-size: 0.66rem;
   }
-
-  .tools-section__more {
-    margin-top: 24px;
-    font-size: 0.78rem;
-  }
-
-  .tools-section__more a,
   .program-card a,
   .site-footer__nav a {
     min-height: 44px;
@@ -1162,15 +1090,6 @@
   .number-art img {
     max-height: 225px;
   }
-
-  .number-art__generated {
-    width: min(230px, 72vw);
-  }
-
-  .number-art__generated strong {
-    font-size: clamp(7rem, 35vw, 10rem);
-  }
-
   .number-detail {
     padding: 24px 17px;
   }
@@ -1243,11 +1162,6 @@
     max-width: none;
     font-size: 0.74rem;
   }
-
-  .about-copy > .action-button {
-    min-height: 54px;
-  }
-
   .pythagoras-card {
     min-height: 510px;
     border-radius: 18px;
@@ -1308,7 +1222,6 @@
     padding: 10px 0 0;
   }
 
-  .methods-grid__orbit,
   .pillar-pill__sparkle {
     display: none;
   }
@@ -1349,12 +1262,6 @@
     grid-template-columns: 96px minmax(0, 1fr);
     padding: 15px;
   }
-
-  .program-card__number {
-    width: 40px;
-    height: 40px;
-  }
-
   .program-card h3 {
     font-size: 0.88rem;
   }
@@ -1446,18 +1353,10 @@
     gap: 9px;
     font-size: 1.25rem;
   }
-
-  .consultation-field {
-    padding-inline: 12px;
-  }
-
   .consultation-form-card form {
     grid-template-columns: 1fr;
   }
 
-  .consultation-field,
-  .consultation-field--textarea,
-  .consultation-form-card__submit,
   .consultation-form-card__status {
     grid-column: 1;
   }
@@ -1529,8 +1428,6 @@
   }
 
   /* Sàn chữ 12px cho nhãn, meta và ghi chú — trước đây có chỗ 10–11px. */
-  .page-kicker,
-  .section-badge,
   .status-badge,
   .detail-meta,
   .detail-tags a,
@@ -1541,9 +1438,7 @@
   .lookup-card__privacy,
   .consultation-form-card__status,
   .field__hint,
-  .page-check,
   .site-footer__bottom,
-  .privacy-banner span,
   .entitlement-note ul {
     font-size: max(12px, 0.75rem) !important;
   }
@@ -1562,10 +1457,7 @@
     align-items: center;
   }
 
-  .page-primary,
   .button,
-  .lookup-card__submit,
-  .consultation-form-card__submit,
   .fengshui-primary-action,
   .fengshui-reset {
     min-height: 48px;
@@ -1577,7 +1469,6 @@
     gap: 8px;
   }
 
-  .detail-actions > .page-primary,
   .detail-actions > .button {
     flex: 1 1 100%;
   }

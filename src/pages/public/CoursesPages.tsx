@@ -307,7 +307,7 @@ export function CoursesListPage() {
               {hasFilters ? " sau khi lọc" : ""}
             </p>
             <div className="category-row">
-              <label className="admin-hint" htmlFor="course-sort">
+              <label className="form-hint" htmlFor="course-sort">
                 Sắp xếp
               </label>
               <select id="course-sort" className="course-sort" value={sort} onChange={(event) => update({ sort: event.target.value })}>
@@ -321,7 +321,7 @@ export function CoursesListPage() {
           </div>
 
           {isLoading && !visible.length ? (
-            <p className="admin-loading">
+            <p className="state-loading">
               <Loader2 className="spin" aria-hidden="true" /> Đang tải danh sách khóa học…
             </p>
           ) : visible.length ? (
@@ -426,7 +426,7 @@ export function CourseDetailPage() {
     return (
       <section className="page-light-section">
         <div className="container">
-          <p className="admin-loading">
+          <p className="state-loading">
             <Loader2 className="spin" aria-hidden="true" /> Đang tải khóa học…
           </p>
         </div>
@@ -705,9 +705,9 @@ export function CourseDetailPage() {
           <SectionHeading eyebrow="Đăng ký" title="Nhận tư vấn lộ trình học" description="Để lại thông tin, đội ngũ SGEN sẽ liên hệ xác nhận lịch học và học phí trong giờ làm việc." />
 
           <div className="lookup-workspace__grid">
-            <form className="admin-card" onSubmit={submit}>
-              <div className="admin-form">
-                <div className="admin-form__grid">
+            <form className="panel" onSubmit={submit}>
+              <div className="form-stack">
+                <div className="form-grid">
                   <TextField
                     label="Họ và tên"
                     required
@@ -760,7 +760,7 @@ export function CourseDetailPage() {
                 />
 
                 {formError ? (
-                  <p className="admin-error">
+                  <p className="form-error">
                     <AlertTriangle aria-hidden="true" /> {formError}
                   </p>
                 ) : null}
@@ -770,21 +770,21 @@ export function CourseDetailPage() {
                   {submitting ? "Đang gửi…" : "Gửi đăng ký"}
                 </Button>
 
-                <p className="admin-hint">
+                <p className="form-hint">
                   <ShieldCheck aria-hidden="true" /> Thông tin chỉ dùng cho mục đích tư vấn, không chia sẻ cho bên thứ ba.
                 </p>
               </div>
             </form>
 
-            <aside className="admin-card">
-              <div className="admin-panel__head">
+            <aside className="panel">
+              <div className="panel__head">
                 <h2>Trao đổi trực tiếp</h2>
               </div>
-              <div className="admin-form">
-                <p className="admin-hint">
+              <div className="form-stack">
+                <p className="form-hint">
                   <Info aria-hidden="true" /> Nếu cần trao đổi nhanh, bạn gọi hotline hoặc gửi email, SGEN phản hồi trong giờ làm việc.
                 </p>
-                <div className="admin-page__actions">
+                <div className="action-row">
                   <ButtonLink variant="secondary" to="/lien-he">
                     Trang liên hệ <ArrowRight aria-hidden="true" />
                   </ButtonLink>

@@ -162,23 +162,6 @@
   font-family: Georgia, serif;
   font-size: 2.25rem;
 }
-
-.tools-section__more {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 30px;
-}
-
-.tools-section__more a {
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
-  color: var(--violet);
-  border-bottom: 1px solid currentColor;
-  font-weight: 700;
-  text-transform: uppercase;
-}
-
 .numbers-section {
   background-color: var(--night);
   background-image: linear-gradient(180deg, rgba(8, 3, 49, 0.15), rgba(9, 4, 50, 0.2)), var(--dark-clean-bg);
@@ -266,70 +249,6 @@
 .number-art__image--outgoing {
   animation: number-image-out 440ms cubic-bezier(0.4, 0, 0.2, 1) both;
 }
-
-.number-art__generated {
-  position: relative;
-  width: min(340px, 78vw);
-  aspect-ratio: 1;
-  display: grid;
-  place-items: center;
-  color: #fff;
-  background: radial-gradient(circle, rgba(129, 38, 232, 0.36), transparent 64%);
-}
-
-.number-art__generated::after {
-  position: absolute;
-  right: 20%;
-  bottom: 8%;
-  left: 20%;
-  height: 8px;
-  background: #fff;
-  border-radius: 50%;
-  box-shadow: 0 0 35px 15px rgba(201, 85, 255, 0.75);
-  content: "";
-  filter: blur(7px);
-}
-
-.number-art__generated strong {
-  position: relative;
-  z-index: 2;
-  font-family: Georgia, serif;
-  font-size: clamp(9rem, 19vw, 15rem);
-  font-weight: 400;
-  line-height: 1;
-  text-shadow:
-    0 0 5px #fff,
-    0 0 22px #e7a9ff,
-    0 0 45px rgba(193, 60, 255, 0.85);
-}
-
-.number-art__orbit {
-  position: absolute;
-  inset: 12%;
-  border: 1px solid rgba(221, 168, 255, 0.82);
-  border-radius: 50%;
-  transform: rotate(24deg) scaleY(0.42);
-  animation: orbit-spin 12s linear infinite;
-}
-
-.number-art__orbit--two {
-  inset: 22% 4%;
-  transform: rotate(-28deg) scaleY(0.45);
-  animation-duration: 16s;
-  animation-direction: reverse;
-}
-
-.number-art__star {
-  position: absolute;
-  width: 18px;
-  color: #ebb5ff;
-  filter: drop-shadow(0 0 8px #bf6dff);
-  animation: star-pulse 2.8s ease-in-out infinite;
-}
-
-.number-art__star--one { top: 16%; left: 21%; }
-.number-art__star--two { right: 15%; bottom: 24%; animation-delay: -1.2s; }
-
 .number-detail {
   display: flex;
   flex-direction: column;
@@ -395,8 +314,6 @@
 
 .number-detail__traits svg { width: 27px; }
 .number-detail__traits span { font-size: 0.77rem; font-weight: 700; text-transform: uppercase; }
-.number-detail .action-button { width: 100%; }
-
 @keyframes panel-enter {
   from { opacity: 0; transform: translateY(12px); }
   to { opacity: 1; transform: translateY(0); }
@@ -447,9 +364,7 @@
   .tool-card .icon-orb--lg svg { width: 33px; height: 33px; }
   .tool-card h3 { min-height: 48px; margin: 10px 0 12px; font-size: 0.82rem; }
   .tool-card > a { font-size: 0.72rem; }
-  .tool-card__number { width: 74px; height: 74px; font-size: 1.8rem; }
-  .tools-section__more { justify-content: center; }
-  .number-tabs [role="tablist"] { justify-content: flex-start; }
+  .tool-card__number { width: 74px; height: 74px; font-size: 1.8rem; }  .number-tabs [role="tablist"] { justify-content: flex-start; }
   .number-panel { border-radius: 18px; }
   .number-art { min-height: 320px; padding: 18px; }
   .number-art img { max-height: 300px; }

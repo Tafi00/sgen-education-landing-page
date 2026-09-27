@@ -5,6 +5,7 @@ import { AlertTriangle, Eye, EyeOff, Info, Loader2, Lock, LogIn, Mail, ShieldChe
 import { api, errorMessage } from "../../api/client";
 import { TextField } from "../../components/form/Field";
 import { useToast } from "../../components/ui/Toast";
+import "../../admin/styles";
 
 type AdminUser = {
   id: string;

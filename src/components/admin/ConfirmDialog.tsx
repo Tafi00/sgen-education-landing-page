@@ -1,5 +1,6 @@
 import { useState, type ReactNode } from "react";
 import { AlertTriangle, Loader2, X } from "lucide-react";
+import { Button } from "../ui/Button";
 
 export function ConfirmDialog({
   open,
@@ -40,12 +41,12 @@ export function ConfirmDialog({
         </header>
         {children ? <div className="confirm-dialog__body">{children}</div> : null}
         <footer>
-          <button type="button" className="button button--ghost" onClick={onCancel} disabled={busy}>
+          <Button variant="secondary" size="sm" onClick={onCancel} disabled={busy}>
             {cancelLabel}
-          </button>
-          <button
-            type="button"
-            className={`button ${tone === "danger" ? "button--danger" : "button--primary"}`}
+          </Button>
+          <Button
+            variant={tone === "danger" ? "danger" : "primary"}
+            size="sm"
             disabled={busy}
             onClick={async () => {
               setBusy(true);
@@ -58,7 +59,7 @@ export function ConfirmDialog({
           >
             {busy ? <Loader2 className="spin" aria-hidden="true" /> : null}
             {confirmLabel}
-          </button>
+          </Button>
         </footer>
       </article>
     </div>

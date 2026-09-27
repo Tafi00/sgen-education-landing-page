@@ -104,36 +104,36 @@ function PaymentPanel({ payment, amount, code, viewToken }: { payment: PaymentIn
 
   return (
     <div className="lookup-workspace__grid">
-      <div className="admin-card">
-        <div className="admin-panel__head">
+      <div className="panel">
+        <div className="panel__head">
           <h2>Thông tin chuyển khoản</h2>
-          <span className="admin-hint">Mã đơn {code}</span>
+          <span className="form-hint">Mã đơn {code}</span>
         </div>
-        <div className="admin-quick-grid">
+        <div className="tile-grid">
           {rows.map((row) => (
-            <div className="admin-quick" key={row.label}>
+            <div className="tile" key={row.label}>
               {row.label}
               <small>{row.value}</small>
             </div>
           ))}
         </div>
-        <p className="admin-hint">
+        <p className="form-hint">
           <Info aria-hidden="true" /> Vui lòng giữ đúng nội dung chuyển khoản để SGEN đối chiếu nhanh. Đơn được xác nhận trong giờ làm việc.
         </p>
       </div>
 
-      <div className="admin-card">
-        <div className="admin-panel__head">
+      <div className="panel">
+        <div className="panel__head">
           <h2>Quét mã để thanh toán</h2>
         </div>
         {payment.qrUrl ? (
           <img src={payment.qrUrl} alt={`Mã QR chuyển khoản cho đơn ${code}`} style={{ width: "min(260px, 100%)", borderRadius: 14 }} />
         ) : (
-          <p className="admin-hint">
+          <p className="form-hint">
             <QrCode aria-hidden="true" /> Chưa cấu hình thông tin ngân hàng trong CMS nên chưa tạo được mã QR. Vui lòng chuyển khoản theo thông tin bên cạnh.
           </p>
         )}
-        <div className="admin-page__actions">
+        <div className="action-row">
           <ButtonLink variant="primary" to={`/dich-vu/don-hang/${code}${viewToken ? `?token=${viewToken}` : ""}`}>
             Xem trạng thái đơn <ArrowRight aria-hidden="true" />
           </ButtonLink>
@@ -164,7 +164,7 @@ export function ServicesListPage() {
           <SectionHeading eyebrow="Gói dịch vụ" title="Chọn hình thức đồng hành phù hợp" description="Xem nhanh thời lượng, quyền lợi và mức giá để chọn gói phù hợp với mục tiêu của bạn." />
 
           {isLoading && !services.length ? (
-            <p className="admin-loading">
+            <p className="state-loading">
               <Loader2 className="spin" aria-hidden="true" /> Đang tải danh sách dịch vụ…
             </p>
           ) : services.length ? (
@@ -271,7 +271,7 @@ export function ServiceDetailPage() {
     return (
       <section className="page-light-section">
         <div className="container">
-          <p className="admin-loading">
+          <p className="state-loading">
             <Loader2 className="spin" aria-hidden="true" /> Đang tải gói dịch vụ…
           </p>
         </div>
@@ -500,7 +500,7 @@ export function ServiceDetailPage() {
           <SectionHeading eyebrow="Đặt mua" title="Hoàn tất đăng ký" description="Sau khi gửi, hệ thống tạo mã đơn và hiển thị hướng dẫn chuyển khoản kèm mã QR." />
 
           {purchaseDisabled ? (
-            <div className="admin-alerts">
+            <div className="alert-list">
               <article className="is-warn">
                 <Info aria-hidden="true" />
                 <div>
@@ -513,9 +513,9 @@ export function ServiceDetailPage() {
             <PaymentPanel payment={created.payment} amount={created.order.amount} code={created.order.code} viewToken={created.order.viewToken} />
           ) : (
             <div className="lookup-workspace__grid">
-              <form className="admin-card service-checkout__form" onSubmit={submit}>
-                <div className="admin-form">
-                  <div className="admin-form__grid">
+              <form className="panel service-checkout__form" onSubmit={submit}>
+                <div className="form-stack">
+                  <div className="form-grid">
                     <TextField
                       label="Họ và tên"
                       required
@@ -544,13 +544,13 @@ export function ServiceDetailPage() {
                     />
                   </div>
 
-                  <p className="admin-hint">
+                  <p className="form-hint">
                     <ShieldCheck aria-hidden="true" /> Khi gửi thông tin, bạn đồng ý để SGEN xử lý dữ liệu phục vụ đơn hàng và hiểu rằng quyền truy cập
                     được cấp sau khi SGEN xác nhận thanh toán.
                   </p>
 
                   {formError ? (
-                    <p className="admin-error">
+                    <p className="form-error">
                       <AlertTriangle aria-hidden="true" /> {formError}
                     </p>
                   ) : null}
@@ -560,14 +560,14 @@ export function ServiceDetailPage() {
                     {submitting ? "Đang tạo đơn…" : `Đặt mua ${service.name}`}
                   </Button>
 
-                  <p className="admin-hint">
+                  <p className="form-hint">
                     <ShieldCheck aria-hidden="true" /> SGEN không lưu thông tin thẻ hay tài khoản ngân hàng của bạn.
                   </p>
                 </div>
               </form>
 
-              <aside className="admin-card service-checkout__summary">
-                <div className="admin-panel__head">
+              <aside className="panel service-checkout__summary">
+                <div className="panel__head">
                   <h2>Đơn hàng của bạn</h2>
                 </div>
                 <div className="service-checkout__total"><span>{service.name}</span><strong>{formatPrice(service.price)}</strong></div>
@@ -585,7 +585,7 @@ export function ServiceDetailPage() {
                     </article>
                   ))}
                 </div>
-                {service.priceNote && !/CMS/i.test(service.priceNote) ? <p className="admin-hint"><Info aria-hidden="true" /> {service.priceNote}</p> : null}
+                {service.priceNote && !/CMS/i.test(service.priceNote) ? <p className="form-hint"><Info aria-hidden="true" /> {service.priceNote}</p> : null}
               </aside>
             </div>
           )}
@@ -647,12 +647,12 @@ export function OrderStatusPage() {
   return (
     <section className="page-light-section" style={LIGHT_STYLE}>
       <div className="container">
-        <Link className="admin-back" to="/dich-vu">
+        <Link className="back-link" to="/dich-vu">
           <ArrowLeft aria-hidden="true" /> Danh sách dịch vụ
         </Link>
 
         {query.isLoading ? (
-          <p className="admin-loading">
+          <p className="state-loading">
             <Loader2 className="spin" aria-hidden="true" /> Đang tải đơn hàng…
           </p>
         ) : query.isError ? (
@@ -660,10 +660,10 @@ export function OrderStatusPage() {
             <AlertTriangle aria-hidden="true" />
             <h2>Không mở được đơn hàng</h2>
             <p>{errorMessage(query.error)}</p>
-            <p className="admin-hint">
+            <p className="form-hint">
               <Info aria-hidden="true" /> Bạn cần mở đúng liên kết có token mà hệ thống trả về khi tạo đơn, hoặc đăng nhập bằng tài khoản đã dùng để đặt mua.
             </p>
-            <div className="admin-page__actions">
+            <div className="action-row">
               <ButtonLink variant="primary" to="/dang-nhap">
                 Đăng nhập tài khoản
               </ButtonLink>
@@ -677,7 +677,7 @@ export function OrderStatusPage() {
             <SectionHeading eyebrow={<>Đơn hàng {order.code}</>} title={order.serviceName} description={<>Tạo lúc {formatDateTime(order.createdAt)} · Số tiền {formatPrice(order.amount)} · <StatusBadge status={order.status} /></>} as="h1" />
 
             {order.status === "paid" ? (
-              <div className="admin-alerts">
+              <div className="alert-list">
                 <article className="is-info">
                   <ShieldCheck aria-hidden="true" />
                   <div>
@@ -696,11 +696,11 @@ export function OrderStatusPage() {
             ) : null}
 
             <div className="lookup-workspace__grid">
-              <form className="admin-card" onSubmit={uploadProof}>
-                <div className="admin-panel__head">
+              <form className="panel" onSubmit={uploadProof}>
+                <div className="panel__head">
                   <h2>Gửi biên lai chuyển khoản</h2>
                 </div>
-                <div className="admin-form">
+                <div className="form-stack">
                   <FieldShell label="Ảnh biên lai" hint="Chấp nhận ảnh chụp màn hình hoặc ảnh chụp giấy chuyển khoản.">
                     <span className="field__control">
                       <Upload aria-hidden="true" />
@@ -717,13 +717,13 @@ export function OrderStatusPage() {
                   </FieldShell>
 
                   {order.status !== "pending" ? (
-                    <p className="admin-hint">
+                    <p className="form-hint">
                       <Info aria-hidden="true" /> Đơn không còn ở trạng thái chờ xác nhận nên không thể gửi thêm biên lai.
                     </p>
                   ) : null}
 
                   {uploadError ? (
-                    <p className="admin-error">
+                    <p className="form-error">
                       <AlertTriangle aria-hidden="true" /> {uploadError}
                     </p>
                   ) : null}
@@ -735,31 +735,31 @@ export function OrderStatusPage() {
                 </div>
               </form>
 
-              <aside className="admin-card">
-                <div className="admin-panel__head">
+              <aside className="panel">
+                <div className="panel__head">
                   <h2>Trạng thái xử lý</h2>
                 </div>
-                <div className="admin-quick-grid">
-                  <div className="admin-quick">
+                <div className="tile-grid">
+                  <div className="tile">
                     Trạng thái
                     <small>{ORDER_STATUS[order.status] ?? order.status}</small>
                   </div>
-                  <div className="admin-quick">
+                  <div className="tile">
                     Ngày tạo
                     <small>{formatDateTime(order.createdAt)}</small>
                   </div>
-                  <div className="admin-quick">
+                  <div className="tile">
                     Thanh toán
                     <small>{formatDateTime(order.paidAt)}</small>
                   </div>
-                  <div className="admin-quick">
+                  <div className="tile">
                     Mã đơn
                     <small>{order.code}</small>
                   </div>
                 </div>
 
                 {order.adminNote ? (
-                  <p className="admin-hint">
+                  <p className="form-hint">
                     <Info aria-hidden="true" /> Ghi chú từ SGEN: {order.adminNote}
                   </p>
                 ) : null}

@@ -75,14 +75,6 @@
   line-height: 1.4;
   text-transform: uppercase;
 }
-
-.about-copy > .action-button {
-  width: 100%;
-  min-height: 64px;
-  font-size: 1rem;
-  text-transform: uppercase;
-}
-
 .pythagoras-card {
   position: relative;
   min-height: 720px;
@@ -188,20 +180,6 @@
   margin: -12px auto 0;
   padding-top: 12px;
 }
-
-.methods-grid__orbit {
-  position: absolute;
-  top: 38%;
-  right: 2%;
-  left: 2%;
-  height: 130px;
-  border: 1px solid rgba(209, 144, 255, 0.7);
-  border-radius: 50%;
-  box-shadow: 0 0 18px rgba(183, 88, 255, 0.25);
-  content: "";
-  transform: translateY(-50%);
-}
-
 .method-card {
   position: relative;
   z-index: 2;
@@ -225,14 +203,6 @@
   object-fit: contain;
   filter: drop-shadow(0 0 18px rgba(180, 89, 255, 0.35));
 }
-
-.method-card__number {
-  margin-top: 2px;
-  color: #db87ff;
-  font-family: Georgia, serif;
-  font-size: 2rem;
-}
-
 .method-card h3 {
   margin: 7px 0 0;
   color: #fff;
@@ -330,21 +300,6 @@
   position: relative;
   min-width: 0;
 }
-
-.program-card__number {
-  display: inline-grid;
-  width: 44px;
-  height: 44px;
-  place-items: center;
-  margin-bottom: 8px;
-  color: #fff;
-  background: linear-gradient(145deg, #7040ee, #321070);
-  border-radius: 50%;
-  box-shadow: 0 7px 16px rgba(74, 29, 174, 0.25);
-  font-family: var(--font-display);
-  font-weight: 700;
-}
-
 .program-card h3 {
   margin: 0;
   font-family: var(--font-display);
@@ -382,14 +337,6 @@
   justify-content: center;
   margin-top: 36px;
 }
-
-.programs-section__cta .action-button {
-  min-width: min(100%, 430px);
-  min-height: 58px;
-  border-radius: var(--radius-pill);
-  text-transform: uppercase;
-}
-
 .blog-grid {
   display: grid;
   grid-template-columns: 1.05fr 0.95fr;
@@ -528,9 +475,7 @@
 }
 
 @media (max-width: 850px) {
-  .methods-grid { grid-template-columns: 1fr; max-width: 520px; gap: 20px; }
-  .methods-grid__orbit { display: none; }
-  .method-card { min-height: 350px; }
+  .methods-grid { grid-template-columns: 1fr; max-width: 520px; gap: 20px; }  .method-card { min-height: 350px; }
   .methods-pillars { grid-template-columns: 1fr; max-width: 520px; margin-inline: auto; }
   .blog-grid { grid-template-columns: 1fr; grid-template-rows: auto; }
   .blog-card--featured,

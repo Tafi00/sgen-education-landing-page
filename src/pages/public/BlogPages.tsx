@@ -204,7 +204,7 @@ export function BlogListPage() {
           </p>
 
           {isLoading && !visible.length ? (
-            <p className="admin-loading">
+            <p className="state-loading">
               <Loader2 className="spin" aria-hidden="true" /> Đang tải bài viết…
             </p>
           ) : visible.length ? (
@@ -309,7 +309,7 @@ export function BlogCategoryPage() {
       <section className="page-light-section blog-library ux-blog-hub catalog-content" style={{ "--page-light-bg": "none" } as CSSProperties}>
         <div className="container">
           {isLoading && !posts.length ? (
-            <p className="admin-loading">
+            <p className="state-loading">
               <Loader2 className="spin" aria-hidden="true" /> Đang tải thư viện…
             </p>
           ) : (
@@ -554,7 +554,7 @@ export function BlogDetailPage() {
     return (
       <section className="page-light-section">
         <div className="container">
-          <p className="admin-loading">
+          <p className="state-loading">
             <Loader2 className="spin" aria-hidden="true" /> Đang tải bài viết…
           </p>
         </div>
@@ -674,19 +674,19 @@ export function BlogDetailPage() {
           </article>
 
           <aside>
-            <div className="article-toc ux-article-tools">
-              <span>Công cụ liên quan</span>
+            <div className="article-cta">
+              <Eyebrow>Công cụ liên quan</Eyebrow>
               <h2>Áp dụng vào chính bạn</h2>
               <p>Chuyển nội dung vừa đọc thành dữ liệu của riêng bạn bằng các công cụ miễn phí của SGEN.</p>
-              <Link to="/tra-cuu/than-so-hoc">
+              <ButtonLink variant="primary" size="sm" block to="/tra-cuu/than-so-hoc">
                 Tra cứu Thần số học <ArrowRight aria-hidden="true" />
-              </Link>
-              <Link to="/free-tools">
-                Bộ công cụ miễn phí <ArrowRight aria-hidden="true" />
-              </Link>
-              <Link to="/khoa-hoc">
-                Lộ trình khóa học <ArrowRight aria-hidden="true" />
-              </Link>
+              </ButtonLink>
+              <ButtonLink variant="secondary" size="sm" block to="/free-tools">
+                Bộ công cụ miễn phí
+              </ButtonLink>
+              <ButtonLink variant="secondary" size="sm" block to="/khoa-hoc">
+                Lộ trình khóa học
+              </ButtonLink>
             </div>
           </aside>
         </div>
