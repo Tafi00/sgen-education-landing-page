@@ -315,8 +315,22 @@
     border-color: rgba(206, 164, 255, 0.24);
     box-shadow: none;
     opacity: 1;
-    pointer-events: auto;
+    /* Kế thừa từ drawer: `auto` ở đây từng làm các link menu vô hình (drawer đang đóng)
+       vẫn nhận chạm, nên bấm vào form tra cứu trên điện thoại lại nhảy sang trang khác. */
+    pointer-events: inherit;
     transform: none;
+  }
+
+  /* Drawer đóng: ẩn hẳn khỏi hit-test và tab, kể cả khi còn :focus-within sau lần bấm trước.
+     visibility trễ 220ms để hiệu ứng mờ dần khi đóng vẫn chạy. */
+  .site-nav:not(.site-nav--open) {
+    visibility: hidden;
+    transition: opacity 220ms ease, transform 220ms ease, visibility 0s linear 220ms;
+  }
+
+  .site-nav.site-nav--open {
+    visibility: visible;
+    transition: opacity 220ms ease, transform 220ms ease, visibility 0s;
   }
 
   .site-nav__dropdown a {
