@@ -2,12 +2,9 @@ import { useRef, useState, type FormEvent } from "react";
 import {
   AlertTriangle,
   CalendarDays,
-  CheckCircle2,
-  Compass,
   Download,
   Hash,
   Loader2,
-  Mars,
   Orbit,
   Printer,
   Search,
@@ -15,9 +12,6 @@ import {
   ShieldCheck,
   Tag,
   UserRound,
-  Venus,
-  VenusAndMars,
-  type LucideIcon,
 } from "lucide-react";
 import { api, errorMessage } from "../../api/client";
 import { LookupNavTabs } from "../../components/lookup/LookupNavTabs";
@@ -26,7 +20,7 @@ import { useToast } from "../../components/ui/Toast";
 import type { LookupResultPayload } from "../../../shared/lookup-types";
 import { Button, ButtonAnchor } from "../../components/ui/Button";
 import { Callout, ToolHeader } from "../../components/ui/Layout";
-import { CheckboxField, FieldShell, TextField } from "../../components/form/Field";
+import { CheckboxField, TextField } from "../../components/form/Field";
 import { Eyebrow } from "../../components/ui/Eyebrow";
 
 const cosmicDarkClean = "/assets/backgrounds/cosmic-dark-clean.webp";
@@ -118,18 +112,11 @@ const STEPS = ["Nhập thông tin", "Phân tích", "Nhận kết quả", "Lưu &
 
 type NumerologyReport = LookupResultPayload & { id: string; shareToken?: string };
 
-const GENDER_OPTIONS: { value: "Nam" | "Nữ" | "Khác"; icon: LucideIcon }[] = [
-  { value: "Nam", icon: Mars },
-  { value: "Nữ", icon: Venus },
-  { value: "Khác", icon: VenusAndMars },
-];
-
 export function NumerologyPage() {
   const toast = useToast();
   const [name, setName] = useState("");
   const [birthDate, setBirthDate] = useState("");
   const [commonName, setCommonName] = useState("");
-  const [gender, setGender] = useState<"Nam" | "Nữ" | "Khác">("Nam");
   const [agreed, setAgreed] = useState(true);
   const [previewNumber, setPreviewNumber] = useState("1");
   const [fieldErrors, setFieldErrors] = useState<{ name?: string; birthDate?: string }>({});
@@ -279,21 +266,6 @@ export function NumerologyPage() {
                 error={fieldErrors.birthDate}
                 onChange={(e) => setBirthDate(e.target.value)}
               />
-              <FieldShell label="Giới tính">
-                <div className="gender-selector" role="group" aria-label="Giới tính">
-                  {GENDER_OPTIONS.map(({ value, icon: Icon }) => (
-                    <button
-                      key={value}
-                      type="button"
-                      className={`gender-btn ${gender === value ? "is-selected" : ""}`}
-                      aria-pressed={gender === value}
-                      onClick={() => setGender(value)}
-                    >
-                      <Icon aria-hidden="true" /> {value}
-                    </button>
-                  ))}
-                </div>
-              </FieldShell>
               <CheckboxField
                 className="form-grid__wide"
                 checked={agreed}

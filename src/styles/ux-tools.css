@@ -640,7 +640,7 @@
   .quiz-choice__text,
   .quiz-choice small,
   .quiz-question__text {
-    font-size: 13px !important;
+    font-size: 13px;
     line-height: 1.5;
   }
 }
@@ -677,7 +677,7 @@
 }
 
 /* Sàn chữ 12px cho toàn bộ trang công khai trên mobile (các rule cũ dùng rem nhỏ hơn
-   nằm rải rác trong nhiều file nên cần !important để thắng). */
+   nằm rải rác trong nhiều file nên cần để thắng). */
 @media (max-width: 767px) {
   .page-body small {
     font-size: max(12px, 0.85em) !important;

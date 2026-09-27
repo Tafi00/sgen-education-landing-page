@@ -36,7 +36,7 @@ import { useService, useServices, useSiteSettings } from "../../api/hooks";
 import { FieldShell, TextField } from "../../components/form/Field";
 import { useToast } from "../../components/ui/Toast";
 import { Button, ButtonAnchor, ButtonLink, ButtonRow } from "../../components/ui/Button";
-import { Callout, PageHero, Steps } from "../../components/ui/Layout";
+import { PageHero, Steps } from "../../components/ui/Layout";
 import { SectionHeading } from "../../components/ui/SectionHeading";
 
 const DARK_STYLE = { "--page-dark-bg": "url(/assets/backgrounds/cosmic-dark-clean.webp)" } as CSSProperties;
@@ -454,10 +454,6 @@ export function ServiceDetailPage() {
             title="Quy trình mua gói dịch vụ"
             steps={["Điền thông tin đặt mua", "Chuyển khoản theo mã đơn", "Tải biên lai chuyển khoản", "Nhận quyền sau khi xác nhận"]}
           />
-
-          {settings.legal.disclaimer.trim() ? (
-            <Callout title="Lưu ý quan trọng">{settings.legal.disclaimer}</Callout>
-          ) : null}
 
           {otherServices.length ? (
             <section className="service-related" aria-labelledby="service-related-title">
