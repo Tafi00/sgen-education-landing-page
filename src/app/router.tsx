@@ -203,4 +203,4 @@ export const router = createBrowserRouter([
       { path: "*", element: <NotFoundPage />, handle: handle("Không tìm thấy trang quản trị") },
     ],
   },
-], { basename: import.meta.env.BASE_URL.replace(/\/$/, "") || "/" });
+]);
