@@ -6,21 +6,17 @@ import {
   BookOpen,
   CalendarCheck,
   Check,
-  ChevronLeft,
-  ChevronRight,
   CircleAlert,
   Clock3,
   Coins,
   Compass,
   LayoutGrid,
-  Printer,
   ShieldCheck,
   type LucideIcon,
 } from "lucide-react";
-import { CalendarToolView } from "../../components/fengshui/CalendarToolView";
+import { XemNgayView } from "../../components/fengshui/XemNgayView";
 import { IChingToolView } from "../../components/fengshui/IChingToolView";
 import MenhThuApp from "../../vendor/menh-thu/app/MenhThuApp";
-import { getDateProfile, getMonthCalendar, getVietnameseObservances, toDateString } from "../../../shared/menh-thu/metaphysics";
 import { ButtonLink, ButtonRow } from "../../components/ui/Button";
 import { Callout, CardGrid, Faq, FeatureCard, PageHero, Steps, ToolHeader } from "../../components/ui/Layout";
 import { SectionHeading } from "../../components/ui/SectionHeading";
@@ -361,131 +357,28 @@ function useMenhThuStylesheet() {
   return ready;
 }
 
-function addDays(base: string, days: number) {
-  const [year, month, day] = base.split("-").map(Number);
-  const shifted = new Date(Date.UTC(year, month - 1, day + days));
-  return shifted.toISOString().slice(0, 10);
-}
-
 function localDateValue() {
   const now = new Date();
   const offset = now.getTimezoneOffset() * 60_000;
   return new Date(now.getTime() - offset).toISOString().slice(0, 10);
 }
 
-function CalendarMonthPanel({ selectedDate, onDateChange, today }: { selectedDate: string; onDateChange: (date: string) => void; today: string }) {
-  const [selectedYear, selectedMonth] = selectedDate.split("-").map(Number);
-  const [view, setView] = useState({ year: selectedYear, monthIndex: selectedMonth - 1 });
-  useEffect(() => {
-    setView({ year: selectedYear, monthIndex: selectedMonth - 1 });
-  }, [selectedYear, selectedMonth]);
-  const month = useMemo(() => getMonthCalendar(view.year, view.monthIndex), [view.year, view.monthIndex]);
-  const days = useMemo(() => Array.from({ length: month.days }, (_, index) => {
-    const day = index + 1;
-    const date = toDateString(view.year, view.monthIndex, day);
-    const profile = getDateProfile(date);
-    const score = profile.energyScore;
-    const quality = score >= 80 ? { key: "excellent", label: "Hoàng đạo tốt", stars: 5 }
-      : score >= 65 ? { key: "good", label: "Hoàng đạo khá", stars: 4 }
-      : score >= 50 ? { key: "normal", label: "Bình thường", stars: 3 }
-      : score >= 30 ? { key: "bad", label: "Xấu", stars: 2 }
-      : { key: "very-bad", label: "Rất xấu", stars: 1 };
-    return { day, date, profile, quality, observance: getVietnameseObservances(date)[0]?.name };
-  }), [month.days, view.year, view.monthIndex]);
-  const moveMonth = (delta: number) => {
-    const next = new Date(Date.UTC(view.year, view.monthIndex + delta, 1));
-    setView({ year: next.getUTCFullYear(), monthIndex: next.getUTCMonth() });
-  };
-
-  return (
-    <section className="xem-ngay-month" aria-label="Lịch chọn ngày tốt xấu">
-      <header className="xem-ngay-month__header">
-        <div><small>Lịch ngày tốt xấu</small><h2>Tháng {view.monthIndex + 1} / {view.year}</h2></div>
-        <div className="xem-ngay-month__nav">
-          <button type="button" onClick={() => moveMonth(-1)} aria-label="Xem tháng trước"><ChevronLeft aria-hidden="true" /></button>
-          <button type="button" onClick={() => moveMonth(1)} aria-label="Xem tháng sau"><ChevronRight aria-hidden="true" /></button>
-        </div>
-      </header>
-      <div className="xem-ngay-month__weekdays" aria-hidden="true">
-        {["Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7", "CN"].map((label) => <span key={label}>{label}</span>)}
-      </div>
-      <div className="xem-ngay-month__grid">
-        {Array.from({ length: month.offset }, (_, index) => <span className="xem-ngay-month__empty" key={`empty-${index}`} />)}
-        {days.map(({ day, date, profile, quality, observance }) => (
-          <button
-            type="button"
-            key={date}
-            className={`xem-ngay-month__day quality-${quality.key}${selectedDate === date ? " is-selected" : ""}${today === date ? " is-today" : ""}`}
-            aria-label={`Ngày ${day}, âm lịch ${profile.lunarDate.day} tháng ${profile.lunarDate.month}, ${quality.label}${observance ? `, ${observance}` : ""}`}
-            aria-pressed={selectedDate === date}
-            onClick={() => onDateChange(date)}
-          >
-            <span className="xem-ngay-month__day-top"><strong>{day}</strong>{today === date && <em>Hôm nay</em>}</span>
-            <span className="xem-ngay-month__lunar">ÂL {profile.lunarDate.day}/{profile.lunarDate.month}</span>
-            <span className="xem-ngay-month__stars" title={quality.label} aria-hidden="true">{"★".repeat(quality.stars)}</span>
-            <small>Trực {profile.dayOfficer} · Sao {profile.lunarMansion}</small>
-            {observance && <span className="xem-ngay-month__observance" title={observance}>{observance}</span>}
-          </button>
-        ))}
-      </div>
-      <div className="xem-ngay-month__legend" aria-label="Chú giải mức độ tốt xấu">
-        <span><i className="quality-excellent" />Tốt</span><span><i className="quality-good" />Khá</span><span><i className="quality-normal" />Bình thường</span><span><i className="quality-bad" />Xấu</span><span><i className="quality-very-bad" />Rất xấu</span>
-      </div>
-    </section>
-  );
-}
-
-/** Trang xem ngày: chọn nhanh ngày, tra cát hung và in bảng mười hai giờ tốt — xấu. */
+/** Trang xem ngày: công cụ tra ngày tốt xấu đầy đủ theo lịch pháp Việt Nam. */
 export function XemNgayPage() {
-  const today = useMemo(localDateValue, []);
-  const [date, setDate] = useState(today);
-  const profile = useMemo(() => getDateProfile(date), [date]);
-  const presets = [
-    { label: "Hôm nay", value: today },
-    { label: "Ngày mai", value: addDays(today, 1) },
-    { label: "+7 ngày", value: addDays(today, 7) },
-  ];
-  const weekdayLabel = useMemo(() => new Date(`${date}T00:00:00`).toLocaleDateString("vi-VN", { weekday: "short" }), [date]);
-  const dateLabel = useMemo(() => new Date(`${date}T00:00:00`).toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit", year: "numeric" }), [date]);
-  const lunarLabel = `Âm lịch ${profile.lunarDate.day}/${profile.lunarDate.month}${profile.lunarDate.leap ? " nhuận" : ""}`;
-
   return (
     <div className="xem-ngay-page">
-      <section className="page-dark-section" style={FIRST_SECTION_STYLE}>
+      <section className="page-dark-section xn-hero" style={FIRST_SECTION_STYLE}>
         <ToolHero
           kicker="Công cụ phong thủy"
           icon={CalendarCheck}
           title="Xem ngày"
           accent="tốt — xấu theo lịch pháp"
-          description="Chọn ngày dương lịch hoặc âm lịch và giờ muốn xem để tra Can Chi, Thập nhị Trực, Nhị thập bát tú, cát hung tinh cùng mười hai giờ trong ngày."
+          description="Chọn ngày dương lịch hoặc âm lịch và giờ muốn xem để tra Can Chi, Thập nhị Trực, Nhị thập bát tú, kiết hung tinh, giờ hoàng đạo, Đổng Công và các mục chọn ngày của Trạng Trình."
         />
-        <div className="container fengshui-tools">
-          <div className="xem-ngay-bar">
-            <p className="xem-ngay-bar__current">
-              <small>Đang xem · {weekdayLabel}</small>
-              <b>{dateLabel} · {lunarLabel}</b>
-            </p>
-            <div className="category-row">
-              <button type="button" aria-label="Xem ngày trước" onClick={() => setDate(addDays(date, -1))}>
-                −1 ngày
-              </button>
-              <button type="button" aria-label="Xem ngày sau" onClick={() => setDate(addDays(date, 1))}>
-                +1 ngày
-              </button>
-              {presets.map((preset) => (
-                <button type="button" className={date === preset.value ? "is-active" : ""} onClick={() => setDate(preset.value)} key={preset.label}>
-                  {preset.label}
-                </button>
-              ))}
-              <button type="button" onClick={() => window.print()}>
-                <Printer aria-hidden="true" /> In trang
-              </button>
-            </div>
-          </div>
-          <CalendarMonthPanel selectedDate={date} onDateChange={setDate} today={today} />
-          <div className="fengshui-workspace is-open">
-            <CalendarToolView date={date} onDateChange={setDate} />
-          </div>
+      </section>
+      <section className="page-light-section xn-section">
+        <div className="container">
+          <XemNgayView />
         </div>
       </section>
 
@@ -497,11 +390,11 @@ export function XemNgayPage() {
           },
           {
             question: "Vì sao cùng một ngày lại có giờ tốt và giờ xấu?",
-            answer: "Mỗi giờ có Can Chi và thần trực riêng, được chấm theo Nhật Phá, Trực giờ, Quý Nhân và Hoàng — Hắc đạo nên điểm số khác nhau.",
+            answer: "Mỗi giờ có Can Chi và thần trực riêng (Hoàng đạo hoặc Hắc đạo), cùng các sao theo giờ như Thiên Ất, Nhật Lộc, Nhật Phá hay Tuần Không, nên tính chất từng giờ khác nhau.",
           },
           {
-            question: "Nhập ngày sinh có bắt buộc không?",
-            answer: "Không bắt buộc. Bạn vẫn xem được toàn bộ thông tin của ngày khi bỏ trống phần đối chiếu tuổi.",
+            question: "Âm lịch trong công cụ tính theo múi giờ nào?",
+            answer: "Âm lịch được tính theo múi giờ Việt Nam (GMT+7); Thập nhị Trực và các sao an theo tiết khí lấy tiết tại 0 giờ đầu ngày.",
           },
         ]}
       />
