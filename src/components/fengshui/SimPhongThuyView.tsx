@@ -6,10 +6,15 @@ import {
   validateSimPhongThuyInput,
 } from "../../../shared/sim/sim-phong-thuy-engine";
 import {
+  BarChart3,
+  CheckCircle2,
   Compass,
+  Hash,
   Phone,
   RotateCcw,
+  Scale,
   Search,
+  Zap,
 } from "lucide-react";
 import "../../styles/sim-phong-thuy.css";
 
@@ -36,6 +41,17 @@ const formatQueryDate = (year: string, month: string, day: string) => {
 
 const formatQueryTime = (hour: string, minute: string) => {
   return `${hour.trim().padStart(2, "0")}:${minute.trim().padStart(2, "0")}`;
+};
+
+const BAGUA_BY_PALACE: Record<string, { symbol: string; han: string }> = {
+  Càn: { symbol: "☰", han: "乾" },
+  Đoài: { symbol: "☱", han: "兌" },
+  Ly: { symbol: "☲", han: "離" },
+  Chấn: { symbol: "☳", han: "震" },
+  Tốn: { symbol: "☴", han: "巽" },
+  Khảm: { symbol: "☵", han: "坎" },
+  Cấn: { symbol: "☶", han: "艮" },
+  Khôn: { symbol: "☷", han: "坤" },
 };
 
 export default function SimPhongThuyView({
@@ -122,18 +138,14 @@ export default function SimPhongThuyView({
     const [h, min] = submittedQuery.birthTime.split(":");
     const params = new URLSearchParams({
       so: submittedQuery.phone,
+      ngay: String(Number(d)),
+      thang: String(Number(m)),
+      nam: y,
+      gio: String(Number(h)),
+      phut: String(Number(min)),
       gioitinh: submittedQuery.gender === "Nữ" ? "nu" : "nam",
       lich: submittedQuery.calendarType === "lunar" ? "al" : "dl",
     });
-    if (y && m && d) {
-      params.set("nam", y);
-      params.set("thang", String(Number(m)));
-      params.set("ngay", String(Number(d)));
-    }
-    if (h && min) {
-      params.set("gio", String(Number(h)));
-      params.set("phut", String(Number(min)));
-    }
     if (submittedQuery.lunarLeapMonth) params.set("nhuan", "1");
 
     const controller = new AbortController();
@@ -162,6 +174,61 @@ export default function SimPhongThuyView({
   const result = syncedForCurrentQuery && syncedAnalysis.result
     ? syncedAnalysis.result
     : analysis.result;
+  const aspectAnalysisItems = result ? [
+    {
+      key: "theVan" as const,
+      label: "Thế vận",
+      facts: [] as Array<[string, string]>,
+    },
+    {
+      key: "taiLoc" as const,
+      label: "Tài lộc",
+      facts: [
+        ["Địa chi Tài vận", result.scores5Aspects.taiLoc.diaChi],
+        ["Ngũ hành Tài vận", result.scores5Aspects.taiLoc.nguHanh],
+      ] as Array<[string, string]>,
+    },
+    {
+      key: "congDanh" as const,
+      label: "Công danh",
+      facts: [
+        ["Địa chi Công danh", result.scores5Aspects.congDanh.diaChi],
+        ["Ngũ hành Công danh", result.scores5Aspects.congDanh.nguHanh],
+        ["Địa chi nguyên thần", result.scores5Aspects.congDanh.nguyenThanChi],
+        ["Ngũ hành nguyên thần", result.scores5Aspects.congDanh.nguyenThanHanh],
+      ] as Array<[string, string]>,
+    },
+    {
+      key: "tinhCam" as const,
+      label: "Tình cảm",
+      facts: [
+        ["Địa chi đối tượng", result.scores5Aspects.tinhCam.diaChiDoiTuong],
+        ["Ngũ hành đối tượng", result.scores5Aspects.tinhCam.nguHanhDoiTuong],
+        ["Quan hệ địa chi", result.scores5Aspects.tinhCam.quanHeDiaChi],
+      ] as Array<[string, string]>,
+    },
+    {
+      key: "giaDao" as const,
+      label: "Gia đạo",
+      facts: [] as Array<[string, string]>,
+    },
+  ].filter(({ key, facts }) => (
+    (result.referenceDetails?.aspectDetails?.[key]?.contextParagraphs.length ?? 0) > 0
+    || facts.some(([, value]) => Boolean(value))
+  )) : [];
+  const baguaProfile = result
+    ? BAGUA_BY_PALACE[result.ownerAstro.cungPhi] ?? { symbol: "☯", han: "易" }
+    : { symbol: "☯", han: "易" };
+  const elementDistribution = result
+    ? (["Thủy", "Mộc", "Hỏa", "Thổ", "Kim"] as const).map((element) => ({
+        element,
+        points: result.ownerAstro.elementPoints[element] ?? 0,
+        percent: result.ownerAstro.elementPercent[element] ?? 0,
+      }))
+    : [];
+  const dominantElement = [...elementDistribution].sort((a, b) => b.points - a.points)[0];
+  const weakestElement = [...elementDistribution].sort((a, b) => a.points - b.points)[0];
+
   useEffect(() => {
     if (!didSubmitRef.current || !result || isSyncing) return;
     resultRef.current?.focus({ preventScroll: true });
@@ -219,6 +286,17 @@ export default function SimPhongThuyView({
         url.searchParams.delete("phut");
       }
       window.history.replaceState({}, "", url.toString());
+    }
+  };
+
+  const getNguHanhBadgeColor = (element: string) => {
+    switch (element) {
+      case "Kim": return "#9c6b1e";
+      case "Mộc": return "#107e3e";
+      case "Thủy": return "#1769aa";
+      case "Hỏa": return "#c81e1e";
+      case "Thổ": return "#8c5b2a";
+      default: return "#555";
     }
   };
 
@@ -428,105 +506,716 @@ export default function SimPhongThuyView({
         </form>
       </div>
 
+      {/* RESULT OR WELCOME SECTION */}
       {hasValidPhone && isSyncing ? (
         <div className="skd-result-loading" role="status" aria-live="polite">
           <span className="skd-result-loading-mark" aria-hidden="true">易</span>
-          <div><strong>Đang lập quẻ SIM</strong><span>Vui lòng chờ trong giây lát.</span></div>
+          <div>
+            <strong>Đang lập và đối chiếu lá quẻ</strong>
+            <span>Kiểm tra quẻ, Bát Tự và các chỉ số liên quan.</span>
+          </div>
         </div>
       ) : !hasValidPhone || !result ? (
-        <div className="skd-simple-welcome">
-          <Compass aria-hidden="true" />
-          <div><strong>Tra cứu SIM theo Kinh Dịch</strong><p>Nhập số điện thoại để xem quẻ chủ, quẻ biến và gợi ý sử dụng.</p></div>
-        </div>
-      ) : (
-        <div id="print-area" ref={resultRef} className="skd-simple-result" role="region" aria-live="polite" aria-labelledby="sim-result-title" tabIndex={-1}>
-          {syncedForCurrentQuery && syncedAnalysis.error && (
-            <p className="skd-result-sync-warning" role="status">Không thể đối chiếu dữ liệu trực tuyến. Kết quả đang dùng bộ tính nội bộ.</p>
-          )}
-          <header className="skd-simple-result__intro">
-            <span>Kết quả tra cứu</span>
-            <h2 id="sim-result-title">Phong thủy SIM {result.formattedPhone}</h2>
+        <div className="skd-welcome-card">
+          <header className="skd-welcome-head">
+            <span>Phương pháp</span>
+            <div className="skd-welcome-title">5 yếu tố luận giải</div>
           </header>
 
-          <section className="skd-simple-summary" aria-label="Kết luận nhanh">
-            <div className="skd-simple-summary__copy">
-              <span>Kết luận theo Kinh Dịch</span>
-              <h3>SIM {result.formattedPhone}</h3>
-              <p>{result.decisionText.summary}</p>
-              <dl>
-                <div><dt>Quẻ chủ</dt><dd>{result.primaryHexagram.name}</dd></div>
-                <div><dt>Hào động</dt><dd>Hào {result.movingLine}</dd></div>
-                <div><dt>Quẻ biến</dt><dd>{result.changedHexagram.name}</dd></div>
-              </dl>
+          <div className="skd-welcome-features">
+            <div className="skd-welcome-feature-item">
+              <div className="skd-welcome-feature-icon"><Compass aria-hidden="true" /></div>
+              <h3>Kinh Dịch Lục Hào</h3>
             </div>
-            <div className="skd-simple-summary__verdict">
-              <strong>{result.finalClassification}</strong>
-              <span>{result.decisionText.recommendation}</span>
-            </div>
-          </section>
 
-          <section className="skd-simple-panel" aria-labelledby="skd-simple-hex-title">
-            <div className="skd-simple-panel__heading"><span>01 / Lá quẻ</span><h3 id="skd-simple-hex-title">Quẻ SIM</h3></div>
-            <div className="skd-simple-hex-grid">
-              <article>
-                <span>Quẻ chủ · Hiện tại</span>
-                <h4>{result.primaryHexagram.name}</h4>
-                <p>{result.hexagramAssessment.primary.explanation}</p>
+            <div className="skd-welcome-feature-item">
+              <div className="skd-welcome-feature-icon"><Zap aria-hidden="true" /></div>
+              <h3>Ngũ Hành & Bát Tự</h3>
+            </div>
+
+            <div className="skd-welcome-feature-item">
+              <div className="skd-welcome-feature-icon"><Scale aria-hidden="true" /></div>
+              <h3>Âm Dương Tương Phối</h3>
+            </div>
+
+            <div className="skd-welcome-feature-item">
+              <div className="skd-welcome-feature-icon"><Hash aria-hidden="true" /></div>
+              <h3>81 Linh Số Đuôi SIM</h3>
+            </div>
+
+            <div className="skd-welcome-feature-item">
+              <div className="skd-welcome-feature-icon"><BarChart3 aria-hidden="true" /></div>
+              <h3>5 Phương Diện Vận Khí</h3>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div
+          id="print-area"
+          ref={resultRef}
+          role="region"
+          aria-live="polite"
+          aria-labelledby="sim-result-title"
+          tabIndex={-1}
+        >
+          {syncedForCurrentQuery && syncedAnalysis.error && (
+            <p className="skd-result-sync-warning" role="status">
+              Chưa thể đối chiếu nguồn trực tuyến; kết quả dưới đây đang dùng bộ tính dự phòng.
+            </p>
+          )}
+          <div className="skd-result-header">
+            <h2 id="sim-result-title">XEM PHONG THỦY SIM {result.formattedPhone}</h2>
+          </div>
+
+          <nav className="skd-result-jump-nav" aria-label="Điều hướng nhanh kết quả phong thủy sim">
+            <a href="#kd-summary-card"><span>01</span>Tổng quan</a>
+            <a href="#skd-luc-hao"><span>02</span>Lá quẻ</a>
+            <a href="#skd-owner-overview"><span>03</span>Mệnh cục</a>
+            <a href="#skd-boisim-scorecards"><span>04</span>Phương diện</a>
+            <a href="#skd-bcls"><span>05</span>Bát Cực</a>
+            <a href="#skd-final-advice"><span>06</span>Tổng hợp</a>
+          </nav>
+
+        {/* HERO SUMMARY CARD */}
+        <section id="kd-summary-card" className="skd-hero-summary-card">
+          <div>
+            <div className="skd-hero-eyebrow">Tổng quan theo Kinh Dịch</div>
+            <div className="skd-hero-phone-title">Sim {result.formattedPhone}</div>
+
+            <div className="skd-hero-meta-row">
+              <div className="skd-hero-meta-item">
+                <span>Quẻ chủ:</span>
+                <strong>{result.primaryHexagram.name}</strong>
+              </div>
+              <div className="skd-hero-meta-item">
+                <span>Hào động:</span>
+                <strong>{result.movingLine}</strong>
+              </div>
+              <div className="skd-hero-meta-item">
+                <span>Ngũ hành sim:</span>
+                <strong style={{ color: getNguHanhBadgeColor(result.simElement.element) }}>
+                  {result.simElement.element}
+                </strong>
+              </div>
+            </div>
+
+            <p className="skd-hero-desc">Bản luận giải tổng hợp lá quẻ Lục Hào, mệnh cục Bát Tự và Bát Cực Linh Số của dãy số.</p>
+
+            <div className="skd-hero-actions">
+              <button
+                type="button"
+                className="skd-btn-sm"
+                onClick={handleResetToTop}
+              >
+                <RotateCcw size={14} style={{ display: "inline", marginRight: 4 }} />
+                Luận số khác
+              </button>
+            </div>
+          </div>
+
+        </section>
+
+        {/* LÁ QUẺ LỤC HÀO SHEET */}
+        <section id="skd-luc-hao" className="skd-luc-hao-sheet" aria-labelledby="skd-lh-title">
+          <header className="skd-lh-section-intro">
+            <span>Lá quẻ đồ họa</span>
+            <h3 id="skd-lh-title">Lá Quẻ Lục Hào của SIM {result.formattedPhone}</h3>
+            <p>Xem nhanh toàn bộ quẻ chủ, quẻ biến và các hào trên một bản duy nhất.</p>
+          </header>
+
+
+          {result.referenceDetails?.hexagramImageUrl && (
+            <figure className="skd-lh-reference-figure">
+              <div className="skd-lh-reference-head">
+                <div>
+                  <span>Bản Lá Quẻ hoàn chỉnh</span>
+                  <strong>Lục Thân · Can Chi · Lục Thú · Sao theo hào</strong>
+                </div>
+                <a
+                  href={result.referenceDetails.hexagramImageUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label="Mở ảnh Lá Quẻ kích thước đầy đủ"
+                >
+                  Mở ảnh lớn
+                </a>
+              </div>
+              <a
+                className="skd-lh-reference-image-link"
+                href={result.referenceDetails.hexagramImageUrl}
+                target="_blank"
+                rel="noreferrer"
+                aria-label="Mở ảnh Lá Quẻ kích thước đầy đủ trong thẻ mới"
+              >
+                {/* Dynamic reference artwork is already generated at its final dimensions. */}
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={result.referenceDetails.hexagramImageUrl}
+                  alt={`Lá Quẻ Lục Hào đầy đủ của SIM ${result.formattedPhone}`}
+                  width={860}
+                  height={1253}
+                  loading="lazy"
+                  decoding="async"
+                />
+              </a>
+              <figcaption>Chạm vào ảnh để xem rõ toàn bộ Lục Thân, Can Chi, Lục Thú và sao theo từng hào.</figcaption>
+            </figure>
+          )}
+
+          <details className="skd-lh-data-details" open={!result.referenceDetails?.hexagramImageUrl}>
+            <summary>
+              <span>
+                <b>Bảng dữ liệu Lục Hào</b>
+                <small>Dành cho người muốn tra cứu từng hào và các chỉ số chi tiết</small>
+              </span>
+              <em>Xem chi tiết</em>
+            </summary>
+            <div className="skd-lh-data-details-body">
+          <div className="skd-lh-oracle-stage">
+            <header className="skd-lh-heading">
+              <div>
+                <div className="skd-lh-kicker">Hồ sơ Kinh Dịch · Lục Hào</div>
+                <h3>Bản đọc tương tác</h3>
+                <p>Đối chiếu quẻ chủ, hào động và quẻ biến của dãy sim.</p>
+              </div>
+              <div className="skd-lh-line-legend" aria-label="Chú giải màu hào">
+                <span><i /> Hào tĩnh</span>
+                <span><i className="is-moving" /> Hào động</span>
+              </div>
+            </header>
+
+            {/* HEXAGRAM GRAPHICS & LABELS */}
+            <div className="skd-lh-hex-header">
+              {/* QUẺ CHỦ */}
+              <article className="skd-lh-hex-col is-primary">
+                <div className="skd-lh-hex-eyebrow">Quẻ chủ</div>
+                <div className="skd-lh-hex-name">{result.lucHaoData.primary.name}</div>
+                <div className="skd-lh-hex-bars" aria-label={`Sáu hào của quẻ ${result.lucHaoData.primary.name}`}>
+                  {result.lucHaoData.primary.lines.map((l) => (
+                    <div
+                      key={l.position}
+                      className="skd-lh-bar-row"
+                      aria-label={`Hào ${l.position}${l.isMoving ? ", hào động" : ""}`}
+                    >
+                      <span className="skd-lh-bar-order">{l.position}</span>
+                      <span className="skd-lh-bar-graphic">
+                        {l.isYang ? (
+                          <span className={`skd-lh-bar-yang ${l.isMoving ? "is-moving" : ""}`} />
+                        ) : (
+                          <span className={`skd-lh-bar-yin ${l.isMoving ? "is-moving" : ""}`}>
+                            <span />
+                            <span />
+                          </span>
+                        )}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+                <div className="skd-lh-hex-palace">{result.lucHaoData.primary.palaceLabel}</div>
               </article>
-              <div className="skd-simple-hex-arrow" aria-label={`Hào ${result.movingLine} động`}><b>Hào {result.movingLine}</b><span aria-hidden="true">→</span></div>
-              <article>
-                <span>Quẻ biến · Xu hướng</span>
-                <h4>{result.changedHexagram.name}</h4>
-                <p>{result.hexagramAssessment.changed.explanation}</p>
+
+              {/* BIẾN ARROW */}
+              <div className="skd-lh-hex-center" aria-label={`Hào ${result.movingLine} biến`}>
+                <span className="skd-lh-moving-label">Hào {result.movingLine}</span>
+                <span className="skd-lh-arrow" aria-hidden="true">→</span>
+                <span>Biến quẻ</span>
+              </div>
+
+              {/* QUẺ BIẾN */}
+              <article className="skd-lh-hex-col is-changed">
+                <div className="skd-lh-hex-eyebrow">Quẻ biến</div>
+                <div className="skd-lh-hex-name">{result.lucHaoData.changed.name}</div>
+                <div className="skd-lh-hex-bars" aria-label={`Sáu hào của quẻ ${result.lucHaoData.changed.name}`}>
+                  {result.lucHaoData.changed.lines.map((cl) => (
+                    <div
+                      key={cl.position}
+                      className="skd-lh-bar-row"
+                      aria-label={`Hào ${cl.position}${cl.isTransformed ? ", được biến đổi" : ""}`}
+                    >
+                      <span className="skd-lh-bar-order">{cl.position}</span>
+                      <span className="skd-lh-bar-graphic">
+                        {cl.isYang ? (
+                          <span className={`skd-lh-bar-yang ${cl.isTransformed ? "is-moving" : ""}`} />
+                        ) : (
+                          <span className={`skd-lh-bar-yin ${cl.isTransformed ? "is-moving" : ""}`}>
+                            <span />
+                            <span />
+                          </span>
+                        )}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+                <div className="skd-lh-hex-palace">{result.lucHaoData.changed.palaceLabel}</div>
               </article>
             </div>
-            {result.referenceDetails?.hexagramImageUrl && (
-              <details className="skd-simple-details">
-                <summary>Xem lá quẻ Lục Hào đầy đủ</summary>
-                <img src={result.referenceDetails.hexagramImageUrl} alt={`Lá quẻ Lục Hào của SIM ${result.formattedPhone}`} loading="lazy" />
-              </details>
-            )}
-          </section>
+          </div>
 
-          <section className="skd-simple-panel" aria-labelledby="skd-simple-aspects-title">
-            <div className="skd-simple-panel__heading"><span>02 / Phương diện</span><h3 id="skd-simple-aspects-title">SIM hỗ trợ điều gì?</h3></div>
-            <div className="skd-simple-aspects">
-              {([
-                ["Thế vận", result.scores5Aspects.theVan],
-                ["Tài lộc", result.scores5Aspects.taiLoc],
-                ["Công danh", result.scores5Aspects.congDanh],
-                ["Tình cảm", result.scores5Aspects.tinhCam],
-                ["Gia đạo", result.scores5Aspects.giaDao],
-              ] as const).map(([label, aspect]) => (
-                <article key={label}>
-                  <div><h4>{label}</h4><strong>{aspect.scorePercent}%</strong></div>
-                  <p>{result.referenceDetails ? aspect.text : aspect.scorePercent >= 70 ? "Phương diện được hỗ trợ rõ." : aspect.scorePercent >= 50 ? "Phương diện ở mức cân bằng." : "Phương diện cần cân nhắc thêm."}</p>
-                </article>
-              ))}
+          {/* META INFO */}
+          <div className="skd-lh-meta-box">
+            <div className="skd-lh-meta-item">
+              <span>Dương lịch</span>
+              <strong>{result.lucHaoData.meta.solarDateTime}</strong>
             </div>
-          </section>
-
-          <section className="skd-simple-advice" aria-labelledby="skd-simple-advice-title">
-            <span>03 / Gợi ý sử dụng</span>
-            <h3 id="skd-simple-advice-title">Có nên tiếp tục sử dụng?</h3>
-            <p>{result.referenceDetails ? result.decisionText.advice : result.decisionText.summary}</p>
-            <button type="button" onClick={handleResetToTop}><RotateCcw size={17} aria-hidden="true" /> Luận SIM khác</button>
-          </section>
-
-          <details className="skd-simple-details skd-simple-details--more">
-            <summary>Xem thêm thông tin mệnh chủ và luận giải</summary>
-            <div className="skd-simple-more-grid">
-              <div><span>Ngày sinh</span><strong>{result.ownerAstro.solarDate}</strong></div>
-              <div><span>Bản mệnh</span><strong>{result.ownerAstro.banMenhNguHanh}</strong></div>
-              <div><span>Cung phi</span><strong>{result.ownerAstro.cungPhi}</strong></div>
-              <div><span>Ngũ hành SIM</span><strong>{result.simElement.element}</strong></div>
+            <div className="skd-lh-meta-item">
+              <span>Âm lịch</span>
+              <strong>{result.lucHaoData.meta.lunarDateTime}</strong>
             </div>
-            <div className="skd-simple-reading">
-              <h4>Ý nghĩa quẻ {result.primaryHexagram.name}</h4>
-              {(result.referenceDetails?.meaningParagraphs.length ? result.referenceDetails.meaningParagraphs : [result.primaryHexagram.explanation]).map((paragraph, index) => <p key={index}>{paragraph}</p>)}
+            <div className="skd-lh-meta-item is-wide">
+              <span>Tứ trụ Can Chi</span>
+              <strong>{result.lucHaoData.meta.fourPillarsText}</strong>
+            </div>
+            <div className="skd-lh-meta-item">
+              <span>Tiết khí</span>
+              <strong>{result.lucHaoData.meta.solarTerm}</strong>
+            </div>
+            <div className="skd-lh-meta-item">
+              <span>Nhật thần</span>
+              <strong>{result.lucHaoData.meta.nhatThan}</strong>
+            </div>
+            <div className="skd-lh-meta-item">
+              <span>Nguyệt lệnh</span>
+              <strong>{result.lucHaoData.meta.nguyetLenh}</strong>
+            </div>
+          </div>
+
+          {/* TRIỆU / TƯỢNG QUẺ BANNER */}
+          <div className="skd-lh-trieu-banner">
+            <span>Tượng quẻ</span>
+            <strong>{result.lucHaoData.primary.trieu}</strong>
+          </div>
+
+          {/* TABLE 1: THÂN HÀO & CAN CHI */}
+          <div className="skd-lh-table-section">
+            <div className="skd-lh-table-heading">
+              <div>
+                <span>Chi tiết Lục Hào</span>
+                <strong>Lục Thân · Can Chi · Lục Thú</strong>
+              </div>
+              <small>Vuốt ngang để xem đầy đủ</small>
+            </div>
+            <div
+              className="skd-lh-table-wrap"
+              role="region"
+              aria-label="Bảng chi tiết Lục Thân, Can Chi và Lục Thú"
+              tabIndex={0}
+            >
+              <table className="skd-lh-table">
+                <caption className="skd-visually-hidden">Bảng Lục Thân, Can Chi và Lục Thú của quẻ chủ và quẻ biến</caption>
+                <thead>
+                  <tr className="skd-lh-table-group-row">
+                    <th colSpan={6}>Quẻ chủ · {result.lucHaoData.primary.name}</th>
+                    <th colSpan={5}>Quẻ biến · {result.lucHaoData.changed.name}</th>
+                  </tr>
+                  <tr>
+                  <th style={{ width: "45px" }}>Hào</th>
+                  <th style={{ width: "50px" }}>T/Ư</th>
+                  <th>Lục Thân</th>
+                  <th>Can Chi</th>
+                  <th style={{ width: "55px" }}>P.Thần</th>
+                  <th style={{ width: "45px" }}>T.K</th>
+                  <th>Lục Thân</th>
+                  <th>Can Chi</th>
+                  <th>Lục Thú</th>
+                  <th style={{ width: "45px" }}>T.K</th>
+                  <th style={{ width: "45px" }}>Hào</th>
+                  </tr>
+                </thead>
+                <tbody>
+                {result.lucHaoData.primary.lines.map((pLine, i) => {
+                  const cLine = result.lucHaoData.changed.lines[i];
+                  const isMoving = pLine.isMoving;
+
+                  return (
+                    <tr key={pLine.position} className={isMoving ? "skd-lh-row-moving" : ""}>
+                      {/* Quẻ Chủ: Hào */}
+                      <td style={{ fontWeight: "700" }}>{pLine.symbol}</td>
+                      {/* Quẻ Chủ: T/Ư */}
+                      <td>
+                        {pLine.theUng === "Thế" ? (
+                          <span className="skd-lh-the-tag">Thế</span>
+                        ) : pLine.theUng === "Ứng" ? (
+                          <span className="skd-lh-ung-tag">Ứng</span>
+                        ) : (
+                          ""
+                        )}
+                      </td>
+                      {/* Quẻ Chủ: Lục Thân */}
+                      <td style={{ fontWeight: isMoving ? "700" : "500" }}>{pLine.lucThan}</td>
+                      {/* Quẻ Chủ: Can Chi */}
+                      <td style={{ fontWeight: isMoving ? "700" : "500" }}>{pLine.canChi}</td>
+                      {/* Quẻ Chủ: P.Thần */}
+                      <td>{pLine.phucThan}</td>
+                      {/* Quẻ Chủ: T.K */}
+                      <td>{pLine.tuanKhong}</td>
+
+                      {/* Quẻ Biến: Lục Thân */}
+                      <td style={{ fontWeight: isMoving ? "700" : "500" }}>{cLine.lucThan}</td>
+                      {/* Quẻ Biến: Can Chi */}
+                      <td style={{ fontWeight: isMoving ? "700" : "500" }}>{cLine.canChi}</td>
+                      {/* Quẻ Biến: Lục Thú */}
+                      <td>{cLine.lucThu}</td>
+                      {/* Quẻ Biến: T.K */}
+                      <td>{cLine.tuanKhong}</td>
+                      {/* Quẻ Biến: Hào */}
+                      <td style={{ fontWeight: "700" }}>{cLine.symbol}</td>
+                    </tr>
+                  );
+                })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* TABLE 2: VƯỢNG TƯỚNG & TRƯỜNG SINH */}
+          <div className="skd-lh-table-section">
+            <div className="skd-lh-table-heading">
+              <div>
+                <span>Chu kỳ sinh vượng</span>
+                <strong>Vượng Suy · Quý Thần · Trường Sinh</strong>
+              </div>
+              <small>Hào động được đánh dấu màu son</small>
+            </div>
+            <div
+              className="skd-lh-table-wrap"
+              role="region"
+              aria-label="Bảng Vượng Suy, Quý Thần và Trường Sinh"
+              tabIndex={0}
+            >
+              <table className="skd-lh-table">
+                <caption className="skd-visually-hidden">Bảng Vượng Suy, Quý Thần và Trường Sinh của quẻ chủ và quẻ biến</caption>
+                <thead>
+                  <tr className="skd-lh-table-group-row">
+                    <th colSpan={5}>Quẻ chủ · {result.lucHaoData.primary.name}</th>
+                    <th colSpan={4}>Quẻ biến · {result.lucHaoData.changed.name}</th>
+                  </tr>
+                  <tr>
+                  <th>Hào</th>
+                  <th>V-S</th>
+                  <th>Q.Thần</th>
+                  <th>T.S-Ngày</th>
+                  <th>T.S-Tháng</th>
+                  <th>Hào</th>
+                  <th>V-S</th>
+                  <th>T.S-Ngày</th>
+                  <th>T.S-Tháng</th>
+                  </tr>
+                </thead>
+                <tbody>
+                {result.lucHaoData.primary.lines.map((pLine, i) => {
+                  const cLine = result.lucHaoData.changed.lines[i];
+                  const isMoving = pLine.isMoving;
+
+                  return (
+                    <tr key={pLine.position} className={isMoving ? "skd-lh-row-moving" : ""}>
+                      {/* Quẻ Chủ: Hào */}
+                      <td style={{ fontWeight: isMoving ? "700" : "600" }}>{pLine.canChiFull}</td>
+                      {/* Quẻ Chủ: V-S */}
+                      <td>{pLine.vuongTuong}</td>
+                      {/* Quẻ Chủ: Q.Thần */}
+                      <td>{pLine.quyThan}</td>
+                      {/* Quẻ Chủ: T.S Ngày */}
+                      <td>{pLine.tsNgay}</td>
+                      {/* Quẻ Chủ: T.S Tháng */}
+                      <td>{pLine.tsThang}</td>
+
+                      {/* Quẻ Biến: Hào */}
+                      <td style={{ fontWeight: isMoving ? "700" : "600" }}>{cLine.canChiFull}</td>
+                      {/* Quẻ Biến: V-S */}
+                      <td>{cLine.vuongTuong}</td>
+                      {/* Quẻ Biến: T.S Ngày */}
+                      <td>{cLine.tsNgay}</td>
+                      {/* Quẻ Biến: T.S Tháng */}
+                      <td>{cLine.tsThang}</td>
+                    </tr>
+                  );
+                })}
+                </tbody>
+              </table>
+            </div>
+          </div>
             </div>
           </details>
-        </div>
+        </section>
+
+        {/* KHÁI QUÁT VỀ MỆNH CỤC (5 THẺ) */}
+        <details id="skd-owner-overview" className="skd-accordion" open>
+          <summary>Khái quát về mệnh cục cá nhân</summary>
+          <div className="skd-accordion-body">
+            <section className="skd-destiny-score-panel" aria-label="Đối chiếu ngũ hành SIM với mệnh cục">
+              <div className="skd-destiny-score-total">
+                <span>Đối chiếu Mệnh cục</span>
+                <p>Đối chiếu ngũ hành SIM với Nạp âm, Cung phi và Nhật chủ.</p>
+              </div>
+              <div className="skd-destiny-axis-list">
+                {result.ownerAstro.destinyAxes.length > 0 ? result.ownerAstro.destinyAxes.map((axis) => (
+                  <div key={axis.key}>
+                    <span>{axis.label}<small>{axis.ownerElement} ↔ SIM {axis.simElement}</small></span>
+                    <b>{axis.relation}</b>
+                  </div>
+                )) : <p>Nhập ngày giờ sinh để đối chiếu Mệnh cục.</p>}
+              </div>
+            </section>
+
+            <div className="skd-astro-cards-grid">
+              {/* CARD 01 */}
+              <article className="skd-astro-card is-profile">
+                <header className="skd-astro-card-head">
+                  <span className="skd-astro-card-num">01</span>
+                  <h4>Thông tin thân chủ</h4>
+                </header>
+                <div className="skd-astro-kv"><span>Dương lịch</span><strong>{result.ownerAstro.solarDate}</strong></div>
+                <div className="skd-astro-kv"><span>Âm lịch</span><strong>{result.ownerAstro.lunarDate}</strong></div>
+                <div className="skd-astro-kv"><span>Tiết khí</span><strong>{result.ownerAstro.solarTerm}</strong></div>
+                <div className="skd-astro-kv"><span>Giới tính</span><strong>{result.ownerAstro.gender}</strong></div>
+                <div className="skd-astro-kv"><span>Cung mệnh</span><strong>{result.ownerAstro.cungMenh}</strong></div>
+                <div className="skd-astro-kv"><span>Bản mệnh</span><strong>{result.ownerAstro.banMenhNguHanh}</strong></div>
+              </article>
+
+              {/* CARD 02 */}
+              <article className="skd-astro-card is-palace">
+                <header className="skd-astro-card-head">
+                  <span className="skd-astro-card-num">02</span>
+                  <h4>Cung phi & Quái số</h4>
+                </header>
+                <div className="skd-palace-panel">
+                  <span className="skd-palace-symbol" aria-hidden="true">{baguaProfile.symbol}</span>
+                  <strong className="skd-palace-number">{result.ownerAstro.quaiSo}</strong>
+                  <div className="skd-palace-name">
+                    <b>{baguaProfile.han}</b>
+                    <span>{result.ownerAstro.cungPhi}</span>
+                  </div>
+                </div>
+              </article>
+
+              {/* CARD 03 */}
+              <article className="skd-astro-card is-elements">
+                <header className="skd-astro-card-head">
+                  <span className="skd-astro-card-num">03</span>
+                  <h4>Biểu đồ Ngũ hành Bát Tự</h4>
+                </header>
+                <div className="skd-element-insights">
+                  <div><span>Vượng nhất</span><strong>{dominantElement?.element} · {dominantElement?.points}</strong></div>
+                  <div><span>Yếu nhất</span><strong>{weakestElement?.element} · {weakestElement?.points}</strong></div>
+                </div>
+                <div className="skd-element-meter-list">
+                  {elementDistribution.map(({ element, points, percent }) => {
+                    return (
+                      <div key={element} className="skd-element-meter-row">
+                        <span style={{ color: getNguHanhBadgeColor(element), fontWeight: "bold" }}>{element}</span>
+                        <div className="skd-element-meter-bar" role="meter" aria-label={`${element}: ${points}`} aria-valuemin={0} aria-valuemax={100} aria-valuenow={percent}>
+                          <div
+                            className="skd-element-meter-fill"
+                            style={{ width: `${percent}%`, background: getNguHanhBadgeColor(element) }}
+                          />
+                        </div>
+                        <strong>{points}</strong>
+                      </div>
+                    );
+                  })}
+                </div>
+              </article>
+
+              {/* CARD 04 */}
+              <article className="skd-astro-card is-bazi">
+                <header className="skd-astro-card-head">
+                  <span className="skd-astro-card-num">04</span>
+                  <h4>Bát tự Tứ trụ</h4>
+                </header>
+                <div className="skd-bazi-pillars">
+                  {([
+                    ["Giờ", result.ownerAstro.baziPillars.hour],
+                    ["Ngày", result.ownerAstro.baziPillars.day],
+                    ["Tháng", result.ownerAstro.baziPillars.month],
+                    ["Năm", result.ownerAstro.baziPillars.year],
+                  ] as const).map(([label, pillar]) => (
+                    <section className="skd-bazi-pillar" key={label}>
+                      <h5>{label}</h5>
+                      <div>
+                        <span>{label === "Ngày" ? "Nhật chủ" : "Thiên can"}</span>
+                        <strong>{pillar.stem}</strong>
+                        <small>{pillar.stemMeta || pillar.element.split(" · ")[0]}</small>
+                      </div>
+                      <div>
+                        <span>Địa chi</span>
+                        <strong>{pillar.branch}</strong>
+                        <small>{pillar.branchMeta || pillar.element.split(" · ")[1]}</small>
+                      </div>
+                    </section>
+                  ))}
+                </div>
+              </article>
+
+              {/* CARD 05 */}
+              <article className="skd-astro-card is-relations">
+                <header className="skd-astro-card-head">
+                  <span className="skd-astro-card-num">05</span>
+                  <h4>Quan hệ Can Chi</h4>
+                </header>
+                <div className="skd-relation-list">
+                  {result.ownerAstro.canChiRelations.canHops.length > 0 && (
+                    <div className="skd-relation-group">
+                      <div className="skd-relation-label">Thiên can</div>
+                      {result.ownerAstro.canChiRelations.canHops.map((item, index) => <p key={index}>{item}</p>)}
+                    </div>
+                  )}
+                  {result.ownerAstro.canChiRelations.good.length > 0 && (
+                    <div className="skd-relation-group is-good">
+                      <div className="skd-relation-label">Quan hệ tốt</div>
+                      {result.ownerAstro.canChiRelations.good.map((item, index) => <p key={index}>{item}</p>)}
+                    </div>
+                  )}
+                  {result.ownerAstro.canChiRelations.caution.length > 0 && (
+                    <div className="skd-relation-group is-warning">
+                      <div className="skd-relation-label">Cần lưu ý</div>
+                      {result.ownerAstro.canChiRelations.caution.map((item, index) => <p key={index}>{item}</p>)}
+                    </div>
+                  )}
+                </div>
+              </article>
+            </div>
+          </div>
+        </details>
+
+
+        {/* 5 PHƯƠNG DIỆN SCORE METERS */}
+        <section id="skd-boisim-scorecards">
+          <header className="skd-aspect-section-head">
+            <div><span>04 · Ứng dụng</span><h3>SIM tác động thế nào đến từng phương diện?</h3></div>
+          </header>
+
+          {aspectAnalysisItems.length > 0 && (
+            <details className="skd-aspect-analysis" open>
+              <summary>Luận chi tiết từng phương diện</summary>
+              {result.referenceDetails?.fitMethodParagraphs?.length ? (
+                <details className="skd-fit-method">
+                  <summary>Cách phối quẻ với Bát Tự</summary>
+                  <div>
+                    {result.referenceDetails.fitMethodParagraphs.map((paragraph, index) => <p key={index}>{paragraph}</p>)}
+                  </div>
+                </details>
+              ) : null}
+              <div className="skd-aspect-analysis-grid">
+                {aspectAnalysisItems.map(({ key, label, facts }, index) => (
+                  <details className="skd-aspect-detail-card" key={key} open={index === 0}>
+                    <summary>
+                      <span>{label}</span>
+                    </summary>
+                    <div className="skd-aspect-detail-body">
+                      {result.referenceDetails?.aspectDetails?.[key]?.contextParagraphs.map((paragraph, paragraphIndex) => (
+                        <p key={paragraphIndex}>{paragraph}</p>
+                      ))}
+                      {facts.some(([, value]) => Boolean(value)) && (
+                        <dl className="skd-aspect-facts">
+                          {facts.filter(([, value]) => Boolean(value)).map(([factLabel, value]) => (
+                            <div key={factLabel}><dt>{factLabel}</dt><dd>{value}</dd></div>
+                          ))}
+                        </dl>
+                      )}
+                    </div>
+                  </details>
+                ))}
+              </div>
+            </details>
+          )}
+        </section>
+
+        {/* BÁT CỰC LINH SỐ */}
+        <section id="skd-bcls" className="skd-bcls-section" aria-labelledby="skd-bcls-title">
+          <header className="skd-bcls-head">
+            <div>
+              <span>05 · 64 cặp sao Bát Trạch</span>
+              <h3 id="skd-bcls-title">Bát Cực Linh Số</h3>
+              <p>Đọc lần lượt {result.meta.bc.total} cặp số liền kề và ý nghĩa sao Bát Trạch của từng cặp.</p>
+            </div>
+          </header>
+
+          <div className="skd-bcls-pair-flow" role="list" aria-label="Các cặp sao Bát Cực trong SIM">
+            {result.meta.bc.items.map((item, index) => (
+              <article key={`${item.pair}-${index}`} role="listitem" className="skd-bcls-pair">
+                <header><strong>{item.pair}</strong><span>{index + 1}</span></header>
+                <b>{item.name}</b>
+                <p>{item.desc}</p>
+              </article>
+            ))}
+          </div>
+
+        </section>
+
+        {/* LUẬN GIẢI CHUYÊN SÂU THEO QUẺ SIM & BÁT TỰ */}
+        <details id="skd-deep-reading" className="skd-accordion">
+          <summary>Luận giải chuyên sâu theo quẻ sim và bát tự</summary>
+          <div className="skd-accordion-body">
+            <div className="skd-reading-article">
+              <h4>Ý nghĩa quẻ: {result.primaryHexagram.name}</h4>
+              {result.referenceDetails?.meaningParagraphs.length
+                ? result.referenceDetails.meaningParagraphs.map((paragraph, index) => <p key={index}>{paragraph}</p>)
+                : <><p><b>Triệu:</b> <em>{result.primaryHexagram.trieu}</em></p><p>{result.primaryHexagram.explanation}</p></>}
+            </div>
+
+            <div className="skd-reading-article">
+              <h4>Luận giải tổng thể vận thế của Sim {result.formattedPhone}</h4>
+              {result.referenceDetails?.generalReadingParagraphs.length
+                ? result.referenceDetails.generalReadingParagraphs.map((paragraph, index) => <p key={index}>{paragraph}</p>)
+                : <p>{result.primaryHexagram.generalReading}</p>}
+            </div>
+          </div>
+        </details>
+
+        {/* GỢI Ý SỬ DỤNG & QUYẾT ĐỊNH */}
+        <section id="skd-final-advice" className="skd-decision-card">
+          <header className="skd-decision-head">
+            <span>Tổng hợp</span>
+            <h3 className="skd-decision-title">Các yếu tố của SIM {result.formattedPhone}</h3>
+          </header>
+
+
+          <div className="skd-decision-highlights">
+            <div className="skd-decision-highlights-title">Các yếu tố đã xét</div>
+            <ul>
+              <li>
+                <CheckCircle2 aria-hidden="true" />
+                <span><b>Quẻ Kinh Dịch:</b> Quẻ chủ {result.primaryHexagram.name}, hào {result.movingLine} động, quẻ biến {result.changedHexagram.name}.</span>
+              </li>
+              <li>
+                <CheckCircle2 aria-hidden="true" />
+                <span><b>Bát Cực Linh Số:</b> {result.meta.bc.total} cặp số liền kề: {result.meta.bc.items.map((item) => item.name).join(", ")}.</span>
+              </li>
+              <li>
+                <CheckCircle2 aria-hidden="true" />
+                <span><b>Ngũ hành Sim:</b> Sim {result.formattedPhone} có ngũ hành <strong>{result.simElement.element}</strong> ({result.simElement.name}), thân chủ có bản mệnh <strong>{result.ownerAstro.banMenhNguHanh}</strong>, quan hệ ngũ hành: <em>{result.simElement.relationWithOwner}</em>.</span>
+              </li>
+              <li>
+                <CheckCircle2 aria-hidden="true" />
+                <span><b>Âm Dương:</b> {result.yinYang.evenCount} số Âm (chẵn) / {result.yinYang.oddCount} số Dương (lẻ).</span>
+              </li>
+              {result.referenceDetails?.hasLast4Reading !== false && (
+                <li>
+                  <CheckCircle2 aria-hidden="true" />
+                  <span><b>4 số cuối:</b> Đuôi <strong>{result.linhSo4Last.last4}</strong> ({result.linhSo4Last.meaning}).</span>
+                </li>
+              )}
+              {result.patterns.length > 0 && (
+                <li>
+                  <CheckCircle2 aria-hidden="true" />
+                  <span><b>Dạng số:</b> {result.patterns.join(", ")}.</span>
+                </li>
+              )}
+            </ul>
+          </div>
+
+          <div className="skd-decision-verdict">
+            <button
+              type="button"
+              className="skd-decision-reset"
+              onClick={handleResetToTop}
+            >
+              <RotateCcw size={15} aria-hidden="true" />
+              Luận SIM Khác
+            </button>
+          </div>
+        </section>
+      </div>
       )}
     </div>
   );
