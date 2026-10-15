@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { createPortal } from "react-dom";
 import { useSearchParams } from "react-router-dom";
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Printer, X } from "lucide-react";
 import {
@@ -11,6 +12,7 @@ import {
   STEMS,
   type XemNgayProfile,
 } from "../../../shared/xem-ngay";
+import { canChi, jdFromDate, monthCanChi, yearCanChi } from "../../../shared/xem-ngay/calendar";
 import {
   CUU_TINH_INFO,
   DAN_GIAN_INFO,
@@ -27,9 +29,17 @@ import {
 import { TRANG_TRINH_MUC } from "../../../shared/xem-ngay/trang-trinh";
 import "../../styles/xem-ngay.css";
 
-type Detail = { title: string; body: ReactNode };
+/**
+ * "note": lời giải ngắn, hiện thành thẻ nhỏ căn giữa (như popover vàng của trang mẫu).
+ * "rich": nội dung có bảng/danh sách, hiện thành thẻ rộng.
+ */
+type HintVariant = "note" | "rich";
+type Hint = { id: string; title: string; body: ReactNode; variant: HintVariant };
+type ActiveHint = Hint & { anchor: HTMLElement; pinned: boolean; sheet: boolean };
 
 const pad = (value: number) => String(value).padStart(2, "0");
+const OPEN_DELAY = 90;
+const CLOSE_DELAY = 160;
 
 function todayValue() {
   const now = new Date();
@@ -43,37 +53,200 @@ function isValidDate(value: string | null): value is string {
   return year >= 1900 && year <= 2199 && probe.getMonth() === month - 1 && probe.getDate() === day;
 }
 
-/** Hộp thoại chi tiết (tự dựng để chạy cả trên Safari 14 không có thẻ <dialog>). */
-function DetailDialog({ detail, onClose }: { detail: Detail; onClose: () => void }) {
+/** Màn hình hẹp hoặc chạm: mở chi tiết thành tấm trượt từ đáy thay cho popover. */
+function prefersSheet() {
+  return window.matchMedia("(max-width: 640px), (hover: none)").matches;
+}
+
+/** Popover neo dưới chữ, tự lật lên trên khi thiếu chỗ (giống placement "auto bottom" của trang mẫu). */
+function HintPopover({
+  hint,
+  onClose,
+  onPointerEnter,
+  onPointerLeave,
+}: {
+  hint: ActiveHint;
+  onClose: () => void;
+  onPointerEnter: () => void;
+  onPointerLeave: () => void;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [place, setPlace] = useState<{ top: number; left: number; arrow: number; side: "bottom" | "top" } | null>(null);
+
+  useLayoutEffect(() => {
+    const update = () => {
+      const node = ref.current;
+      if (!node || !hint.anchor.isConnected) return;
+      const rect = hint.anchor.getBoundingClientRect();
+      const width = node.offsetWidth;
+      const height = node.offsetHeight;
+      const gap = 10;
+      const margin = 8;
+      const below = window.innerHeight - rect.bottom;
+      const side = below < height + gap + margin && rect.top > below ? "top" : "bottom";
+      const center = rect.left + rect.width / 2;
+      const left = Math.min(Math.max(center - width / 2, margin), window.innerWidth - width - margin);
+      const top = side === "bottom" ? rect.bottom + gap : rect.top - gap - height;
+      setPlace({ top, left, side, arrow: Math.min(Math.max(center - left, 14), width - 14) });
+    };
+    update();
+    window.addEventListener("scroll", update, true);
+    window.addEventListener("resize", update);
+    return () => {
+      window.removeEventListener("scroll", update, true);
+      window.removeEventListener("resize", update);
+    };
+  }, [hint]);
+
+  return createPortal(
+    <div
+      ref={ref}
+      id={`xn-hint-${hint.id}`}
+      role={hint.pinned ? "dialog" : "tooltip"}
+      aria-label={hint.title}
+      className={`xn-pop xn-pop--${hint.variant} ${place ? `is-${place.side}` : ""} ${hint.pinned ? "is-pinned" : ""}`}
+      style={place ? { top: place.top, left: place.left, ["--xn-arrow" as string]: `${place.arrow}px` } : { top: -9999, left: -9999 }}
+      onPointerEnter={onPointerEnter}
+      onPointerLeave={onPointerLeave}
+    >
+      <div className="xn-pop__head">
+        <strong>{hint.title}</strong>
+        {hint.pinned && (
+          <button type="button" onClick={onClose} aria-label="Đóng">
+            <X aria-hidden="true" />
+          </button>
+        )}
+      </div>
+      <div className="xn-pop__body">{hint.body}</div>
+    </div>,
+    document.body,
+  );
+}
+
+/** Tấm chi tiết trượt từ đáy cho điện thoại (tự dựng, chạy cả trên Safari 14). */
+function HintSheet({ hint, onClose }: { hint: ActiveHint; onClose: () => void }) {
   const closeRef = useRef<HTMLButtonElement>(null);
   useEffect(() => {
     const previous = document.activeElement as HTMLElement | null;
     closeRef.current?.focus();
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") onClose();
-    };
-    document.addEventListener("keydown", onKey);
-    document.body.classList.add("xn-dialog-open");
+    document.body.classList.add("xn-sheet-open");
     return () => {
-      document.removeEventListener("keydown", onKey);
-      document.body.classList.remove("xn-dialog-open");
+      document.body.classList.remove("xn-sheet-open");
       previous?.focus();
     };
-  }, [onClose]);
-  return (
-    <div className="xn-dialog-backdrop" onMouseDown={(event) => event.target === event.currentTarget && onClose()}>
-      <div className="xn-dialog" role="dialog" aria-modal="true" aria-labelledby="xn-dialog-title">
-        <header className="xn-dialog__head">
-          <h3 id="xn-dialog-title">{detail.title}</h3>
+  }, []);
+  return createPortal(
+    <div className="xn-sheet-backdrop" onMouseDown={(event) => event.target === event.currentTarget && onClose()}>
+      <div className={`xn-sheet xn-sheet--${hint.variant}`} role="dialog" aria-modal="true" aria-labelledby="xn-sheet-title">
+        <span className="xn-sheet__grip" aria-hidden="true" />
+        <header className="xn-sheet__head">
+          <h3 id="xn-sheet-title">{hint.title}</h3>
           <button type="button" ref={closeRef} onClick={onClose} aria-label="Đóng">
             <X aria-hidden="true" />
           </button>
         </header>
-        <div className="xn-dialog__body">{detail.body}</div>
+        <div className="xn-sheet__body">{hint.body}</div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
+
+/** Quản lý một popover duy nhất: rê chuột để xem, bấm để ghim, Esc / bấm ra ngoài để đóng. */
+function useHints() {
+  const [active, setActive] = useState<ActiveHint | null>(null);
+  const openTimer = useRef<number | undefined>(undefined);
+  const closeTimer = useRef<number | undefined>(undefined);
+  const activeRef = useRef(active);
+  activeRef.current = active;
+
+  const clearTimers = () => {
+    window.clearTimeout(openTimer.current);
+    window.clearTimeout(closeTimer.current);
+  };
+  const close = useCallback(() => {
+    clearTimers();
+    setActive(null);
+  }, []);
+  const scheduleClose = useCallback(() => {
+    window.clearTimeout(openTimer.current);
+    window.clearTimeout(closeTimer.current);
+    if (activeRef.current?.pinned) return;
+    closeTimer.current = window.setTimeout(() => setActive((current) => (current?.pinned ? current : null)), CLOSE_DELAY);
+  }, []);
+  const keepOpen = useCallback(() => window.clearTimeout(closeTimer.current), []);
+
+  const show = useCallback((hint: Hint, anchor: HTMLElement, pinned: boolean, delay = 0) => {
+    clearTimers();
+    const sheet = pinned && prefersSheet();
+    const apply = () => setActive({ ...hint, anchor, pinned, sheet });
+    if (delay) openTimer.current = window.setTimeout(apply, delay);
+    else apply();
+  }, []);
+
+  useEffect(() => {
+    if (!active) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        const anchor = active.anchor;
+        close();
+        anchor.focus();
+      }
+    };
+    const onDown = (event: PointerEvent) => {
+      const target = event.target as Node;
+      if (active.anchor.contains(target)) return;
+      if ((target as Element).closest?.(".xn-pop, .xn-sheet")) return;
+      close();
+    };
+    document.addEventListener("keydown", onKey);
+    document.addEventListener("pointerdown", onDown);
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.removeEventListener("pointerdown", onDown);
+    };
+  }, [active, close]);
+
+  useEffect(() => clearTimers, []);
+
+  const trigger = (hint: Hint) => ({
+    "aria-expanded": active?.id === hint.id,
+    "aria-describedby": active?.id === hint.id && !active.sheet ? `xn-hint-${hint.id}` : undefined,
+    onPointerEnter: (event: React.PointerEvent<HTMLElement>) => {
+      if (event.pointerType !== "mouse" || activeRef.current?.pinned) return;
+      show(hint, event.currentTarget, false, activeRef.current ? 0 : OPEN_DELAY);
+    },
+    onPointerLeave: (event: React.PointerEvent<HTMLElement>) => {
+      if (event.pointerType === "mouse") scheduleClose();
+    },
+    onFocus: (event: React.FocusEvent<HTMLElement>) => {
+      if (activeRef.current?.pinned) return;
+      if (event.currentTarget.matches(":focus-visible")) show(hint, event.currentTarget, false);
+    },
+    onBlur: (event: React.FocusEvent<HTMLElement>) => {
+      const next = event.relatedTarget as Element | null;
+      if (next?.closest?.(".xn-pop")) return;
+      scheduleClose();
+    },
+    onClick: (event: React.MouseEvent<HTMLElement>) => {
+      const current = activeRef.current;
+      if (current?.id === hint.id && current.pinned) close();
+      else show(hint, event.currentTarget, true);
+    },
+  });
+
+  const layer = active ? (
+    active.sheet ? (
+      <HintSheet hint={active} onClose={close} />
+    ) : (
+      <HintPopover hint={active} onClose={close} onPointerEnter={keepOpen} onPointerLeave={scheduleClose} />
+    )
+  ) : null;
+
+  return { trigger, layer, close };
+}
+
+type LinkFn = (label: ReactNode, title: string, body: ReactNode, className?: string, variant?: HintVariant) => ReactNode;
 
 function Panel({ title, className = "", children }: { title: string; className?: string; children: ReactNode }) {
   return (
@@ -113,6 +286,16 @@ function sentenceCase(text: string) {
   return lower.charAt(0).toLocaleUpperCase("vi") + lower.slice(1);
 }
 
+/** Xếp hai danh sách vào lưới 2 cột theo hàng: a[0], b[0], a[1], b[1]... */
+function interleave<T>(a: T[], b: T[]) {
+  const result: T[] = [];
+  for (let index = 0; index < Math.max(a.length, b.length); index += 1) {
+    if (a[index]) result.push(a[index]);
+    if (b[index]) result.push(b[index]);
+  }
+  return result;
+}
+
 function luckClass(luck?: string) {
   if (!luck) return "";
   if (/Đại Hung|Hung|Xấu|Hắc/.test(luck)) return "is-bad";
@@ -129,8 +312,11 @@ export function XemNgayView() {
   const hour = Math.min(23, Math.max(0, Number(searchParams.get("gio") ?? now.getHours()) || 0));
   const minute = Math.min(59, Math.max(0, Number(searchParams.get("phut") ?? now.getMinutes()) || 0));
   const profile = useMemo(() => getXemNgayProfile(date, hour, minute), [date, hour, minute]);
-  const [detail, setDetail] = useState<Detail | null>(null);
-  const closeDetail = useCallback(() => setDetail(null), []);
+  const hints = useHints();
+  const closeHints = hints.close;
+
+  // Đổi ngày thì đóng popover đang mở (nội dung cũ không còn đúng).
+  useEffect(() => closeHints(), [profile.date, profile.hour, profile.minute, closeHints]);
 
   const go = (nextDate: string, nextHour = hour, nextMinute = minute) => {
     const params = new URLSearchParams(searchParams);
@@ -140,27 +326,31 @@ export function XemNgayView() {
     setSearchParams(params, { replace: false });
   };
 
-  const open = (title: string, body: ReactNode) => setDetail({ title, body });
-  const link = (label: ReactNode, title: string, body: ReactNode, className = "") => (
-    <button type="button" className={`xn-link ${className}`} onClick={() => open(title, body)}>
-      {label}
-    </button>
-  );
+  const link: LinkFn = (label, title, body, className = "", variant = "rich") => {
+    const id = `${title}::${typeof label === "string" ? label : ""}::${className}`.replace(/\s+/g, "-");
+    return (
+      <button type="button" className={`xn-link ${className}`} {...hints.trigger({ id, title, body, variant })}>
+        {label}
+      </button>
+    );
+  };
+  const note = (label: ReactNode, title: string, text: string | undefined, className = "") =>
+    text ? link(label, title, <SimpleInfo text={text} />, className, "note") : <span className={className}>{label}</span>;
 
   return (
     <div className="xn">
       <div className="xn-row xn-row--top">
-        <OverviewPanel profile={profile} link={link} />
+        <OverviewPanel profile={profile} link={link} note={note} />
         <ToolPanel profile={profile} today={today} onGo={go} link={link} />
-        <InfoPanel profile={profile} link={link} />
+        <InfoPanel profile={profile} link={link} note={note} />
       </div>
 
       <div className="xn-row xn-row--2">
         <Panel title="Kiết tinh">
-          <StarList stars={profile.stars.good} tone="good" link={link} />
+          <StarList stars={profile.stars.good} tone="good" note={note} />
         </Panel>
         <Panel title="Hung tinh">
-          <StarList stars={profile.stars.bad} tone="bad" link={link} />
+          <StarList stars={profile.stars.bad} tone="bad" note={note} />
         </Panel>
       </div>
 
@@ -178,8 +368,8 @@ export function XemNgayView() {
               {profile.goodHours.map((item) => (
                 <tr key={item.chi}>
                   <th scope="row">{item.chi}</th>
-                  <td>{item.range}</td>
-                  <td>{link(item.name, `${item.name} Hoàng Đạo`, <OfficerDetail name={item.name} />, "is-good")}</td>
+                  <td className="xn-num">{item.range}</td>
+                  <td className="xn-right">{note(item.name, `${item.name} Hoàng Đạo`, findInfo(DAY_OFFICER_INFO, item.name)?.summary, "is-good")}</td>
                 </tr>
               ))}
             </tbody>
@@ -193,7 +383,12 @@ export function XemNgayView() {
                   <th scope="row">{item.chi}</th>
                   {[0, 1].map((slot) => {
                     const name = item.stars[slot];
-                    return <td key={slot}>{name ? link(name, name, <HourStarDetail name={name} />, luckClass(findInfo(HOUR_STAR_INFO, name)?.luck)) : null}</td>;
+                    const info = name ? findInfo(HOUR_STAR_INFO, name) ?? findInfo(DAY_OFFICER_INFO, name) : undefined;
+                    return (
+                      <td key={slot} className={slot ? "xn-right" : ""}>
+                        {name ? note(name, name, info?.summary, luckClass(findInfo(HOUR_STAR_INFO, name)?.luck)) : null}
+                      </td>
+                    );
                   })}
                 </tr>
               ))}
@@ -201,24 +396,29 @@ export function XemNgayView() {
           </table>
         </Panel>
         <Panel title="Giờ Lục Nhâm">
-          <table className="xn-table">
-            <tbody>
-              {profile.hours.map((item) => (
-                <tr key={item.chi} className={item.type === "Hoàng Đạo" ? "is-golden" : ""}>
-                  <th scope="row">{item.chi}</th>
-                  <td>{link(item.lucNham, `Giờ ${item.chi} · ${item.lucNham}`, <LucNhamDetail name={item.lucNham} />, luckClass(findInfo(LUC_NHAM_INFO, item.lucNham)?.luck))}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <ul className="xn-lucnham">
+            {/* Như trang mẫu: cột trái là giờ hoàng đạo, cột phải là giờ hắc đạo. */}
+            {interleave(
+              profile.hours.filter((item) => item.type === "Hoàng Đạo"),
+              profile.hours.filter((item) => item.type !== "Hoàng Đạo"),
+            ).map((item) => {
+              const info = findInfo(LUC_NHAM_INFO, item.lucNham);
+              return (
+                <li key={item.chi} className={item.type === "Hoàng Đạo" ? "is-golden" : ""}>
+                  <span>{item.chi}</span>
+                  {note(item.lucNham, `Giờ ${item.chi} · ${item.lucNham}`, info ? `${info.luck}. ${info.summary}` : undefined, luckClass(info?.luck))}
+                </li>
+              );
+            })}
+          </ul>
         </Panel>
         <Panel title="Giờ nước lớn, ròng">
           <div className="xn-tide">
             <b>Đối với vùng cao</b>
-            <p>Giờ nước lớn: {profile.tide.highland.flood.join(", ")}</p>
+            <p>Giờ nước lớn: <span className="is-bad">{profile.tide.highland.flood.join(", ")}</span></p>
             <p>Giờ nước ròng: {profile.tide.highland.ebb.join(", ")}</p>
             <b>Đối với vùng thấp</b>
-            <p>Giờ nước lớn: {profile.tide.lowland.flood.join(", ")}</p>
+            <p>Giờ nước lớn: <span className="is-bad">{profile.tide.lowland.flood.join(", ")}</span></p>
             <p>Giờ nước ròng: {profile.tide.lowland.ebb.join(", ")}</p>
           </div>
         </Panel>
@@ -236,7 +436,7 @@ export function XemNgayView() {
             rows={[
               ["Tài thần", <span className="is-good">{profile.directions.taiThan}</span>],
               ["Hỷ thần", <span className="is-good">{profile.directions.hyThan}</span>],
-              ["Hạc thần", profile.directions.hacThan],
+              ["Hạc thần", <span className="is-bad">{profile.directions.hacThan}</span>],
             ]}
           />
         </Panel>
@@ -253,15 +453,16 @@ export function XemNgayView() {
       <div className="xn-row xn-row--2 xn-row--wide">
         <Panel title="Đổng Công — soạn trạch nhật">
           {profile.dongCong ? (
-            <button
-              type="button"
-              className="xn-dongcong"
-              onClick={() => open(profile.dongCong!.title, <DongCongDetail entry={profile.dongCong!} day={profile.ctx.day.name} />)}
-            >
-              <b>Ngày {profile.ctx.day.name}:</b>
-              <span>{profile.dongCong.summary}</span>
-              <em className={luckClass(profile.dongCong.rating)}>{profile.dongCong.rating}</em>
-            </button>
+            link(
+              <>
+                <b>Ngày {profile.ctx.day.name}:</b>
+                <span>{profile.dongCong.summary}</span>
+                <em className={luckClass(profile.dongCong.rating)}>{profile.dongCong.rating}</em>
+              </>,
+              profile.dongCong.title,
+              <DongCongDetail entry={profile.dongCong} day={profile.ctx.day.name} />,
+              "xn-dongcong",
+            )
           ) : (
             <p className="xn-muted">Chưa có lời luận Đổng Công cho ngày này.</p>
           )}
@@ -291,14 +492,14 @@ export function XemNgayView() {
         </Panel>
       </div>
 
-      {detail && <DetailDialog detail={detail} onClose={closeDetail} />}
+      {hints.layer}
     </div>
   );
 }
 
-type LinkFn = (label: ReactNode, title: string, body: ReactNode, className?: string) => ReactNode;
+type NoteFn = (label: ReactNode, title: string, text: string | undefined, className?: string) => ReactNode;
 
-function OverviewPanel({ profile, link }: { profile: XemNgayProfile; link: LinkFn }) {
+function OverviewPanel({ profile, link, note }: { profile: XemNgayProfile; link: LinkFn; note: NoteFn }) {
   const { overview } = profile;
   const truc = findInfo(TRUC_INFO, overview.truc);
   return (
@@ -310,11 +511,16 @@ function OverviewPanel({ profile, link }: { profile: XemNgayProfile; link: LinkF
           ["Thập nhị trực", link(`Trực ${overview.truc}`, `Trực ${overview.truc}`, <TrucDetail name={overview.truc} />, luckClass(truc?.luck))],
           [
             "Kiết hung nhật",
-            link(`${overview.officer.name} ${overview.officer.type}`, `${overview.officer.name} ${overview.officer.type}`, <OfficerDetail name={overview.officer.name} />, overview.officer.type === "Hoàng Đạo" ? "is-good" : "is-bad"),
+            note(
+              `${overview.officer.name} ${overview.officer.type}`,
+              `${overview.officer.name} ${overview.officer.type}`,
+              findInfo(DAY_OFFICER_INFO, overview.officer.name)?.summary,
+              overview.officer.type === "Hoàng Đạo" ? "is-good" : "is-bad",
+            ),
           ],
           ["Đại tiểu nguyệt", overview.monthSize],
           ["Nhị thập bát tú", link(`${overview.tu28.name}: ${overview.tu28.luck}`, overview.tu28.name, <TuDetail name={overview.tu28.name} />, overview.tu28.luck === "Tốt" ? "is-good" : "is-bad")],
-          ["Tương quan ngũ hành", link(overview.relation, overview.relation, <SimpleInfo text={findInfo(TUONG_QUAN_INFO, overview.relation)?.summary} />, luckClass(overview.relation))],
+          ["Tương quan ngũ hành", note(overview.relation, overview.relation, findInfo(TUONG_QUAN_INFO, overview.relation)?.summary, luckClass(overview.relation))],
           ["Thập thiên can ngày", overview.stem],
           ["Thập nhị địa chi ngày", overview.branch],
         ]}
@@ -323,9 +529,12 @@ function OverviewPanel({ profile, link }: { profile: XemNgayProfile; link: LinkF
   );
 }
 
-function InfoPanel({ profile, link }: { profile: XemNgayProfile; link: LinkFn }) {
+function InfoPanel({ profile, link, note }: { profile: XemNgayProfile; link: LinkFn; note: NoteFn }) {
   const { info } = profile;
-  const starLink = (name: string, suffix = "") => link(`${name}${suffix}`, name, <CuuTinhDetail name={name} />);
+  const starLink = (name: string, label: string = name) => link(label, name, <CuuTinhDetail name={name} />);
+  const lucNham = findInfo(LUC_NHAM_INFO, info.lucNham);
+  const xuatHanh = findInfo(XUAT_HANH_INFO, info.xuatHanh);
+  const folk = findInfo(DAN_GIAN_INFO, info.folk);
   return (
     <Panel title="Thông tin" className="xn-info">
       <Rows
@@ -333,39 +542,59 @@ function InfoPanel({ profile, link }: { profile: XemNgayProfile; link: LinkFn })
           ["Năm cửu tinh", starLink(info.yearStar)],
           ["Tháng cửu tinh", starLink(info.monthStar)],
           ["Ngày cửu tinh", starLink(info.dayStar)],
-          ["Giờ cửu tinh", link(`${info.hourStar} (${profile.overview.hour})`, info.hourStar, <CuuTinhDetail name={info.hourStar} />)],
-          ["Ngày Lục Nhâm", link(info.lucNham, `Ngày ${info.lucNham}`, <LucNhamDetail name={info.lucNham} />, luckClass(findInfo(LUC_NHAM_INFO, info.lucNham)?.luck))],
+          ["Giờ cửu tinh", starLink(info.hourStar, `${info.hourStar} (${profile.overview.hour})`)],
+          ["Ngày Lục Nhâm", note(info.lucNham, `Ngày ${info.lucNham}`, lucNham ? `${lucNham.luck}. ${lucNham.summary}` : undefined, luckClass(lucNham?.luck))],
           [
             "Nhị thập tứ khí",
             <>
-              {link(info.solarTerms[0], info.solarTerms[0], <SimpleInfo text={TIET_KHI_INFO[info.solarTerms[0]]?.summary} />)} —{" "}
-              {link(info.solarTerms[1], info.solarTerms[1], <SimpleInfo text={TIET_KHI_INFO[info.solarTerms[1]]?.summary} />)}
+              {note(info.solarTerms[0], info.solarTerms[0], TIET_KHI_INFO[info.solarTerms[0]]?.summary)} –{" "}
+              {note(info.solarTerms[1], info.solarTerms[1], TIET_KHI_INFO[info.solarTerms[1]]?.summary)}
             </>,
           ],
-          ["Ngày xuất hành", link(info.xuatHanh, `Xuất hành ${info.xuatHanh}`, <SimpleInfo text={findInfo(XUAT_HANH_INFO, info.xuatHanh)?.summary} />, luckClass(findInfo(XUAT_HANH_INFO, info.xuatHanh)?.luck))],
-          ["Ngày đầu tháng", link(info.monthFirstDay, "Ngày đầu tháng", <SimpleInfo text={`Mùng 1 tháng ${profile.lunar.month}${profile.lunar.leap ? " nhuận" : ""} âm lịch là ngày ${info.monthFirstDay}.`} />)],
-          ["Quan niệm dân gian", link(info.folk, info.folk, <SimpleInfo text={findInfo(DAN_GIAN_INFO, info.folk)?.summary} />, luckClass(findInfo(DAN_GIAN_INFO, info.folk)?.luck))],
+          ["Ngày xuất hành", note(info.xuatHanh, `Xuất hành ${info.xuatHanh}`, xuatHanh?.summary, luckClass(xuatHanh?.luck))],
+          ["Ngày đầu tháng", note(info.monthFirstDay, "Ngày đầu tháng", `Mùng 1 tháng ${profile.lunar.month}${profile.lunar.leap ? " nhuận" : ""} âm lịch là ngày ${info.monthFirstDay}.`)],
+          ["Quan niệm dân gian", note(info.folk, info.folk, folk?.summary, luckClass(folk?.luck))],
         ]}
       />
     </Panel>
   );
 }
 
-function ToolPanel({ profile, today, onGo, link }: { profile: XemNgayProfile; today: string; onGo: (date: string, hour?: number, minute?: number) => void; link: LinkFn }) {
-  const [mode, setMode] = useState<"solar" | "lunar">("solar");
+/** Can Chi đầy đủ của một ngày dương lịch, dùng cho tooltip ô lịch như trang mẫu. */
+function dayTitle(day: number, month: number, year: number) {
+  const lunar = solarToLunar(day, month, year);
+  const jd = jdFromDate(day, month, year);
+  const dayName = canChi(jd + 9, jd + 1).name;
+  return `Ngày ${dayName}, tháng ${monthCanChi(lunar.year, lunar.month).name}, năm ${yearCanChi(lunar.year).name}`;
+}
+
+type PickerMode = "solar" | "lunar";
+
+function DatePicker({
+  profile,
+  today,
+  initialMode,
+  onGo,
+  onClose,
+}: {
+  profile: XemNgayProfile;
+  today: string;
+  initialMode: PickerMode;
+  onGo: (date: string, hour?: number, minute?: number) => void;
+  onClose: () => void;
+}) {
+  const [mode, setMode] = useState<PickerMode>(initialMode);
   const [solarInput, setSolarInput] = useState({ day: profile.solar.day, month: profile.solar.month, year: profile.solar.year });
   const [lunarInput, setLunarInput] = useState({ day: profile.lunar.day, month: profile.lunar.month, year: profile.lunar.year, leap: profile.lunar.leap });
   const [time, setTime] = useState({ hour: profile.hour, minute: profile.minute });
   const [error, setError] = useState("");
   const [view, setView] = useState({ year: profile.solar.year, month: profile.solar.month });
+  const firstFieldRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    setSolarInput({ day: profile.solar.day, month: profile.solar.month, year: profile.solar.year });
-    setLunarInput({ day: profile.lunar.day, month: profile.lunar.month, year: profile.lunar.year, leap: profile.lunar.leap });
-    setTime({ hour: profile.hour, minute: profile.minute });
-    setView({ year: profile.solar.year, month: profile.solar.month });
-    setError("");
-  }, [profile.date, profile.hour, profile.minute, profile.solar, profile.lunar]);
+    firstFieldRef.current?.focus();
+    firstFieldRef.current?.select();
+  }, [mode]);
 
   const submit = (event: React.FormEvent) => {
     event.preventDefault();
@@ -381,6 +610,7 @@ function ToolPanel({ profile, today, onGo, link }: { profile: XemNgayProfile; to
       if (check.day !== lunarInput.day) return setError("Tháng âm lịch này không có ngày 30.");
       onGo(value, time.hour, time.minute);
     }
+    onClose();
   };
 
   const moveView = (months: number) => {
@@ -390,54 +620,35 @@ function ToolPanel({ profile, today, onGo, link }: { profile: XemNgayProfile; to
   const firstWeekday = new Date(view.year, view.month - 1, 1).getDay();
   const daysInMonth = new Date(view.year, view.month, 0).getDate();
   const cells = [...Array(firstWeekday).fill(null), ...Array.from({ length: daysInMonth }, (_, i) => i + 1)];
+  while (cells.length % 7) cells.push(null);
 
-  const numberField = (label: string, value: number, onChange: (value: number) => void, min: number, max: number) => (
+  const numberField = (label: string, value: number, onChange: (value: number) => void, min: number, max: number, first = false) => (
     <label className="xn-field">
       <span>{label}</span>
-      <input type="number" inputMode="numeric" min={min} max={max} value={value} onChange={(event) => onChange(Number(event.target.value))} />
+      <input ref={first ? firstFieldRef : undefined} type="number" inputMode="numeric" min={min} max={max} value={value} onChange={(event) => { setError(""); onChange(Number(event.target.value)); }} />
     </label>
   );
 
   return (
-    <Panel title="Công cụ xem ngày tốt, xấu" className="xn-tool">
-      <p className="xn-tool__today">
-        Đang hiển thị <b>{profile.weekday}</b>
-      </p>
-      <div className="xn-tool__dates">
-        <div>
-          <span>Dương lịch</span>
-          <strong>
-            {pad(profile.solar.day)}/{pad(profile.solar.month)}/{profile.solar.year}
-          </strong>
+    <div className="xn-picker" role="dialog" aria-label="Chọn ngày xem">
+      <form onSubmit={submit}>
+        <div className="xn-picker__tabs" role="tablist" aria-label="Loại lịch">
+          {(["solar", "lunar"] as const).map((value) => (
+            <button key={value} type="button" role="tab" aria-selected={mode === value} className={mode === value ? "is-active" : ""} onClick={() => { setMode(value); setError(""); }}>
+              {value === "solar" ? "Dương lịch" : "Âm lịch"}
+            </button>
+          ))}
         </div>
-        <div>
-          <span>Âm lịch</span>
-          <strong>
-            {pad(profile.lunar.day)}/{pad(profile.lunar.month)}
-            {profile.lunar.leap ? " nhuận" : ""}/{profile.lunar.year}
-          </strong>
-        </div>
-      </div>
-
-      <form className="xn-form" onSubmit={submit}>
-        <div className="xn-form__mode" role="tablist" aria-label="Loại lịch">
-          <button type="button" role="tab" aria-selected={mode === "solar"} className={mode === "solar" ? "is-active" : ""} onClick={() => setMode("solar")}>
-            Dương lịch
-          </button>
-          <button type="button" role="tab" aria-selected={mode === "lunar"} className={mode === "lunar" ? "is-active" : ""} onClick={() => setMode("lunar")}>
-            Âm lịch
-          </button>
-        </div>
-        <div className="xn-form__grid">
+        <div className="xn-picker__fields">
           {mode === "solar" ? (
             <>
-              {numberField("Ngày", solarInput.day, (day) => setSolarInput({ ...solarInput, day }), 1, 31)}
+              {numberField("Ngày", solarInput.day, (day) => setSolarInput({ ...solarInput, day }), 1, 31, true)}
               {numberField("Tháng", solarInput.month, (month) => setSolarInput({ ...solarInput, month }), 1, 12)}
               {numberField("Năm", solarInput.year, (year) => setSolarInput({ ...solarInput, year }), 1900, 2199)}
             </>
           ) : (
             <>
-              {numberField("Ngày", lunarInput.day, (day) => setLunarInput({ ...lunarInput, day }), 1, 30)}
+              {numberField("Ngày", lunarInput.day, (day) => setLunarInput({ ...lunarInput, day }), 1, 30, true)}
               {numberField("Tháng", lunarInput.month, (month) => setLunarInput({ ...lunarInput, month }), 1, 12)}
               {numberField("Năm", lunarInput.year, (year) => setLunarInput({ ...lunarInput, year }), 1900, 2199)}
             </>
@@ -450,40 +661,96 @@ function ToolPanel({ profile, today, onGo, link }: { profile: XemNgayProfile; to
             <input type="checkbox" checked={lunarInput.leap} onChange={(event) => setLunarInput({ ...lunarInput, leap: event.target.checked })} /> Tháng nhuận
           </label>
         )}
-        {error && <p className="xn-form__error" role="alert">{error}</p>}
-        <button type="submit" className="xn-btn xn-btn--primary">Xem ngày</button>
+        {error && <p className="xn-picker__error" role="alert">{error}</p>}
+        <button type="submit" className="xn-btn xn-btn--primary xn-btn--block">Xem ngày</button>
       </form>
 
       <div className="xn-calendar" aria-label="Lịch tháng">
         <div className="xn-calendar__nav">
-          <button type="button" onClick={() => moveView(-12)} aria-label="Năm trước"><ChevronsLeft aria-hidden="true" /></button>
-          <button type="button" onClick={() => moveView(-1)} aria-label="Tháng trước"><ChevronLeft aria-hidden="true" /></button>
-          <strong>
-            {pad(view.month)}/{view.year}
-          </strong>
-          <button type="button" onClick={() => moveView(1)} aria-label="Tháng sau"><ChevronRight aria-hidden="true" /></button>
-          <button type="button" onClick={() => moveView(12)} aria-label="Năm sau"><ChevronsRight aria-hidden="true" /></button>
+          <button type="button" onClick={() => moveView(-12)} aria-label="Năm trước" title="Năm trước"><ChevronsLeft aria-hidden="true" /></button>
+          <button type="button" onClick={() => moveView(-1)} aria-label="Tháng trước" title="Tháng trước"><ChevronLeft aria-hidden="true" /></button>
+          <strong>Tháng {view.month}/{view.year}</strong>
+          <button type="button" onClick={() => moveView(1)} aria-label="Tháng sau" title="Tháng sau"><ChevronRight aria-hidden="true" /></button>
+          <button type="button" onClick={() => moveView(12)} aria-label="Năm sau" title="Năm sau"><ChevronsRight aria-hidden="true" /></button>
         </div>
         <div className="xn-calendar__grid">
           {["CN", "T2", "T3", "T4", "T5", "T6", "T7"].map((label) => (
             <span className="xn-calendar__weekday" key={label}>{label}</span>
           ))}
           {cells.map((day, index) => {
-            if (!day) return <span key={`empty-${index}`} />;
+            if (!day) return <span key={`empty-${index}`} aria-hidden="true" />;
             const value = formatDateString(view.year, view.month, day);
             const lunar = solarToLunar(day, view.month, view.year);
+            const title = dayTitle(day, view.month, view.year);
             const classes = ["xn-calendar__day"];
             if (value === profile.date) classes.push("is-selected");
             if (value === today) classes.push("is-today");
             if (lunar.day === 1 || lunar.day === 15) classes.push("is-marked");
+            if (index % 7 === 0) classes.push("is-sunday");
             return (
-              <button type="button" key={value} className={classes.join(" ")} onClick={() => onGo(value)} aria-label={`Ngày ${day}/${view.month}/${view.year}, âm lịch ${lunar.day}/${lunar.month}`} aria-pressed={value === profile.date}>
+              <button
+                type="button"
+                key={value}
+                className={classes.join(" ")}
+                title={title}
+                onClick={() => {
+                  onGo(value);
+                  onClose();
+                }}
+                aria-label={`${day}/${view.month}/${view.year}, âm lịch ${lunar.day}/${lunar.month}. ${title}`}
+                aria-pressed={value === profile.date}
+              >
                 <b>{day}</b>
                 <small>{lunar.day === 1 ? `${lunar.day}/${lunar.month}` : lunar.day}</small>
               </button>
             );
           })}
         </div>
+      </div>
+      <button type="button" className="xn-picker__close" onClick={onClose}>Đóng lại</button>
+    </div>
+  );
+}
+
+function ToolPanel({ profile, today, onGo, link }: { profile: XemNgayProfile; today: string; onGo: (date: string, hour?: number, minute?: number) => void; link: LinkFn }) {
+  const [picker, setPicker] = useState<PickerMode | null>(null);
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const closePicker = useCallback(() => setPicker(null), []);
+
+  useEffect(() => {
+    if (!picker) return;
+    const onDown = (event: PointerEvent) => {
+      if (!wrapRef.current?.contains(event.target as Node)) closePicker();
+    };
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") closePicker();
+    };
+    document.addEventListener("pointerdown", onDown);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("pointerdown", onDown);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [picker, closePicker]);
+
+  const dateButton = (mode: PickerMode, label: string, value: string) => (
+    <button type="button" className={`xn-datebox ${picker === mode ? "is-open" : ""}`} aria-expanded={picker === mode} aria-haspopup="dialog" onClick={() => setPicker(picker === mode ? null : mode)}>
+      <span>{label}</span>
+      <strong>{value}</strong>
+    </button>
+  );
+
+  return (
+    <Panel title="Công cụ xem ngày tốt, xấu" className="xn-tool">
+      <p className="xn-tool__today">
+        Đang hiển thị <b>{profile.weekday}</b>
+      </p>
+      <div className="xn-tool__picker" ref={wrapRef}>
+        <div className="xn-tool__dates">
+          {dateButton("solar", "Dương lịch", `${pad(profile.solar.day)}/${pad(profile.solar.month)}/${profile.solar.year}`)}
+          {dateButton("lunar", "Âm lịch", `${pad(profile.lunar.day)}/${pad(profile.lunar.month)}${profile.lunar.leap ? "N" : ""}/${profile.lunar.year}`)}
+        </div>
+        {picker && <DatePicker key={picker} profile={profile} today={today} initialMode={picker} onGo={onGo} onClose={closePicker} />}
       </div>
 
       <div className="xn-pillars">
@@ -496,43 +763,43 @@ function ToolPanel({ profile, today, onGo, link }: { profile: XemNgayProfile; to
                 <b>{item.name}</b>
                 <i>{item.luck}</i>
               </>,
-              "Biểu đồ Lục thập Giáp Tý phối quẻ",
-              <PhoiQueDetail label={item.label} name={item.name} upper={item.upper} luck={item.luck} hexagram={item.hexagram} />,
+              `Trụ ${item.label.toLowerCase()} · ${item.name}`,
+              <PhoiQueDetail name={item.name} upper={item.upper} luck={item.luck} hexagram={item.hexagram} />,
               "xn-pillar__btn",
             )}
           </div>
         ))}
       </div>
 
-      <div className="xn-tool__actions">
-        <button type="button" className="xn-btn" onClick={() => onGo(addDaysToDate(profile.date, -1))}>
-          <ChevronLeft aria-hidden="true" /> Ngày trước
+      <div className="xn-tool__nav">
+        <button type="button" className="xn-icon-btn" onClick={() => onGo(addDaysToDate(profile.date, -1))} aria-label="Ngày trước" title="Ngày trước">
+          <ChevronLeft aria-hidden="true" />
         </button>
         <button type="button" className="xn-btn xn-btn--primary" onClick={() => onGo(today, new Date().getHours(), new Date().getMinutes())}>
           Xem hôm nay
         </button>
-        <button type="button" className="xn-btn" onClick={() => onGo(addDaysToDate(profile.date, 1))}>
-          Ngày sau <ChevronRight aria-hidden="true" />
-        </button>
-        <button type="button" className="xn-btn xn-btn--ghost" onClick={() => window.print()}>
-          <Printer aria-hidden="true" /> In trang này
+        <button type="button" className="xn-icon-btn" onClick={() => onGo(addDaysToDate(profile.date, 1))} aria-label="Ngày sau" title="Ngày sau">
+          <ChevronRight aria-hidden="true" />
         </button>
       </div>
+      <button type="button" className="xn-print" onClick={() => window.print()}>
+        <Printer aria-hidden="true" /> In trang này
+      </button>
     </Panel>
   );
 }
 
-function StarList({ stars, tone, link }: { stars: XemNgayProfile["stars"]["good"]; tone: "good" | "bad"; link: LinkFn }) {
+function StarList({ stars, tone, note }: { stars: XemNgayProfile["stars"]["good"]; tone: "good" | "bad"; note: NoteFn }) {
   if (stars.length === 0) return <p className="xn-muted">Không có {tone === "good" ? "kiết tinh" : "hung tinh"} đáng kể.</p>;
   return (
-    <ul className={`xn-stars is-${tone}`}>
-      {stars.map((item) => (
-        <li key={item.name}>
-          {link(item.name, item.name, <SimpleInfo text={sentenceCase(item.tag)} />, item.strong ? "is-strong" : "")}
-          <small>{sentenceCase(item.tag)}</small>
-        </li>
+    <p className={`xn-stars is-${tone}`}>
+      {stars.map((item, index) => (
+        <span key={item.name}>
+          {note(item.name, item.name, sentenceCase(item.tag), item.strong ? "is-strong" : "")}
+          {index < stars.length - 1 ? ", " : ""}
+        </span>
       ))}
-    </ul>
+    </p>
   );
 }
 
@@ -622,10 +889,9 @@ function CuuTinhDetail({ name }: { name: string }) {
   );
 }
 
-function PhoiQueDetail({ label, name, upper, luck, hexagram }: { label: string; name: string; upper: number; luck: number; hexagram: string }) {
+function PhoiQueDetail({ name, upper, luck, hexagram }: { name: string; upper: number; luck: number; hexagram: string }) {
   return (
     <div className="xn-detail xn-phoique">
-      <p className="xn-detail__lead">Trụ {label.toLowerCase()} · {name}</p>
       <div className="xn-phoique__card">
         <span>{upper}</span>
         <b>{name}</b>
