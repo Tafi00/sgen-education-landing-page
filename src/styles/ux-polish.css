@@ -6,29 +6,9 @@
       kéo rộng tới ~610px trên màn 390px, làm chữ và nút bị cắt ở mép phải.
    --------------------------------------------------------------------------- */
 @media (max-width: 1100px) {
-  .hero__main {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .hero__content,
   .hero .lookup-card {
     min-width: 0;
   }
-}
-
-.intro-hub-item {
-  min-width: 0;
-}
-
-@media (max-width: 767px) {
-  .intro-hub-item__info small {
-    white-space: normal;
-  }
-}
-
-/* Card "Bốn trụ cột": chỉ giữ icon, bỏ số thứ tự serif trùng vai trò. */
-.intro-hub-item__num {
-  justify-content: center;
 }
 
 /* ---------------------------------------------------------------------------

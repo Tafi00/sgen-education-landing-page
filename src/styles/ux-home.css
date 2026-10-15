@@ -64,132 +64,13 @@
     padding-top: 64px;
   }
 
-  .hero__main {
-    gap: 16px;
-    padding-top: 30px;
-    padding-bottom: 18px;
-  }
-
-  .hero__content h1 {
-    margin-top: 10px;
-  }
-
-  .hero__tagline {
-    margin-top: 12px;
-  }
-
-  .hero__description {
-    margin-top: 8px;
-  }
-
-  /* 2 CTA nằm gọn 1 hàng, mỗi nút ~50% chiều rộng. */
-  .hero__actions {
-    flex-wrap: nowrap;
-    gap: 8px;
-    margin-top: 14px;
-  }
-  /* 3 chip tin cậy: 1 hàng cuộn ngang thay vì 3 hàng cao. */
-  .hero__trust-list {
-    flex-wrap: nowrap;
-    gap: 8px;
-    margin-top: 14px;
-    margin-inline: -14px;
-    padding: 2px 14px 2px;
-    overflow-x: auto;
-    overflow-y: hidden;
-    scroll-snap-type: x proximity;
-    scroll-padding-inline: 14px;
-    scrollbar-width: none;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  .hero__trust-list::-webkit-scrollbar {
-    display: none;
-  }
-
-  .hero__trust-item {
-    flex: 0 0 auto;
-    min-height: 44px;
-    scroll-snap-align: start;
-    font-size: max(12px, 0.74rem);
-  }
-
   /* Form tra cứu: nhãn gọn + field ≤ 52px để cả form nằm trong ~1.2 màn hình. */
   .lookup-card {
     padding: 16px 14px;
   }
 
-  .lookup-card__intro {
-    margin: 6px 0 10px;
-    font-size: 0.82rem;
-    line-height: 1.45;
-  }
-
-  .lookup-card form {
-    gap: 8px;
-  }
-
-  .lookup-card .field-group {
-    gap: 2px;
-  }
-
-  .lookup-card .field-group > span:first-child {
-    font-size: max(12px, 0.72rem);
-    line-height: 1.2;
-  }
-
-  .lookup-card .field-control {
-    min-height: 44px;
-    max-height: 52px;
-  }
-
-  /* Ô nhập cao đúng vùng chạm 44px (trước đây input chỉ ~21px). */
-  .lookup-card .field-control input {
-    min-height: 44px;
-  }
-  /* Ô vuông giữ 20px (vùng chạm thực tế là cả hàng label 44px bên trên). */
-  /* Nút mũi tên của thẻ lợi ích: vùng chạm 44px. */
-  .benefit-card > a {
-    right: 4px;
-    bottom: 2px;
-    width: 44px;
-    height: 44px;
-    display: grid;
-    place-items: center;
-  }
   .lookup-card__privacy {
     margin-top: 6px;
-  }
-
-  /* Khối lợi ích dưới hero: gọn lại để không chiếm thêm 1 màn hình. */
-  .hero__benefits {
-    gap: 8px;
-    padding-block: 4px;
-  }
-
-  .benefit-card {
-    padding: 10px 38px 10px 10px;
-  }
-
-  .benefit-card .icon-orb {
-    width: 46px;
-    height: 46px;
-    border-width: 4px;
-  }
-
-  .benefit-card .icon-orb svg {
-    width: 20px;
-    height: 20px;
-  }
-
-  .benefit-card h3 {
-    font-size: 0.95rem;
-  }
-
-  .benefit-card p {
-    margin-top: 4px;
-    font-size: 0.78rem;
-    line-height: 1.45;
   }
 
   /* ================= Tools ================= */
@@ -1030,85 +911,6 @@
   }
 }
 
-/* ================= Card giới thiệu trong Hero ================= */
-.intro-hub-items {
-  display: grid;
-  gap: 10px;
-  margin-top: 18px;
-  margin-bottom: 22px;
-}
-
-.intro-hub-item {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 12px 16px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(214, 165, 255, 0.22);
-  border-radius: 14px;
-  color: #fff;
-  text-decoration: none;
-  transition: transform 180ms ease, background 180ms ease, border-color 180ms ease;
-}
-
-.intro-hub-item:hover {
-  transform: translateX(4px);
-  background: rgba(142, 65, 221, 0.28);
-  border-color: rgba(214, 165, 255, 0.65);
-  color: #fff;
-}
-
-.intro-hub-item__num {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: #c48eff;
-  font-family: Georgia, serif;
-  font-size: 1.15rem;
-  font-weight: 700;
-  flex: 0 0 auto;
-}
-
-.intro-hub-item__num svg {
-  color: #d7b3ff;
-  flex: 0 0 auto;
-}
-
-.intro-hub-item__info {
-  flex: 1;
-  min-width: 0;
-}
-
-.intro-hub-item__info strong {
-  display: block;
-  font-family: var(--font-display);
-  font-size: 0.92rem;
-  text-transform: uppercase;
-  color: #fff;
-  letter-spacing: 0.02em;
-}
-
-.intro-hub-item__info small {
-  display: block;
-  font-size: 0.76rem;
-  color: rgba(235, 215, 255, 0.72);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  margin-top: 2px;
-}
-
-.intro-hub-item__arrow {
-  color: #d7b3ff;
-  flex: 0 0 auto;
-  transition: transform 180ms ease;
-}
-
-.intro-hub-item:hover .intro-hub-item__arrow {
-  transform: translateX(3px);
-  color: #fff;
-}
-
 /* ================= Sub-navigation cho Tra cứu Thần số học, DISC, MBTI ================= */
 .lookup-nav-tabs-wrap {
   display: flex;
@@ -1165,14 +967,6 @@
 .lookup-nav-tab.is-active svg {
   color: #fff;
 }
-
-
-
-
-
-
-
-/* Các tùy chọn tra cứu chuyên sâu (checkboxes) */
 
 @media (max-width: 768px) {
   .lookup-nav-tabs {
@@ -1387,55 +1181,7 @@
   color: rgba(235, 215, 255, 0.74);
   font-size: 0.88rem;
 }
-/* Ô nhập liệu dark glassmorphism sang trọng */
-.lookup-form-center .field-control {
-  min-height: 52px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 0 16px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(214, 165, 255, 0.28);
-  border-radius: 13px;
-  color: #fff;
-  transition: all 180ms ease;
-}
 
-.lookup-form-center .field-control:focus-within {
-  background: rgba(255, 255, 255, 0.12);
-  border-color: #a855f7;
-  box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.25), 0 0 20px rgba(168, 85, 247, 0.3);
-}
-
-.lookup-form-center .field-control input {
-  color: #fff;
-  background: transparent;
-  font-size: 0.95rem;
-  width: 100%;
-  border: 0;
-  outline: 0;
-}
-
-.lookup-form-center .field-control input::placeholder {
-  color: rgba(214, 195, 245, 0.5);
-}
-
-.lookup-form-center .field-control svg {
-  color: #d7b3ff;
-  width: 19px;
-  height: 19px;
-  flex: 0 0 auto;
-}
-
-.field-error-text {
-  color: #ff769e;
-  font-size: 0.74rem;
-  margin-top: 4px;
-}
-
-/* Hộp tùy chọn phân tích chuyên sâu */
-
-/* Nút bấm TRA CỨU NGAY rực rỡ */
 /* Khu vực hiển thị kết quả mở rộng thoáng đãng */
 .lookup-result-area {
   max-width: 1320px;

@@ -808,17 +808,6 @@
   white-space: nowrap;
 }
 
-/* Hero trang chủ trên mobile: 2 nút cùng một hàng, chữ không bẻ dòng. */
-@media (max-width: 767px) {
-  .hero__actions > .btn {
-    flex: 1 1 0;
-    min-width: 0;
-    padding-inline: 10px;
-    font-size: 0.74rem;
-    white-space: nowrap;
-  }
-}
-
 /* Bảng so sánh gói dịch vụ: trên mobile các card gói ngay phía trên đã đủ thông tin,
    bảng chuyển thành card sẽ lặp lại y hệt — chỉ hiện từ tablet trở lên. */
 @media (max-width: 767px) {
