@@ -10,7 +10,9 @@ import {
   ArrowUp,
   Ban,
   BookOpen,
+  Bot,
   CalendarDays,
+  Check,
   ChevronLeft,
   ChevronRight,
   CircleAlert,
@@ -39,7 +41,6 @@ import {
   Save,
   ShieldCheck,
   SlidersHorizontal,
-  Sparkles,
   Star,
   type LucideIcon,
 } from "lucide-react";
@@ -1343,7 +1344,7 @@ function ToolIntro({
         <p>{description}</p>
       </div>
       <ul>
-        {highlights.map((item) => <li key={item}><Sparkles size={14} strokeWidth={1.8} />{item}</li>)}
+        {highlights.map((item) => <li key={item}><Check size={14} strokeWidth={2} />{item}</li>)}
       </ul>
     </header>
   );
@@ -3065,7 +3066,7 @@ export default function MenhThuApp({
                   {question && <div className="question-echo"><small>Câu hỏi đã lập quẻ</small><p>“{question}”</p></div>}
                   <section className="iching-ai-panel" aria-labelledby="iching-ai-title">
                     <header>
-                      <span><Sparkles size={18} /></span>
+                      <span><Bot size={18} /></span>
                       <div>
                         <small>Gói dữ liệu dành cho AI</small>
                         <h4 id="iching-ai-title">Hỏi sâu hơn về quẻ này</h4>
@@ -3078,7 +3079,7 @@ export default function MenhThuApp({
                         <ClipboardCopy size={16} /><span>Chép cho AI</span>
                       </button>
                       <button type="button" className="button button--primary" onClick={requestAiReading} disabled={aiLoading}>
-                        <Sparkles size={16} /><span>{aiLoading ? "Đang luận giải…" : "Luận giải bằng AI"}</span>
+                        <Bot size={16} /><span>{aiLoading ? "Đang luận giải…" : "Luận giải bằng AI"}</span>
                       </button>
                     </div>
                     {aiError && <p className="iching-ai-error" role="alert">{aiError}{aiSignInPath && <> <a href={aiSignInPath}>Đăng nhập để tiếp tục</a>.</>}</p>}
@@ -3204,7 +3205,7 @@ export default function MenhThuApp({
               <button role="tab" aria-selected={baziView === "chart"} className={baziView === "chart" ? "is-selected" : ""} onClick={() => setBaziView("chart")}><LayoutGrid size={16} /><span>Lá số</span></button>
               <button role="tab" aria-selected={baziView === "fortune"} className={baziView === "fortune" ? "is-selected" : ""} onClick={() => setBaziView("fortune")}><CalendarDays size={16} /><span>Đại vận · Lưu niên</span></button>
               <button role="tab" aria-selected={baziView === "analysis"} className={baziView === "analysis" ? "is-selected" : ""} onClick={() => setBaziView("analysis")}><Compass size={16} /><span>Phân tích cấu trúc</span></button>
-              <button role="tab" aria-selected={baziView === "ai"} className={baziView === "ai" ? "is-selected" : ""} onClick={() => setBaziView("ai")}><Sparkles size={16} /><span>Tổng kết AI</span></button>
+              <button role="tab" aria-selected={baziView === "ai"} className={baziView === "ai" ? "is-selected" : ""} onClick={() => setBaziView("ai")}><Bot size={16} /><span>Tổng kết AI</span></button>
               <button role="tab" aria-selected={baziView === "notes"} className={baziView === "notes" ? "is-selected" : ""} onClick={openChartNotes}><FileText size={16} /><span>Ghi chú</span></button>
             </nav>
 

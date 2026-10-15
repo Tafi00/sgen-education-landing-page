@@ -84,60 +84,6 @@
   pointer-events: none;
 }
 
-.hero-lookup__orbit {
-  position: absolute;
-  top: 46%;
-  left: 50%;
-  width: 128%;
-  height: 0;
-  padding-bottom: 128%;
-  border: 1px dashed rgba(224, 187, 255, 0.32);
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  pointer-events: none;
-}
-
-.hero-lookup__orbit::before {
-  position: absolute;
-  top: 9%;
-  right: 9%;
-  bottom: 9%;
-  left: 9%;
-  border: 1px solid rgba(224, 187, 255, 0.14);
-  border-radius: 50%;
-  content: "";
-}
-
-.hero-lookup__orbit span {
-  --angle: calc(var(--i) * 45deg - 22deg);
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  transform: rotate(var(--angle));
-}
-
-.hero-lookup__orbit b {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  display: grid;
-  place-items: center;
-  width: 38px;
-  height: 38px;
-  margin: -19px 0 0 -19px;
-  color: #fff;
-  background: radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.28), rgba(122, 60, 255, 0.35) 60%, rgba(23, 10, 74, 0.6));
-  border: 1px solid rgba(224, 187, 255, 0.55);
-  border-radius: 50%;
-  box-shadow: 0 0 18px rgba(176, 108, 255, 0.55);
-  font-family: var(--font-display);
-  font-size: 0.82rem;
-  font-weight: 800;
-  transform: rotate(calc(var(--angle) * -1));
-}
-
 .hero-lookup__nameplate {
   position: absolute;
   bottom: 0;
@@ -264,21 +210,8 @@
 }
 
 .hero-lookup__form-head {
-  display: flex;
-  gap: 14px;
-  align-items: center;
-}
-
-.hero-lookup__form-head > span {
   display: grid;
-  flex: none;
-  place-items: center;
-  width: 42px;
-  height: 42px;
-  color: #fff;
-  background: var(--gradient-cta);
-  border-radius: 14px;
-  box-shadow: var(--shadow-glow);
+  gap: 3px;
 }
 
 .hero-lookup__form-head h2 {
@@ -291,7 +224,7 @@
 }
 
 .hero-lookup__form-head p {
-  margin: 3px 0 0;
+  margin: 0;
   color: rgba(229, 211, 255, 0.78);
   font-size: 0.86rem;
 }
@@ -314,24 +247,6 @@
 
 .hero-lookup__privacy {
   margin: 0;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .hero-lookup__orbit {
-    animation: hero-lookup-orbit 90s linear infinite;
-  }
-
-  .hero-lookup__orbit b {
-    animation: hero-lookup-orbit-counter 90s linear infinite;
-  }
-}
-
-@keyframes hero-lookup-orbit {
-  to { transform: translate(-50%, -50%) rotate(360deg); }
-}
-
-@keyframes hero-lookup-orbit-counter {
-  to { transform: rotate(calc(var(--angle) * -1 - 360deg)); }
 }
 
 /* ---------- Responsive ---------- */
@@ -359,11 +274,6 @@
   .hero-lookup__promises li + li {
     border-top: 1px solid rgba(224, 187, 255, 0.24);
     border-left: 0;
-  }
-
-  .hero-lookup__orbit {
-    width: 116%;
-    padding-bottom: 116%;
   }
 }
 
@@ -393,13 +303,6 @@
     height: min(98vw, 380px);
   }
 
-  .hero-lookup__orbit b {
-    width: 32px;
-    height: 32px;
-    margin: -16px 0 0 -16px;
-    font-size: 0.74rem;
-  }
-
   .hero-lookup__promises {
     margin-top: 22px;
     text-align: left;
@@ -418,10 +321,6 @@
 
   :is(a, button).lookup-submit.hero-lookup__submit {
     width: 100%;
-  }
-
-  .hero-lookup__form-head {
-    align-items: flex-start;
   }
 
   .hero-lookup__nameplate {

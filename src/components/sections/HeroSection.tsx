@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
-import { CalendarDays, CircleCheck, Hash, Loader2, Search, ShieldCheck, Sparkles, Tag, UserRound } from "lucide-react";
+import { CalendarDays, CircleCheck, Hash, Loader2, Search, ShieldCheck, Tag, UserRound } from "lucide-react";
 import { api, errorMessage } from "../../api/client";
 import type { LookupResultPayload } from "../../../shared/lookup-types";
 import { TextField } from "../form/Field";
@@ -19,8 +19,6 @@ const promises = [
   "Mỗi bản báo cáo đều được chuyên gia SGEN giải đáp chi tiết, chính xác",
   "Được tham gia 1 buổi học về Thần số học cùng Ths. Phạm Bá Nha",
 ];
-
-const floatingNumbers = ["1", "7", "9", "4", "22", "6", "11", "3"];
 
 type FieldErrors = { name?: string; birthDate?: string };
 
@@ -73,11 +71,6 @@ export function HeroSection() {
       <div className="container hero-lookup__inner">
         <Reveal className="hero-lookup__portrait" direction="right">
           <figure>
-            <div className="hero-lookup__orbit" aria-hidden="true">
-              {floatingNumbers.map((value, index) => (
-                <span key={value} style={{ "--i": index } as React.CSSProperties}><b>{value}</b></span>
-              ))}
-            </div>
             <div className="hero-lookup__frame">
               <div className="hero-lookup__stage">
                 <img
@@ -119,11 +112,8 @@ export function HeroSection() {
         <Reveal className="hero-lookup__form-wrap" delay={180}>
           <form className="lookup-card hero-lookup__form" onSubmit={handleSubmit} noValidate aria-labelledby="hero-lookup-title">
             <div className="hero-lookup__form-head">
-              <span aria-hidden="true"><Sparkles size={18} /></span>
-              <div>
-                <h2 id="hero-lookup-title">Tra cứu bản đồ Thần số học miễn phí</h2>
-                <p>Nhập đúng họ tên khai sinh và ngày sinh dương lịch để nhận báo cáo đầy đủ.</p>
-              </div>
+              <h2 id="hero-lookup-title">Tra cứu bản đồ Thần số học miễn phí</h2>
+              <p>Nhập đúng họ tên khai sinh và ngày sinh dương lịch để nhận báo cáo đầy đủ.</p>
             </div>
             <div className="hero-lookup__fields">
               <TextField
