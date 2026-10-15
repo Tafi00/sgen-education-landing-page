@@ -2040,6 +2040,23 @@ export function getHexagram(lines: number[]): HexagramResult {
   return { primary: resolve(bits), changed: resolve(changedBits), moving, movingDetails, readingRule };
 }
 
+/** Quẻ theo số thứ tự Văn Vương (1–64). */
+export function getHexagramInfo(number: number): HexagramInfo | null {
+  for (let upperIndex = 0; upperIndex < 8; upperIndex++) {
+    const lowerIndex = HEX_MATRIX[upperIndex].indexOf(number);
+    if (lowerIndex >= 0) {
+      return { number, name: HEX_NAMES[number - 1], keyword: HEX_KEYWORDS[number - 1], message: HEX_MESSAGES[number - 1], lower: TRIGRAMS[lowerIndex], upper: TRIGRAMS[upperIndex] };
+    }
+  }
+  return null;
+}
+
+/** Quẻ theo số Tiên Thiên của thượng/hạ quái (1 Càn … 8 Khôn), như cách ghi “4/6” trong tài liệu SGEN. */
+export function getHexagramByTrigramOrder(upper: number, lower: number): HexagramInfo | null {
+  const row = HEX_MATRIX[upper - 1];
+  return row && row[lower - 1] ? getHexagramInfo(row[lower - 1]) : null;
+}
+
 const HA_LAC_STEM_NUMBERS = [6, 2, 8, 7, 1, 9, 3, 4, 6, 2] as const;
 const HA_LAC_BRANCH_FIRST = [1, 5, 3, 3, 5, 2, 2, 5, 4, 4, 5, 1] as const;
 const HA_LAC_BRANCH_SECOND = [0, 6, 7, 8, 9, 10] as const;

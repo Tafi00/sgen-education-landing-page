@@ -1,0 +1,127 @@
+/* Bảng luận quẻ theo tài liệu nội dung SGEN — dùng chung cho Gieo quẻ và Phong thủy sim. */
+.iching-reading-list {
+  --icr-ink: #311b58;
+  --icr-text: #4c405b;
+  --icr-muted: #7a6b8c;
+  --icr-accent: #6330a5;
+  --icr-line: #d8c8e9;
+  --icr-line-soft: #ece2f4;
+  --icr-tint: #faf7fd;
+  --icr-red: #c52240;
+  --icr-display: var(--ich-font-display, "Noto Serif", "Times New Roman", serif);
+  display: grid;
+  gap: 18px;
+}
+
+.iching-reading-block { overflow: hidden; background: #fff; border: 1px solid var(--icr-line); border-radius: 14px; }
+.iching-reading-block > header { padding: 15px 20px; background: #efe6f8; }
+.iching-reading-block > header small { color: var(--icr-accent); font-size: .72rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.iching-reading-block > header h4 { margin: 4px 0 0; color: var(--icr-ink); font-family: var(--icr-display); font-size: 1.15rem; }
+.iching-reading-table-wrap { overflow-x: auto; }
+.iching-reading-table { width: 100%; min-width: 620px; table-layout: fixed; border-collapse: collapse; }
+.iching-reading-table th, .iching-reading-table td { width: 20%; }
+.iching-reading-table th { padding: 10px 14px; color: #4d2878; background: var(--icr-tint); border-bottom: 1px solid #e8ddf1; font-size: .72rem; font-weight: 800; text-align: left; white-space: nowrap; }
+.iching-reading-table td { padding: 12px 14px; color: var(--icr-text); border-right: 1px solid #f0e8f6; font-size: .78rem; line-height: 1.6; vertical-align: top; }
+.iching-reading-table td:last-child { border-right: 0; }
+.iching-reading-table td strong { color: var(--icr-ink); }
+
+/* Phần thông tin thêm dưới mỗi bảng. */
+.iching-reading-more { display: flex; flex-wrap: wrap; gap: 12px 18px; align-items: center; justify-content: space-between; padding: 12px 20px; background: var(--icr-tint); border-top: 1px solid var(--icr-line-soft); }
+.iching-reading-more dl { display: flex; flex-wrap: wrap; gap: 6px 18px; margin: 0; }
+.iching-reading-more dl > div { display: flex; gap: 6px; align-items: baseline; }
+.iching-reading-more dt { color: var(--icr-muted); font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; }
+.iching-reading-more dd { margin: 0; color: var(--icr-ink); font-size: .8rem; font-weight: 700; }
+.iching-reading-more__btn {
+  display: inline-flex; gap: 7px; align-items: center; min-height: 38px; padding: 0 16px;
+  color: #fff; background: linear-gradient(135deg, #5a22e8, #3d1496); border: 0; border-radius: 999px;
+  font: inherit; font-size: .82rem; font-weight: 800; cursor: pointer;
+  box-shadow: 0 4px 12px rgba(61, 20, 150, .22);
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+.iching-reading-more__btn:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(61, 20, 150, .3); }
+.iching-reading-more__btn:focus-visible { outline: 3px solid #8b5cf6; outline-offset: 2px; }
+
+/* Hộp thoại chi tiết (tự dựng để chạy cả trên Safari 14 không có thẻ <dialog>). */
+.iching-dialog-open { overflow: hidden; }
+.iching-dialog-backdrop {
+  position: fixed; top: 0; right: 0; bottom: 0; left: 0; z-index: 1000; display: grid; place-items: center; padding: 16px;
+  background: rgba(24, 12, 48, .55);
+  -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px);
+  animation: iching-dialog-fade .18s ease-out;
+}
+.iching-dialog {
+  --icr-ink: #311b58; --icr-text: #4c405b; --icr-muted: #7a6b8c; --icr-accent: #6330a5;
+  --icr-line: #d8c8e9; --icr-line-soft: #ece2f4; --icr-tint: #faf7fd; --icr-red: #c52240;
+  --icr-display: "Noto Serif", "Times New Roman", serif;
+  display: flex; flex-direction: column; width: min(760px, 100%); max-height: min(88vh, 900px);
+  overflow: hidden; color: var(--icr-text); background: #fff; border-radius: 18px;
+  box-shadow: 0 24px 60px rgba(24, 12, 48, .35);
+  font-family: "Be Vietnam Pro", ui-sans-serif, system-ui, sans-serif;
+  animation: iching-dialog-rise .22s cubic-bezier(.22, 1, .36, 1);
+}
+.iching-dialog__head { display: flex; gap: 12px; align-items: center; justify-content: space-between; padding: 16px 20px; color: #fff; background: linear-gradient(135deg, #2a0f6e, #5a22e8); }
+.iching-dialog__head small { color: rgba(255, 255, 255, .78); font-size: .72rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+.iching-dialog__head h3 { margin: 3px 0 0; color: #fff; font-family: var(--icr-display); font-size: 1.3rem; line-height: 1.3; }
+.iching-dialog__head button { display: grid; flex: none; place-items: center; width: 38px; height: 38px; color: #fff; background: rgba(255, 255, 255, .14); border: 0; border-radius: 999px; cursor: pointer; }
+.iching-dialog__head button:hover { background: rgba(255, 255, 255, .26); }
+.iching-dialog__head button:focus-visible,
+.iching-dialog__tabs button:focus-visible,
+.iching-dialog__foot button:focus-visible { outline: 3px solid #8b5cf6; outline-offset: 2px; }
+
+.iching-dialog__tabs { display: flex; gap: 6px; padding: 10px 16px; overflow-x: auto; background: var(--icr-tint); border-bottom: 1px solid var(--icr-line-soft); }
+.iching-dialog__tabs button { flex: none; min-height: 34px; padding: 0 14px; color: var(--icr-accent); background: #fff; border: 1px solid var(--icr-line); border-radius: 999px; font: inherit; font-size: .8rem; font-weight: 700; cursor: pointer; }
+.iching-dialog__tabs button.is-active { color: #fff; background: #5a22e8; border-color: #5a22e8; }
+
+.iching-dialog__body { flex: 1; padding: 20px; overflow: auto; overscroll-behavior: contain; font-size: .92rem; line-height: 1.65; }
+.iching-dialog__overview { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 22px; align-items: center; padding: 16px 18px; background: var(--icr-tint); border: 1px solid var(--icr-line-soft); border-radius: 14px; }
+.iching-dialog__overview dl { display: grid; gap: 8px; margin: 0; }
+.iching-dialog__overview dl > div { display: grid; grid-template-columns: 92px minmax(0, 1fr); gap: 10px; }
+.iching-dialog__overview dt { color: var(--icr-muted); font-size: .74rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; padding-top: 2px; }
+.iching-dialog__overview dd { margin: 0; color: var(--icr-ink); font-weight: 600; }
+
+.iching-figure { display: grid; gap: 7px; }
+.iching-figure__row { display: grid; grid-template-columns: 14px minmax(0, 1fr); gap: 8px; align-items: center; }
+.iching-figure__row small { color: var(--icr-muted); font-size: .66rem; font-weight: 700; text-align: center; }
+.iching-figure__row > i { display: flex; gap: 12px; height: 12px; font-style: normal; }
+.iching-figure__row > i em { display: block; flex: 1; height: 100%; background: #3c2861; border-radius: 3px; }
+.iching-figure__row.is-moving > i em { background: var(--icr-red); }
+.iching-figure__row.is-moving small { color: var(--icr-red); font-weight: 900; }
+
+.iching-dialog__section { margin-top: 20px; }
+.iching-dialog__section h4 { margin: 0 0 10px; color: var(--icr-ink); font-family: var(--icr-display); font-size: 1.05rem; }
+.iching-dialog__section > p { margin: 0; }
+.iching-dialog__section blockquote { margin: 0; padding: 12px 16px; color: var(--icr-ink); background: #f4edfb; border-left: 4px solid #5a22e8; border-radius: 0 10px 10px 0; font-weight: 700; }
+.iching-dialog__aspects { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.iching-dialog__aspects article { display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 10px; padding: 12px 14px; border: 1px solid var(--icr-line-soft); border-radius: 12px; }
+.iching-dialog__aspects article > span { display: grid; place-items: center; width: 34px; height: 34px; color: #5a22e8; background: #efe6f8; border-radius: 10px; }
+.iching-dialog__aspects b { color: var(--icr-ink); font-size: .84rem; }
+.iching-dialog__aspects p { margin: 2px 0 0; font-size: .86rem; }
+.iching-dialog__moving { display: grid; gap: 10px; margin: 0 0 10px; padding: 0; list-style: none; }
+.iching-dialog__moving li { padding: 10px 14px; background: #fdf3f5; border: 1px solid #f3cfd6; border-radius: 12px; }
+.iching-dialog__moving b { color: var(--icr-red); font-size: .84rem; }
+.iching-dialog__moving p { margin: 2px 0; }
+.iching-dialog__moving small { color: var(--icr-muted); }
+.iching-dialog__rule { margin: 0; color: var(--icr-text); font-style: italic; }
+.iching-dialog__note { margin: 22px 0 0; color: var(--icr-muted); font-size: .78rem; }
+.iching-dialog__foot { display: flex; justify-content: flex-end; padding: 12px 20px; border-top: 1px solid var(--icr-line-soft); }
+.iching-dialog__foot button { min-height: 38px; padding: 0 20px; color: var(--icr-accent); background: #fff; border: 1px solid var(--icr-line); border-radius: 999px; font: inherit; font-size: .85rem; font-weight: 700; cursor: pointer; }
+.iching-dialog__foot button:hover { background: var(--icr-tint); }
+
+@keyframes iching-dialog-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes iching-dialog-rise { from { opacity: 0; transform: translateY(12px) scale(.98); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .iching-dialog-backdrop, .iching-dialog { animation: none; }
+  .iching-reading-more__btn { transition: none; }
+}
+
+@media (max-width: 650px) {
+  .iching-reading-more { padding: 12px 16px; }
+  .iching-reading-more__btn { width: 100%; justify-content: center; }
+  .iching-dialog-backdrop { padding: 0; place-items: end stretch; }
+  .iching-dialog { width: 100%; max-height: 92vh; border-radius: 18px 18px 0 0; }
+  .iching-dialog__body { padding: 16px; }
+  .iching-dialog__overview { grid-template-columns: 1fr; gap: 16px; }
+  .iching-dialog__overview .iching-figure { width: min(180px, 100%); margin: 0 auto; }
+  .iching-dialog__overview dl > div { grid-template-columns: 84px minmax(0, 1fr); }
+  .iching-dialog__aspects { grid-template-columns: 1fr; }
+}

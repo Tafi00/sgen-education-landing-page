@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { getHexagram, type HexagramResult } from "../../../shared/menh-thu/metaphysics";
 import { ICHING_DOCUMENT_READINGS } from "./iching-document-readings";
+import { IChingReadingList } from "./IChingReadingList";
 import "../../styles/iching-tool.css";
 import { Button } from "../ui/Button";
 
@@ -301,35 +302,6 @@ export function IChingToolView({ defaultQuestion = "", compact = false }: FengSh
                     </span>
                   );
                 };
-                const renderReadingTable = (side: "primary" | "changed") => {
-                  const result = hexagram[side];
-                  const reading = ICHING_DOCUMENT_READINGS[result.number];
-                  const title = side === "primary" ? "Quẻ Chủ" : "Quẻ Biến";
-                  return (
-                    <section className="iching-reading-block" key={side}>
-                      <header>
-                        <small>{title} · {reading?.pair ?? `Quẻ ${result.number}`}</small>
-                        <h4>Luận Quẻ {reading?.name ?? result.name}</h4>
-                      </header>
-                      <div className="iching-reading-table-wrap">
-                        <table className="iching-reading-table">
-                          <thead>
-                            <tr><th scope="col">Ý Nghĩa</th><th scope="col">Tài Chính</th><th scope="col">Sự Nghiệp</th><th scope="col">Sức Khỏe</th><th scope="col">Mối quan hệ</th></tr>
-                          </thead>
-                          <tbody>
-                            <tr>
-                              <td><strong>{reading?.meaning ?? result.keyword}</strong></td>
-                              <td>{reading?.finance ?? "—"}</td>
-                              <td>{reading?.career ?? "—"}</td>
-                              <td>{reading?.health ?? "—"}</td>
-                              <td>{reading?.relationship ?? "—"}</td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                    </section>
-                  );
-                };
                 return (
                   <>
                     <div className="iching-diagram" aria-label="Sơ đồ Quẻ Chủ và Quẻ Biến">
@@ -361,8 +333,26 @@ export function IChingToolView({ defaultQuestion = "", compact = false }: FengSh
                         <strong>{changedReading?.pair ?? ""} {changedReading?.name ?? hexagram.changed.name}</strong>
                       </div>
                     </div>
-                    {renderReadingTable("primary")}
-                    {renderReadingTable("changed")}
+                    <IChingReadingList
+                      items={[
+                        {
+                          key: "primary",
+                          label: "Quẻ Chủ",
+                          number: hexagram.primary.number,
+                          highlightLines: hexagram.moving,
+                          note: hexagram.moving.length ? `Động hào ${hexagram.moving.join(", ")}` : "Quẻ tĩnh, không hào động",
+                          movingDetails: hexagram.movingDetails,
+                          readingRule: hexagram.readingRule,
+                        },
+                        {
+                          key: "changed",
+                          label: "Quẻ Biến",
+                          number: hexagram.changed.number,
+                          highlightLines: hexagram.moving,
+                          note: hexagram.moving.length ? `Biến từ hào ${hexagram.moving.join(", ")} của quẻ chủ` : "Giữ nguyên quẻ chủ",
+                        },
+                      ]}
+                    />
                   </>
                 );
               })()}

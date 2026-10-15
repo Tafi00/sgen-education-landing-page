@@ -1,7 +1,9 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   analyzeSimPhongThuy,
+  calcSimLifeHexagrams,
   normalizeVietnamesePhone,
+  type SimFortuneHexagram,
   type SimAnalysisResult,
   validateSimPhongThuyInput,
 } from "../../../shared/sim/sim-phong-thuy-engine";
@@ -16,6 +18,7 @@ import {
   Search,
   Zap,
 } from "lucide-react";
+import { IChingReadingList, type IChingReadingItem } from "./IChingReadingList";
 import "../../styles/sim-phong-thuy.css";
 
 interface SimPhongThuyViewProps {
@@ -174,6 +177,20 @@ export default function SimPhongThuyView({
   const result = syncedForCurrentQuery && syncedAnalysis.result
     ? syncedAnalysis.result
     : analysis.result;
+  const lifeHexagramItems = useMemo<IChingReadingItem[]>(() => {
+    if (!hasValidPhone) return [];
+    const life = calcSimLifeHexagrams(submittedQuery.phone);
+    const fortuneNote = (fortune: SimFortuneHexagram, scope: string) =>
+      `${scope} ${fortune.digits}: thượng ${fortune.upperDigits.split("").join(" + ")} → ${fortune.upperQuai}, hạ ${fortune.lowerDigits.split("").join(" + ")} → ${fortune.lowerQuai}`;
+    const items: IChingReadingItem[] = [
+      { key: "primary", label: "Quẻ Chủ", number: life.primary, highlightLines: [life.movingLine], note: `Động hào ${life.movingLine}` },
+      { key: "changed", label: "Quẻ Biến", number: life.changed, highlightLines: [life.movingLine], note: `Biến từ hào ${life.movingLine} của quẻ chủ` },
+    ];
+    if (life.tienVan) items.push({ key: "tien", label: "Quẻ Tiền Vận", number: life.tienVan.hexNum, note: fortuneNote(life.tienVan, "Xét số đầu") });
+    if (life.trungVan) items.push({ key: "trung", label: "Quẻ Trung Vận", number: life.trungVan.hexNum, note: fortuneNote(life.trungVan, "Xét số giữa") });
+    if (life.hauVan) items.push({ key: "hau", label: "Quẻ Hậu Vận", number: life.hauVan.hexNum, note: fortuneNote(life.hauVan, "Xét số cuối") });
+    return items;
+  }, [hasValidPhone, submittedQuery.phone]);
   const aspectAnalysisItems = result ? [
     {
       key: "theVan" as const,
@@ -569,11 +586,12 @@ export default function SimPhongThuyView({
 
           <nav className="skd-result-jump-nav" aria-label="Điều hướng nhanh kết quả phong thủy sim">
             <a href="#kd-summary-card"><span>01</span>Tổng quan</a>
-            <a href="#skd-luc-hao"><span>02</span>Lá quẻ</a>
-            <a href="#skd-owner-overview"><span>03</span>Mệnh cục</a>
-            <a href="#skd-boisim-scorecards"><span>04</span>Phương diện</a>
-            <a href="#skd-bcls"><span>05</span>Bát Cực</a>
-            <a href="#skd-final-advice"><span>06</span>Tổng hợp</a>
+            <a href="#skd-life-hexagrams"><span>02</span>Luận quẻ</a>
+            <a href="#skd-luc-hao"><span>03</span>Lá quẻ</a>
+            <a href="#skd-owner-overview"><span>04</span>Mệnh cục</a>
+            <a href="#skd-boisim-scorecards"><span>05</span>Phương diện</a>
+            <a href="#skd-bcls"><span>06</span>Bát Cực</a>
+            <a href="#skd-final-advice"><span>07</span>Tổng hợp</a>
           </nav>
 
         {/* HERO SUMMARY CARD */}
@@ -614,6 +632,18 @@ export default function SimPhongThuyView({
           </div>
 
         </section>
+
+        {/* NĂM QUẺ LUẬN SIM: CHỦ · BIẾN · TIỀN VẬN · TRUNG VẬN · HẬU VẬN */}
+        {lifeHexagramItems.length > 0 && (
+          <section id="skd-life-hexagrams" className="skd-life-hexagrams" aria-labelledby="skd-life-hex-title">
+            <header className="skd-lh-section-intro">
+              <span>Luận giải tổng thể sim</span>
+              <h3 id="skd-life-hex-title">{lifeHexagramItems.length} quẻ của SIM {result.formattedPhone}</h3>
+              <p>Quẻ Chủ, Quẻ Biến và các quẻ Tiền Vận, Trung Vận, Hậu Vận theo bảng 64 quẻ Kinh Dịch. Bấm “Xem chi tiết” để đọc đầy đủ từng quẻ.</p>
+            </header>
+            <IChingReadingList items={lifeHexagramItems} />
+          </section>
+        )}
 
         {/* LÁ QUẺ LỤC HÀO SHEET */}
         <section id="skd-luc-hao" className="skd-luc-hao-sheet" aria-labelledby="skd-lh-title">

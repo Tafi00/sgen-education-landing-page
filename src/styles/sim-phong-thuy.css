@@ -2397,7 +2397,7 @@
 
 /* SCORE SUMMARY TABLE */
 .skd-result-jump-nav {
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-columns: repeat(7, minmax(0, 1fr));
 }
 
 #skd-bcls {
@@ -4001,3 +4001,9 @@
 .skd-simple-reading p { color:#51465b; line-height:1.65; }
 @media (max-width:800px) { .skd-simple-aspects { grid-template-columns:repeat(2,minmax(0,1fr)); } .skd-simple-more-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
 @media (max-width:650px) { .skd-simple-summary { grid-template-columns:1fr; padding:23px; } .skd-simple-summary__verdict { justify-items:start; text-align:left; } .skd-simple-panel { padding:22px 17px; } .skd-simple-hex-grid { grid-template-columns:1fr; } .skd-simple-hex-arrow { display:flex; align-items:center; justify-content:center; gap:12px; } .skd-simple-hex-arrow span { transform:rotate(90deg); } .skd-simple-aspects { grid-template-columns:1fr; } .skd-simple-advice { padding:23px; } }
+
+/* --- NĂM QUẺ LUẬN SIM (dưới Tổng quan theo Kinh Dịch) --- */
+.skd-life-hexagrams {
+  margin: 0 0 2.5rem;
+  scroll-margin-top: 94px;
+}

@@ -1829,14 +1829,5 @@
 .iching-diagram__foot strong { color:#311b58; font-family:var(--ich-font-display); font-size:.86rem; text-align:center; }
 .iching-diagram__foot strong:first-child { grid-column:2; }
 .iching-diagram__foot strong:last-child { grid-column:4; }
-.iching-reading-block { margin:0 30px 22px; overflow:hidden; background:#fff; border:1px solid #d8c8e9; border-radius:14px; }
-.iching-reading-block > header { padding:15px 20px; background:#efe6f8; }
-.iching-reading-block > header small { color:#6330a5; font-size:.72rem; font-weight:800; letter-spacing:.08em; text-transform:uppercase; }
-.iching-reading-block > header h4 { margin:4px 0 0; color:#311b58; font-family:var(--ich-font-display); font-size:1.15rem; }
-.iching-reading-table-wrap { overflow-x:auto; }
-.iching-reading-table { width:100%; min-width:560px; border-collapse:collapse; }
-.iching-reading-table th { padding:10px 14px; color:#4d2878; background:#faf7fd; border-bottom:1px solid #e8ddf1; font-size:.72rem; font-weight:800; text-align:left; white-space:nowrap; }
-.iching-reading-table td { padding:12px 14px; color:#4c405b; border-right:1px solid #f0e8f6; font-size:.78rem; line-height:1.6; vertical-align:top; }
-.iching-reading-table td:last-child { border-right:0; }
-.iching-reading-table td strong { color:#311b58; }
-@media (max-width:650px) { .iching-result-intro { padding:20px 17px 15px; }.iching-diagram { margin:0 17px 18px; padding:14px 12px 10px; }.iching-diagram__head,.iching-diagram__row,.iching-diagram__foot { grid-template-columns:20px minmax(0,1fr) minmax(64px,auto) minmax(0,1fr) 20px; gap:6px; }.iching-diagram__trigrams b { font-size:.62rem; }.iching-diagram__trigrams small { font-size:.6rem; }.iching-diagram__foot strong { font-size:.72rem; }.iching-reading-block { margin:0 17px 18px; } }
+.hex-result .iching-reading-list { margin:0 30px 22px; }
+@media (max-width:650px) { .iching-result-intro { padding:20px 17px 15px; }.iching-diagram { margin:0 17px 18px; padding:14px 12px 10px; }.iching-diagram__head,.iching-diagram__row,.iching-diagram__foot { grid-template-columns:20px minmax(0,1fr) minmax(64px,auto) minmax(0,1fr) 20px; gap:6px; }.iching-diagram__trigrams b { font-size:.62rem; }.iching-diagram__trigrams small { font-size:.6rem; }.iching-diagram__foot strong { font-size:.72rem; }.hex-result .iching-reading-list { margin:0 17px 18px; } }

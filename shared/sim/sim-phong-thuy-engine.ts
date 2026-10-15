@@ -461,6 +461,74 @@ export function calcQue(phone: string): QueCalculation {
   };
 }
 
+/** Một quẻ vận (Tiền/Trung/Hậu) lập từ một đoạn số của dãy sim. */
+export interface SimFortuneHexagram {
+  /** Đoạn số được xét, ví dụ "0902". */
+  digits: string;
+  /** Các chữ số cộng ra Quái Thượng / Quái Hạ. */
+  upperDigits: string;
+  lowerDigits: string;
+  upperQuai: number;
+  lowerQuai: number;
+  hexNum: number;
+}
+
+export interface SimLifeHexagrams {
+  primary: number;
+  changed: number;
+  movingLine: number;
+  /** Null khi dãy số không đủ dài để có quẻ vận đó (ví dụ dãy 4–8 số không có Trung Vận). */
+  tienVan: SimFortuneHexagram | null;
+  trungVan: SimFortuneHexagram | null;
+  hauVan: SimFortuneHexagram | null;
+}
+
+/**
+ * Độ dài đoạn Tiền / Trung / Hậu vận theo độ dài dãy số
+ * (mục “Công thức tính toán sim số” trong tài liệu nội dung SGEN 22/09/2026). 0 = không có.
+ */
+const FORTUNE_SEGMENTS: Record<number, [number, number, number]> = {
+  4: [2, 0, 2], 5: [3, 0, 2], 6: [3, 0, 3], 7: [4, 0, 3], 8: [4, 0, 4],
+  9: [3, 3, 3], 10: [4, 3, 3], 11: [4, 4, 3], 12: [4, 4, 4],
+  13: [5, 4, 4], 14: [5, 5, 4], 15: [5, 5, 5],
+};
+
+const quaiFromSum = (digits: string) => {
+  const quai = digits.split("").reduce((acc, c) => acc + (parseInt(c, 10) || 0), 0) % 8;
+  return quai === 0 ? 8 : quai;
+};
+
+/**
+ * Đoạn 2 số: 1 số đầu / 1 số cuối; 3 số: 2 số đầu / 1 số cuối;
+ * 4 và 5 số: 2 số đầu / 2 số cuối (tài liệu ghi như vậy cho cả đoạn 5 số).
+ */
+function calcFortuneHexagram(segment: string): SimFortuneHexagram {
+  const head = segment.length <= 2 ? 1 : 2;
+  const tail = segment.length <= 3 ? 1 : 2;
+  const upperDigits = segment.slice(0, head);
+  const lowerDigits = segment.slice(-tail);
+  const upperQuai = quaiFromSum(upperDigits);
+  const lowerQuai = quaiFromSum(lowerDigits);
+  return { digits: segment, upperDigits, lowerDigits, upperQuai, lowerQuai, hexNum: LOOKUP[upperQuai][lowerQuai] };
+}
+
+/** Năm quẻ luận sim: Quẻ Chủ, Quẻ Biến, Tiền Vận, Trung Vận, Hậu Vận. */
+export function calcSimLifeHexagrams(phone: string): SimLifeHexagrams {
+  const digits = normalizeVietnamesePhone(phone);
+  const que = calcQue(digits);
+  const segments = FORTUNE_SEGMENTS[digits.length];
+  let tienVan: SimFortuneHexagram | null = null;
+  let trungVan: SimFortuneHexagram | null = null;
+  let hauVan: SimFortuneHexagram | null = null;
+  if (segments) {
+    const [tienLen, trungLen, hauLen] = segments;
+    tienVan = calcFortuneHexagram(digits.slice(0, tienLen));
+    if (trungLen) trungVan = calcFortuneHexagram(digits.slice(tienLen, tienLen + trungLen));
+    hauVan = calcFortuneHexagram(digits.slice(-hauLen));
+  }
+  return { primary: que.hexNum, changed: que.bienNum, movingLine: que.haoDong, tienVan, trungVan, hauVan };
+}
+
 // ==========================================
 // 5. CUNG PHI, BẢN MỆNH & ĐỐI CHIẾU
 // ==========================================
