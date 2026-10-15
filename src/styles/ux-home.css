@@ -590,7 +590,7 @@
   /* Họ tên + Điện thoại nằm cùng 1 hàng. */
   .consultation-form-card form {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 10px;
+    gap: 14px 10px;
   }
   /* Dòng cam kết thời gian phản hồi. */
   .consultation-form-card__promise {
@@ -1491,5 +1491,12 @@
   .numeral-showcase-display {
     grid-template-columns: 1fr;
     gap: 20px;
+  }
+}
+
+/* Điện thoại nhỏ: 2 cột chỉ còn ~150px mỗi ô, cắt chữ gợi ý và ô ngày sinh bị icon lịch đè — về 1 cột. */
+@media (max-width: 480px) {
+  .consultation-form-card form {
+    grid-template-columns: minmax(0, 1fr);
   }
 }

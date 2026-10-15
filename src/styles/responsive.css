@@ -281,8 +281,9 @@
   margin-bottom: 18px;
 }
 
+/* Khoảng cách giữa các hàng phải lớn hơn khoảng nhãn → ô (7px) để nhãn thuộc rõ về ô bên dưới. */
 .consultation-form-card form {
-  gap: 11px;
+  gap: 16px 12px;
 }
 .site-footer__grid {
   padding-top: 30px;
@@ -504,9 +505,10 @@
     margin-bottom: 0;
   }
 
+  /* Hàng co theo nội dung (nhãn + ô ~80px); chỉ ô "Nội dung" giãn để lấp đầy chiều cao thẻ. */
   .consultation-form-card form {
     flex: 1;
-    grid-template-rows: repeat(2, 58px) minmax(150px, 1fr) 58px auto;
+    grid-template-rows: auto auto minmax(150px, 1fr) auto;
   }}
 
 @media (max-width: 1200px) {

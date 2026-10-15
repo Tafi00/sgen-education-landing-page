@@ -106,7 +106,7 @@ export function ConsultationSection() {
           <p className="consultation-form-card__intro">Để lại thông tin, SGEN sẽ liên hệ và tư vấn lộ trình phù hợp với bạn.</p>
           <form className="form-grid" onSubmit={handleSubmit}>
             <TextField label="Họ và tên" name="name" autoComplete="name" required icon={<UserRound aria-hidden="true" />} placeholder="Nguyễn Văn A" />
-            <TextField label="Ngày sinh (không bắt buộc)" name="birthDate" type="date" icon={<CalendarDays aria-hidden="true" />} />
+            <TextField label="Ngày sinh" name="birthDate" type="date" icon={<CalendarDays aria-hidden="true" />} />
             <TextField label="Email" name="email" type="email" autoComplete="email" required icon={<Mail aria-hidden="true" />} placeholder="ban@email.com" />
             <TextField
               label="Điện thoại"
