@@ -1,5 +1,6 @@
 import type { NextFunction, Request, RequestHandler, Response } from "express";
 import { ZodError, type ZodTypeAny, type z } from "zod";
+import { DB_UNAVAILABLE_MESSAGE, isDbConnectionError } from "../db/connectionErrors.js";
 
 export class AppError extends Error {
   status: number;
@@ -29,6 +30,21 @@ export function notFoundHandler(req: Request, res: Response) {
 }
 
 export function errorHandler(error: unknown, _req: Request, res: Response, _next: NextFunction) {
+  /**
+   * Lỗi đến sau khi đã gửi phản hồi (vd. express-session lưu phiên lúc kết thúc response):
+   * không thể trả lời lần nữa, chỉ ghi log. Không gọi `next` vì handler mặc định của Express
+   * sẽ huỷ socket và có thể cắt mất phần cuối response đang được gửi.
+   */
+  if (res.headersSent) {
+    console.error("[api] lỗi sau khi đã gửi phản hồi:", error instanceof Error ? error.message : String(error));
+    return;
+  }
+  if (isDbConnectionError(error)) {
+    console.error("[api] không truy cập được PostgreSQL:", (error as Error).message);
+    res.set("Retry-After", "30");
+    res.status(503).json({ error: { code: "db_unavailable", message: DB_UNAVAILABLE_MESSAGE } });
+    return;
+  }
   if (error instanceof ZodError) {
     res.status(422).json({
       error: {

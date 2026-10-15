@@ -1,6 +1,7 @@
 import crypto from "node:crypto";
 import type { NextFunction, Request, Response } from "express";
 import { env } from "../env.js";
+import { DB_UNAVAILABLE_MESSAGE } from "../db/connectionErrors.js";
 import { AppError } from "./errors.js";
 
 const CSRF_COOKIE = "sgen_csrf";
@@ -29,7 +30,12 @@ export function requireCsrf(req: Request, _res: Response, next: NextFunction) {
     next();
     return;
   }
-  const expected = req.session?.csrfToken;
+  /** Không có phiên chỉ xảy ra khi store phiên tạm mất kết nối DB (xem ResilientSessionStore). */
+  if (!req.session) {
+    next(new AppError(503, DB_UNAVAILABLE_MESSAGE, "session_unavailable"));
+    return;
+  }
+  const expected = req.session.csrfToken;
   const provided = req.get(CSRF_HEADER) ?? "";
   if (
     !expected ||

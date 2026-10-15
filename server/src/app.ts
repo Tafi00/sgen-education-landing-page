@@ -8,6 +8,7 @@ import cookieParser from "cookie-parser";
 import { env } from "./env.js";
 import { dbState } from "./db.js";
 import { getPool } from "./db/pool.js";
+import { ResilientSessionStore } from "./db/sessionStore.js";
 import { errorHandler, notFoundHandler } from "./middleware/errors.js";
 import { issueCsrfToken, requireCsrf } from "./middleware/csrf.js";
 import { requireAdmin } from "./middleware/auth.js";
@@ -33,6 +34,10 @@ export function createApp() {
   app.use(express.urlencoded({ extended: true }));
   app.use(cookieParser());
 
+  const sessionStore = new ResilientSessionStore(
+    new (connectPgSimple(session))({ pool: getPool(), tableName: "session", ttl: 60 * 60 * 24 * 14, createTableIfMissing: false }),
+    () => getPool().query("SELECT 1"),
+  );
   app.use(
     session({
       name: "sgen_sid",
@@ -40,10 +45,7 @@ export function createApp() {
       resave: false,
       saveUninitialized: true,
       rolling: true,
-      store:
-        dbState.status === "connected" || dbState.status === "connecting"
-          ? new (connectPgSimple(session))({ pool: getPool(), tableName: "session", ttl: 60 * 60 * 24 * 14, createTableIfMissing: false })
-          : undefined,
+      store: sessionStore,
       cookie: {
         httpOnly: true,
         sameSite: "lax",
@@ -52,6 +54,8 @@ export function createApp() {
       },
     }),
   );
+  /** DB chưa sẵn sàng lúc khởi động: phục vụ không có phiên cho tới khi store kết nối lại được. */
+  if (dbState.status !== "connected") sessionStore.markUnavailable(dbState.lastError || dbState.status);
   app.use(issueCsrfToken);
 
   app.get("/api/health", (_req, res) => {
