@@ -109,15 +109,12 @@ function HintPopover({
       onPointerEnter={onPointerEnter}
       onPointerLeave={onPointerLeave}
     >
-      <div className="xn-pop__head">
-        <strong>{hint.title}</strong>
-        {hint.pinned && (
-          <button type="button" onClick={onClose} aria-label="Đóng">
-            <X aria-hidden="true" />
-          </button>
-        )}
-      </div>
-      <div className="xn-pop__body">{hint.body}</div>
+      {hint.pinned && (
+        <button type="button" className="xn-pop__close" onClick={onClose} aria-label="Đóng">
+          <X aria-hidden="true" />
+        </button>
+      )}
+      {hint.body}
     </div>,
     document.body,
   );
@@ -137,14 +134,13 @@ function HintSheet({ hint, onClose }: { hint: ActiveHint; onClose: () => void })
   }, []);
   return createPortal(
     <div className="xn-sheet-backdrop" onMouseDown={(event) => event.target === event.currentTarget && onClose()}>
-      <div className={`xn-sheet xn-sheet--${hint.variant}`} role="dialog" aria-modal="true" aria-labelledby="xn-sheet-title">
-        <span className="xn-sheet__grip" aria-hidden="true" />
-        <header className="xn-sheet__head">
-          <h3 id="xn-sheet-title">{hint.title}</h3>
+      <div className={`xn-sheet xn-sheet--${hint.variant}`} role="dialog" aria-modal="true" aria-label={hint.title}>
+        <div className="xn-sheet__bar">
+          <span className="xn-sheet__grip" aria-hidden="true" />
           <button type="button" ref={closeRef} onClick={onClose} aria-label="Đóng">
             <X aria-hidden="true" />
           </button>
-        </header>
+        </div>
         <div className="xn-sheet__body">{hint.body}</div>
       </div>
     </div>,
@@ -270,16 +266,6 @@ function Rows({ rows }: { rows: Array<[string, ReactNode]> }) {
   );
 }
 
-function ListBlock({ title, items, tone }: { title: string; items?: string[]; tone?: "good" | "bad" }) {
-  if (!items || items.length === 0) return null;
-  return (
-    <div className={`xn-detail-list ${tone ? `is-${tone}` : ""}`}>
-      <b>{title}</b>
-      <p>{items.join(", ")}.</p>
-    </div>
-  );
-}
-
 /** Nhãn sao trong dữ liệu viết hoa mọi chữ; hiển thị theo kiểu câu thường. */
 function sentenceCase(text: string) {
   const lower = text.toLocaleLowerCase("vi");
@@ -335,7 +321,7 @@ export function XemNgayView() {
     );
   };
   const note = (label: ReactNode, title: string, text: string | undefined, className = "") =>
-    text ? link(label, title, <SimpleInfo text={text} />, className, "note") : <span className={className}>{label}</span>;
+    text ? link(label, title, <NoteCard title={title} text={text} />, className, "note") : <span className={className}>{label}</span>;
 
   return (
     <div className="xn">
@@ -460,7 +446,7 @@ export function XemNgayView() {
                 <em className={luckClass(profile.dongCong.rating)}>{profile.dongCong.rating}</em>
               </>,
               profile.dongCong.title,
-              <DongCongDetail entry={profile.dongCong} day={profile.ctx.day.name} />,
+              <DongCongCard entry={profile.dongCong} day={profile.ctx.day.name} />,
               "xn-dongcong",
             )
           ) : (
@@ -480,7 +466,7 @@ export function XemNgayView() {
                         <b>{pad(no)}.</b> {muc.title}
                       </>,
                       `Mục ${pad(no)} · ${muc.title}`,
-                      <MucDetail no={no} highlight={profile.ctx.day.name} />,
+                      <MucCard no={no} highlight={profile.ctx.day.name} />,
                     )}
                   </li>
                 );
@@ -506,9 +492,9 @@ function OverviewPanel({ profile, link, note }: { profile: XemNgayProfile; link:
     <Panel title="Tổng quan" className="xn-overview">
       <Rows
         rows={[
-          ["Giờ đang xem", link(overview.hour, "Can Chi giờ theo ngày", <HourTable profile={profile} />)],
+          ["Giờ đang xem", link(overview.hour, "Can Chi giờ theo ngày", <HourCard profile={profile} />)],
           ["Nạp âm ngày", overview.napAm],
-          ["Thập nhị trực", link(`Trực ${overview.truc}`, `Trực ${overview.truc}`, <TrucDetail name={overview.truc} />, luckClass(truc?.luck))],
+          ["Thập nhị trực", link(`Trực ${overview.truc}`, `Trực ${overview.truc}`, <TrucCard name={overview.truc} />, luckClass(truc?.luck))],
           [
             "Kiết hung nhật",
             note(
@@ -519,7 +505,7 @@ function OverviewPanel({ profile, link, note }: { profile: XemNgayProfile; link:
             ),
           ],
           ["Đại tiểu nguyệt", overview.monthSize],
-          ["Nhị thập bát tú", link(`${overview.tu28.name}: ${overview.tu28.luck}`, overview.tu28.name, <TuDetail name={overview.tu28.name} />, overview.tu28.luck === "Tốt" ? "is-good" : "is-bad")],
+          ["Nhị thập bát tú", link(`${overview.tu28.name}: ${overview.tu28.luck}`, overview.tu28.name, <TuCard name={overview.tu28.name} />, overview.tu28.luck === "Tốt" ? "is-good" : "is-bad")],
           ["Tương quan ngũ hành", note(overview.relation, overview.relation, findInfo(TUONG_QUAN_INFO, overview.relation)?.summary, luckClass(overview.relation))],
           ["Thập thiên can ngày", overview.stem],
           ["Thập nhị địa chi ngày", overview.branch],
@@ -531,7 +517,7 @@ function OverviewPanel({ profile, link, note }: { profile: XemNgayProfile; link:
 
 function InfoPanel({ profile, link, note }: { profile: XemNgayProfile; link: LinkFn; note: NoteFn }) {
   const { info } = profile;
-  const starLink = (name: string, label: string = name) => link(label, name, <CuuTinhDetail name={name} />);
+  const starLink = (name: string, label: string = name) => link(label, `Sao ${name}`, <CuuTinhCard name={name} />);
   const lucNham = findInfo(LUC_NHAM_INFO, info.lucNham);
   const xuatHanh = findInfo(XUAT_HANH_INFO, info.xuatHanh);
   const folk = findInfo(DAN_GIAN_INFO, info.folk);
@@ -806,7 +792,7 @@ function ToolPanel({ profile, today, onGo, link }: { profile: XemNgayProfile; to
                 <i>{item.luck}</i>
               </>,
               `Trụ ${item.label.toLowerCase()} · ${item.name}`,
-              <PhoiQueDetail name={item.name} upper={item.upper} luck={item.luck} hexagram={item.hexagram} />,
+              <PhoiQueCard name={item.name} upper={item.upper} luck={item.luck} hexagram={item.hexagram} />,
               "xn-pillar__btn",
             )}
           </div>
@@ -845,22 +831,39 @@ function StarList({ stars, tone, note }: { stars: XemNgayProfile["stars"]["good"
   );
 }
 
-function SimpleInfo({ text }: { text?: string }) {
-  return <p>{text || "Chưa có diễn giải cho mục này."}</p>;
+/** Lời giải ngắn: thẻ vàng căn giữa như popover của trang mẫu. */
+function NoteCard({ title, text }: { title: string; text: string }) {
+  return (
+    <div className="xn-note">
+      <b>{title}</b>
+      <p>{text}</p>
+    </div>
+  );
 }
 
-function HourTable({ profile }: { profile: XemNgayProfile }) {
+/** Thẻ bảng: dải tiêu đề vàng, các hàng nhãn | nội dung trên nền ngà (như popover của trang mẫu). */
+function Card({ title, sub, children, wide = false }: { title: string; sub?: ReactNode; children?: ReactNode; wide?: boolean }) {
   return (
-    <table className="xn-table xn-table--full">
-      <thead>
-        <tr><th>Khung giờ</th><th>Can Chi</th><th>Thần trực</th></tr>
-      </thead>
+    <div className={`xn-card ${wide ? "is-wide" : ""}`}>
+      <header className="xn-card__band">
+        <strong>{title}</strong>
+        {sub && <div className="xn-card__sub">{sub}</div>}
+      </header>
+      {children}
+    </div>
+  );
+}
+
+function CardRows({ rows }: { rows: Array<[string, ReactNode, string?] | false | null | undefined> }) {
+  const visible = rows.filter((row): row is [string, ReactNode, string?] => Boolean(row && row[1]));
+  if (visible.length === 0) return null;
+  return (
+    <table className="xn-card__rows">
       <tbody>
-        {profile.hours.map((item) => (
-          <tr key={item.chi} className={item.canChi === profile.overview.hour ? "is-current" : ""}>
-            <td>{item.range.replace("-", "h – ")}h</td>
-            <td><b>{item.canChi}</b></td>
-            <td className={item.type === "Hoàng Đạo" ? "is-good" : "is-bad"}>{item.name} ({item.type})</td>
+        {visible.map(([label, value, tone]) => (
+          <tr key={label} className={tone ? `is-${tone}` : ""}>
+            <th scope="row">{label}</th>
+            <td>{value}</td>
           </tr>
         ))}
       </tbody>
@@ -868,118 +871,145 @@ function HourTable({ profile }: { profile: XemNgayProfile }) {
   );
 }
 
-function TrucDetail({ name }: { name: string }) {
+const joinList = (items?: string[]) => (items && items.length ? `${items.join(", ")}.` : "");
+
+function HourCard({ profile }: { profile: XemNgayProfile }) {
+  const fmt = (range: string) => {
+    const [from, to] = range.split("-").map(Number);
+    return `${pad(from)}:00 – ${pad((to + 23) % 24)}:59`;
+  };
+  return (
+    <Card title="Can Chi giờ theo ngày">
+      <table className="xn-card__rows xn-card__rows--center">
+        <tbody>
+          {profile.hours.map((item) => (
+            <tr key={item.chi} className={item.canChi === profile.overview.hour ? "is-current" : ""}>
+              <td className="xn-num">{fmt(item.range)}</td>
+              <td><b>{item.canChi}</b></td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </Card>
+  );
+}
+
+function PhoiQueCard({ name, upper, luck, hexagram }: { name: string; upper: number; luck: number; hexagram: string }) {
+  return (
+    <Card title="Biểu đồ Lục thập Giáp Tý phối quẻ">
+      <table className="xn-card__rows xn-card__rows--center xn-phoique">
+        <tbody>
+          <tr><td className="xn-phoique__num">{upper}</td></tr>
+          <tr><td><b>{name}</b></td></tr>
+          <tr><td className="xn-phoique__num">{luck}</td></tr>
+          <tr><td className="xn-phoique__gua">{hexagram}</td></tr>
+        </tbody>
+      </table>
+    </Card>
+  );
+}
+
+function TrucCard({ name }: { name: string }) {
   const info = findInfo(TRUC_INFO, name);
-  if (!info) return <SimpleInfo />;
+  if (!info) return <Card title={`Trực ${name}`} />;
   return (
-    <div className="xn-detail">
-      <p className="xn-detail__lead">{info.summary}</p>
-      <Rows rows={[["Tốt xấu", info.luck], ["Ngũ hành", info.element], ["Bành Tổ kị nhật", info.saying], ["Ý nghĩa", info.meaning]]} />
-      <ListBlock title="Nên làm" items={info.suitable} tone="good" />
-      <ListBlock title="Kiêng kỵ" items={info.avoid} tone="bad" />
-    </div>
+    <Card title={`Trực ${name}`} sub={<><p>{info.luck}{info.luckNote ? ` — ${info.luckNote}` : ""}</p><p>{info.summary}</p></>} wide>
+      <CardRows
+        rows={[
+          ["Bành Tổ kị nhật", info.saying],
+          [`Ý nghĩa trực ${name}`, info.meaning],
+          ["Trực thuộc ngũ hành", info.element],
+          ["Nên", joinList(info.suitable), "good"],
+          ["Kị", joinList(info.avoid), "bad"],
+        ]}
+      />
+    </Card>
   );
 }
 
-function TuDetail({ name }: { name: string }) {
+function TuCard({ name }: { name: string }) {
   const info = findInfo(TU28_INFO, name);
-  if (!info) return <SimpleInfo />;
+  if (!info) return <Card title={name} />;
   return (
-    <div className="xn-detail">
-      <p className="xn-detail__lead">{info.summary}</p>
-      <Rows rows={[["Sao", info.short], ["Ngũ hành", info.element], ["Tướng tinh", info.animal], ["Đánh giá", info.luck]]} />
-      <ListBlock title="Nên làm" items={info.suitable} tone="good" />
-      <ListBlock title="Kiêng cữ" items={info.avoid} tone="bad" />
-      {info.exception && <p className="xn-detail__note"><b>Ngoại lệ:</b> {info.exception}</p>}
-    </div>
+    <Card title={info.name} sub={<p>Tướng tinh: {info.animal} · {info.luck} · chủ trị {info.weekday}</p>} wide>
+      <CardRows
+        rows={[
+          ["Thất diệu", info.element],
+          ["Tứ tượng", info.group],
+          ["Ý nghĩa", info.summary],
+          ["Nên làm", joinList(info.suitable), "good"],
+          ["Kiêng cữ", joinList(info.avoid), "bad"],
+          ["Ngoại lệ", info.exception],
+        ]}
+      />
+    </Card>
   );
 }
 
-function OfficerDetail({ name }: { name: string }) {
-  const info = findInfo(DAY_OFFICER_INFO, name);
-  return (
-    <div className="xn-detail">
-      {info && <p className="xn-detail__lead">{info.type}</p>}
-      <SimpleInfo text={info?.summary} />
-    </div>
-  );
+/** Lưới phi tinh 3×3 (Bắc ở trên): sao đang xét vào giữa, các sao còn lại bay thuận như trang mẫu. */
+const FLIGHT_ORDER = [4, 0, 3, 2, 7, 1, 6, 5, 8]; // ô lưới theo thứ tự bay: giữa, TB, T, ĐB, N, B, TN, Đ, ĐN
+const GRID_LABELS = ["Tây Bắc", "Bắc", "Đông Bắc", "Tây", "Trung cung", "Đông", "Tây Nam", "Nam", "Đông Nam"];
+const STAR_TONES = ["", "white", "black", "jade", "green", "yellow", "white", "red", "white", "purple"];
+
+function flyingGrid(center: number) {
+  const grid = Array<number>(9).fill(0);
+  FLIGHT_ORDER.forEach((cell, step) => {
+    grid[cell] = ((center - 1 + step) % 9) + 1;
+  });
+  return grid;
 }
 
-function HourStarDetail({ name }: { name: string }) {
-  const info = findInfo(HOUR_STAR_INFO, name) ?? findInfo(DAY_OFFICER_INFO, name);
-  return <SimpleInfo text={info?.summary} />;
-}
-
-function LucNhamDetail({ name }: { name: string }) {
-  const info = findInfo(LUC_NHAM_INFO, name);
-  return (
-    <div className="xn-detail">
-      {info && <p className={`xn-detail__lead ${luckClass(info.luck)}`}>{info.luck}</p>}
-      <SimpleInfo text={info?.summary} />
-    </div>
-  );
-}
-
-function CuuTinhDetail({ name }: { name: string }) {
+function CuuTinhCard({ name }: { name: string }) {
   const info = findInfo(CUU_TINH_INFO, name);
-  if (!info) return <SimpleInfo />;
+  if (!info) return <Card title={`Sao ${name}`} />;
+  const grid = flyingGrid(info.number);
   return (
-    <div className="xn-detail">
-      <Rows rows={[["Ngũ hành", info.element], ["Màu", info.color], ["Tính chất", info.luck]]} />
-      <SimpleInfo text={info.summary} />
-    </div>
-  );
-}
-
-function PhoiQueDetail({ name, upper, luck, hexagram }: { name: string; upper: number; luck: number; hexagram: string }) {
-  return (
-    <div className="xn-detail xn-phoique">
-      <div className="xn-phoique__card">
-        <span>{upper}</span>
-        <b>{name}</b>
-        <span>{luck}</span>
-        <strong>{hexagram}</strong>
+    <Card title={`Sao ${info.name}`} sub={<p>{info.star} · {info.element} · màu {info.color.toLocaleLowerCase("vi")} · {info.luck}</p>}>
+      <div className="xn-loshu" role="img" aria-label={`Phi tinh: ${grid.map((value, index) => `${GRID_LABELS[index]} ${value}`).join(", ")}`}>
+        {grid.map((value, index) => (
+          <span key={index} className={`xn-loshu__cell is-${STAR_TONES[value]} ${index === 4 ? "is-center" : ""}`}>
+            <b>{value}</b>
+            <small>{GRID_LABELS[index]}</small>
+          </span>
+        ))}
       </div>
-      <p>
-        Theo Huyền Không Đại Quái, mỗi Can Chi trong Lục thập Giáp Tý ứng với một quẻ. Số phía trên là quái số của quẻ thượng, số phía dưới là quái vận (1–9) của quẻ.
-      </p>
-    </div>
+    </Card>
   );
 }
 
-function DongCongDetail({ entry, day }: { entry: NonNullable<XemNgayProfile["dongCong"]>; day: string }) {
+function DongCongCard({ entry, day }: { entry: NonNullable<XemNgayProfile["dongCong"]>; day: string }) {
   return (
-    <div className="xn-detail">
-      {entry.label && <p className="xn-detail__lead">{entry.label}</p>}
-      <table className="xn-table xn-table--full">
+    <Card title={entry.title} wide>
+      <table className="xn-card__grid">
         <thead>
-          <tr><th>Ngày</th><th>Lời luận</th><th>Kiết – Hung</th></tr>
+          <tr><th>Ngày</th><th>Nghi – Kị</th><th>Kiết – Hung</th></tr>
         </thead>
         <tbody>
           <tr>
             <td><b>{day}</b></td>
-            <td>{entry.summary}</td>
+            <td>
+              {entry.summary}
+              {entry.suitable.length > 0 && <span className="xn-card__good"> Nên: {joinList(entry.suitable)}</span>}
+            </td>
             <td className={luckClass(entry.rating)}><b>{entry.rating}</b></td>
           </tr>
         </tbody>
       </table>
-      <ListBlock title="Đổng Công nêu là nên làm" items={entry.suitable} tone="good" />
-    </div>
+    </Card>
   );
 }
 
-function MucDetail({ no, highlight }: { no: number; highlight: string }) {
+function MucCard({ no, highlight }: { no: number; highlight: string }) {
   const muc = TRANG_TRINH_MUC[no];
-  if (!muc) return <SimpleInfo />;
+  if (!muc) return <Card title={`Mục ${pad(no)}`} />;
   const [stem, branch] = highlight.split(" ");
   return (
-    <div className="xn-detail">
-      <p className="xn-detail__lead">{muc.summary}</p>
+    <Card title={`Mục ${pad(no)} · ${muc.title}`} sub={<p>{muc.summary}</p>} wide>
       {muc.tables.map((table, index) => (
         <div className="xn-muc-table" key={index}>
           {table.caption && <p className="xn-muc-table__caption">{table.caption}</p>}
           <div className="xn-muc-table__scroll">
-            <table className="xn-table xn-table--grid">
+            <table className="xn-card__grid xn-card__grid--days">
               <thead>
                 <tr>
                   <th scope="row">Can</th>
@@ -1004,11 +1034,10 @@ function MucDetail({ no, highlight }: { no: number; highlight: string }) {
         </div>
       ))}
       {muc.notes.length > 0 && (
-        <ul className="xn-detail__notes">
+        <ul className="xn-card__notes">
           {muc.notes.map((note) => <li key={note}>{note}</li>)}
         </ul>
       )}
-    </div>
+    </Card>
   );
 }
-
