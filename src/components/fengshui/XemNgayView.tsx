@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { useSearchParams } from "react-router-dom";
-import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Printer, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Printer, X } from "lucide-react";
 import {
   addDaysToDate,
   formatDateString,
@@ -570,46 +570,54 @@ function dayTitle(day: number, month: number, year: number) {
 
 type PickerMode = "solar" | "lunar";
 
+/**
+ * Bảng chọn ngày theo trang mẫu: mở đè lên khung công cụ, hai cột Dương lịch | Âm lịch
+ * (mỗi cột có ngày/tháng/năm, giờ/phút và nút Xem), bên dưới là lịch tháng.
+ */
 function DatePicker({
   profile,
   today,
-  initialMode,
+  focusMode,
   onGo,
   onClose,
 }: {
   profile: XemNgayProfile;
   today: string;
-  initialMode: PickerMode;
+  focusMode: PickerMode;
   onGo: (date: string, hour?: number, minute?: number) => void;
   onClose: () => void;
 }) {
-  const [mode, setMode] = useState<PickerMode>(initialMode);
   const [solarInput, setSolarInput] = useState({ day: profile.solar.day, month: profile.solar.month, year: profile.solar.year });
   const [lunarInput, setLunarInput] = useState({ day: profile.lunar.day, month: profile.lunar.month, year: profile.lunar.year, leap: profile.lunar.leap });
   const [time, setTime] = useState({ hour: profile.hour, minute: profile.minute });
-  const [error, setError] = useState("");
+  const [error, setError] = useState<{ mode: PickerMode; text: string } | null>(null);
   const [view, setView] = useState({ year: profile.solar.year, month: profile.solar.month });
-  const firstFieldRef = useRef<HTMLInputElement>(null);
+  const solarDayRef = useRef<HTMLInputElement>(null);
+  const lunarDayRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    firstFieldRef.current?.focus();
-    firstFieldRef.current?.select();
-  }, [mode]);
+    const field = focusMode === "solar" ? solarDayRef.current : lunarDayRef.current;
+    field?.focus();
+    field?.select();
+  }, [focusMode]);
 
-  const submit = (event: React.FormEvent) => {
+  const submitSolar = (event: React.FormEvent) => {
     event.preventDefault();
-    if (mode === "solar") {
-      const value = formatDateString(solarInput.year, solarInput.month, solarInput.day);
-      if (!isValidDate(value)) return setError("Ngày dương lịch không hợp lệ.");
-      onGo(value, time.hour, time.minute);
-    } else {
-      const solar = lunarToSolar(lunarInput.day, lunarInput.month, lunarInput.year, lunarInput.leap);
-      if (!solar || lunarInput.day < 1 || lunarInput.day > 30) return setError(lunarInput.leap ? "Năm này không có tháng nhuận đã chọn." : "Ngày âm lịch không hợp lệ.");
-      const value = formatDateString(solar[2], solar[1], solar[0]);
-      const check = solarToLunar(solar[0], solar[1], solar[2]);
-      if (check.day !== lunarInput.day) return setError("Tháng âm lịch này không có ngày 30.");
-      onGo(value, time.hour, time.minute);
+    const value = formatDateString(solarInput.year, solarInput.month, solarInput.day);
+    if (!isValidDate(value)) return setError({ mode: "solar", text: "Ngày dương lịch không hợp lệ." });
+    onGo(value, time.hour, time.minute);
+    onClose();
+  };
+
+  const submitLunar = (event: React.FormEvent) => {
+    event.preventDefault();
+    const solar = lunarToSolar(lunarInput.day, lunarInput.month, lunarInput.year, lunarInput.leap);
+    if (!solar || lunarInput.day < 1 || lunarInput.day > 30) {
+      return setError({ mode: "lunar", text: lunarInput.leap ? "Năm này không có tháng nhuận đã chọn." : "Ngày âm lịch không hợp lệ." });
     }
+    const check = solarToLunar(solar[0], solar[1], solar[2]);
+    if (check.day !== lunarInput.day) return setError({ mode: "lunar", text: "Tháng âm lịch này không có ngày 30." });
+    onGo(formatDateString(solar[2], solar[1], solar[0]), time.hour, time.minute);
     onClose();
   };
 
@@ -619,95 +627,129 @@ function DatePicker({
   };
   const firstWeekday = new Date(view.year, view.month - 1, 1).getDay();
   const daysInMonth = new Date(view.year, view.month, 0).getDate();
-  const cells = [...Array(firstWeekday).fill(null), ...Array.from({ length: daysInMonth }, (_, i) => i + 1)];
-  while (cells.length % 7) cells.push(null);
+  // Luôn đủ 6 hàng như trang mẫu để bảng không nhảy chiều cao khi đổi tháng.
+  const cells: Array<number | null> = Array.from({ length: 42 }, (_, i) => {
+    const day = i - firstWeekday + 1;
+    return day >= 1 && day <= daysInMonth ? day : null;
+  });
 
-  const numberField = (label: string, value: number, onChange: (value: number) => void, min: number, max: number, first = false) => (
-    <label className="xn-field">
-      <span>{label}</span>
-      <input ref={first ? firstFieldRef : undefined} type="number" inputMode="numeric" min={min} max={max} value={value} onChange={(event) => { setError(""); onChange(Number(event.target.value)); }} />
-    </label>
+  const num = (
+    label: string,
+    value: number,
+    onChange: (value: number) => void,
+    min: number,
+    max: number,
+    className = "",
+    ref?: React.Ref<HTMLInputElement>,
+  ) => (
+    <input
+      ref={ref}
+      aria-label={label}
+      className={className}
+      type="number"
+      inputMode="numeric"
+      min={min}
+      max={max}
+      value={value}
+      onChange={(event) => {
+        setError(null);
+        onChange(Number(event.target.value));
+      }}
+    />
+  );
+
+  const timeRow = (
+    <div className="xn-picker__time">
+      <label>
+        Giờ {num("Giờ", time.hour, (hour) => setTime({ ...time, hour: Math.min(23, Math.max(0, hour)) }), 0, 23)}
+      </label>
+      <label>
+        Phút {num("Phút", time.minute, (minute) => setTime({ ...time, minute: Math.min(59, Math.max(0, minute)) }), 0, 59)}
+      </label>
+    </div>
   );
 
   return (
     <div className="xn-picker" role="dialog" aria-label="Chọn ngày xem">
-      <form onSubmit={submit}>
-        <div className="xn-picker__tabs" role="tablist" aria-label="Loại lịch">
-          {(["solar", "lunar"] as const).map((value) => (
-            <button key={value} type="button" role="tab" aria-selected={mode === value} className={mode === value ? "is-active" : ""} onClick={() => { setMode(value); setError(""); }}>
-              {value === "solar" ? "Dương lịch" : "Âm lịch"}
-            </button>
-          ))}
-        </div>
-        <div className="xn-picker__fields">
-          {mode === "solar" ? (
-            <>
-              {numberField("Ngày", solarInput.day, (day) => setSolarInput({ ...solarInput, day }), 1, 31, true)}
-              {numberField("Tháng", solarInput.month, (month) => setSolarInput({ ...solarInput, month }), 1, 12)}
-              {numberField("Năm", solarInput.year, (year) => setSolarInput({ ...solarInput, year }), 1900, 2199)}
-            </>
-          ) : (
-            <>
-              {numberField("Ngày", lunarInput.day, (day) => setLunarInput({ ...lunarInput, day }), 1, 30, true)}
-              {numberField("Tháng", lunarInput.month, (month) => setLunarInput({ ...lunarInput, month }), 1, 12)}
-              {numberField("Năm", lunarInput.year, (year) => setLunarInput({ ...lunarInput, year }), 1900, 2199)}
-            </>
-          )}
-          {numberField("Giờ", time.hour, (hour) => setTime({ ...time, hour: Math.min(23, Math.max(0, hour)) }), 0, 23)}
-          {numberField("Phút", time.minute, (minute) => setTime({ ...time, minute: Math.min(59, Math.max(0, minute)) }), 0, 59)}
-        </div>
-        {mode === "lunar" && (
-          <label className="xn-check">
-            <input type="checkbox" checked={lunarInput.leap} onChange={(event) => setLunarInput({ ...lunarInput, leap: event.target.checked })} /> Tháng nhuận
-          </label>
-        )}
-        {error && <p className="xn-picker__error" role="alert">{error}</p>}
-        <button type="submit" className="xn-btn xn-btn--primary xn-btn--block">Xem ngày</button>
-      </form>
-
-      <div className="xn-calendar" aria-label="Lịch tháng">
-        <div className="xn-calendar__nav">
-          <button type="button" onClick={() => moveView(-12)} aria-label="Năm trước" title="Năm trước"><ChevronsLeft aria-hidden="true" /></button>
-          <button type="button" onClick={() => moveView(-1)} aria-label="Tháng trước" title="Tháng trước"><ChevronLeft aria-hidden="true" /></button>
-          <strong>Tháng {view.month}/{view.year}</strong>
-          <button type="button" onClick={() => moveView(1)} aria-label="Tháng sau" title="Tháng sau"><ChevronRight aria-hidden="true" /></button>
-          <button type="button" onClick={() => moveView(12)} aria-label="Năm sau" title="Năm sau"><ChevronsRight aria-hidden="true" /></button>
-        </div>
-        <div className="xn-calendar__grid">
-          {["CN", "T2", "T3", "T4", "T5", "T6", "T7"].map((label) => (
-            <span className="xn-calendar__weekday" key={label}>{label}</span>
-          ))}
-          {cells.map((day, index) => {
-            if (!day) return <span key={`empty-${index}`} aria-hidden="true" />;
-            const value = formatDateString(view.year, view.month, day);
-            const lunar = solarToLunar(day, view.month, view.year);
-            const title = dayTitle(day, view.month, view.year);
-            const classes = ["xn-calendar__day"];
-            if (value === profile.date) classes.push("is-selected");
-            if (value === today) classes.push("is-today");
-            if (lunar.day === 1 || lunar.day === 15) classes.push("is-marked");
-            if (index % 7 === 0) classes.push("is-sunday");
-            return (
-              <button
-                type="button"
-                key={value}
-                className={classes.join(" ")}
-                title={title}
-                onClick={() => {
-                  onGo(value);
-                  onClose();
-                }}
-                aria-label={`${day}/${view.month}/${view.year}, âm lịch ${lunar.day}/${lunar.month}. ${title}`}
-                aria-pressed={value === profile.date}
-              >
-                <b>{day}</b>
-                <small>{lunar.day === 1 ? `${lunar.day}/${lunar.month}` : lunar.day}</small>
-              </button>
-            );
-          })}
-        </div>
+      <div className="xn-picker__cols">
+        <form className="xn-picker__col" onSubmit={submitSolar}>
+          <div className="xn-picker__title">
+            <b>Dương lịch</b>
+          </div>
+          <div className="xn-picker__date">
+            {num("Ngày dương lịch", solarInput.day, (day) => setSolarInput({ ...solarInput, day }), 1, 31, "", solarDayRef)}
+            {num("Tháng dương lịch", solarInput.month, (month) => setSolarInput({ ...solarInput, month }), 1, 12)}
+            {num("Năm dương lịch", solarInput.year, (year) => setSolarInput({ ...solarInput, year }), 1900, 2199, "is-year")}
+          </div>
+          {timeRow}
+          {error?.mode === "solar" && <p className="xn-picker__error" role="alert">{error.text}</p>}
+          <button type="submit" className="xn-picker__go">Xem</button>
+        </form>
+        <form className="xn-picker__col" onSubmit={submitLunar}>
+          <div className="xn-picker__title">
+            <b>Âm lịch</b>
+            <label className="xn-picker__leap" title="Tháng nhuận">
+              <input type="checkbox" checked={lunarInput.leap} onChange={(event) => setLunarInput({ ...lunarInput, leap: event.target.checked })} /> nhuận
+            </label>
+          </div>
+          <div className="xn-picker__date">
+            {num("Ngày âm lịch", lunarInput.day, (day) => setLunarInput({ ...lunarInput, day }), 1, 30, "", lunarDayRef)}
+            {num("Tháng âm lịch", lunarInput.month, (month) => setLunarInput({ ...lunarInput, month }), 1, 12)}
+            {num("Năm âm lịch", lunarInput.year, (year) => setLunarInput({ ...lunarInput, year }), 1900, 2199, "is-year")}
+          </div>
+          {timeRow}
+          {error?.mode === "lunar" && <p className="xn-picker__error" role="alert">{error.text}</p>}
+          <button type="submit" className="xn-picker__go">Xem</button>
+        </form>
       </div>
-      <button type="button" className="xn-picker__close" onClick={onClose}>Đóng lại</button>
+
+      <table className="xn-cal" aria-label={`Lịch tháng ${view.month}/${view.year}`}>
+        <thead>
+          <tr className="xn-cal__nav">
+            <td><button type="button" onClick={() => moveView(-12)} aria-label="Năm trước" title="Năm trước">«</button></td>
+            <td><button type="button" onClick={() => moveView(-1)} aria-label="Tháng trước" title="Tháng trước">‹</button></td>
+            <td colSpan={3}><strong>{view.month}/{view.year}</strong></td>
+            <td><button type="button" onClick={() => moveView(1)} aria-label="Tháng sau" title="Tháng sau">›</button></td>
+            <td><button type="button" onClick={() => moveView(12)} aria-label="Năm sau" title="Năm sau">»</button></td>
+          </tr>
+          <tr className="xn-cal__week">
+            {["CN", "T2", "T3", "T4", "T5", "T6", "T7"].map((label) => <th key={label} scope="col">{label}</th>)}
+          </tr>
+        </thead>
+        <tbody>
+          {Array.from({ length: 6 }, (_, row) => (
+            <tr key={row}>
+              {cells.slice(row * 7, row * 7 + 7).map((day, col) => {
+                if (!day) return <td key={col} className="is-empty" />;
+                const value = formatDateString(view.year, view.month, day);
+                const lunar = solarToLunar(day, view.month, view.year);
+                const title = dayTitle(day, view.month, view.year);
+                const classes = [col === 0 ? "is-sun" : col === 6 ? "is-sat" : ""];
+                if (value === profile.date) classes.push("is-selected");
+                if (value === today) classes.push("is-today");
+                return (
+                  <td key={col} className={classes.join(" ")}>
+                    <button
+                      type="button"
+                      title={title}
+                      aria-label={`${day}/${view.month}/${view.year}, âm lịch ${lunar.day}/${lunar.month}. ${title}`}
+                      aria-pressed={value === profile.date}
+                      onClick={() => {
+                        onGo(value);
+                        onClose();
+                      }}
+                    >
+                      <b>{day}</b>
+                      <small>{lunar.day === 1 || day === 1 ? `${lunar.day}/${lunar.month}` : lunar.day}</small>
+                    </button>
+                  </td>
+                );
+              })}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <button type="button" className="xn-picker__close" onClick={onClose}>– Đóng lại –</button>
     </div>
   );
 }
@@ -750,7 +792,7 @@ function ToolPanel({ profile, today, onGo, link }: { profile: XemNgayProfile; to
           {dateButton("solar", "Dương lịch", `${pad(profile.solar.day)}/${pad(profile.solar.month)}/${profile.solar.year}`)}
           {dateButton("lunar", "Âm lịch", `${pad(profile.lunar.day)}/${pad(profile.lunar.month)}${profile.lunar.leap ? "N" : ""}/${profile.lunar.year}`)}
         </div>
-        {picker && <DatePicker key={picker} profile={profile} today={today} initialMode={picker} onGo={onGo} onClose={closePicker} />}
+        {picker && <DatePicker profile={profile} today={today} focusMode={picker} onGo={onGo} onClose={closePicker} />}
       </div>
 
       <div className="xn-pillars">

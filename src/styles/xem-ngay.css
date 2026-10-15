@@ -148,72 +148,127 @@
 .xn-datebox.is-open { border-color: var(--xn-violet); box-shadow: 0 0 0 3px rgba(90, 34, 232, 0.12); }
 .xn-datebox:focus-visible { outline: 2px solid var(--xn-violet); outline-offset: 2px; }
 
-/* Bảng chọn ngày thả xuống dưới hai ô ngày */
+/* Bảng chọn ngày: mở đè lên khung công cụ như trang mẫu. */
 .xn-picker {
   position: absolute;
-  top: calc(100% + 8px);
+  top: -6px;
   left: 50%;
   z-index: 40;
   display: grid;
-  gap: 12px;
-  width: min(360px, calc(100vw - 32px));
-  padding: 14px;
+  gap: 10px;
+  width: min(400px, calc(100vw - 24px));
+  padding: 12px;
   background: #fff;
   border: 1px solid var(--xn-line-strong);
-  border-radius: 14px;
-  box-shadow: 0 22px 50px rgba(11, 10, 70, 0.18);
+  border-radius: 12px;
+  box-shadow: 0 22px 50px rgba(11, 10, 70, 0.2);
   transform: translateX(-50%);
   animation: xn-fade 0.14s ease-out;
 }
-.xn-picker form { display: grid; gap: 10px; }
-.xn-picker__tabs { display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid var(--xn-line-strong); }
-.xn-picker__tabs button {
-  margin-bottom: -1px;
-  padding: 6px 0 8px;
-  border: 0;
-  border-bottom: 2px solid transparent;
-  color: var(--xn-text);
-  background: none;
-  font: inherit;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-}
-.xn-picker__tabs button.is-active { color: var(--xn-violet); border-bottom-color: var(--xn-violet); }
-.xn-picker__fields { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
-.xn-field { display: grid; gap: 3px; min-width: 0; }
-.xn-field span { color: var(--xn-text); font-size: 11.5px; }
-.xn-field input {
+.xn-picker__cols { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.xn-picker__col { display: grid; align-content: start; gap: 6px; min-width: 0; }
+.xn-picker__col + .xn-picker__col { padding-left: 12px; border-left: 1px solid var(--xn-line); }
+.xn-picker__title { display: flex; flex-wrap: wrap; gap: 2px 8px; justify-content: center; align-items: baseline; min-height: 20px; }
+.xn-picker__title b { color: var(--xn-ink); font-size: 14px; }
+.xn-picker input[type="number"] {
   width: 100%;
   min-width: 0;
-  height: 36px;
-  padding: 0 4px;
+  height: 32px;
+  padding: 0 2px;
   border: 1px solid var(--xn-line-strong);
-  border-radius: 8px;
+  border-radius: 6px;
   color: var(--xn-ink);
   background: #fff;
   font: inherit;
+  font-size: 14px;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
   text-align: center;
   -moz-appearance: textfield;
 }
-.xn-field input::-webkit-outer-spin-button,
-.xn-field input::-webkit-inner-spin-button { margin: 0; -webkit-appearance: none; }
-.xn-field input:focus { outline: none; border-color: var(--xn-violet); box-shadow: 0 0 0 3px rgba(90, 34, 232, 0.12); }
-.xn-check { display: inline-flex; gap: 6px; align-items: center; color: var(--xn-ink); font-size: 14px; }
-.xn-picker__error { margin: 0; color: var(--xn-bad); font-size: 13.5px; }
-.xn-picker__close {
-  justify-self: center;
-  padding: 2px 8px;
-  border: 0;
-  color: var(--xn-text);
-  background: none;
+.xn-picker input[type="number"]::-webkit-outer-spin-button,
+.xn-picker input[type="number"]::-webkit-inner-spin-button { margin: 0; -webkit-appearance: none; }
+.xn-picker input[type="number"]:focus { outline: none; border-color: var(--xn-violet); box-shadow: 0 0 0 3px rgba(90, 34, 232, 0.12); }
+.xn-picker__date { display: grid; grid-template-columns: 1fr 1fr 1.7fr; gap: 4px; }
+.xn-picker__time { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.xn-picker__time label { display: flex; gap: 5px; align-items: center; color: var(--xn-text); font-size: 12.5px; }
+.xn-picker__leap { display: inline-flex; gap: 3px; align-items: center; color: var(--xn-text); font-size: 11.5px; cursor: pointer; }
+.xn-picker__leap input { accent-color: var(--xn-violet); }
+.xn-picker__error { margin: 0; color: var(--xn-bad); font-size: 12.5px; text-align: center; }
+.xn-picker__go {
+  height: 32px;
+  margin-top: auto;
+  border: 1px solid var(--xn-violet);
+  border-radius: 6px;
+  color: #fff;
+  background: var(--xn-violet);
   font: inherit;
-  font-size: 13px;
+  font-size: 14px;
+  font-weight: 600;
   cursor: pointer;
 }
-.xn-picker__close:hover { color: var(--xn-ink); text-decoration: underline; }
+.xn-picker__go:hover { background: #4a14d0; }
+.xn-picker__close {
+  justify-self: center;
+  padding: 0 8px;
+  border: 0;
+  color: var(--xn-bad);
+  background: none;
+  font: inherit;
+  font-size: 13.5px;
+  cursor: pointer;
+}
+.xn-picker__close:hover { text-decoration: underline; }
+
+/* Lịch tháng trong bảng chọn ngày */
+.xn-cal { width: 100%; border-collapse: separate; border-spacing: 2px; table-layout: fixed; }
+.xn-cal td,
+.xn-cal th { padding: 0; text-align: center; }
+.xn-cal__nav td { background: var(--xn-tint); }
+.xn-cal__nav td:first-child { border-radius: 6px 0 0 6px; }
+.xn-cal__nav td:last-child { border-radius: 0 6px 6px 0; }
+.xn-cal__nav button {
+  width: 100%;
+  height: 28px;
+  border: 0;
+  border-radius: 6px;
+  color: var(--xn-violet);
+  background: none;
+  font: inherit;
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+}
+.xn-cal__nav button:hover { background: #fff; }
+.xn-cal__nav strong { color: var(--xn-ink); font-size: 14px; font-variant-numeric: tabular-nums; }
+.xn-cal__week th { padding: 3px 0; color: var(--xn-text); font-size: 12px; font-weight: 600; }
+.xn-cal__week th:first-child { color: var(--xn-bad); }
+.xn-cal__week th:last-child { color: var(--xn-good); }
+.xn-cal tbody td { height: 36px; }
+.xn-cal tbody button {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  padding: 3px 4px 2px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  color: var(--xn-ink);
+  background: #fbfaff;
+  font: inherit;
+  line-height: 1;
+  cursor: pointer;
+}
+.xn-cal tbody b { align-self: flex-start; font-size: 14px; font-weight: 600; }
+.xn-cal tbody small { align-self: flex-end; margin-top: auto; color: var(--xn-violet); font-size: 10.5px; }
+.xn-cal td.is-sun b { color: var(--xn-bad); }
+.xn-cal td.is-sat b { color: var(--xn-good); }
+.xn-cal tbody button:hover { background: var(--xn-tint); border-color: rgba(90, 34, 232, 0.25); }
+.xn-cal td.is-today button { border-color: rgba(90, 34, 232, 0.45); }
+.xn-cal td.is-selected button { background: var(--xn-violet); border-color: var(--xn-violet); }
+.xn-cal td.is-selected b,
+.xn-cal td.is-selected small { color: #fff; }
 
 .xn-btn {
   display: inline-flex;
@@ -235,10 +290,6 @@
 .xn-btn--primary:hover { background: #4a14d0; }
 .xn-btn--block { width: 100%; }
 
-.xn-calendar { border-top: 1px solid var(--xn-line); padding-top: 10px; }
-.xn-calendar__nav { display: flex; align-items: center; justify-content: space-between; gap: 2px; }
-.xn-calendar__nav strong { flex: 1; color: var(--xn-ink); font-size: 14px; text-align: center; font-variant-numeric: tabular-nums; }
-.xn-calendar__nav button,
 .xn-icon-btn {
   display: grid;
   place-items: center;
@@ -250,34 +301,8 @@
   background: transparent;
   cursor: pointer;
 }
-.xn-calendar__nav button:hover,
 .xn-icon-btn:hover { color: var(--xn-violet); background: var(--xn-tint); }
-.xn-calendar__nav svg,
 .xn-icon-btn svg { width: 18px; height: 18px; }
-.xn-calendar__grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 2px; margin-top: 6px; }
-.xn-calendar__weekday { padding: 4px 0; color: var(--xn-text); font-size: 11.5px; font-weight: 600; text-align: center; }
-.xn-calendar__weekday:first-child { color: var(--xn-bad); }
-.xn-calendar__day {
-  display: grid;
-  min-height: 40px;
-  padding: 3px 0;
-  border: 1px solid transparent;
-  border-radius: 8px;
-  color: var(--xn-ink);
-  background: transparent;
-  font: inherit;
-  line-height: 1.15;
-  cursor: pointer;
-}
-.xn-calendar__day b { font-size: 14px; font-weight: 600; }
-.xn-calendar__day small { color: var(--xn-text); font-size: 10.5px; }
-.xn-calendar__day.is-sunday b { color: var(--xn-bad); }
-.xn-calendar__day.is-marked small { color: var(--xn-bad); font-weight: 700; }
-.xn-calendar__day:hover { background: var(--xn-tint); }
-.xn-calendar__day.is-today { border-color: rgba(90, 34, 232, 0.4); }
-.xn-calendar__day.is-selected { background: var(--xn-violet); }
-.xn-calendar__day.is-selected b,
-.xn-calendar__day.is-selected small { color: #fff; }
 
 /* Bốn trụ: số quái trên, Can Chi giữa, quái vận dưới (như trang mẫu). */
 .xn-pillars { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
@@ -508,7 +533,6 @@
   .xn-row--top,
   .xn-row--2,
   .xn-row--4 { grid-template-columns: minmax(0, 1fr); }
-  .xn-picker__fields { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .xn-muc { grid-template-columns: minmax(0, 1fr); }
   .xn-kv > div { grid-template-columns: minmax(110px, 44%) minmax(0, 1fr); }
 }
