@@ -180,6 +180,13 @@
   filter: drop-shadow(0 8px 26px rgba(122, 60, 255, 0.45));
 }
 
+/* Tiêu đề dài hơn tên người (trang Free tools): cỡ chữ nhỏ hơn và được phép xuống dòng. */
+.hero-lookup__name.hero-lookup__name--wrap {
+  font-size: clamp(2.2rem, 4.6vw, 4.2rem);
+  white-space: normal;
+  text-wrap: balance;
+}
+
 /* ---------- 3 cam kết ---------- */
 .hero-lookup__promises-wrap {
   grid-area: promises;

@@ -6,6 +6,7 @@ import {
   Calculator,
   CalendarCheck,
   CalendarDays,
+  CircleCheck,
   ChartNoAxesCombined,
   ChevronDown,
   Coins,
@@ -31,7 +32,91 @@ import { RESULTS_DISCLAIMER } from "../../../shared/lookup-types";
 import { Button, ButtonAnchor, ButtonLink, ButtonRow } from "../../components/ui/Button";
 import { Callout, CardGrid, Faq, FeatureCard, PageHero, ToolHeader } from "../../components/ui/Layout";
 import { Eyebrow } from "../../components/ui/Eyebrow";
+import { Reveal } from "../../components/ui/Reveal";
+import { keepTogether as keep } from "../../app/text";
+import "../../styles/hero-lookup.css";
 import { SectionHeading } from "../../components/ui/SectionHeading";
+
+const HERO_BG = "/assets/backgrounds/cosmic-dark.webp";
+const HERO_PORTRAIT = "/assets/team/pham-ba-nha-cutout.webp";
+const HERO_PROMISES = [
+  `Tính nhanh các chỉ số ${keep("Thần số học")} Pythagoras chỉ với ${keep("họ tên")} và ${keep("ngày sinh")}`,
+  `Mỗi công cụ đều có ${keep("giải thích")} cách tính để bạn dễ ${keep("đối chiếu")}`,
+  `Công cụ ${keep("phong thủy")}, xem ngày, tử vi và ${keep("tra cứu")} bản đồ số học ${keep("miễn phí")}`,
+];
+
+/** Hero Free tools: cùng bố cục với hero trang giới thiệu (chân dung · tiêu đề · 3 cam kết · khung hành động). */
+function FreeToolsHero() {
+  return (
+    <section className="hero hero-lookup" style={{ "--hero-bg": `url(${HERO_BG})` } as CSSProperties}>
+      <div className="container hero-lookup__inner">
+        <Reveal className="hero-lookup__portrait" direction="right">
+          <figure>
+            <div className="hero-lookup__frame">
+              <div className="hero-lookup__stage">
+                <img
+                  src={HERO_PORTRAIT}
+                  alt="Ths. Phạm Bá Nha, CEO & Founder Học viện SGEN Education"
+                  width={760}
+                  height={1140}
+                  fetchPriority="high"
+                  decoding="async"
+                />
+              </div>
+            </div>
+            <figcaption className="hero-lookup__nameplate">
+              <strong>Ths. Phạm Bá Nha</strong>
+              <span>
+                <span>CEO &amp; Founder</span>
+                <span>{`Học viện ${keep("SGEN Education")}`}</span>
+              </span>
+            </figcaption>
+          </figure>
+        </Reveal>
+
+        <Reveal className="hero-lookup__heading" direction="left" delay={100}>
+          <Eyebrow variant="pill" icon={Calculator}>Kho công cụ SGEN</Eyebrow>
+          <h1>
+            <span className="hero-lookup__kicker">Free tools</span>
+            <span className="hero-lookup__name hero-lookup__name--wrap">Tính nhanh tại chỗ</span>
+          </h1>
+        </Reveal>
+
+        <Reveal className="hero-lookup__promises-wrap" direction="left" delay={160}>
+          <ul className="hero-lookup__promises">
+            {HERO_PROMISES.map((promise) => (
+              <li key={promise}>
+                <CircleCheck aria-hidden="true" size={22} strokeWidth={1.8} />
+                <span>{promise}</span>
+              </li>
+            ))}
+          </ul>
+        </Reveal>
+
+        <Reveal className="hero-lookup__form-wrap" delay={180}>
+          <div className="lookup-card hero-lookup__form">
+            <div className="hero-lookup__form-head">
+              <h2>Chọn công cụ bạn cần</h2>
+              <p>Chọn công cụ Thần số học hoặc phong thủy, nhập thông tin cần thiết và xem kết quả ngay.</p>
+            </div>
+            <ButtonRow>
+              <ButtonAnchor variant="primary" href="#nhom-tinh-nhanh">Bắt đầu tính nhanh <ArrowRight aria-hidden="true" /></ButtonAnchor>
+              <ButtonLink variant="secondary" to="/tra-cuu/than-so-hoc">
+                Tra cứu bản đồ số học <ArrowRight aria-hidden="true" />
+              </ButtonLink>
+            </ButtonRow>
+            <p className="lookup-card__privacy hero-lookup__privacy">
+              <ShieldCheck aria-hidden="true" />
+              <span>Miễn phí sử dụng</span>
+              <span>Dữ liệu được bảo mật</span>
+              <span>Có giải thích cách tính</span>
+            </p>
+          </div>
+        </Reveal>
+      </div>
+    </section>
+  );
+}
 
 type FreeToolMetric = { value: string; label: string; note: string };
 
@@ -594,17 +679,7 @@ export function FreeToolsPage() {
 
   return (
     <>
-      <PageHero
-        eyebrow="Kho công cụ SGEN"
-        eyebrowIcon={Calculator}
-        title="Free tools"
-        accent="tính nhanh tại chỗ"
-        description="Chọn công cụ Thần số học hoặc phong thủy, nhập thông tin cần thiết và xem kết quả ngay. Mỗi mục có giải thích cách tính để bạn dễ đối chiếu."
-        actions={<ButtonRow><ButtonAnchor variant="primary" href="#nhom-tinh-nhanh">Bắt đầu tính nhanh <ArrowRight aria-hidden="true" /></ButtonAnchor>
-              <ButtonLink variant="secondary" to="/tra-cuu/than-so-hoc">
-                Tra cứu bản đồ số học <ArrowRight aria-hidden="true" />
-              </ButtonLink></ButtonRow>}
-      />
+      <FreeToolsHero />
 
       <section className="page-light-section ux-free-tools catalog-content" id="tinh-nhanh-chi-so">
         <div className="container">
