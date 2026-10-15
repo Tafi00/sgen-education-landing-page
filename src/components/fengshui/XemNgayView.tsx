@@ -30,12 +30,12 @@ import { TRANG_TRINH_MUC } from "../../../shared/xem-ngay/trang-trinh";
 import "../../styles/xem-ngay.css";
 
 /**
- * "note": lời giải ngắn, hiện thành thẻ nhỏ căn giữa (như popover vàng của trang mẫu).
- * "rich": nội dung có bảng/danh sách, hiện thành thẻ rộng.
+ * Rê chuột: thẻ nhỏ neo dưới chữ ("note": lời giải ngắn, "rich": bảng/danh sách).
+ * Bấm: mở hộp thoại chi tiết đầy đủ (`detail`, mặc định dùng lại `body`).
  */
 type HintVariant = "note" | "rich";
-type Hint = { id: string; title: string; body: ReactNode; variant: HintVariant };
-type ActiveHint = Hint & { anchor: HTMLElement; pinned: boolean; sheet: boolean };
+type Hint = { id: string; title: string; body: ReactNode; variant: HintVariant; detail?: ReactNode };
+type ActiveHint = Hint & { anchor: HTMLElement; pinned: boolean };
 
 const pad = (value: number) => String(value).padStart(2, "0");
 const OPEN_DELAY = 90;
@@ -53,20 +53,13 @@ function isValidDate(value: string | null): value is string {
   return year >= 1900 && year <= 2199 && probe.getMonth() === month - 1 && probe.getDate() === day;
 }
 
-/** Màn hình hẹp hoặc chạm: mở chi tiết thành tấm trượt từ đáy thay cho popover. */
-function prefersSheet() {
-  return window.matchMedia("(max-width: 640px), (hover: none)").matches;
-}
-
 /** Popover neo dưới chữ, tự lật lên trên khi thiếu chỗ (giống placement "auto bottom" của trang mẫu). */
 function HintPopover({
   hint,
-  onClose,
   onPointerEnter,
   onPointerLeave,
 }: {
   hint: ActiveHint;
-  onClose: () => void;
   onPointerEnter: () => void;
   onPointerLeave: () => void;
 }) {
@@ -102,26 +95,21 @@ function HintPopover({
     <div
       ref={ref}
       id={`xn-hint-${hint.id}`}
-      role={hint.pinned ? "dialog" : "tooltip"}
+      role="tooltip"
       aria-label={hint.title}
-      className={`xn-pop xn-pop--${hint.variant} ${place ? `is-${place.side}` : ""} ${hint.pinned ? "is-pinned" : ""}`}
+      className={`xn-pop xn-pop--${hint.variant} ${place ? `is-${place.side}` : ""}`}
       style={place ? { top: place.top, left: place.left, ["--xn-arrow" as string]: `${place.arrow}px` } : { top: -9999, left: -9999 }}
       onPointerEnter={onPointerEnter}
       onPointerLeave={onPointerLeave}
     >
-      {hint.pinned && (
-        <button type="button" className="xn-pop__close" onClick={onClose} aria-label="Đóng">
-          <X aria-hidden="true" />
-        </button>
-      )}
       {hint.body}
     </div>,
     document.body,
   );
 }
 
-/** Tấm chi tiết trượt từ đáy cho điện thoại (tự dựng, chạy cả trên Safari 14). */
-function HintSheet({ hint, onClose }: { hint: ActiveHint; onClose: () => void }) {
+/** Hộp thoại chi tiết ở giữa màn hình (trượt từ đáy trên điện thoại), tự dựng nên chạy cả trên Safari 14. */
+function HintDialog({ hint, onClose }: { hint: ActiveHint; onClose: () => void }) {
   const closeRef = useRef<HTMLButtonElement>(null);
   useEffect(() => {
     const previous = document.activeElement as HTMLElement | null;
@@ -141,7 +129,7 @@ function HintSheet({ hint, onClose }: { hint: ActiveHint; onClose: () => void })
             <X aria-hidden="true" />
           </button>
         </div>
-        <div className="xn-sheet__body">{hint.body}</div>
+        <div className="xn-sheet__body">{hint.detail ?? hint.body}</div>
       </div>
     </div>,
     document.body,
@@ -174,8 +162,7 @@ function useHints() {
 
   const show = useCallback((hint: Hint, anchor: HTMLElement, pinned: boolean, delay = 0) => {
     clearTimers();
-    const sheet = pinned && prefersSheet();
-    const apply = () => setActive({ ...hint, anchor, pinned, sheet });
+    const apply = () => setActive({ ...hint, anchor, pinned });
     if (delay) openTimer.current = window.setTimeout(apply, delay);
     else apply();
   }, []);
@@ -207,7 +194,7 @@ function useHints() {
 
   const trigger = (hint: Hint) => ({
     "aria-expanded": active?.id === hint.id,
-    "aria-describedby": active?.id === hint.id && !active.sheet ? `xn-hint-${hint.id}` : undefined,
+    "aria-describedby": active?.id === hint.id && !active.pinned ? `xn-hint-${hint.id}` : undefined,
     onPointerEnter: (event: React.PointerEvent<HTMLElement>) => {
       if (event.pointerType !== "mouse" || activeRef.current?.pinned) return;
       show(hint, event.currentTarget, false, activeRef.current ? 0 : OPEN_DELAY);
@@ -232,17 +219,17 @@ function useHints() {
   });
 
   const layer = active ? (
-    active.sheet ? (
-      <HintSheet hint={active} onClose={close} />
+    active.pinned ? (
+      <HintDialog hint={active} onClose={close} />
     ) : (
-      <HintPopover hint={active} onClose={close} onPointerEnter={keepOpen} onPointerLeave={scheduleClose} />
+      <HintPopover hint={active} onPointerEnter={keepOpen} onPointerLeave={scheduleClose} />
     )
   ) : null;
 
   return { trigger, layer, close };
 }
 
-type LinkFn = (label: ReactNode, title: string, body: ReactNode, className?: string, variant?: HintVariant) => ReactNode;
+type LinkFn = (label: ReactNode, title: string, body: ReactNode, className?: string, variant?: HintVariant, detail?: ReactNode) => ReactNode;
 
 function Panel({ title, className = "", children }: { title: string; className?: string; children: ReactNode }) {
   return (
@@ -312,16 +299,29 @@ export function XemNgayView() {
     setSearchParams(params, { replace: false });
   };
 
-  const link: LinkFn = (label, title, body, className = "", variant = "rich") => {
+  const link: LinkFn = (label, title, body, className = "", variant = "rich", detail) => {
     const id = `${title}::${typeof label === "string" ? label : ""}::${className}`.replace(/\s+/g, "-");
     return (
-      <button type="button" className={`xn-link ${className}`} {...hints.trigger({ id, title, body, variant })}>
+      <button type="button" className={`xn-link ${className}`} {...hints.trigger({ id, title, body, variant, detail })}>
         {label}
       </button>
     );
   };
-  const note = (label: ReactNode, title: string, text: string | undefined, className = "") =>
-    text ? link(label, title, <NoteCard title={title} text={text} />, className, "note") : <span className={className}>{label}</span>;
+  const note: NoteFn = (label, title, text, className = "", detail) =>
+    text
+      ? link(
+          label,
+          title,
+          <NoteCard title={title} text={text} />,
+          className,
+          "note",
+          detail ?? (
+            <Card title={title}>
+              <CardRows rows={[["Ý nghĩa", text]]} />
+            </Card>
+          ),
+        )
+      : <span className={className}>{label}</span>;
 
   return (
     <div className="xn">
@@ -355,7 +355,7 @@ export function XemNgayView() {
                 <tr key={item.chi}>
                   <th scope="row">{item.chi}</th>
                   <td className="xn-num">{item.range}</td>
-                  <td className="xn-right">{note(item.name, `${item.name} Hoàng Đạo`, findInfo(DAY_OFFICER_INFO, item.name)?.summary, "is-good")}</td>
+                  <td className="xn-right">{note(item.name, `${item.name} Hoàng Đạo`, findInfo(DAY_OFFICER_INFO, item.name)?.summary, "is-good", officerDetail(item.name))}</td>
                 </tr>
               ))}
             </tbody>
@@ -372,7 +372,7 @@ export function XemNgayView() {
                     const info = name ? findInfo(HOUR_STAR_INFO, name) ?? findInfo(DAY_OFFICER_INFO, name) : undefined;
                     return (
                       <td key={slot} className={slot ? "xn-right" : ""}>
-                        {name ? note(name, name, info?.summary, luckClass(findInfo(HOUR_STAR_INFO, name)?.luck)) : null}
+                        {name ? note(name, name, info?.summary, luckClass(findInfo(HOUR_STAR_INFO, name)?.luck), hourStarDetail(name)) : null}
                       </td>
                     );
                   })}
@@ -392,7 +392,7 @@ export function XemNgayView() {
               return (
                 <li key={item.chi} className={item.type === "Hoàng Đạo" ? "is-golden" : ""}>
                   <span>{item.chi}</span>
-                  {note(item.lucNham, `Giờ ${item.chi} · ${item.lucNham}`, info ? `${info.luck}. ${info.summary}` : undefined, luckClass(info?.luck))}
+                  {note(item.lucNham, `Giờ ${item.chi} · ${item.lucNham}`, info ? `${info.luck}. ${info.summary}` : undefined, luckClass(info?.luck), lucNhamDetail(item.lucNham, `Giờ ${item.chi} · ${item.lucNham}`))}
                 </li>
               );
             })}
@@ -483,7 +483,7 @@ export function XemNgayView() {
   );
 }
 
-type NoteFn = (label: ReactNode, title: string, text: string | undefined, className?: string) => ReactNode;
+type NoteFn = (label: ReactNode, title: string, text: string | undefined, className?: string, detail?: ReactNode) => ReactNode;
 
 function OverviewPanel({ profile, link, note }: { profile: XemNgayProfile; link: LinkFn; note: NoteFn }) {
   const { overview } = profile;
@@ -502,11 +502,12 @@ function OverviewPanel({ profile, link, note }: { profile: XemNgayProfile; link:
               `${overview.officer.name} ${overview.officer.type}`,
               findInfo(DAY_OFFICER_INFO, overview.officer.name)?.summary,
               overview.officer.type === "Hoàng Đạo" ? "is-good" : "is-bad",
+              officerDetail(overview.officer.name),
             ),
           ],
           ["Đại tiểu nguyệt", overview.monthSize],
           ["Nhị thập bát tú", link(`${overview.tu28.name}: ${overview.tu28.luck}`, overview.tu28.name, <TuCard name={overview.tu28.name} />, overview.tu28.luck === "Tốt" ? "is-good" : "is-bad")],
-          ["Tương quan ngũ hành", note(overview.relation, overview.relation, findInfo(TUONG_QUAN_INFO, overview.relation)?.summary, luckClass(overview.relation))],
+          ["Tương quan ngũ hành", note(overview.relation, overview.relation, findInfo(TUONG_QUAN_INFO, overview.relation)?.summary, luckClass(overview.relation), tuongQuanDetail(overview.relation))],
           ["Thập thiên can ngày", overview.stem],
           ["Thập nhị địa chi ngày", overview.branch],
         ]}
@@ -529,17 +530,17 @@ function InfoPanel({ profile, link, note }: { profile: XemNgayProfile; link: Lin
           ["Tháng cửu tinh", starLink(info.monthStar)],
           ["Ngày cửu tinh", starLink(info.dayStar)],
           ["Giờ cửu tinh", starLink(info.hourStar, `${info.hourStar} (${profile.overview.hour})`)],
-          ["Ngày Lục Nhâm", note(info.lucNham, `Ngày ${info.lucNham}`, lucNham ? `${lucNham.luck}. ${lucNham.summary}` : undefined, luckClass(lucNham?.luck))],
+          ["Ngày Lục Nhâm", note(info.lucNham, `Ngày ${info.lucNham}`, lucNham ? `${lucNham.luck}. ${lucNham.summary}` : undefined, luckClass(lucNham?.luck), lucNhamDetail(info.lucNham, `Ngày ${info.lucNham}`))],
           [
             "Nhị thập tứ khí",
             <>
-              {note(info.solarTerms[0], info.solarTerms[0], TIET_KHI_INFO[info.solarTerms[0]]?.summary)} –{" "}
-              {note(info.solarTerms[1], info.solarTerms[1], TIET_KHI_INFO[info.solarTerms[1]]?.summary)}
+              {note(info.solarTerms[0], info.solarTerms[0], TIET_KHI_INFO[info.solarTerms[0]]?.summary, "", tietKhiDetail(info.solarTerms[0]))} –{" "}
+              {note(info.solarTerms[1], info.solarTerms[1], TIET_KHI_INFO[info.solarTerms[1]]?.summary, "", tietKhiDetail(info.solarTerms[1]))}
             </>,
           ],
-          ["Ngày xuất hành", note(info.xuatHanh, `Xuất hành ${info.xuatHanh}`, xuatHanh?.summary, luckClass(xuatHanh?.luck))],
+          ["Ngày xuất hành", note(info.xuatHanh, `Xuất hành ${info.xuatHanh}`, xuatHanh?.summary, luckClass(xuatHanh?.luck), xuatHanhDetail(info.xuatHanh))],
           ["Ngày đầu tháng", note(info.monthFirstDay, "Ngày đầu tháng", `Mùng 1 tháng ${profile.lunar.month}${profile.lunar.leap ? " nhuận" : ""} âm lịch là ngày ${info.monthFirstDay}.`)],
-          ["Quan niệm dân gian", note(info.folk, info.folk, folk?.summary, luckClass(folk?.luck))],
+          ["Quan niệm dân gian", note(info.folk, info.folk, folk?.summary, luckClass(folk?.luck), danGianDetail(info.folk))],
         ]}
       />
     </Panel>
@@ -831,7 +832,89 @@ function StarList({ stars, tone, note }: { stars: XemNgayProfile["stars"]["good"
   );
 }
 
-/** Lời giải ngắn: thẻ vàng căn giữa như popover của trang mẫu. */
+/* Nội dung hộp thoại chi tiết cho các mục chỉ có lời giải ngắn khi rê chuột. */
+const luckTone = (luck?: string) => (/Hung|Xấu/.test(luck ?? "") ? "bad" : /Cát|Tốt|Kiết/.test(luck ?? "") ? "good" : undefined);
+
+function officerDetail(name: string) {
+  const info = findInfo(DAY_OFFICER_INFO, name);
+  if (!info) return undefined;
+  return (
+    <Card title={`${info.name} ${info.type}`}>
+      <CardRows rows={[["Loại", info.type, info.type === "Hoàng Đạo" ? "good" : "bad"], ["Tên gọi khác", info.alias], ["Ý nghĩa", info.summary]]} />
+    </Card>
+  );
+}
+
+function hourStarDetail(name: string) {
+  const info = findInfo(HOUR_STAR_INFO, name);
+  if (!info) return officerDetail(name);
+  return (
+    <Card title={name} sub={<p>Sao theo giờ · {info.luck}</p>}>
+      <CardRows rows={[["Tính chất", info.luck, luckTone(info.luck)], ["Ý nghĩa", info.summary]]} />
+    </Card>
+  );
+}
+
+function lucNhamDetail(name: string, title: string) {
+  const info = findInfo(LUC_NHAM_INFO, name);
+  if (!info) return undefined;
+  return (
+    <Card title={title} sub={<p>Lục Nhâm · vị trí thứ {info.order} trong vòng 6 cung · {info.luck}</p>}>
+      <CardRows rows={[["Tính chất", info.luck, luckTone(info.luck)], ["Ý nghĩa", info.summary]]} />
+    </Card>
+  );
+}
+
+function tuongQuanDetail(name: string) {
+  const info = findInfo(TUONG_QUAN_INFO, name);
+  if (!info) return undefined;
+  return (
+    <Card title={info.name} sub={<p>{info.relation} · {info.luck}</p>}>
+      <CardRows rows={[["Quan hệ Can – Chi", info.relation], ["Tính chất", info.luck, luckTone(info.luck)], ["Ví dụ", info.example], ["Ý nghĩa", info.summary]]} />
+    </Card>
+  );
+}
+
+function tietKhiDetail(name: string) {
+  const info = TIET_KHI_INFO[name];
+  if (!info) return undefined;
+  return (
+    <Card title={name} sub={<p>{info.kind} · mùa {info.season}</p>}>
+      <CardRows
+        rows={[
+          ["Nghĩa của tên", info.meaning],
+          ["Loại", info.kind],
+          ["Mùa", info.season],
+          ["Ngày dương lịch thường gặp", info.approxDate],
+          ["Kinh độ Mặt Trời", `${info.longitude}°`],
+          ["Ý nghĩa", info.summary],
+        ]}
+      />
+    </Card>
+  );
+}
+
+function xuatHanhDetail(name: string) {
+  const info = findInfo(XUAT_HANH_INFO, name);
+  if (!info) return undefined;
+  return (
+    <Card title={`Xuất hành ${name}`} sub={<p>{info.luck}</p>}>
+      <CardRows rows={[["Tính chất", info.luck, luckTone(info.luck)], ["Áp dụng cho tháng âm", info.months], ["Ý nghĩa", info.summary]]} />
+    </Card>
+  );
+}
+
+function danGianDetail(name: string) {
+  const info = findInfo(DAN_GIAN_INFO, name);
+  if (!info) return undefined;
+  return (
+    <Card title={name} sub={<p>Quan niệm dân gian · {info.luck}</p>}>
+      <CardRows rows={[["Tính chất", info.luck, luckTone(info.luck)], ["Ý nghĩa", info.summary]]} />
+    </Card>
+  );
+}
+
+/** Lời giải ngắn: thẻ nhỏ căn giữa hiện khi rê chuột. */
 function NoteCard({ title, text }: { title: string; text: string }) {
   return (
     <div className="xn-note">
@@ -841,7 +924,7 @@ function NoteCard({ title, text }: { title: string; text: string }) {
   );
 }
 
-/** Thẻ bảng: dải tiêu đề vàng, các hàng nhãn | nội dung trên nền ngà (như popover của trang mẫu). */
+/** Thẻ bảng: dải tiêu đề tím đậm, các hàng nhãn | nội dung. */
 function Card({ title, sub, children, wide = false }: { title: string; sub?: ReactNode; children?: ReactNode; wide?: boolean }) {
   return (
     <div className={`xn-card ${wide ? "is-wide" : ""}`}>
