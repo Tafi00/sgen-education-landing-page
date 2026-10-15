@@ -2,6 +2,7 @@ import { useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { CalendarDays, CircleCheck, Hash, Loader2, Search, ShieldCheck, Tag, UserRound } from "lucide-react";
 import { api, errorMessage } from "../../api/client";
+import { keepTogether as keep } from "../../app/text";
 import type { LookupResultPayload } from "../../../shared/lookup-types";
 import { TextField } from "../form/Field";
 import { Button } from "../ui/Button";
@@ -15,9 +16,9 @@ const cosmicDark = "/assets/backgrounds/cosmic-dark.webp";
 const founderPortrait = "/assets/team/pham-ba-nha-cutout.webp";
 
 const promises = [
-  "Đơn vị tiên phong đưa Thần số học Pythagoras ứng dụng định hướng nghề nghiệp về Việt Nam",
-  "Mỗi bản báo cáo đều được chuyên gia SGEN giải đáp chi tiết, chính xác",
-  "Được tham gia 1 buổi học về Thần số học cùng Ths. Phạm Bá Nha",
+  `Đơn vị tiên phong đưa ${keep("Thần số học")} Pythagoras ứng dụng ${keep("định hướng")} ${keep("nghề nghiệp")} về ${keep("Việt Nam")}`,
+  `Mỗi bản báo cáo đều được chuyên gia SGEN giải đáp ${keep("chi tiết")}, ${keep("chính xác")}`,
+  `Được tham gia 1 buổi học về ${keep("Thần số học")} cùng ${keep("Ths. Phạm Bá Nha")}`,
 ];
 
 type FieldErrors = { name?: string; birthDate?: string };
@@ -85,7 +86,10 @@ export function HeroSection() {
             </div>
             <figcaption className="hero-lookup__nameplate">
               <strong>Ths. Phạm Bá Nha</strong>
-              <span>CEO &amp; Founder Học viện SGEN Education</span>
+              <span>
+                <span>CEO &amp; Founder</span>
+                <span>{`Học viện ${keep("SGEN Education")}`}</span>
+              </span>
             </figcaption>
           </figure>
         </Reveal>
@@ -112,8 +116,8 @@ export function HeroSection() {
         <Reveal className="hero-lookup__form-wrap" delay={180}>
           <form className="lookup-card hero-lookup__form" onSubmit={handleSubmit} noValidate aria-labelledby="hero-lookup-title">
             <div className="hero-lookup__form-head">
-              <h2 id="hero-lookup-title">Tra cứu bản đồ Thần số học miễn phí</h2>
-              <p>Nhập đúng họ tên khai sinh và ngày sinh dương lịch để nhận báo cáo đầy đủ.</p>
+              <h2 id="hero-lookup-title">{`Tra cứu bản đồ ${keep("Thần số học")} miễn phí`}</h2>
+              <p>{`Nhập đúng họ tên khai sinh và ngày sinh ${keep("dương lịch")} để nhận báo cáo ${keep("đầy đủ")}.`}</p>
             </div>
             <div className="hero-lookup__fields">
               <TextField
@@ -147,7 +151,10 @@ export function HeroSection() {
               </Button>
             </div>
             <p className="lookup-card__privacy hero-lookup__privacy">
-              <ShieldCheck aria-hidden="true" /> Miễn phí tra cứu · Dữ liệu được bảo mật · Phân tích theo hệ Pythagoras chuẩn hóa
+              <ShieldCheck aria-hidden="true" />
+              <span>Miễn phí tra cứu</span>
+              <span>Dữ liệu được bảo mật</span>
+              <span>Phân tích theo hệ Pythagoras chuẩn hóa</span>
             </p>
           </form>
         </Reveal>

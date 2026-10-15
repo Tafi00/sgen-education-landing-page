@@ -5,11 +5,13 @@ import { IconOrb } from "../ui/IconOrb";
 import { Reveal } from "../ui/Reveal";
 import { ButtonAnchor } from "../ui/Button";
 import { Eyebrow } from "../ui/Eyebrow";
+import { keepTogether } from "../../app/text";
 
+/** Ô nhãn hẹp: chỉ cho ngắt dòng giữa hai từ ghép, không ngắt giữa một từ. */
 const values = [
-  { icon: UserRound, label: "Đào tạo chuyên sâu" },
-  { icon: BriefcaseBusiness, label: "Tư vấn ứng dụng" },
-  { icon: Star, label: "Đồng hành cá nhân" },
+  { icon: UserRound, label: `${keepTogether("Đào tạo")} ${keepTogether("chuyên sâu")}` },
+  { icon: BriefcaseBusiness, label: `${keepTogether("Tư vấn")} ${keepTogether("ứng dụng")}` },
+  { icon: Star, label: `${keepTogether("Đồng hành")} ${keepTogether("cá nhân")}` },
 ];
 
 export function AboutSection() {

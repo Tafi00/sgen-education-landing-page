@@ -688,6 +688,8 @@
   .methods-pillars {
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 12px;
+    /* Bỏ giới hạn 520px của bố cục 1 cột (content.css) để 3 viên đủ chỗ cho chữ. */
+    max-width: none;
     margin-top: 26px;
   }
 

@@ -1,6 +1,16 @@
 /* Hero trang chủ dạng “Tra cứu Thần số học cùng thầy”: chân dung · tiêu đề · 3 cam kết · form tra cứu. */
 .hero.hero-lookup {
   min-height: 0;
+  background-color: #170a4a;
+  background-image:
+    radial-gradient(ellipse 60% 55% at 24% 42%, rgba(160, 96, 255, 0.38), transparent 70%),
+    radial-gradient(ellipse 50% 45% at 80% 22%, rgba(232, 20, 145, 0.18), transparent 70%),
+    radial-gradient(ellipse 90% 60% at 50% 105%, rgba(122, 60, 255, 0.42), transparent 70%),
+    linear-gradient(180deg, rgba(58, 26, 140, 0.18), rgba(30, 12, 90, 0.08)),
+    var(--hero-bg);
+  background-position: center top;
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 
 .hero-lookup__inner {
@@ -103,6 +113,7 @@
 }
 
 .hero-lookup__nameplate strong {
+  white-space: nowrap;
   font-family: var(--font-display);
   font-size: 1.05rem;
   font-weight: 800;
@@ -114,6 +125,20 @@
   color: var(--violet);
   font-size: 0.74rem;
   font-weight: 700;
+}
+
+.hero-lookup__nameplate > span {
+  display: flex;
+  justify-content: center;
+}
+
+.hero-lookup__nameplate > span > span {
+  white-space: nowrap;
+}
+
+.hero-lookup__nameplate > span > span + span::before {
+  margin: 0 6px;
+  content: "·";
 }
 
 /* ---------- Tiêu đề ---------- */
@@ -150,6 +175,7 @@
   font-size: clamp(2.9rem, 6.2vw, 5.9rem);
   font-weight: 800;
   letter-spacing: -0.035em;
+  white-space: nowrap;
   line-height: 1.02;
   filter: drop-shadow(0 8px 26px rgba(122, 60, 255, 0.45));
 }
@@ -162,8 +188,8 @@
 
 .hero-lookup__promises {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  margin: 30px 0 0;
+  max-width: 640px;
+  margin: 28px 0 0;
   padding: 0;
   list-style: none;
   background: linear-gradient(145deg, rgba(60, 30, 124, 0.5), rgba(23, 10, 74, 0.62));
@@ -179,14 +205,14 @@
   grid-template-columns: 22px minmax(0, 1fr);
   gap: 12px;
   align-items: start;
-  padding: 20px 22px;
-  color: rgba(255, 255, 255, 0.9);
-  font-size: 0.92rem;
-  line-height: 1.55;
+  padding: 14px 20px;
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 0.95rem;
+  line-height: 1.5;
 }
 
 .hero-lookup__promises li + li {
-  border-left: 1px solid rgba(224, 187, 255, 0.24);
+  border-top: 1px solid rgba(224, 187, 255, 0.22);
 }
 
 .hero-lookup__promises svg {
@@ -245,8 +271,23 @@
   white-space: nowrap;
 }
 
-.hero-lookup__privacy {
+.hero-lookup .hero-lookup__privacy {
+  flex-wrap: wrap;
+  gap: 2px 0;
   margin: 0;
+}
+
+.hero-lookup__privacy svg {
+  margin-right: 7px;
+}
+
+.hero-lookup__privacy span {
+  white-space: nowrap;
+}
+
+.hero-lookup__privacy span + span::before {
+  margin: 0 7px;
+  content: "·";
 }
 
 /* ---------- Responsive ---------- */
@@ -260,20 +301,6 @@
     justify-self: center;
     min-width: min(100%, 300px);
     margin-top: 4px;
-  }
-
-  .hero-lookup__promises {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .hero-lookup__promises li {
-    padding: 13px 18px;
-    font-size: 0.88rem;
-  }
-
-  .hero-lookup__promises li + li {
-    border-top: 1px solid rgba(224, 187, 255, 0.24);
-    border-left: 0;
   }
 }
 
@@ -294,6 +321,23 @@
     margin-top: 16px;
   }
 
+  .hero-lookup__kicker {
+    font-size: clamp(1rem, 4.4vw, 1.4rem);
+  }
+
+  /* Tên rộng ~7.4em: co theo bề ngang màn hình để luôn nằm trên một dòng. */
+  .hero-lookup__name {
+    font-size: min(4.6rem, calc((100vw - 40px) / 7.6));
+  }
+
+  .hero-lookup__nameplate > span {
+    display: grid;
+  }
+
+  .hero-lookup__nameplate > span > span + span::before {
+    content: none;
+  }
+
   .hero-lookup__portrait {
     width: min(76vw, 300px);
     margin-top: 26px;
@@ -304,7 +348,7 @@
   }
 
   .hero-lookup__promises {
-    margin-top: 22px;
+    margin: 22px auto 0;
     text-align: left;
   }
 
@@ -329,5 +373,17 @@
 
   .hero-lookup__nameplate strong {
     font-size: 0.95rem;
+  }
+
+  .hero-lookup .hero-lookup__privacy {
+    gap: 2px 14px;
+  }
+
+  .hero-lookup__privacy svg {
+    margin-right: -7px;
+  }
+
+  .hero-lookup__privacy span + span::before {
+    content: none;
   }
 }

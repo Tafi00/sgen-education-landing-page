@@ -46,6 +46,8 @@ section[id],
   scroll-margin-top: calc(var(--header-h, 96px) + 20px);
 }
 
+/* Tiếng Việt viết rời từng âm tiết nên trình duyệt hay để một âm tiết lẻ ở dòng cuối ("học | viên"):
+   chữ thường dùng `pretty` để tránh dòng mồ côi; tiêu đề ngắn dùng `balance` (bên dưới) để chia đều các dòng. */
 body {
   margin: 0;
   min-width: 320px;
@@ -54,6 +56,7 @@ body {
   font-family: var(--font-body);
   line-height: 1.6;
   overflow-x: hidden;
+  text-wrap: pretty;
 }
 
 body.menu-open {
@@ -83,14 +86,10 @@ img {
 }
 
 h1,
-h2 {
-  overflow-wrap: normal;
-  text-wrap: balance;
-}
-
+h2,
 h3 {
   overflow-wrap: normal;
-  text-wrap: pretty;
+  text-wrap: balance;
 }
 .sr-only {
   position: absolute;

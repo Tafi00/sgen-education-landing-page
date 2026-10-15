@@ -6,6 +6,7 @@ const methodPythagoras = "/assets/methods/method-pythagoras.webp";
 import { IconOrb } from "../ui/IconOrb";
 import { Reveal } from "../ui/Reveal";
 import { SectionHeading } from "../ui/SectionHeading";
+import { keepTogether } from "../../app/text";
 
 const methods = [
   {
@@ -25,10 +26,11 @@ const methods = [
   },
 ];
 
+/** Viên nhãn hẹp: chỉ cho ngắt dòng giữa hai từ ghép, không ngắt giữa một từ. */
 const pillars = [
-  { icon: GraduationCap, label: "Định hướng giáo dục" },
-  { icon: BriefcaseBusiness, label: "Định hướng nghề nghiệp" },
-  { icon: Star, label: "Đào tạo tài năng Việt" },
+  { icon: GraduationCap, label: `${keepTogether("Định hướng")} ${keepTogether("giáo dục")}` },
+  { icon: BriefcaseBusiness, label: `${keepTogether("Định hướng")} ${keepTogether("nghề nghiệp")}` },
+  { icon: Star, label: `${keepTogether("Đào tạo")} ${keepTogether("tài năng Việt")}` },
 ];
 
 export function MethodsSection() {
