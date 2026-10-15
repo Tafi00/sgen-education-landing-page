@@ -1,208 +1,166 @@
-import {
-  ArrowDown,
-  ArrowRight,
-  BriefcaseBusiness,
-  Compass,
-  HeartHandshake,
-  MessageSquare,
-  Orbit,
-  ShieldCheck,
-  Star,
-  Target,
-} from "lucide-react";
-const cosmicDark = "/assets/backgrounds/cosmic-dark.webp";
-import { IconOrb } from "../ui/IconOrb";
-import { Reveal } from "../ui/Reveal";
-import { ButtonAnchor } from "../ui/Button";
+import { useState, type FormEvent } from "react";
+import { useNavigate } from "react-router-dom";
+import { CalendarDays, CircleCheck, Hash, Loader2, Search, ShieldCheck, Sparkles, Tag, UserRound } from "lucide-react";
+import { api, errorMessage } from "../../api/client";
+import type { LookupResultPayload } from "../../../shared/lookup-types";
+import { TextField } from "../form/Field";
+import { Button } from "../ui/Button";
 import { Eyebrow } from "../ui/Eyebrow";
+import { Reveal } from "../ui/Reveal";
+import { useToast } from "../ui/Toast";
+import "../../styles/hero-lookup.css";
 
-const trustItems = [
-  { icon: ShieldCheck, label: "Chuẩn phương pháp" },
-  { icon: Target, label: "Ứng dụng thực tiễn" },
-  { icon: HeartHandshake, label: "Đồng hành dài lâu" },
+const cosmicDark = "/assets/backgrounds/cosmic-dark.webp";
+/** Chân dung đã tách nền (AI dựng lại từ ảnh gốc) đặt trên nền vũ trụ riêng, ghép bằng CSS. */
+const founderPortrait = "/assets/team/pham-ba-nha-cutout.webp";
+
+const promises = [
+  "Đơn vị tiên phong đưa Thần số học Pythagoras ứng dụng định hướng nghề nghiệp về Việt Nam",
+  "Mỗi bản báo cáo đều được chuyên gia SGEN giải đáp chi tiết, chính xác",
+  "Được tham gia 1 buổi học về Thần số học cùng Ths. Phạm Bá Nha",
 ];
 
-const benefits = [
-  {
-    icon: HeartHandshake,
-    title: "Hiểu bản thân",
-    description: "Thấu hiểu tính cách, tài năng và điểm mạnh tiềm ẩn của chính bạn.",
-    href: "#gioi-thieu",
-  },
-  {
-    icon: BriefcaseBusiness,
-    title: "Chọn đúng nghề",
-    description: "Khám phá ngành nghề phù hợp, phát huy tối đa năng lực cá nhân.",
-    href: "#tam-nhin",
-  },
-  {
-    icon: Star,
-    title: "Vững bước tương lai",
-    description: "Xây dựng lộ trình sự nghiệp rõ ràng, tự tin chinh phục mục tiêu.",
-    href: "#su-menh",
-  },
-];
+const floatingNumbers = ["1", "7", "9", "4", "22", "6", "11", "3"];
 
-const sections = [
-  {
-    id: "tam-nhin",
-    title: "Tầm nhìn giáo dục",
-    desc: "Một hệ thống định hướng toàn diện, giáo dục để hiểu và kiểm chứng.",
-    icon: Compass,
-  },
-  {
-    id: "su-menh",
-    title: "Sứ mệnh đồng hành",
-    desc: "Rút ngắn khoảng cách từ hiểu đến hành qua lộ trình thực tiễn 4 bước.",
-    icon: Target,
-  },
-  {
-    id: "gia-tri-cot-loi",
-    title: "Giá trị cốt lõi",
-    desc: "4 nguyên tắc bất biến định hình cách SGEN đào tạo & tư vấn.",
-    icon: HeartHandshake,
-  },
-  {
-    id: "lien-he",
-    title: "Liên hệ & tư vấn",
-    desc: "Kênh trao đổi trực tiếp và nhận tư vấn định hướng miễn phí.",
-    icon: MessageSquare,
-  },
-];
+type FieldErrors = { name?: string; birthDate?: string };
 
 export function HeroSection() {
-  const handleScroll = (id: string) => {
-    const target = document.getElementById(id);
-    if (target) {
-      target.scrollIntoView({ behavior: "smooth", block: "start" });
+  const navigate = useNavigate();
+  const toast = useToast();
+  const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState<FieldErrors>({});
+
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const name = String(formData.get("name") ?? "").trim();
+    const commonName = String(formData.get("commonName") ?? "").trim();
+    const birthDate = String(formData.get("birthDate") ?? "");
+    const nextErrors: FieldErrors = {};
+    if (name.length < 2) nextErrors.name = "Vui lòng nhập họ tên (ít nhất 2 ký tự).";
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(birthDate)) nextErrors.birthDate = "Vui lòng chọn ngày sinh.";
+    setErrors(nextErrors);
+    if (Object.keys(nextErrors).length) {
+      toast.error("Thiếu thông tin", "Vui lòng kiểm tra các ô được đánh dấu rồi thử lại.");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const data = await api.post<{ report: LookupResultPayload & { id: string; shareToken?: string } }>("/api/lookups/numerology", {
+        inputs: {
+          name,
+          birthDate,
+          commonName: commonName || undefined,
+          referenceYear: new Date().getFullYear(),
+        },
+        save: true,
+        source: "/",
+      });
+      navigate(
+        data.report.shareToken
+          ? `/tra-cuu/ket-qua/${data.report.id}?token=${data.report.shareToken}`
+          : `/tra-cuu/ket-qua/${data.report.id}`,
+      );
+    } catch (caught) {
+      toast.error("Không thể phân tích", errorMessage(caught));
+      setLoading(false);
     }
   };
 
   return (
-    <section id="top" className="hero" style={{ "--hero-bg": `url(${cosmicDark})` } as React.CSSProperties}>
-
-      <div className="container hero__main">
-        <Reveal className="hero__content" direction="right">
-          <Eyebrow variant="pill" icon={Orbit}>
-            Học viện SGEN Education
-          </Eyebrow>
-          <h1>
-            Giới thiệu<br />
-            <span>SGEN Education</span>
-          </h1>
-          <p className="hero__tagline">Hiểu mình sâu sắc. Chọn đúng con đường.</p>
-          <p className="hero__description">
-            SGEN kết nối tri thức phương Tây và tinh hoa phương Đông thành những hệ thống học tập dễ hiểu, có chiều sâu
-            và áp dụng được vào đời sống thực tế.
-          </p>
-
-          <div className="hero__actions">
-            <ButtonAnchor
-              variant="primary"
-              href="#tam-nhin"
-              onClick={(e) => {
-                e.preventDefault();
-                window.history.pushState(null, "", "#tam-nhin");
-                handleScroll("tam-nhin");
-              }}
-            >
-              <span>Khám phá SGEN</span>
-              <ArrowDown aria-hidden="true" size={17} />
-            </ButtonAnchor>
-            <ButtonAnchor
-              variant="secondary"
-              href="#lien-he"
-              onClick={(e) => {
-                e.preventDefault();
-                window.history.pushState(null, "", "#lien-he");
-                handleScroll("lien-he");
-              }}
-            >
-              <span>Liên hệ tư vấn</span>
-              <ArrowRight aria-hidden="true" size={17} />
-            </ButtonAnchor>
-          </div>
-
-          <div className="hero__trust-list">
-            {trustItems.map(({ icon: Icon, label }) => (
-              <span className="hero__trust-item" key={label}>
-                <Icon aria-hidden="true" size={20} />
-                {label}
-              </span>
-            ))}
-          </div>
-        </Reveal>
-
-        <Reveal className="lookup-card intro-hub-card" direction="left" delay={120}>
-          <div className="lookup-card__heading">
-            <span>
-              <Compass aria-hidden="true" />
-            </span>
-            <div>
-              <small>Hành trình khám phá bản thân</small>
-              <h2>Bốn trụ cột tại SGEN</h2>
+    <section id="top" className="hero hero-lookup" style={{ "--hero-bg": `url(${cosmicDark})` } as React.CSSProperties}>
+      <div className="container hero-lookup__inner">
+        <Reveal className="hero-lookup__portrait" direction="right">
+          <figure>
+            <div className="hero-lookup__orbit" aria-hidden="true">
+              {floatingNumbers.map((value, index) => (
+                <span key={value} style={{ "--i": index } as React.CSSProperties}><b>{value}</b></span>
+              ))}
             </div>
-          </div>
-
-          <p className="lookup-card__intro">
-            Khám phá hệ thống giáo dục định hướng, sứ mệnh đào tạo và các giá trị cốt lõi của Học viện:
-          </p>
-
-          <div className="intro-hub-items">
-            {sections.map(({ id, title, desc, icon: Icon }) => (
-              <a
-                key={id}
-                href={`#${id}`}
-                className="intro-hub-item"
-                onClick={(e) => {
-                  e.preventDefault();
-                  window.history.pushState(null, "", `#${id}`);
-                  handleScroll(id);
-                }}
-              >
-                <span className="intro-hub-item__num">
-                  <Icon aria-hidden="true" size={17} />
-                </span>
-                <div className="intro-hub-item__info">
-                  <strong>{title}</strong>
-                  <small>{desc}</small>
-                </div>
-                <ArrowRight className="intro-hub-item__arrow" size={16} aria-hidden="true" />
-              </a>
-            ))}
-          </div>
-
-          <p className="lookup-card__privacy">
-            <ShieldCheck aria-hidden="true" /> Tri thức chuẩn hóa · Phương pháp kiểm chứng · Đồng hành tận tâm
-          </p>
-        </Reveal>
-      </div>
-
-      <div className="hero__benefits-wrap">
-        <div className="container hero__benefits">
-          {benefits.map(({ icon, title, description, href }, index) => (
-            <Reveal as="article" className="benefit-card" delay={index * 90} key={title}>
-              <IconOrb icon={icon} size="md" />
-              <div>
-                <h3>{title}</h3>
-                <p>{description}</p>
+            <div className="hero-lookup__frame">
+              <div className="hero-lookup__stage">
+                <img
+                  src={founderPortrait}
+                  alt="Ths. Phạm Bá Nha, CEO & Founder Học viện SGEN Education"
+                  width={760}
+                  height={1140}
+                  fetchPriority="high"
+                  decoding="async"
+                />
               </div>
-              <a
-                href={href}
-                aria-label={`Tìm hiểu ${title}`}
-                onClick={(e) => {
-                  if (href.startsWith("#")) {
-                    e.preventDefault();
-                    window.history.pushState(null, "", href);
-                    handleScroll(href.slice(1));
-                  }
-                }}
-              >
-                <ArrowRight />
-              </a>
-            </Reveal>
-          ))}
-        </div>
+            </div>
+            <figcaption className="hero-lookup__nameplate">
+              <strong>Ths. Phạm Bá Nha</strong>
+              <span>CEO &amp; Founder Học viện SGEN Education</span>
+            </figcaption>
+          </figure>
+        </Reveal>
+
+        <Reveal className="hero-lookup__heading" direction="left" delay={100}>
+          <Eyebrow variant="pill" icon={Hash}>Tra cứu Thần số học</Eyebrow>
+          <h1>
+            <span className="hero-lookup__kicker">Khám phá bản thân cùng thầy</span>
+            <span className="hero-lookup__name">Phạm Bá Nha</span>
+          </h1>
+        </Reveal>
+
+        <Reveal className="hero-lookup__promises-wrap" direction="left" delay={160}>
+          <ul className="hero-lookup__promises">
+            {promises.map((promise) => (
+              <li key={promise}>
+                <CircleCheck aria-hidden="true" size={22} strokeWidth={1.8} />
+                <span>{promise}</span>
+              </li>
+            ))}
+          </ul>
+        </Reveal>
+
+        <Reveal className="hero-lookup__form-wrap" delay={180}>
+          <form className="lookup-card hero-lookup__form" onSubmit={handleSubmit} noValidate aria-labelledby="hero-lookup-title">
+            <div className="hero-lookup__form-head">
+              <span aria-hidden="true"><Sparkles size={18} /></span>
+              <div>
+                <h2 id="hero-lookup-title">Tra cứu bản đồ Thần số học miễn phí</h2>
+                <p>Nhập đúng họ tên khai sinh và ngày sinh dương lịch để nhận báo cáo đầy đủ.</p>
+              </div>
+            </div>
+            <div className="hero-lookup__fields">
+              <TextField
+                name="name"
+                label="Họ tên khai sinh"
+                required
+                autoComplete="name"
+                placeholder="Ví dụ: NGUYỄN VĂN A"
+                icon={<UserRound aria-hidden="true" />}
+                error={errors.name}
+                onChange={() => errors.name && setErrors((current) => ({ ...current, name: undefined }))}
+              />
+              <TextField
+                name="commonName"
+                label="Tên thường dùng (nếu có)"
+                placeholder="Ví dụ: Minh Anh, Anna"
+                icon={<Tag aria-hidden="true" />}
+              />
+              <TextField
+                name="birthDate"
+                label="Ngày sinh dương lịch"
+                type="date"
+                required
+                icon={<CalendarDays aria-hidden="true" />}
+                error={errors.birthDate}
+                onChange={() => errors.birthDate && setErrors((current) => ({ ...current, birthDate: undefined }))}
+              />
+              <Button variant="primary" type="submit" className="lookup-submit hero-lookup__submit" disabled={loading}>
+                {loading ? <Loader2 className="spin" aria-hidden="true" /> : <Search aria-hidden="true" />}
+                {loading ? "Đang phân tích…" : "Tra cứu ngay"}
+              </Button>
+            </div>
+            <p className="lookup-card__privacy hero-lookup__privacy">
+              <ShieldCheck aria-hidden="true" /> Miễn phí tra cứu · Dữ liệu được bảo mật · Phân tích theo hệ Pythagoras chuẩn hóa
+            </p>
+          </form>
+        </Reveal>
       </div>
     </section>
   );

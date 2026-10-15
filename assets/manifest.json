@@ -170,5 +170,18 @@
       "id": "blog-numerology-arrows",
       "path": "public/assets/blog/blog-numerology-arrows.webp"
     }
+  ],
+  "team": [
+    {
+      "id": "pham-ba-nha-cutout",
+      "path": "public/assets/team/pham-ba-nha-cutout.webp",
+      "usage": "Home hero founder portrait (Ths. Phạm Bá Nha)",
+      "transparent": true
+    },
+    {
+      "id": "hero-founder-bg",
+      "path": "public/assets/team/hero-founder-bg.webp",
+      "usage": "Background plate behind the home hero founder portrait"
+    }
   ]
 }
