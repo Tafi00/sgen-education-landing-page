@@ -491,6 +491,8 @@ const FORTUNE_SEGMENTS: Record<number, [number, number, number]> = {
   4: [2, 0, 2], 5: [3, 0, 2], 6: [3, 0, 3], 7: [4, 0, 3], 8: [4, 0, 4],
   9: [3, 3, 3], 10: [4, 3, 3], 11: [4, 4, 3], 12: [4, 4, 4],
   13: [5, 4, 4], 14: [5, 5, 4], 15: [5, 5, 5],
+  // 16–20 số: tài liệu chưa nêu, kéo dài đúng quy luật chia ba đoạn đều (đoạn đầu dài nhất).
+  16: [6, 5, 5], 17: [6, 6, 5], 18: [6, 6, 6], 19: [7, 6, 6], 20: [7, 7, 6],
 };
 
 const quaiFromSum = (digits: string) => {
@@ -1391,15 +1393,25 @@ export interface SimAnalysisInput {
   lunarLeapMonth?: boolean;
 }
 
+/** Độ dài dãy số được phép phân tích (không chỉ số điện thoại 10 số: sim, biển số, dãy số bất kỳ). */
+export const SIM_MIN_DIGITS = 4;
+export const SIM_MAX_DIGITS = 20;
+
 export function normalizeVietnamesePhone(phone: string): string {
   if (!phone) return "";
   let clean = phone.replace(/[^0-9+]/g, "");
   if (clean.startsWith("+84")) {
     clean = "0" + clean.slice(3);
-  } else if (clean.startsWith("84") && clean.length > 9) {
+  } else if (clean.startsWith("84") && clean.length === 11) {
+    // 84 + 9 số = số điện thoại di động quốc tế; dãy khác độ dài giữ nguyên để không làm sai dãy 4–20 số.
     clean = "0" + clean.slice(2);
   }
   return clean;
+}
+
+/** Dãy số hợp lệ để phân tích: chỉ chữ số, dài 4–20. */
+export function isValidSimDigits(digits: string): boolean {
+  return /^\d+$/.test(digits) && digits.length >= SIM_MIN_DIGITS && digits.length <= SIM_MAX_DIGITS;
 }
 
 export interface ValidationResult {
@@ -1409,8 +1421,8 @@ export interface ValidationResult {
 
 export function validateSimPhongThuyInput(input: SimAnalysisInput): ValidationResult {
   const digits = normalizeVietnamesePhone(input?.phone || "");
-  if (!digits || digits.length < 2) {
-    return { isValid: false, error: "Vui lòng nhập số điện thoại hợp lệ (tối thiểu 2 chữ số)." };
+  if (!isValidSimDigits(digits)) {
+    return { isValid: false, error: `Vui lòng nhập dãy số hợp lệ gồm ${SIM_MIN_DIGITS} đến ${SIM_MAX_DIGITS} chữ số.` };
   }
   if (input?.birthDate) {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(input.birthDate)) {
@@ -1652,8 +1664,8 @@ export interface SimAnalysisResult {
 
 export function analyzeSimPhongThuy(input: SimAnalysisInput): SimAnalysisResult {
   const digits = normalizeVietnamesePhone(input.phone);
-  if (!digits || digits.length < 2) {
-    throw new Error("Vui lòng nhập số điện thoại hợp lệ (tối thiểu 2 chữ số).");
+  if (!isValidSimDigits(digits)) {
+    throw new RangeError(`Vui lòng nhập dãy số hợp lệ gồm ${SIM_MIN_DIGITS} đến ${SIM_MAX_DIGITS} chữ số.`);
   }
 
   // 1. Quẻ Kinh Dịch
@@ -1849,7 +1861,13 @@ export function analyzeSimPhongThuy(input: SimAnalysisInput): SimAnalysisResult 
   else if (meta.total >= 35) finalClass = "TIỂU HUNG";
   else finalClass = "HUNG";
 
-  const formattedPhone = digits.replace(/(\d{4})(\d{3})(\d{3})/, "$1 $2 $3");
+  // 10 số: 0932 601 616; 11 số: 0912 345 6789; các độ dài khác: mỗi nhóm 4 số từ trái sang.
+  const formattedPhone =
+    digits.length === 10
+      ? digits.replace(/(\d{4})(\d{3})(\d{3})/, "$1 $2 $3")
+      : digits.length === 11
+        ? digits.replace(/(\d{4})(\d{3})(\d{4})/, "$1 $2 $3")
+        : digits.replace(/(\d{4})(?=\d)/g, "$1 ");
   const trieu = TUONG_QUE_64[hexP.n] || "Hanh thông cát tường.";
   const last4 = digits.length >= 4 ? digits.slice(-4) : digits;
 

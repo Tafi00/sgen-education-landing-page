@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   analyzeSimPhongThuy,
   calcSimLifeHexagrams,
+  isValidSimDigits,
   normalizeVietnamesePhone,
   type SimFortuneHexagram,
   type SimAnalysisResult,
@@ -118,7 +119,7 @@ export default function SimPhongThuyView({
   };
 
   const hasValidPhone = useMemo(() => {
-    return /^0\d{9}$/.test(normalizeVietnamesePhone(submittedQuery.phone));
+    return isValidSimDigits(normalizeVietnamesePhone(submittedQuery.phone));
   }, [submittedQuery.phone]);
 
   const analysis = useMemo<{ result: SimAnalysisResult | null; error: string }>(() => {
@@ -269,7 +270,7 @@ export default function SimPhongThuyView({
     const validation = validateSimPhongThuyInput(nextQuery);
     if (!validation.isValid) {
       setFormError(validation.error || "Dữ liệu không hợp lệ.");
-      if (!/^0\d{9}$/.test(normalizedPhone)) phoneInputRef.current?.focus();
+      if (!isValidSimDigits(normalizedPhone)) phoneInputRef.current?.focus();
       return;
     }
 
@@ -350,7 +351,7 @@ export default function SimPhongThuyView({
               }}
               autoComplete="tel"
               inputMode="tel"
-              maxLength={16}
+              maxLength={32}
               aria-describedby={formError || analysis.error ? "sim-form-error" : undefined}
               required
             />

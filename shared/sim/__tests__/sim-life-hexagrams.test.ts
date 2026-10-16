@@ -28,6 +28,8 @@ describe("năm quẻ luận sim theo tài liệu SGEN", () => {
     expect(lengths("12345678")).toEqual([4, 0, 4]);
     expect(lengths("12345")).toEqual([3, 0, 2]);
     expect(lengths("1234")).toEqual([2, 0, 2]);
+    expect(lengths("1234567890123456")).toEqual([6, 5, 5]);
+    expect(lengths("12345678901234567890")).toEqual([7, 7, 6]);
   });
 
   it("đoạn 2 số lấy mỗi số làm một quái, số 0 thành 8", () => {
