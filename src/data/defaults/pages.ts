@@ -205,8 +205,7 @@ export const defaultPages: DefaultPage[] = [
           items: [
             { label: "Hotline tư vấn", value: "0903 891 839", href: "tel:0903891839" },
             { label: "Email", value: "sgen.vn@gmail.com", href: "mailto:sgen.vn@gmail.com" },
-            { label: "Địa chỉ", value: "57/27 Đình Tân Khai, P. Bình Trị Đông, Q. Bình Tân, TP.HCM" },
-            { label: "Văn phòng", value: "700/2N Tỉnh Lộ 10, P. Bình Trị Đông, Q. Bình Tân, TP.HCM" },
+            { label: "Địa chỉ", value: "400/6 Mã Lò, Phường Bình Hưng Hòa, Thành Phố Hồ Chí Minh" },
             { label: "Giờ làm việc", value: "Thứ Hai – Thứ Bảy, 08:30 – 20:00" },
           ],
           note: "SGEN chỉ sử dụng thông tin bạn cung cấp cho mục đích tư vấn và không chia sẻ cho bên thứ ba.",
@@ -218,7 +217,7 @@ export const defaultPages: DefaultPage[] = [
         props: {
           heading: "Văn phòng SGEN Education",
           embed: "",
-          address: "700/2N Tỉnh Lộ 10, P. Bình Trị Đông, Q. Bình Tân, TP.HCM",
+          address: "400/6 Mã Lò, Phường Bình Hưng Hòa, Thành Phố Hồ Chí Minh",
           note: "Bản đồ sẽ được cập nhật khi khách hàng cung cấp liên kết nhúng chính thức.",
         },
       },

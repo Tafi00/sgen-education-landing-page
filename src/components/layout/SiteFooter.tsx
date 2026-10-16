@@ -27,9 +27,11 @@ export function SiteFooter() {
           <p>
             <MapPin aria-hidden="true" /> <span>{settings.contact.address}</span>
           </p>
-          <p>
-            <MapPin aria-hidden="true" /> <span>Văn phòng: {settings.contact.officeAddress}</span>
-          </p>
+          {settings.contact.officeAddress ? (
+            <p>
+              <MapPin aria-hidden="true" /> <span>Văn phòng: {settings.contact.officeAddress}</span>
+            </p>
+          ) : null}
           <p>
             <Mail aria-hidden="true" /> <a href={`mailto:${settings.contact.email}`}>{settings.contact.email}</a>
           </p>
