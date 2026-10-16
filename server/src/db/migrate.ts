@@ -6,11 +6,13 @@ import { query } from "./pool.js";
 const here = path.dirname(fileURLToPath(import.meta.url));
 /**
  * `schema.sql` được tìm ở nhiều vị trí vì file này chạy ở 2 dạng: `tsx` (dev, cùng thư mục)
- * và bundle `dist-server/index.js` (Dockerfile copy schema.sql ra cạnh bundle).
+ * và bundle `dist-server/index.js` (Dockerfile copy schema.sql ra cạnh bundle). Các script
+ * `dist-server/scripts/*.js` (seed, create-admin) nằm sâu hơn một cấp nên tìm thêm ở thư mục cha.
  */
 const SCHEMA_CANDIDATES = [
   path.join(here, "schema.sql"),
   path.join(here, "db", "schema.sql"),
+  path.join(here, "..", "schema.sql"),
   path.join(process.cwd(), "server", "src", "db", "schema.sql"),
   path.join(here, "..", "server", "src", "db", "schema.sql"),
 ];
