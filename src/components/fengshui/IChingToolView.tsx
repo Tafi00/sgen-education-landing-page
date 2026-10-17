@@ -16,6 +16,8 @@ import {
 import { getHexagram, type HexagramResult } from "../../../shared/menh-thu/metaphysics";
 import { ICHING_DOCUMENT_READINGS } from "./iching-document-readings";
 import { IChingReadingList } from "./IChingReadingList";
+import { LucHaoSheet } from "./LucHaoSheet";
+import { buildLucHaoSheet } from "../../../shared/sim/sim-phong-thuy-engine";
 import "../../styles/iching-tool.css";
 import { Button } from "../ui/Button";
 
@@ -158,6 +160,23 @@ export function IChingToolView({ defaultQuestion = "", compact = false }: FengSh
   const resultRef = useRef<HTMLDivElement>(null);
 
   const hexagram = useMemo(() => coinLines.length === 6 ? getHexagram(coinLines) : null, [coinLines]);
+  /** Lá quẻ Lục Hào an theo thời điểm gieo (Can Chi ngày/tháng quyết định Lục Thú, Vượng Suy, Quý Thần). */
+  const lucHao = useMemo(() => {
+    if (coinLines.length !== 6) return null;
+    const now = new Date();
+    const pad = (value: number) => String(value).padStart(2, "0");
+    const movingLines = coinLines.flatMap((value, index) => (value === 6 || value === 9 ? [index + 1] : []));
+    return {
+      movingLines,
+      castAt: `${pad(now.getDate())}/${pad(now.getMonth() + 1)}/${now.getFullYear()} ${pad(now.getHours())}:${pad(now.getMinutes())}`,
+      data: buildLucHaoSheet({
+        lines: coinLines.map((value) => (value === 7 || value === 9 ? 1 : 0)),
+        movingLines,
+        solarDate: `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`,
+        time: `${pad(now.getHours())}:${pad(now.getMinutes())}`,
+      }),
+    };
+  }, [coinLines]);
   const aiPrompt = useMemo(() => hexagram ? buildIChingAiPrompt({
     question,
     purpose: activeCastPurpose,
@@ -387,6 +406,17 @@ export function IChingToolView({ defaultQuestion = "", compact = false }: FengSh
           )}
         </div>
       </div>
+
+      {lucHao && (
+        <section className="skd-luc-hao-sheet iching-luc-hao" aria-labelledby="iching-lh-title">
+          <header className="skd-lh-section-intro">
+            <span>Lá quẻ Lục Hào</span>
+            <h3 id="iching-lh-title">Lục Thân · Can Chi · Lục Thú của quẻ vừa gieo</h3>
+            <p>An quẻ theo thời điểm gieo ({lucHao.castAt}). Hào 1 ở dưới cùng, hào 6 trên cùng; hào động được đánh dấu màu son.</p>
+          </header>
+          <LucHaoSheet data={lucHao.data} movingLine={lucHao.movingLines} subject="quẻ vừa gieo" />
+        </section>
+      )}
 
       <div className={`casting-dock ${coinLines.length >= 6 ? "is-complete" : ""}`}>
         {coinLines.length < 6 ? <button className="casting-trigger" onClick={tossCoins} disabled={tossing} aria-label={`Tung ba đồng xu để lập hào ${coinLines.length + 1}`}><span className="casting-trigger__coin"><Coins size={21} /></span><span className="casting-trigger__copy"><small>Lập hào {coinLines.length + 1} / 6</small><strong>{tossing ? "Đang tung…" : "Tung 3 đồng xu"}</strong></span><ArrowUp className="casting-trigger__arrow" size={17} /></button> : <button className="casting-reset" onClick={resetCoins}><RotateCcw size={17} /><span><strong>Quẻ mới</strong><small>Gieo lại</small></span></button>}

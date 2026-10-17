@@ -1662,6 +1662,171 @@ export interface SimAnalysisResult {
   };
 }
 
+/** Dữ liệu lá quẻ Lục Hào (Lục Thân, Can Chi, Lục Thú, Thế/Ứng, Vượng Suy, Trường Sinh…). */
+export type SimLucHaoData = SimAnalysisResult["lucHaoData"];
+
+export interface LucHaoSheetInput {
+  /** Sáu hào của quẻ chủ từ dưới lên: 1 = dương, 0 = âm. */
+  lines: number[];
+  /** Các hào động (1–6); quẻ biến đổi âm dương đúng các hào này. */
+  movingLines: number[];
+  /** Ngày dương lịch YYYY-MM-DD và giờ HH:mm lập quẻ, dùng an Lục Thú, Vượng Suy, Quý Thần, Trường Sinh. */
+  solarDate: string;
+  time: string;
+}
+
+/** An lá quẻ Lục Hào cho quẻ chủ và quẻ biến. Dùng cho bói sim và Gieo quẻ. */
+export function buildLucHaoSheet({ lines, movingLines, solarDate, time }: LucHaoSheetInput): SimLucHaoData {
+  const solarDateStr = solarDate;
+  const birthTimeStr = time;
+  const fourPillars = getFourPillars(solarDateStr, birthTimeStr, 105.833, 7, "civil");
+  const lunarDate = getLunarDate(solarDateStr);
+  const allLines = lines.slice(0, 6);
+  const bienLines = allLines.map((value, index) => (movingLines.includes(index + 1) ? (value === 1 ? 0 : 1) : value));
+  const r = {
+    upperQuai: bitsToTri(allLines.slice(3, 6)),
+    lowerQuai: bitsToTri(allLines.slice(0, 3)),
+    allLines,
+    bienLines,
+    hexNum: 0,
+    bienNum: 0,
+  };
+  r.hexNum = LOOKUP[r.upperQuai]?.[r.lowerQuai] || 1;
+  r.bienNum = LOOKUP[bitsToTri(bienLines.slice(3, 6))]?.[bitsToTri(bienLines.slice(0, 3))] || 1;
+  const hexP = HEX[String(r.hexNum)] || { n: "Thuần Càn", t: 1, h: 1, yn: "Cát lành" };
+  const hexB = HEX[String(r.bienNum)] || { n: "Thuần Càn", t: 1, h: 1, yn: "Cát lành" };
+  const trieu = TUONG_QUE_64[hexP.n] || "Hanh thông cát tường.";
+
+  const dayStem = fourPillars.pillars[2]?.stem || "Bính";
+  const dayBranch = fourPillars.pillars[2]?.branch || "Dần";
+  const monthBranch = fourPillars.pillars[1]?.branch || "Thân";
+  const lucThuList = getLucThuByDayStem(dayStem);
+
+  const pPalace = getHexagramPalaceAndTheUng(r.upperQuai, r.lowerQuai);
+  const bUpperQuai = bitsToTri(r.bienLines.slice(3, 6));
+  const bLowerQuai = bitsToTri(r.bienLines.slice(0, 3));
+  const bPalace = getHexagramPalaceAndTheUng(bUpperQuai, bLowerQuai);
+
+  const pLowerNaGiap = NA_GIAP_TRIGRAM_LOWER[r.lowerQuai] || NA_GIAP_TRIGRAM_LOWER[1];
+  const pUpperNaGiap = NA_GIAP_TRIGRAM_UPPER[r.upperQuai] || NA_GIAP_TRIGRAM_UPPER[1];
+  const pLinesNaGiap = [...pLowerNaGiap, ...pUpperNaGiap];
+
+  const bLowerNaGiap = NA_GIAP_TRIGRAM_LOWER[bLowerQuai] || NA_GIAP_TRIGRAM_LOWER[1];
+  const bUpperNaGiap = NA_GIAP_TRIGRAM_UPPER[bUpperQuai] || NA_GIAP_TRIGRAM_UPPER[1];
+  const bLinesNaGiap = [...bLowerNaGiap, ...bUpperNaGiap];
+
+  const LUC_THAN: Record<string, Record<string, string>> = {
+    Kim: { Kim: "Huynh Đệ", Thủy: "Tử Tôn", Mộc: "Thê Tài", Hỏa: "Quan Quỷ", Thổ: "Phụ Mẫu" },
+    Mộc: { Mộc: "Huynh Đệ", Hỏa: "Tử Tôn", Thổ: "Thê Tài", Kim: "Quan Quỷ", Thủy: "Phụ Mẫu" },
+    Thủy: { Thủy: "Huynh Đệ", Mộc: "Tử Tôn", Hỏa: "Thê Tài", Thổ: "Quan Quỷ", Kim: "Phụ Mẫu" },
+    Hỏa: { Hỏa: "Huynh Đệ", Thổ: "Tử Tôn", Kim: "Thê Tài", Thủy: "Quan Quỷ", Mộc: "Phụ Mẫu" },
+    Thổ: { Thổ: "Huynh Đệ", Kim: "Tử Tôn", Thủy: "Thê Tài", Mộc: "Quan Quỷ", Hỏa: "Phụ Mẫu" },
+  };
+
+  const primaryLines = r.allLines.map((val, idx) => {
+    const pos = idx + 1;
+    const isYang = val === 1;
+    const isMoving = movingLines.includes(pos);
+    const ng = pLinesNaGiap[idx] || { can: "Giáp", chi: "Tý" };
+    const el = BRANCH_ELEMENTS[ng.chi] || "Thủy";
+    const rel = LUC_THAN[pPalace.element]?.[el] || "Huynh Đệ";
+    const canChiFull = `${rel} ${ng.can} ${ng.chi} (${el})`;
+    const theUng = pos === pPalace.the ? "Thế" : pos === pPalace.ung ? "Ứng" : "";
+    const vt = getVuongTuong(el, monthBranch);
+    const qt = getQuyThan(dayStem, ng.chi);
+    const tsN = getTruongSinh(el, dayBranch);
+    const tsT = getTruongSinh(el, monthBranch);
+
+    return {
+      position: pos,
+      isYang,
+      isMoving,
+      symbol: isYang ? "—" : "- -",
+      can: ng.can,
+      chi: ng.chi,
+      element: el,
+      relative: rel,
+      lucThan: rel,
+      canChi: `${ng.can} ${ng.chi} (${el})`,
+      phucThan: "—",
+      tuanKhong: "—",
+      canChiFull,
+      lucThu: lucThuList[idx] || "Thanh Long",
+      theUng,
+      vuongTuong: vt,
+      quyThan: qt,
+      tsNgay: tsN,
+      tsThang: tsT,
+    };
+  });
+
+  const changedLines = r.bienLines.map((val, idx) => {
+    const pos = idx + 1;
+    const isYang = val === 1;
+    const isTransformed = movingLines.includes(pos);
+    const ng = bLinesNaGiap[idx] || { can: "Giáp", chi: "Tý" };
+    const el = BRANCH_ELEMENTS[ng.chi] || "Thủy";
+    const rel = LUC_THAN[bPalace.element]?.[el] || "Huynh Đệ";
+    const canChiFull = `${rel} ${ng.can} ${ng.chi} (${el})`;
+    const vt = getVuongTuong(el, monthBranch);
+    const tsN = getTruongSinh(el, dayBranch);
+    const tsT = getTruongSinh(el, monthBranch);
+
+    return {
+      position: pos,
+      isYang,
+      isTransformed,
+      symbol: isYang ? "—" : "- -",
+      can: ng.can,
+      chi: ng.chi,
+      element: el,
+      relative: rel,
+      lucThan: rel,
+      canChi: `${ng.can} ${ng.chi} (${el})`,
+      phucThan: "—",
+      tuanKhong: "—",
+      lucThu: lucThuList[idx] || "Thanh Long",
+      canChiFull,
+      vuongTuong: vt,
+      tsNgay: tsN,
+      tsThang: tsT,
+    };
+  });
+
+  return {
+    meta: {
+      solarDateTime: `${solarDateStr} ${birthTimeStr}`,
+      lunarDateTime: `${lunarDate.day}/${lunarDate.month}/${lunarDate.year}${lunarDate.leap ? " (nhuận)" : ""}`,
+      fourPillarsText: `${fourPillars.pillars[0]?.stem} ${fourPillars.pillars[0]?.branch} · ${fourPillars.pillars[1]?.stem} ${fourPillars.pillars[1]?.branch} · ${fourPillars.pillars[2]?.stem} ${fourPillars.pillars[2]?.branch} · ${fourPillars.pillars[3]?.stem} ${fourPillars.pillars[3]?.branch}`,
+      solarTerm: getSolarTerm(solarDateStr),
+      nhatThan: `${dayStem} ${dayBranch}`,
+      nguyetLenh: `${fourPillars.pillars[1]?.stem} ${monthBranch}`,
+    },
+    primary: {
+      number: r.hexNum,
+      name: hexP.n,
+      hanzi: "易",
+      palace: pPalace.palace,
+      palaceElement: pPalace.element,
+      palaceLabel: `Cung ${pPalace.palace} · Hành ${pPalace.element}`,
+      theLine: pPalace.the,
+      ungLine: pPalace.ung,
+      trieu,
+      explanation: hexP.yn,
+      lines: primaryLines,
+    },
+    changed: {
+      number: r.bienNum,
+      name: hexB.n,
+      hanzi: "變",
+      palace: bPalace.palace,
+      palaceElement: bPalace.element,
+      palaceLabel: `Cung ${bPalace.palace} · Hành ${bPalace.element}`,
+      lines: changedLines,
+    },
+  };
+}
+
 export function analyzeSimPhongThuy(input: SimAnalysisInput): SimAnalysisResult {
   const digits = normalizeVietnamesePhone(input.phone);
   if (!isValidSimDigits(digits)) {
@@ -1713,102 +1878,9 @@ export function analyzeSimPhongThuy(input: SimAnalysisInput): SimAnalysisResult 
     points: elemDist[el],
   }));
 
-  // 8. Xây dựng Lục Hào Sheet
-  const dayStem = fourPillars.pillars[2]?.stem || "Bính";
+  // 8. Lá quẻ Lục Hào (dùng chung với công cụ Gieo quẻ)
   const dayBranch = fourPillars.pillars[2]?.branch || "Dần";
-  const monthBranch = fourPillars.pillars[1]?.branch || "Thân";
-  const lucThuList = getLucThuByDayStem(dayStem);
-
-  const pPalace = getHexagramPalaceAndTheUng(r.upperQuai, r.lowerQuai);
-  const bUpperQuai = bitsToTri(r.bienLines.slice(3, 6));
-  const bLowerQuai = bitsToTri(r.bienLines.slice(0, 3));
-  const bPalace = getHexagramPalaceAndTheUng(bUpperQuai, bLowerQuai);
-
-  const pLowerNaGiap = NA_GIAP_TRIGRAM_LOWER[r.lowerQuai] || NA_GIAP_TRIGRAM_LOWER[1];
-  const pUpperNaGiap = NA_GIAP_TRIGRAM_UPPER[r.upperQuai] || NA_GIAP_TRIGRAM_UPPER[1];
-  const pLinesNaGiap = [...pLowerNaGiap, ...pUpperNaGiap];
-
-  const bLowerNaGiap = NA_GIAP_TRIGRAM_LOWER[bLowerQuai] || NA_GIAP_TRIGRAM_LOWER[1];
-  const bUpperNaGiap = NA_GIAP_TRIGRAM_UPPER[bUpperQuai] || NA_GIAP_TRIGRAM_UPPER[1];
-  const bLinesNaGiap = [...bLowerNaGiap, ...bUpperNaGiap];
-
-  const LUC_THAN: Record<string, Record<string, string>> = {
-    Kim: { Kim: "Huynh Đệ", Thủy: "Tử Tôn", Mộc: "Thê Tài", Hỏa: "Quan Quỷ", Thổ: "Phụ Mẫu" },
-    Mộc: { Mộc: "Huynh Đệ", Hỏa: "Tử Tôn", Thổ: "Thê Tài", Kim: "Quan Quỷ", Thủy: "Phụ Mẫu" },
-    Thủy: { Thủy: "Huynh Đệ", Mộc: "Tử Tôn", Hỏa: "Thê Tài", Thổ: "Quan Quỷ", Kim: "Phụ Mẫu" },
-    Hỏa: { Hỏa: "Huynh Đệ", Thổ: "Tử Tôn", Kim: "Thê Tài", Thủy: "Quan Quỷ", Mộc: "Phụ Mẫu" },
-    Thổ: { Thổ: "Huynh Đệ", Kim: "Tử Tôn", Thủy: "Thê Tài", Mộc: "Quan Quỷ", Hỏa: "Phụ Mẫu" },
-  };
-
-  const primaryLines = r.allLines.map((val, idx) => {
-    const pos = idx + 1;
-    const isYang = val === 1;
-    const isMoving = r.haoDong === pos;
-    const ng = pLinesNaGiap[idx] || { can: "Giáp", chi: "Tý" };
-    const el = BRANCH_ELEMENTS[ng.chi] || "Thủy";
-    const rel = LUC_THAN[pPalace.element]?.[el] || "Huynh Đệ";
-    const canChiFull = `${rel} ${ng.can} ${ng.chi} (${el})`;
-    const theUng = pos === pPalace.the ? "Thế" : pos === pPalace.ung ? "Ứng" : "";
-    const vt = getVuongTuong(el, monthBranch);
-    const qt = getQuyThan(dayStem, ng.chi);
-    const tsN = getTruongSinh(el, dayBranch);
-    const tsT = getTruongSinh(el, monthBranch);
-
-    return {
-      position: pos,
-      isYang,
-      isMoving,
-      symbol: isYang ? "—" : "- -",
-      can: ng.can,
-      chi: ng.chi,
-      element: el,
-      relative: rel,
-      lucThan: rel,
-      canChi: `${ng.can} ${ng.chi} (${el})`,
-      phucThan: "—",
-      tuanKhong: "—",
-      canChiFull,
-      lucThu: lucThuList[idx] || "Thanh Long",
-      theUng,
-      vuongTuong: vt,
-      quyThan: qt,
-      tsNgay: tsN,
-      tsThang: tsT,
-    };
-  });
-
-  const changedLines = r.bienLines.map((val, idx) => {
-    const pos = idx + 1;
-    const isYang = val === 1;
-    const isTransformed = r.haoDong === pos;
-    const ng = bLinesNaGiap[idx] || { can: "Giáp", chi: "Tý" };
-    const el = BRANCH_ELEMENTS[ng.chi] || "Thủy";
-    const rel = LUC_THAN[bPalace.element]?.[el] || "Huynh Đệ";
-    const canChiFull = `${rel} ${ng.can} ${ng.chi} (${el})`;
-    const vt = getVuongTuong(el, monthBranch);
-    const tsN = getTruongSinh(el, dayBranch);
-    const tsT = getTruongSinh(el, monthBranch);
-
-    return {
-      position: pos,
-      isYang,
-      isTransformed,
-      symbol: isYang ? "—" : "- -",
-      can: ng.can,
-      chi: ng.chi,
-      element: el,
-      relative: rel,
-      lucThan: rel,
-      canChi: `${ng.can} ${ng.chi} (${el})`,
-      phucThan: "—",
-      tuanKhong: "—",
-      lucThu: lucThuList[idx] || "Thanh Long",
-      canChiFull,
-      vuongTuong: vt,
-      tsNgay: tsN,
-      tsThang: tsT,
-    };
-  });
+  const lucHaoData = buildLucHaoSheet({ lines: r.allLines, movingLines: [r.haoDong], solarDate: solarDateStr, time: birthTimeStr });
 
   const lunarDate = getLunarDate(solarDateStr);
   const baziBalance = getElementBalance(fourPillars.pillars);
@@ -1832,9 +1904,9 @@ export function analyzeSimPhongThuy(input: SimAnalysisInput): SimAnalysisResult 
   const dayPillar = fourPillars.pillars[2];
   const hourPillar = fourPillars.pillars[3];
   const destinyScore = meta.s3 ?? 60;
-  const taiLocLine = primaryLines.find((line) => line.relative === "Thê Tài");
-  const congDanhLine = primaryLines.find((line) => line.relative === "Quan Quỷ");
-  const nguyenThanLine = primaryLines.find((line) => line.relative === "Phụ Mẫu");
+  const taiLocLine = lucHaoData.primary.lines.find((line) => line.relative === "Thê Tài");
+  const congDanhLine = lucHaoData.primary.lines.find((line) => line.relative === "Quan Quỷ");
+  const nguyenThanLine = lucHaoData.primary.lines.find((line) => line.relative === "Phụ Mẫu");
   const partnerLine = (input.gender || "Nam") === "Nữ" ? congDanhLine : taiLocLine;
   const aspectTag = (score: number) => score >= 80 ? "Điểm mạnh" : score < 50 ? "Điểm yếu" : "Trung hòa";
   const taiLocScore = Math.round(meta.s1 * 0.65 + destinyScore * 0.35);
@@ -1923,38 +1995,7 @@ export function analyzeSimPhongThuy(input: SimAnalysisInput): SimAnalysisResult 
     },
     hexagramScore8: Math.round((meta.s4 / 100) * 80) / 10,
     movingLine: r.haoDong,
-    lucHaoData: {
-      meta: {
-        solarDateTime: `${solarDateStr} ${birthTimeStr}`,
-        lunarDateTime: `${lunarDate.day}/${lunarDate.month}/${lunarDate.year}${lunarDate.leap ? " (nhuận)" : ""}`,
-        fourPillarsText: `${fourPillars.pillars[0]?.stem} ${fourPillars.pillars[0]?.branch} · ${fourPillars.pillars[1]?.stem} ${fourPillars.pillars[1]?.branch} · ${fourPillars.pillars[2]?.stem} ${fourPillars.pillars[2]?.branch} · ${fourPillars.pillars[3]?.stem} ${fourPillars.pillars[3]?.branch}`,
-        solarTerm: getSolarTerm(solarDateStr),
-        nhatThan: `${dayStem} ${dayBranch}`,
-        nguyetLenh: `${fourPillars.pillars[1]?.stem} ${monthBranch}`,
-      },
-      primary: {
-        number: r.hexNum,
-        name: hexP.n,
-        hanzi: "易",
-        palace: pPalace.palace,
-        palaceElement: pPalace.element,
-        palaceLabel: `Cung ${pPalace.palace} · Hành ${pPalace.element}`,
-        theLine: pPalace.the,
-        ungLine: pPalace.ung,
-        trieu,
-        explanation: hexP.yn,
-        lines: primaryLines,
-      },
-      changed: {
-        number: r.bienNum,
-        name: hexB.n,
-        hanzi: "變",
-        palace: bPalace.palace,
-        palaceElement: bPalace.element,
-        palaceLabel: `Cung ${bPalace.palace} · Hành ${bPalace.element}`,
-        lines: changedLines,
-      },
-    },
+    lucHaoData,
     ownerAstro: {
       solarDate: `${solarDateStr} · ${birthTimeStr}`,
       lunarDate: `${lunarDate.day}/${lunarDate.month}/${lunarDate.year}${lunarDate.leap ? " (nhuận)" : ""}`,
