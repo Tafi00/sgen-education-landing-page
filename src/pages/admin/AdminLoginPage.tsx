@@ -54,7 +54,8 @@ export function AdminLoginPage() {
         // Bỏ qua: cookie CSRF đã được cấp ở lần gọi này; lỗi thật sẽ lộ ra ở bước đăng nhập.
       }
       const result = await api.post<SessionResponse>("/api/admin/auth/login", {
-        email: email.trim().toLowerCase(),
+        // Bàn phím điện thoại hay chèn dấu cách sau dấu chấm; email không bao giờ chứa khoảng trắng.
+        email: email.replace(/\s+/g, "").toLowerCase(),
         password,
       });
       const admin = result.admin;
@@ -86,6 +87,10 @@ export function AdminLoginPage() {
             type="email"
             name="email"
             autoComplete="username"
+            inputMode="email"
+            autoCapitalize="none"
+            autoCorrect="off"
+            spellCheck={false}
             placeholder="admin@sgen.vn"
             icon={<Mail aria-hidden="true" />}
             value={email}

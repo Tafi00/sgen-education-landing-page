@@ -31,7 +31,9 @@ adminAuthPublicRouter.post(
   "/login",
   authLimiter,
   asyncHandler(async (req, res) => {
-    const parsed = z.object({ email: z.string().email(), password: z.string().min(1) }).parse(req.body);
+    const parsed = z
+      .object({ email: z.string().transform((value) => value.replace(/\s+/g, "")).pipe(z.string().email()), password: z.string().min(1) })
+      .parse(req.body);
     const user = await User.findOne({ email: parsed.email.toLowerCase() }).select("+passwordHash");
     if (!user || user.status !== "active") throw new AppError(401, "Email hoặc mật khẩu chưa đúng.", "invalid_credentials");
     if (user.lockedUntil && user.lockedUntil > new Date()) {
