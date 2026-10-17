@@ -7,7 +7,9 @@ import {
   CircleCheck,
   ClipboardCopy,
   Coins,
+  Download,
   ExternalLink,
+  FileText,
   LibraryBig,
   RotateCcw,
   ShieldCheck,
@@ -26,6 +28,13 @@ export type FengShuiToolViewProps = {
   defaultQuestion?: string;
   /** Chế độ gọn: ẩn phần tiêu đề nghi thức và ghi chú phương pháp trong thẻ nhập liệu. */
   compact?: boolean;
+};
+
+/** Phụ lục chi tiết 64 quẻ do SGEN biên soạn, phát hành kèm công cụ Gieo quẻ. */
+const APPENDIX_PDF = {
+  href: "/assets/downloads/phu-luc-64-que-kinh-dich.pdf",
+  title: "Phụ lục chi tiết 64 quẻ Kinh Dịch",
+  detail: "Tệp PDF · 133 trang · khoảng 4,8 MB",
 };
 
 const CAST_PURPOSES = [
@@ -406,6 +415,18 @@ export function IChingToolView({ defaultQuestion = "", compact = false }: FengSh
           )}
         </div>
       </div>
+
+      <aside className="iching-appendix" aria-label="Tài liệu đính kèm">
+        <span className="iching-appendix__icon" aria-hidden="true"><FileText size={26} strokeWidth={1.6} /></span>
+        <div className="iching-appendix__copy">
+          <small>Tài liệu đính kèm</small>
+          <strong>{APPENDIX_PDF.title}</strong>
+          <p>Đối chiếu lời luận đầy đủ của từng quẻ sau khi gieo. {APPENDIX_PDF.detail}.</p>
+        </div>
+        <a className="iching-appendix__link" href={APPENDIX_PDF.href} download="Phu-luc-chi-tiet-64-que-Kinh-Dich.pdf">
+          <Download size={17} aria-hidden="true" /><span>Tải PDF</span>
+        </a>
+      </aside>
 
       {lucHao && (
         <section className="skd-luc-hao-sheet iching-luc-hao" aria-labelledby="iching-lh-title">

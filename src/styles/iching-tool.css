@@ -1831,3 +1831,49 @@
 .iching-diagram__foot strong:last-child { grid-column:4; }
 .hex-result .iching-reading-list { margin:0 30px 22px; }
 @media (max-width:650px) { .iching-result-intro { padding:20px 17px 15px; }.iching-diagram { margin:0 17px 18px; padding:14px 12px 10px; }.iching-diagram__head,.iching-diagram__row,.iching-diagram__foot { grid-template-columns:20px minmax(0,1fr) minmax(64px,auto) minmax(0,1fr) 20px; gap:6px; }.iching-diagram__trigrams b { font-size:.62rem; }.iching-diagram__trigrams small { font-size:.6rem; }.iching-diagram__foot strong { font-size:.72rem; }.hex-result .iching-reading-list { margin:0 17px 18px; } }
+
+/* Tài liệu đính kèm: phụ lục chi tiết 64 quẻ (PDF) */
+.iching-appendix {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: center;
+  margin-top: 28px;
+  padding: 18px 22px;
+  border: 1px solid var(--ich-line);
+  border-radius: 16px;
+  background: linear-gradient(135deg, var(--ich-surface) 0%, #fff 100%);
+}
+.iching-appendix__icon {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  color: var(--ich-primary);
+  background: var(--ich-primary-soft);
+}
+.iching-appendix__copy { display: grid; gap: 2px; min-width: 0; }
+.iching-appendix__copy small { color: var(--ich-primary); font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+.iching-appendix__copy strong { color: var(--ich-ink); font-size: 1.05rem; line-height: 1.35; }
+.iching-appendix__copy p { margin: 0; color: var(--ich-muted); font-size: 0.9rem; line-height: 1.5; }
+.iching-appendix__link {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 22px;
+  border-radius: 999px;
+  color: #fff;
+  background: linear-gradient(104deg, #e81491 0%, #a31ac9 44%, #5721e8 100%);
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.iching-appendix__link:hover { filter: brightness(1.08); }
+.iching-appendix__link:focus-visible { outline: 3px solid var(--ich-focus); outline-offset: 2px; }
+@media (max-width: 640px) {
+  .iching-appendix { grid-template-columns: auto minmax(0, 1fr); padding: 16px; }
+  .iching-appendix__link { grid-column: 1 / -1; }
+}
