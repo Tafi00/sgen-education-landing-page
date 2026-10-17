@@ -288,7 +288,8 @@ export function OrderDetailPage() {
             <p className="muted">Thành viên chưa có quyền nội dung nào.</p>
           ) : (
             <div className="data-table__scroll">
-              <table className="data-table">
+              <div className="admin-table-wrap">
+              <table className="admin-table">
                 <thead>
                   <tr>
                     <th scope="col">Loại quyền</th>
@@ -313,6 +314,7 @@ export function OrderDetailPage() {
                   })}
                 </tbody>
               </table>
+              </div>
             </div>
           )}
           <p className="admin-hint">Nút Cấp quyền ở khu thao tác chỉ hoạt động khi đơn hàng gắn với thành viên.</p>
@@ -333,7 +335,8 @@ export function OrderDetailPage() {
           <p className="muted">Chưa có ghi nhận thao tác nào cho đơn hàng này.</p>
         ) : (
           <div className="data-table__scroll">
-            <table className="data-table">
+            <div className="admin-table-wrap">
+            <table className="admin-table">
               <thead>
                 <tr>
                   <th scope="col">Thời gian</th>
@@ -351,6 +354,7 @@ export function OrderDetailPage() {
                 ))}
               </tbody>
             </table>
+            </div>
           </div>
         )}
       </div>

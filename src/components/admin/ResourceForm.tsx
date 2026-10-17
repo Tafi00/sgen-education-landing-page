@@ -645,8 +645,8 @@ export function ResourceForm({ config, children }: { config: ResourceConfig; chi
             </div>
           ) : null}
 
-          <fieldset className="admin-card">
-            <legend>{currentSection}</legend>
+          <section className="admin-card" aria-label={currentSection}>
+            <h2 className="admin-card__title">{currentSection}</h2>
             <div className="admin-form__grid">
               {sectionFields.map((field) => {
                 const limit = charLimitFor(field);
@@ -674,7 +674,7 @@ export function ResourceForm({ config, children }: { config: ResourceConfig; chi
                 );
               })}
             </div>
-          </fieldset>
+          </section>
 
           {hasSeo && currentSection === "SEO" ? (
             <SeoPreview title={seoTitle} description={seoDescription} url={`sgen.edu.vn${seoUrl}`} />

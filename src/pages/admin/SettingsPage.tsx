@@ -220,14 +220,14 @@ export function SettingsPage() {
         </div>
       </header>
 
-      <div className="admin-page__actions settings-tabs" role="tablist" aria-label="Nhóm cài đặt">
+      <div className="form-tabs" role="tablist" aria-label="Nhóm cài đặt">
         {TABS.map((tab) => (
           <button
             key={tab.key}
             type="button"
             role="tab"
             aria-selected={activeTab === tab.key}
-            className={`button ${activeTab === tab.key ? "button--primary" : "button--ghost"}`}
+            className={`form-tab${activeTab === tab.key ? " is-active" : ""}`}
             onClick={() => setActiveTab(tab.key)}
           >
             {tab.label}
@@ -415,7 +415,8 @@ export function SettingsPage() {
               </button>
             </div>
             {testResults ? (
-              <table className="data-table">
+              <div className="admin-table-wrap">
+              <table className="admin-table">
                 <thead>
                   <tr>
                     <th>Kênh</th>
@@ -435,6 +436,7 @@ export function SettingsPage() {
                   ))}
                 </tbody>
               </table>
+              </div>
             ) : null}
           </div>
         </>

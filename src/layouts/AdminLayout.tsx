@@ -199,7 +199,7 @@ export function AdminLayout() {
     return <Navigate to="/admin/dang-nhap" replace state={{ from: location.pathname }} />;
   }
 
-  const { crumbs, label: pageLabel, group: groupLabel } = resolveBreadcrumb(location.pathname, visibleGroups);
+  const { crumbs } = resolveBreadcrumb(location.pathname, visibleGroups);
 
   const logout = async () => {
     try {
@@ -211,29 +211,72 @@ export function AdminLayout() {
     }
   };
 
+  const initials = admin.name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(-2)
+    .map((part) => part.charAt(0).toUpperCase())
+    .join("") || "A";
+
   return (
     <div className={`admin-shell ${sidebarOpen ? "is-sidebar-open" : ""} ${collapsed ? "is-sidebar-collapsed" : ""}`}>
-      {sidebarOpen ? <button type="button" className="admin-sidebar-overlay" aria-label="Đóng menu quản trị" tabIndex={-1} onClick={() => setSidebarOpen(false)} /> : null}
-      <aside className="admin-sidebar" id="admin-sidebar">
-        <div className="admin-sidebar__brand">
-          <Link to="/admin" title="Về bảng điều khiển">
-            <span className="admin-sidebar__mark" aria-hidden="true">S</span>
-            <strong>SGEN CMS</strong>
-            <small>Quản trị nội dung</small>
-          </Link>
-          <button type="button" onClick={() => setSidebarOpen(false)} aria-label="Đóng menu">
-            <X aria-hidden="true" />
-            <span className="admin-sidebar__close-label">Đóng</span>
+      <header className="admin-topbar">
+        <div className="admin-topbar__start">
+          <button
+            type="button"
+            className="admin-topbar__icon admin-topbar__menu"
+            onClick={() => setSidebarOpen((open) => !open)}
+            aria-label="Mở menu quản trị"
+            aria-expanded={sidebarOpen}
+            aria-controls="admin-sidebar"
+          >
+            <Menu aria-hidden="true" />
           </button>
+          <button
+            type="button"
+            className="admin-topbar__icon admin-topbar__collapse"
+            onClick={() => setCollapsed((value) => !value)}
+            aria-label={collapsed ? "Mở rộng menu" : "Thu gọn menu"}
+            title={collapsed ? "Mở rộng menu" : "Thu gọn menu"}
+            aria-pressed={collapsed}
+          >
+            {collapsed ? <PanelLeftOpen aria-hidden="true" /> : <PanelLeftClose aria-hidden="true" />}
+          </button>
+          <Link className="admin-topbar__brand" to="/admin" title="Về bảng điều khiển">
+            <span className="admin-topbar__mark" aria-hidden="true">S</span>
+            <span className="admin-topbar__wordmark">
+              <strong>SGEN CMS</strong>
+              <small>Quản trị nội dung</small>
+            </span>
+          </Link>
         </div>
 
+        <div className="admin-topbar__end">
+          <a className="admin-topbar__site" href="/" target="_blank" rel="noreferrer" title="Mở website trong tab mới">
+            <ExternalLink aria-hidden="true" /> <span>Xem website</span>
+          </a>
+          <div className="admin-topbar__user">
+            <span className="admin-topbar__avatar" aria-hidden="true">{initials}</span>
+            <span className="admin-topbar__who">
+              <strong>{admin.name}</strong>
+              <small>{admin.role === "admin" ? "Quản trị viên" : "Biên tập viên"}</small>
+            </span>
+          </div>
+          <button type="button" className="admin-topbar__logout" onClick={() => void logout()} title="Đăng xuất">
+            <LogOut aria-hidden="true" /> <span>Đăng xuất</span>
+          </button>
+        </div>
+      </header>
+
+      {sidebarOpen ? <button type="button" className="admin-sidebar-overlay" aria-label="Đóng menu quản trị" tabIndex={-1} onClick={() => setSidebarOpen(false)} /> : null}
+      <aside className="admin-sidebar" id="admin-sidebar">
         <div className="admin-sidebar__search">
           <Search aria-hidden="true" />
           <input
             type="search"
             value={navQuery}
             onChange={(event) => setNavQuery(event.target.value)}
-            placeholder="Tìm nhanh mục menu…"
+            placeholder="Tìm mục menu…"
             aria-label="Tìm nhanh mục menu quản trị"
           />
           {navQuery ? (
@@ -266,59 +309,11 @@ export function AdminLayout() {
             ))
           )}
         </nav>
-
-        <div className="admin-sidebar__footer">
-          <a href="/" target="_blank" rel="noreferrer" title="Xem website">
-            <ExternalLink aria-hidden="true" /> <span className="admin-sidebar__label">Xem website</span>
-          </a>
-        </div>
       </aside>
 
       <div className="admin-main">
-        <header className="admin-topbar">
-          <div className="admin-topbar__lead">
-            <button
-              type="button"
-              className="admin-topbar__menu"
-              onClick={() => setSidebarOpen((open) => !open)}
-              aria-label="Mở menu quản trị"
-              aria-expanded={sidebarOpen}
-              aria-controls="admin-sidebar"
-            >
-              <Menu aria-hidden="true" />
-            </button>
-            <button
-              type="button"
-              className="admin-topbar__collapse"
-              onClick={() => setCollapsed((value) => !value)}
-              aria-label={collapsed ? "Mở rộng menu" : "Thu gọn menu"}
-              title={collapsed ? "Mở rộng menu" : "Thu gọn menu"}
-              aria-pressed={collapsed}
-            >
-              {collapsed ? <PanelLeftOpen aria-hidden="true" /> : <PanelLeftClose aria-hidden="true" />}
-            </button>
-            <div className="admin-topbar__crumb">
-              <strong>{pageLabel}</strong>
-              {groupLabel ? <small>{groupLabel}</small> : null}
-            </div>
-          </div>
-
-          <div className="admin-topbar__user">
-            <a className="admin-topbar__site" href="/" target="_blank" rel="noreferrer">
-              <ExternalLink aria-hidden="true" /> <span>Mở website</span>
-            </a>
-            <span>
-              <strong>{admin.name}</strong>
-              <small>{admin.role === "admin" ? "Quản trị viên" : "Biên tập viên"} · {admin.email}</small>
-            </span>
-            <button type="button" className="button button--ghost" onClick={() => void logout()}>
-              <LogOut aria-hidden="true" /> Đăng xuất
-            </button>
-          </div>
-        </header>
-
         {admin.mustChangePassword ? (
-          <div className="admin-banner">
+          <div className="admin-banner admin-banner--warn">
             Bạn đang dùng mật khẩu tạm thời. Hãy đổi mật khẩu trong mục <Link to="/admin/tai-khoan">Tài khoản quản trị</Link>.
           </div>
         ) : null}

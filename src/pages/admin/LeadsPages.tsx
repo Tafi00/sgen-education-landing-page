@@ -291,7 +291,8 @@ export function LeadDetailPage() {
       <div className="admin-card">
         <h2>Dữ liệu tra cứu</h2>
         {payloadRows.length ? (
-          <table className="data-table">
+          <div className="admin-table-wrap">
+          <table className="admin-table">
             <thead>
               <tr>
                 <th>Trường</th>
@@ -307,6 +308,7 @@ export function LeadDetailPage() {
               ))}
             </tbody>
           </table>
+          </div>
         ) : (
           <p className="muted">Khách không gửi kèm dữ liệu tra cứu nào.</p>
         )}
@@ -327,7 +329,8 @@ export function LeadDetailPage() {
           <p className="muted">Lead chưa có báo cáo tra cứu nào.</p>
         ) : (
           <div className="data-table__scroll">
-            <table className="data-table">
+            <div className="admin-table-wrap">
+            <table className="admin-table">
               <thead>
                 <tr>
                   <th scope="col">Loại</th>
@@ -345,6 +348,7 @@ export function LeadDetailPage() {
                 ))}
               </tbody>
             </table>
+            </div>
           </div>
         )}
       </div>
@@ -353,7 +357,8 @@ export function LeadDetailPage() {
         <div className="admin-card">
           <h2>Đơn hàng liên quan</h2>
           <div className="data-table__scroll">
-            <table className="data-table">
+            <div className="admin-table-wrap">
+            <table className="admin-table">
               <thead>
                 <tr>
                   <th scope="col">Mã đơn</th>
@@ -379,6 +384,7 @@ export function LeadDetailPage() {
                 ))}
               </tbody>
             </table>
+            </div>
           </div>
         </div>
       ) : null}

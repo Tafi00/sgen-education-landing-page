@@ -202,7 +202,8 @@ export function AdminUsersPage() {
             <AlertTriangle aria-hidden="true" /> {errorMessage(usersQuery.error)}
           </p>
         ) : (
-          <table className="data-table">
+          <div className="admin-table-wrap">
+          <table className="admin-table">
             <thead>
               <tr>
                 <th>Tài khoản</th>
@@ -282,6 +283,7 @@ export function AdminUsersPage() {
               ) : null}
             </tbody>
           </table>
+          </div>
         )}
         <p className="admin-hint">
           <ShieldCheck aria-hidden="true" /> Quy tắc: không tự khoá/xoá chính mình và hệ thống luôn cần ít nhất một tài khoản quản trị viên.

@@ -95,7 +95,8 @@ export function LookupDetailPage() {
             <div className="admin-card">
               <strong>Dữ liệu đầu vào</strong>
               <div className="data-table__scroll">
-                <table className="data-table">
+                <div className="admin-table-wrap">
+                <table className="admin-table">
                   <tbody>
                     {Object.entries(item.inputs).map(([key, value]) => (
                       <tr key={key}>
@@ -105,6 +106,7 @@ export function LookupDetailPage() {
                     ))}
                   </tbody>
                 </table>
+                </div>
               </div>
             </div>
           ) : null}

@@ -35,7 +35,9 @@ export function AdminLoginPage() {
     retry: 0,
   });
 
-  const from = (location.state as { from?: string } | null)?.from ?? "/admin";
+  const requested = (location.state as { from?: string } | null)?.from;
+  // Chỉ quay lại đường dẫn quản trị hợp lệ; tránh vòng lặp về chính trang đăng nhập.
+  const from = requested && requested.startsWith("/admin") && !/^\/admin\/(login|dang-nhap)/.test(requested) ? requested : "/admin";
 
   if (meQuery.data?.admin) {
     return <Navigate to={from} replace />;
@@ -104,7 +106,7 @@ export function AdminLoginPage() {
               type={showPassword ? "text" : "password"}
               name="password"
               autoComplete="current-password"
-              placeholder="••••••••"
+              placeholder="Nhập mật khẩu"
               icon={<Lock aria-hidden="true" />}
               value={password}
               onChange={(event) => setPassword(event.target.value)}
@@ -129,14 +131,14 @@ export function AdminLoginPage() {
             </p>
           ) : null}
 
-          <button type="submit" className="button button--primary" disabled={submitting || !email || !password}>
+          <button type="submit" className="btn btn--primary admin-login-submit" disabled={submitting || !email || !password}>
             {submitting ? <Loader2 className="spin" aria-hidden="true" /> : <LogIn aria-hidden="true" />}
             {submitting ? "Đang đăng nhập…" : "Đăng nhập"}
           </button>
         </form>
 
         <p className="admin-login-hint">
-          <Info aria-hidden="true" /> Tài khoản đầu tiên tạo bằng lệnh <code>npm run create-admin</code>.
+          <Info aria-hidden="true" /> Quên mật khẩu? Liên hệ quản trị viên hệ thống để được đặt lại.
         </p>
       </section>
     </main>

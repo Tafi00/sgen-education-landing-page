@@ -466,7 +466,8 @@ export function MemberDetailPage() {
               <p className="muted">Thành viên chưa có quyền nội dung nào.</p>
             ) : (
               <div className="data-table__scroll">
-                <table className="data-table">
+                <div className="admin-table-wrap">
+                <table className="admin-table">
                   <thead>
                     <tr>
                       <th scope="col">Loại quyền</th>
@@ -504,6 +505,7 @@ export function MemberDetailPage() {
                     })}
                   </tbody>
                 </table>
+                </div>
               </div>
             )}
           </div>
@@ -552,7 +554,8 @@ export function MemberDetailPage() {
             <p className="muted">Chưa có đơn hàng nào khớp email {member.email}.</p>
           ) : (
             <div className="data-table__scroll">
-              <table className="data-table">
+              <div className="admin-table-wrap">
+              <table className="admin-table">
                 <thead>
                   <tr>
                     <th scope="col">Mã đơn</th>
@@ -578,6 +581,7 @@ export function MemberDetailPage() {
                   ))}
                 </tbody>
               </table>
+              </div>
             </div>
           )}
         </div>
@@ -598,7 +602,8 @@ export function MemberDetailPage() {
             <p className="muted">Thành viên chưa thực hiện tra cứu nào.</p>
           ) : (
             <div className="data-table__scroll">
-              <table className="data-table">
+              <div className="admin-table-wrap">
+              <table className="admin-table">
                 <thead>
                   <tr>
                     <th scope="col">Loại</th>
@@ -624,6 +629,7 @@ export function MemberDetailPage() {
                   ))}
                 </tbody>
               </table>
+              </div>
             </div>
           )}
         </div>
