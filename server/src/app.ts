@@ -98,7 +98,7 @@ export function createApp() {
     /** Mọi route công khai trả HTML đã gắn meta riêng để crawler đọc được ngay. */
     app.get(/^\/(?!api|uploads|sitemap.xml|robots.txt).*/, async (req, res, next) => {
       try {
-        const isAdminArea = req.path.startsWith("/admin") || req.path === "/tai-khoan";
+        const isAdminArea = req.path.startsWith("/admin") || req.path === "/tai-khoan" || req.path === "/ebook";
         if (isAdminArea) {
           res.type("html").send(injectSeoTags(indexHtml, { title: "Quản trị nội dung — SGEN", description: "", canonical: originFrom(req), ogImage: "", noindex: true }));
           return;

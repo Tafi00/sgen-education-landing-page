@@ -43,6 +43,9 @@ const ACTION_LABELS: Record<string, string> = {
   "user.create": "Tạo tài khoản",
   "user.update": "Cập nhật tài khoản",
   "user.delete": "Xoá tài khoản",
+  "ebook.generate": "Tạo mã ebook",
+  "ebook.update": "Cập nhật mã ebook",
+  "ebook.delete": "Xoá mã ebook",
 };
 
 const ACTION_VERBS: Record<string, string> = {

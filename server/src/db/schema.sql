@@ -348,3 +348,37 @@ CREATE INDEX IF NOT EXISTS "session_expire_idx" ON "session" ("expire");
 
 -- Cột audit dùng để lọc nhanh trên trang Nhật ký hoạt động.
 CREATE INDEX IF NOT EXISTS "audit_logs_document_idx" ON "audit_logs" ("documentId");
+
+-- Mã xuất ebook (demo 100 lượt / combo 3–100 ebook) và nhật ký mỗi lượt xuất file.
+CREATE TABLE IF NOT EXISTS "ebook_codes" (
+  "_id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  "code" text NOT NULL UNIQUE,
+  "plan" text NOT NULL,
+  "edition" text NOT NULL DEFAULT 'demo',
+  "quota" integer NOT NULL,
+  "used" integer NOT NULL DEFAULT 0,
+  "status" text NOT NULL DEFAULT 'active',
+  "holderName" text NOT NULL DEFAULT '',
+  "holderContact" text NOT NULL DEFAULT '',
+  "note" text NOT NULL DEFAULT '',
+  "batchId" text NOT NULL DEFAULT '',
+  "expiresAt" timestamptz,
+  "lastUsedAt" timestamptz,
+  "createdBy" uuid,
+  "createdAt" timestamptz NOT NULL DEFAULT now(),
+  "updatedAt" timestamptz NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS "ebook_codes_plan_created_idx" ON "ebook_codes" ("plan", "createdAt");
+CREATE INDEX IF NOT EXISTS "ebook_codes_batch_idx" ON "ebook_codes" ("batchId");
+
+CREATE TABLE IF NOT EXISTS "ebook_exports" (
+  "_id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  "codeId" uuid NOT NULL,
+  "edition" text NOT NULL DEFAULT 'demo',
+  "customerName" text NOT NULL DEFAULT '',
+  "birthDate" text NOT NULL DEFAULT '',
+  "ip" text NOT NULL DEFAULT '',
+  "createdAt" timestamptz NOT NULL DEFAULT now(),
+  "updatedAt" timestamptz NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS "ebook_exports_code_created_idx" ON "ebook_exports" ("codeId", "createdAt");

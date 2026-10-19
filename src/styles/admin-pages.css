@@ -1026,3 +1026,78 @@
     transition: none;
   }
 }
+
+/* ---------- Mã ebook ---------- */
+.admin-shell .admin-banner--info {
+  color: var(--a-info-text);
+  background: var(--a-info-bg);
+  border-color: #c7dcf7;
+}
+
+.admin-shell .ebook-code {
+  padding: 2px 6px;
+  color: var(--a-text);
+  background: var(--a-surface-3);
+  border-radius: 6px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.admin-shell .ebook-usage {
+  display: grid;
+  gap: 4px;
+  min-width: 90px;
+}
+
+.admin-shell .ebook-usage b {
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.admin-shell .ebook-usage i {
+  display: block;
+  height: 5px;
+  overflow: hidden;
+  background: var(--a-surface-3);
+  border-radius: 999px;
+}
+
+.admin-shell .ebook-usage i span {
+  display: block;
+  height: 100%;
+  background: var(--a-brand);
+  border-radius: 999px;
+}
+
+.admin-shell .ebook-link {
+  max-width: 360px;
+  overflow: hidden;
+  color: var(--a-text-2);
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-shell .ebook-detail {
+  width: min(100%, 640px);
+  max-height: 92vh;
+  overflow-y: auto;
+}
+
+.admin-shell .ebook-history {
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.admin-shell .ebook-history__title {
+  margin: 0 0 6px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.admin-shell .ebook-detail__delete {
+  margin-right: auto;
+}

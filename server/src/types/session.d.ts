@@ -10,5 +10,7 @@ declare module "express-session" {
     memberEmail?: string;
     memberName?: string;
     csrfToken?: string;
+    /** Mã ebook đang đăng nhập ở trang /ebook. */
+    ebookCodeId?: string;
   }
 }

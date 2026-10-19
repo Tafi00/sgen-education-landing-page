@@ -84,6 +84,36 @@ export const NotificationLog = new Model({
   },
 });
 
+export const EbookCode = new Model<EbookCodeDoc>({
+  table: "ebook_codes",
+  fields: {
+    code: { kind: "text" },
+    plan: { kind: "text" },
+    edition: { kind: "text" },
+    quota: { kind: "int" },
+    used: { kind: "int" },
+    status: { kind: "text" },
+    holderName: { kind: "text" },
+    holderContact: { kind: "text" },
+    note: { kind: "text" },
+    batchId: { kind: "text" },
+    expiresAt: { kind: "date" },
+    lastUsedAt: { kind: "date" },
+    createdBy: { kind: "uuid" },
+  },
+});
+
+export const EbookExport = new Model<EbookExportDoc>({
+  table: "ebook_exports",
+  fields: {
+    codeId: { kind: "uuid" },
+    edition: { kind: "text" },
+    customerName: { kind: "text" },
+    birthDate: { kind: "text" },
+    ip: { kind: "text" },
+  },
+});
+
 export const AuditLog = new Model<AuditLogDoc>({
   table: "audit_logs",
   fields: {
@@ -177,5 +207,32 @@ export type AuditLogDoc = Doc & {
   collectionName: string;
   documentId: string;
   diff: Record<string, unknown>;
+  createdAt: Date;
+};
+
+export type EbookCodeDoc = Doc & {
+  code: string;
+  plan: string;
+  edition: "demo" | "full";
+  quota: number;
+  used: number;
+  status: "active" | "disabled";
+  holderName: string;
+  holderContact: string;
+  note: string;
+  batchId: string;
+  expiresAt: Date | null;
+  lastUsedAt: Date | null;
+  createdBy: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export type EbookExportDoc = Doc & {
+  codeId: string;
+  edition: "demo" | "full";
+  customerName: string;
+  birthDate: string;
+  ip: string;
   createdAt: Date;
 };

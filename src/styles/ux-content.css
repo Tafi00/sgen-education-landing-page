@@ -778,3 +778,45 @@
     align-items: center;
   }
 }
+
+/* Trang xuất ebook bằng mã (/ebook). */
+.ux-member .ebook-meter {
+  height: 8px;
+  margin: 2px 0 14px;
+  overflow: hidden;
+  background: rgba(122, 60, 255, 0.16);
+  border-radius: 999px;
+}
+
+.ux-member .ebook-meter span {
+  display: block;
+  height: 100%;
+  background: var(--gradient-cta);
+  border-radius: 999px;
+  transition: width 0.3s ease;
+}
+
+.ux-member .ebook-leave {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+  color: inherit;
+  background: transparent;
+  border: 0;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-decoration: underline;
+  opacity: 0.8;
+  cursor: pointer;
+}
+
+.ux-member .ebook-leave:hover {
+  opacity: 1;
+}
+
+.ux-member .ebook-leave svg {
+  width: 15px;
+  height: 15px;
+}

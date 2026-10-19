@@ -24,6 +24,7 @@ import { asyncHandler } from "../../middleware/errors.js";
 import { hashPassword, requireAdmin } from "../../middleware/auth.js";
 import { adminAuthAdminRouter } from "./auth.js";
 import { adminDashboardRouter } from "./dashboard.js";
+import { adminEbookRouter } from "./ebook.js";
 import { adminLeadRouter } from "./leads.js";
 import { adminLookupRouter, adminMemberActionRouter } from "./lookups.js";
 import { adminMediaRouter } from "./media.js";
@@ -60,6 +61,7 @@ export const adminApiRouter = Router();
 adminApiRouter.use("/auth", adminAuthAdminRouter);
 adminApiRouter.use("/dashboard", adminDashboardRouter);
 adminApiRouter.use("/settings", adminSettingsRouter);
+adminApiRouter.use("/ebook-codes", adminEbookRouter);
 
 adminApiRouter.use("/media", adminMediaRouter);
 adminApiRouter.use(

@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { publicContentRouter } from "./content.js";
+import { publicEbookRouter } from "./ebook.js";
 import { publicLeadRouter } from "./leads.js";
 import { publicLookupRouter, publicQuizRouter } from "./lookups.js";
 import { publicMemberRouter } from "./members.js";
@@ -14,6 +15,7 @@ publicApiRouter.use("/lookups", publicLookupRouter);
 publicApiRouter.use("/leads", publicLeadRouter);
 publicApiRouter.use("/members", publicMemberRouter);
 publicApiRouter.use("/orders", publicOrderRouter);
+publicApiRouter.use("/ebook", publicEbookRouter);
 
 publicApiRouter.get("/sim-phong-thuy", async (req, res) => {
   try {

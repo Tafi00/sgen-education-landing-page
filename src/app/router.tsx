@@ -35,6 +35,7 @@ const PublicFreeToolDetailPage = lazy(() => import("../pages/public/FreeToolsPag
 const PublicBlogListPage = lazy(() => import("../pages/public/BlogPages").then((module) => ({ default: module.BlogListPage })));
 const PublicBlogCategoryPage = lazy(() => import("../pages/public/BlogPages").then((module) => ({ default: module.BlogCategoryPage })));
 const PublicBlogDetailPage = lazy(() => import("../pages/public/BlogPages").then((module) => ({ default: module.BlogDetailPage })));
+const PublicEbookPage = lazy(() => import("../pages/public/EbookPage").then((module) => ({ default: module.EbookPage })));
 const PublicMemberLoginPage = lazy(() => import("../pages/public/MemberPages").then((module) => ({ default: module.MemberLoginPage })));
 const PublicMemberRegisterPage = lazy(() => import("../pages/public/MemberPages").then((module) => ({ default: module.MemberRegisterPage })));
 const PublicMemberAccountPage = lazy(() => import("../pages/public/MemberPages").then((module) => ({ default: module.MemberAccountPage })));
@@ -69,6 +70,7 @@ const A_AdminLoginPage_AdminLoginPage = lazy(() => import("../pages/admin/AdminL
 const A_DashboardPage_DashboardPage = lazy(() => import("../pages/admin/DashboardPage").then((module) => ({ default: module.DashboardPage })));
 const A_MediaLibraryPage_MediaLibraryPage = lazy(() => import("../pages/admin/MediaLibraryPage").then((module) => ({ default: module.MediaLibraryPage })));
 const A_SettingsPage_SettingsPage = lazy(() => import("../pages/admin/SettingsPage").then((module) => ({ default: module.SettingsPage })));
+const A_EbookCodesPage = lazy(() => import("../pages/admin/EbookCodesPage").then((module) => ({ default: module.EbookCodesPage })));
 const A_UsersPage_AdminUsersPage = lazy(() => import("../pages/admin/UsersPage").then((module) => ({ default: module.AdminUsersPage })));
 const A_LeadsPages_LeadsListPage = lazy(() => import("../pages/admin/LeadsPages").then((module) => ({ default: module.LeadsListPage })));
 const A_LeadsPages_LeadDetailPage = lazy(() => import("../pages/admin/LeadsPages").then((module) => ({ default: module.LeadDetailPage })));
@@ -125,6 +127,7 @@ export const router = createBrowserRouter([
           { path: "blog/kien-thuc", element: <PublicBlogCategoryPage />, handle: handle("Kiến thức") },
           { path: "blog/:slug", element: <PublicBlogDetailPage />, handle: handle("Bài viết") },
           { path: "dang-nhap", element: <PublicMemberLoginPage />, handle: handle("Đăng nhập") },
+          { path: "ebook", element: <PublicEbookPage />, handle: handle("Xuất ebook bằng mã") },
           { path: "dang-ky", element: <PublicMemberRegisterPage />, handle: handle("Đăng ký tài khoản") },
           { path: "tai-khoan", element: <PublicMemberAccountPage />, handle: handle("Tài khoản của tôi") },
           { path: "tra-cuu/ket-qua/:id", element: <LookupResultPage />, handle: handle("Kết quả tra cứu") },
@@ -200,6 +203,7 @@ export const router = createBrowserRouter([
       { path: "thong-bao", element: <A_ResourcePages_NotificationsListPage />, handle: handle("Lịch sử thông báo") },
       { path: "cai-dat", element: <A_SettingsPage_SettingsPage />, handle: handle("Cài đặt website") },
       { path: "tai-khoan", element: <A_UsersPage_AdminUsersPage />, handle: handle("Tài khoản quản trị") },
+      { path: "ma-ebook", element: <A_EbookCodesPage />, handle: handle("Mã ebook") },
       { path: "*", element: <NotFoundPage />, handle: handle("Không tìm thấy trang quản trị") },
     ],
   },
