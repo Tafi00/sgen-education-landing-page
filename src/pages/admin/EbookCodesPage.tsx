@@ -274,7 +274,7 @@ export function EbookCodesPage() {
 
       <div className="admin-banner admin-banner--info">
         <Info aria-hidden="true" />
-        Khi xuất, người dùng chọn bản “Demo 3 chỉ số” hoặc “Đầy đủ” (mã demo chỉ chọn được bản Demo). Bản đầy đủ hiện dùng mẫu 18 trang với đủ mọi chỉ số cho tới khi có tệp mẫu ebook đầy đủ. Hồ sơ khách hàng và lịch sử xuất xem ở mục Khách hàng.
+        Khi xuất, người dùng chọn bản “Demo 3 chỉ số” hoặc “Đầy đủ” (mã demo chỉ chọn được bản Demo). Cả hai bản hiện dùng mẫu 18 trang (luận giải chi tiết 3 chỉ số Sứ mệnh, Đường đời, Đam mê, trang tổng hợp đầy đủ) cho tới khi có tệp mẫu ebook đầy đủ. Hồ sơ khách hàng và lịch sử xuất xem ở mục Khách hàng.
       </div>
 
       <form className="admin-card" onSubmit={submitGenerate} noValidate>

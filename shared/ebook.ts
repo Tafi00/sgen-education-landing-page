@@ -45,8 +45,8 @@ export const EBOOK_EDITION_LABEL: Record<EbookEdition, string> = {
 
 /** Tên hai lựa chọn hiển thị ở trang /ebook. */
 export const EBOOK_EDITION_CHOICES: Record<EbookEdition, { title: string; description: string }> = {
-  demo: { title: "Bản ebook TSH Demo 3 chỉ số", description: "Trang tổng hợp chỉ hiện 3 chỉ số: Sứ mệnh, Đường đời, Đam mê." },
-  full: { title: "Bản ebook TSH đầy đủ", description: "Đầy đủ các chỉ số và biểu đồ trong báo cáo Thần số học." },
+  demo: { title: "Bản ebook TSH Demo 3 chỉ số", description: "Ebook chi tiết gồm 3 chỉ số: Sứ mệnh, Đường đời, Đam mê." },
+  full: { title: "Bản ebook TSH đầy đủ", description: "Bản đầy đủ của báo cáo Thần số học." },
 };
 
 /** Mã demo chỉ xuất được bản Demo; mã combo (bản đầy đủ) xuất được cả hai bản. */

@@ -80,7 +80,7 @@ Khung quản trị theo chuẩn dashboard: sidebar nhóm chức năng có **tìm
 ## Xuất ebook và hồ sơ khách hàng
 
 - Nút **Tải PDF** ở kết quả tra cứu chuyển sang `/ebook` (không còn tải trực tiếp). Hồ sơ vừa tra cứu (họ tên, ngày sinh, số điện thoại) được giữ trong `sessionStorage` qua bước đăng nhập bằng mã.
-- Ở `/ebook` người dùng chọn **Bản ebook TSH Demo 3 chỉ số** (Sứ mệnh, Đường đời, Đam mê) hoặc **Bản ebook TSH đầy đủ**. Mã demo chỉ xuất được bản Demo; mã combo xuất được cả hai. Mỗi lần xuất thành công trừ 1 lượt.
+- Ở `/ebook` người dùng chọn **Bản ebook TSH Demo 3 chỉ số** hoặc **Bản ebook TSH đầy đủ**. Mã demo chỉ xuất được bản Demo; mã combo xuất được cả hai. Mỗi lần xuất thành công trừ 1 lượt. Hiện cả hai bản dùng mẫu 18 trang (luận giải chi tiết Sứ mệnh, Đường đời, Đam mê; trang tổng hợp đầy đủ); bản Demo chỉ khác tên file. Khách yêu cầu khóa bớt trang tổng hợp của bản Demo thì bật `DEMO_LOCKS_SUMMARY` trong `numerologyPdf.ts`.
 - **Số điện thoại khách hàng là bắt buộc** (kiểm tra ở giao diện và máy chủ, `shared/phone.ts`), được in vào dòng "ĐIỆN THOẠI" của trang Thông tin cá nhân và lưu dạng chuỗi (giữ số 0 đầu, mã quốc gia) ở bảng `customers` — duy nhất theo (họ tên, ngày sinh, số điện thoại) nên xuất lại không sinh hồ sơ trùng.
 - `ebook_exports` ghi mỗi lượt xuất: hồ sơ khách, loại ebook, thời điểm và trạng thái (`success` chỉ khi file tạo xong; lỗi tạo file ghi `failed` và hoàn lượt).
 - `/admin/khach-hang` (chỉ `admin`): tìm theo họ tên/số điện thoại, lọc theo ngày/tháng sinh và loại ebook, xem lịch sử xuất. Dữ liệu này là nền cho tính năng nhắn chúc mừng sinh nhật sau này (kênh, nội dung, lịch gửi sẽ làm ở yêu cầu riêng).

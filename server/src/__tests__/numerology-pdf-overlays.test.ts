@@ -4,7 +4,7 @@ import * as fontkit from "fontkit";
 import { PDFDocument, type PDFFont } from "pdf-lib";
 import { beforeAll, describe, expect, it } from "vitest";
 import { calculateFullNumerologyReport } from "../../../shared/numerology";
-import { DEMO_METRIC_KEYS, SUMMARY_CELL_CENTERS, SUMMARY_CELL_INNER_WIDTH, summaryOverlays, type Overlay, type OverlayFonts } from "../services/numerologyPdf";
+import { DEMO_LOCKS_SUMMARY, DEMO_METRIC_KEYS, SUMMARY_CELL_CENTERS, SUMMARY_CELL_INNER_WIDTH, summaryOverlays, type Overlay, type OverlayFonts } from "../services/numerologyPdf";
 
 const ASSET_DIR = path.resolve(process.cwd(), "assets/numerology-pdf");
 const ROW_Y = { inner: 677, outer: 580, career: 480 } as const;
@@ -120,8 +120,16 @@ describe("trang tổng hợp ebook — không chồng số, không tràn ô", ()
 });
 
 describe("bản demo 3 chỉ số", () => {
-  it("chỉ hiện Sứ mệnh, Đường đời, Đam mê; không vẽ các ô và biểu đồ khác", () => {
-    const { report, overlays } = build("PHẠM THANH TÙNG", "2010-09-02", "demo");
+  it("trang tổng hợp vẫn hiện đầy đủ như bản đầy đủ (khách yêu cầu 21/10/2026)", () => {
+    const demo = build("CAO MINH VI", "1992-09-06", "demo").overlays;
+    const full = build("CAO MINH VI", "1992-09-06", "full").overlays;
+    expect(demo).toEqual(full);
+    expect(demo.length).toBeGreaterThan(30);
+  });
+
+  it("khi bật khóa trang tổng hợp: chỉ hiện Sứ mệnh, Đường đời, Đam mê, các ô và biểu đồ khác để trống", () => {
+    const report = calculateFullNumerologyReport("PHẠM THANH TÙNG", "2010-09-02", 2026);
+    const overlays = summaryOverlays(report, report.displayName.toUpperCase(), report.birthDateLabel, fonts, "demo", true);
     const career = report.sections.find((section) => section.id === "dinh-huong-su-nghiep")!;
     const wanted = DEMO_METRIC_KEYS.map((key) => career.metrics.find((metric) => metric.key === key)!.value);
     expect(rowItems(overlays, ROW_Y.inner)).toHaveLength(0);
@@ -131,7 +139,11 @@ describe("bản demo 3 chỉ số", () => {
     expect(overlays).toHaveLength(2 + 3);
   });
 
-  it("bản đầy đủ vẫn có đủ các ô và biểu đồ", () => {
+  it("mặc định không khóa", () => {
+    expect(DEMO_LOCKS_SUMMARY).toBe(false);
+  });
+
+  it("bản đầy đủ có đủ các ô và biểu đồ", () => {
     const { overlays } = build("PHẠM THANH TÙNG", "2010-09-02", "full");
     expect(rowItems(overlays, ROW_Y.inner).length).toBeGreaterThanOrEqual(5);
     expect(rowItems(overlays, ROW_Y.outer).length).toBeGreaterThanOrEqual(4);

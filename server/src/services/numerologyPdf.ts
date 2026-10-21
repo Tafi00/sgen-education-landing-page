@@ -31,12 +31,22 @@ export type OverlayFonts = Record<Overlay["font"], Pick<PDFFont, "widthOfTextAtS
 export type NumerologyPdfOptions = {
   /** Số điện thoại của KHÁCH HÀNG trong hồ sơ (đã chuẩn hoá), điền vào dòng "ĐIỆN THOẠI" trang Thông tin cá nhân. */
   phone?: string;
-  /** `demo` chỉ hiện 3 chỉ số (Sứ mệnh, Đường đời, Đam mê) ở trang tổng hợp; `full` hiện đủ. */
+  /**
+   * `demo`: ebook chi tiết chỉ có 3 chỉ số (Sứ mệnh, Đường đời, Đam mê) — chính là mẫu 18 trang đang có trên web.
+   * Trang tổng hợp của bản demo VẪN hiện đầy đủ (khách yêu cầu); muốn khóa bớt thì bật `DEMO_LOCKS_SUMMARY`.
+   */
   edition?: EbookEdition;
 };
 
-/** Ba chỉ số của bản Demo (đã được chủ sản phẩm xác nhận). */
+/** Ba chỉ số có trang luận giải chi tiết trong bản Demo (Sứ mệnh, Đường đời, Đam mê). */
 export const DEMO_METRIC_KEYS = ["destiny", "lifePath", "passion"] as const;
+
+/**
+ * Khách (anh Vĩnh, 21/10/2026): trang tổng hợp của bản demo vẫn hiện đầy đủ, chỉ file ebook chi tiết có 3 chỉ số;
+ * "sau này nếu cần khóa bớt tính năng xuất hiện trong trang tổng hợp" sẽ nhờ sau. Đổi thành `true` để bản demo chỉ
+ * hiện `DEMO_METRIC_KEYS` ở trang tổng hợp (các ô và biểu đồ khác để trống).
+ */
+export const DEMO_LOCKS_SUMMARY = false;
 
 /** Tâm 6 cột ô chỉ số của trang tổng hợp (đo từ file mẫu `summary.pdf`, đơn vị pt) và bề rộng chữ tối đa trong ô. */
 export const SUMMARY_CELL_CENTERS = [106, 189.5, 272.5, 356, 438.5, 520] as const;
@@ -142,11 +152,19 @@ const PHONE_LINE_Y = 246;
  *   để không tràn sang ô bên cạnh.
  * - Giá trị trong khung "Thế giới bên trong / bên ngoài / Phát triển bản thân" (trừ Nội tâm, Tương tác) dùng màu hồng
  *   đồng nhất với hai chỉ số ở Nguồn lực hỗ trợ; các chỉ số còn lại giữ màu đỏ.
- * - Bản `demo` chỉ hiện Sứ mệnh, Đường đời, Đam mê (các ô khác và các biểu đồ để trống).
+ * - Bản `demo` hiện đầy đủ như bản đầy đủ; chỉ khi `DEMO_LOCKS_SUMMARY` bật mới giới hạn ở Sứ mệnh, Đường đời, Đam mê
+ *   (các ô khác và các biểu đồ để trống).
  */
-export function summaryOverlays(report: NumerologyFullReport, name: string, birth: string, fonts: OverlayFonts, edition: EbookEdition = "full"): Overlay[] {
+export function summaryOverlays(
+  report: NumerologyFullReport,
+  name: string,
+  birth: string,
+  fonts: OverlayFonts,
+  edition: EbookEdition = "full",
+  lockDemoSummary: boolean = DEMO_LOCKS_SUMMARY,
+): Overlay[] {
   const o: Overlay[] = [];
-  const demo = edition === "demo";
+  const demo = edition === "demo" && lockDemoSummary;
   const put = (text: string, x: number, y: number, size = 22, font: Overlay["font"] = "semi", color = RED, cell?: number) => {
     if (!text) return;
     if (cell !== undefined) {
@@ -226,7 +244,7 @@ export function summaryOverlays(report: NumerologyFullReport, name: string, birt
   if (keep("lifePath")) put(lifePath, 265 + wide(lifePath), 480, 22, "semi", RED, 2);
   if (keep("passion")) put(passion, 515 + comma(passion) + (passion.length > 7 ? 5 : 0), 480, passion.length > 7 ? 18 : 22, "semi", RED, 5);
 
-  // Bản demo: chỉ 3 chỉ số ở trên; biểu đồ và Nguồn lực hỗ trợ (cần các chỉ số khác) để trống.
+  // Khi khóa trang tổng hợp của bản demo: chỉ 3 chỉ số ở trên; biểu đồ và Nguồn lực hỗ trợ (cần các chỉ số khác) để trống.
   if (demo) return o;
 
   // Biểu đồ chặng đường đời: 3 gốc + 4 đỉnh + khoảng tuổi
