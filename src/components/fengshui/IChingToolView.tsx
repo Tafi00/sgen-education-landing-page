@@ -15,7 +15,8 @@ import {
   ShieldCheck,
   type LucideIcon,
 } from "lucide-react";
-import { getHexagram, type HexagramResult } from "../../../shared/menh-thu/metaphysics";
+import type { HexagramResult } from "../../../shared/menh-thu/metaphysics";
+import { castHexagram, castMomentVN, type HiddenMovingLine } from "../../../shared/menh-thu/hidden-moving";
 import { ICHING_DOCUMENT_READINGS } from "./iching-document-readings";
 import { IChingReadingList } from "./IChingReadingList";
 import { LucHaoSheet } from "./LucHaoSheet";
@@ -37,6 +38,18 @@ const APPENDIX_PDF = {
   detail: "Tệp PDF · 133 trang · khoảng 4,8 MB",
 };
 
+/** Văn khấn khi gieo quẻ — chép nguyên văn tài liệu SGEN (trang 26), giữ dấu, thứ tự câu và cách xuống dòng. */
+const PRAYER = {
+  title: "VĂN KHẤN KHI GIEO QUẺ KINH DỊCH",
+  lead: "Chấp tay, thành tâm hướng về điều đang suy xét, kính cẩn khấn rằng:",
+  lines: [
+    "“Thiên hà ngôn tai. Khấu chi tất ứng. Thần chi, cách hề.",
+    "Cảm nhi toại thông. Kim, mỗ hữu tang. Hữu sự quan tâm.",
+    "Bất tri hưu cữu. Võng thích khuyết nghi. Duy thần duy linh.",
+    "Nhược khả nhược phủ. Vọng thuỳ chiếm báo”",
+  ],
+} as const;
+
 const CAST_PURPOSES = [
   { key: "timing", label: "Thời điểm", scope: "Tiến, lui hay chờ", prompt: "Ví dụ: Đây đã phải thời điểm thích hợp để bắt đầu kế hoạch chưa?", focus: "độ chín của thời cơ và nhịp tiến–lui", counsel: "quan sát điều kiện đã đủ hay mới chỉ có ý muốn", caution: "phân biệt sự trì hoãn do sợ hãi với một khoảng chờ thực sự cần thiết" },
   { key: "love", label: "Tình cảm", scope: "Cảm xúc & tương hợp", prompt: "Ví dụ: Mối quan hệ này cần điều gì để có thể tiến xa hơn?", focus: "sự tương ứng giữa tình cảm, ranh giới và mức độ thành thật", counsel: "đối chiếu lời nói với hành động của cả hai phía", caution: "không dùng quẻ để đoán thay suy nghĩ hay ý chí của người khác" },
@@ -54,21 +67,26 @@ function buildIChingAiPrompt({
   purpose,
   lines,
   hexagram,
+  hidden,
 }: {
   question: string;
   purpose: (typeof CAST_PURPOSES)[number];
   lines: number[];
   hexagram: HexagramResult;
+  hidden: HiddenMovingLine | null;
 }) {
   const lineSummary = lines.map((value, index) => {
     const polarity = value === 7 || value === 9 ? "Dương" : "Âm";
-    const movement = value === 6 || value === 9 ? " · động" : " · tĩnh";
-    return `Hào ${index + 1}: ${value} · ${polarity}${movement}`;
+    const movement = hidden?.position === index + 1 ? ` · ám động (Thiên Can ${hidden.stem} của ngày gieo quẻ)` : value === 6 || value === 9 ? " · động" : " · tĩnh";
+    return `Hào ${index + 1}: ${hidden?.position === index + 1 ? (polarity === "Dương" ? 7 : 8) : value} · ${polarity}${movement}`;
   }).join("\n");
   const movingSummary = hexagram.movingDetails.length > 0
-    ? hexagram.movingDetails.map((line) =>
-      `Hào ${line.position} (${line.polarity}, ${line.change}): ${line.guidance} Trọng điểm: ${line.focus}.`,
-    ).join("\n")
+    ? [
+      ...(hidden ? [hidden.notice] : []),
+      ...hexagram.movingDetails.map((line) =>
+        `Hào ${line.position} (${line.polarity}, ${line.change}): ${line.guidance} Trọng điểm: ${line.focus}.`,
+      ),
+    ].join("\n")
     : "Không có hào động.";
   const primaryReading = ICHING_DOCUMENT_READINGS[hexagram.primary.number];
   const changedReading = ICHING_DOCUMENT_READINGS[hexagram.changed.number];
@@ -150,7 +168,7 @@ function MethodNote({
 }
 
 /**
- * Công cụ gieo quẻ Kinh Dịch bằng ba đồng xu — port trình bày từ Mệnh thư,
+ * Công cụ gieo quẻ Kinh Dịch trực tuyến — port trình bày từ Mệnh thư,
  * giữ nguyên thuật toán lập quẻ (getHexagram) và nguồn ngẫu nhiên bảo mật.
  */
 export function IChingToolView({ defaultQuestion = "", compact = false }: FengShuiToolViewProps) {
@@ -168,30 +186,41 @@ export function IChingToolView({ defaultQuestion = "", compact = false }: FengSh
   const flashTimer = useRef<number | undefined>(undefined);
   const resultRef = useRef<HTMLDivElement>(null);
 
-  const hexagram = useMemo(() => coinLines.length === 6 ? getHexagram(coinLines) : null, [coinLines]);
+  /**
+   * Quẻ dựng từ sáu hào gieo, tại thời điểm gieo xong (giờ Việt Nam). Không có hào động thì áp dụng hào Ám động
+   * theo Thiên Can của ngày gieo; đã có hào động thì giữ nguyên quy tắc cũ.
+   */
+  const cast = useMemo(() => {
+    if (coinLines.length !== 6) return null;
+    const moment = castMomentVN();
+    return { moment, ...castHexagram(coinLines, moment) };
+  }, [coinLines]);
+  const hexagram = cast?.hexagram ?? null;
+  const hidden = cast?.hidden ?? null;
+  /** Sáu hào dùng để vẽ và luận: trùng kết quả gieo, trừ hào Ám động đã được đổi thành hào động. */
+  const castLines = cast?.lines ?? coinLines;
   /** Lá quẻ Lục Hào an theo thời điểm gieo (Can Chi ngày/tháng quyết định Lục Thú, Vượng Suy, Quý Thần). */
   const lucHao = useMemo(() => {
-    if (coinLines.length !== 6) return null;
-    const now = new Date();
-    const pad = (value: number) => String(value).padStart(2, "0");
-    const movingLines = coinLines.flatMap((value, index) => (value === 6 || value === 9 ? [index + 1] : []));
+    if (!cast) return null;
+    const [year, month, day] = cast.moment.solarDate.split("-");
     return {
-      movingLines,
-      castAt: `${pad(now.getDate())}/${pad(now.getMonth() + 1)}/${now.getFullYear()} ${pad(now.getHours())}:${pad(now.getMinutes())}`,
+      movingLines: cast.movingLines,
+      castAt: `${day}/${month}/${year} ${cast.moment.time}`,
       data: buildLucHaoSheet({
-        lines: coinLines.map((value) => (value === 7 || value === 9 ? 1 : 0)),
-        movingLines,
-        solarDate: `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`,
-        time: `${pad(now.getHours())}:${pad(now.getMinutes())}`,
+        lines: cast.lines.map((value) => (value === 7 || value === 9 ? 1 : 0)),
+        movingLines: cast.movingLines,
+        solarDate: cast.moment.solarDate,
+        time: cast.moment.time,
       }),
     };
-  }, [coinLines]);
-  const aiPrompt = useMemo(() => hexagram ? buildIChingAiPrompt({
+  }, [cast]);
+  const aiPrompt = useMemo(() => cast ? buildIChingAiPrompt({
     question,
     purpose: activeCastPurpose,
-    lines: coinLines,
-    hexagram,
-  }) : "", [activeCastPurpose, coinLines, hexagram, question]);
+    lines: cast.lines,
+    hexagram: cast.hexagram,
+    hidden: cast.hidden,
+  }) : "", [activeCastPurpose, cast, question]);
 
   useEffect(() => {
     if (coinLines.length === 6 && resultRef.current) {
@@ -260,8 +289,8 @@ export function IChingToolView({ defaultQuestion = "", compact = false }: FengSh
         <ToolIntro
           icon={Coins}
           title="Gieo quẻ Kinh Dịch"
-          description="Giữ tâm ý nhất quán và tung ba đồng xu đúng sáu lần. Mỗi lần tung lập một hào từ dưới lên; đủ sáu hào hệ thống mới mở quẻ chủ, nhận diện hào động và an quẻ biến."
-          highlights={["Lập hào từ dưới lên", "Lưu dấu 3 mặt xu mỗi lần", "Chỉ luận khi đủ 6 hào"]}
+          description="Giữ tâm ý nhất quán và gieo đúng sáu lần. Mỗi lần gieo lập một hào từ dưới lên; đủ sáu hào hệ thống mới mở quẻ chủ, nhận diện hào động và an quẻ biến."
+          highlights={["Lập hào từ dưới lên", "Lưu kết quả từng lần gieo", "Chỉ luận khi đủ 6 hào"]}
         />
       )}
       <div className="iching-workspace">
@@ -271,17 +300,21 @@ export function IChingToolView({ defaultQuestion = "", compact = false }: FengSh
               <legend>Chọn chủ đề</legend>
               <div>{CAST_PURPOSES.map((purpose) => <button type="button" key={purpose.key} className={castPurpose === purpose.key ? "is-selected" : ""} disabled={coinLines.length > 0 || tossing} onClick={() => setCastPurpose(purpose.key)}>{purpose.label}</button>)}</div>
             </fieldset>
+            <section className="iching-prayer" aria-labelledby="iching-prayer-title">
+              <h2 id="iching-prayer-title">{PRAYER.title}</h2>
+              <p className="iching-prayer__lead">{PRAYER.lead}</p>
+              <blockquote className="iching-prayer__text">
+                {PRAYER.lines.map((line) => <p key={line}>{line}</p>)}
+              </blockquote>
+            </section>
             <div className="question-field">
               <div className="question-label"><label htmlFor="question">Điều bạn đang suy xét <span>không bắt buộc</span></label><small>{question.length}/180</small></div>
               <textarea id="question" value={question} maxLength={180} onChange={(event) => setQuestion(event.target.value)} placeholder={activeCastPurpose.prompt} rows={2} />
             </div>
           </div>
           <div className="casting-instruction">
-            <strong>Tung 3 đồng xu để lập hào</strong>
-            <div className="coin-key" aria-label="Quy ước hai mặt đồng xu">
-              <span><i className="mini-coin is-heads">乾</i><b>Mặt ngửa</b><small>2 điểm</small></span>
-              <span><i className="mini-coin is-tails">坤</i><b>Mặt sấp</b><small>3 điểm</small></span>
-            </div>
+            <strong>Gieo lần lượt sáu hào</strong>
+            <span>Sau khi đã đọc văn khấn, giữ tâm hướng về điều đang suy xét rồi bấm gieo từng hào, từ hào 1 ở dưới lên hào 6 ở trên.</span>
           </div>
 
           <div className="casting-ledger" aria-live="polite" aria-label="Sáu hào của quẻ">
@@ -290,12 +323,14 @@ export function IChingToolView({ defaultQuestion = "", compact = false }: FengSh
               const faces = coinHistory[lineNumber - 1];
               const yang = value === 7 || value === 9;
               const moving = value === 6 || value === 9;
+              const isHidden = hidden?.position === lineNumber;
               return (
-                <div className={`casting-row ${value ? "is-revealed" : ""} ${moving ? "is-moving" : ""}`} key={lineNumber}>
+                <div className={`casting-row ${value ? "is-revealed" : ""} ${moving || isHidden ? "is-moving" : ""}`} key={lineNumber}>
                   <span>Hào {lineNumber}</span>
                   <div className={`casting-line ${yang ? "is-yang" : "is-yin"} ${!value ? "is-empty" : ""}`}>
                     {yang ? <i /> : <><i /><i /></>}
                     {moving && <b>{value === 9 ? "○" : "×"}</b>}
+                    {isHidden && <b title={`Hào Ám động · Thiên Can ${hidden.stem}`}>◎</b>}
                   </div>
                   <div className="casting-coins">
                     {faces ? faces.map((heads, index) => <i className={`mini-coin ${heads ? "is-heads" : "is-tails"}`} key={`${lineNumber}-${index}`}>{heads ? "乾" : "坤"}</i>) : [0, 1, 2].map((index) => <i className="mini-coin is-empty" key={`${lineNumber}-${index}`} />)}
@@ -313,20 +348,21 @@ export function IChingToolView({ defaultQuestion = "", compact = false }: FengSh
               <div className="iching-result-intro">
                 <small>Kết quả gieo quẻ · {activeCastPurpose.label}</small>
                 <h3>Quẻ chủ và Quẻ biến</h3>
-                <p>{hexagram.moving.length ? `Có ${hexagram.moving.length} hào động: ${hexagram.moving.join(", ")}. Các hào này đổi âm dương để thành quẻ biến.` : "Không có hào động. Quẻ biến giữ nguyên sáu hào của quẻ chủ."}</p>
+                <p>{hidden ? hidden.notice : `Có ${hexagram.moving.length} hào động: ${hexagram.moving.join(", ")}. Các hào này đổi âm dương để thành quẻ biến.`}</p>
               </div>
               {(() => {
                 const primaryReading = ICHING_DOCUMENT_READINGS[hexagram.primary.number];
                 const changedReading = ICHING_DOCUMENT_READINGS[hexagram.changed.number];
                 const renderLine = (index: number, changed: boolean) => {
-                  const original = coinLines[index];
+                  const original = castLines[index];
                   const value = changed ? (original === 6 ? 7 : original === 9 ? 8 : original) : original;
                   const yang = value === 7 || value === 9;
                   const moving = original === 6 || original === 9;
+                  const isHidden = hidden?.position === index + 1;
                   return (
-                    <span className={`iching-diagram-line ${moving ? "is-moving" : ""}`} key={`${changed ? "b" : "c"}-${index}`}>
+                    <span className={`iching-diagram-line ${moving ? "is-moving" : ""} ${isHidden ? "is-hidden" : ""}`} key={`${changed ? "b" : "c"}-${index}`}>
                       <i className={yang ? "is-yang" : "is-yin"}>{yang ? <em /> : <><em /><em /></>}</i>
-                      <small>{moving ? (original === 9 ? "○" : "×") : ""}</small>
+                      <small title={isHidden ? `Hào Ám động · Thiên Can ${hidden.stem}` : undefined}>{isHidden ? "◎" : moving ? (original === 9 ? "○" : "×") : ""}</small>
                     </span>
                   );
                 };
@@ -339,13 +375,13 @@ export function IChingToolView({ defaultQuestion = "", compact = false }: FengSh
                         <span className="iching-diagram__trigrams">
                           <b>{hexagram.primary.upper.name} → {hexagram.changed.upper.name}</b>
                           <b>{hexagram.primary.lower.name} → {hexagram.changed.lower.name}</b>
-                          <small>{hexagram.moving.length ? `Động hào ${hexagram.moving.join(", ")}` : "Quẻ tĩnh · không hào động"}</small>
+                          <small>{hidden ? `Ám động hào ${hidden.position} · Thiên Can ${hidden.stem}` : `Động hào ${hexagram.moving.join(", ")}`}</small>
                         </span>
                         <strong>Quẻ Biến</strong>
                         <span>Hào</span>
                       </div>
                       {[5, 4, 3, 2, 1, 0].map((index) => {
-                        const moving = coinLines[index] === 6 || coinLines[index] === 9;
+                        const moving = castLines[index] === 6 || castLines[index] === 9;
                         return (
                           <div className={`iching-diagram__row ${moving ? "is-moving" : ""}`} key={index}>
                             <span>{index + 1}</span>
@@ -368,7 +404,7 @@ export function IChingToolView({ defaultQuestion = "", compact = false }: FengSh
                           label: "Quẻ Chủ",
                           number: hexagram.primary.number,
                           highlightLines: hexagram.moving,
-                          note: hexagram.moving.length ? `Động hào ${hexagram.moving.join(", ")}` : "Quẻ tĩnh, không hào động",
+                          note: hidden ? `Ám động hào ${hidden.position} · Thiên Can ${hidden.stem}` : `Động hào ${hexagram.moving.join(", ")}`,
                           movingDetails: hexagram.movingDetails,
                           readingRule: hexagram.readingRule,
                         },
@@ -377,7 +413,7 @@ export function IChingToolView({ defaultQuestion = "", compact = false }: FengSh
                           label: "Quẻ Biến",
                           number: hexagram.changed.number,
                           highlightLines: hexagram.moving,
-                          note: hexagram.moving.length ? `Biến từ hào ${hexagram.moving.join(", ")} của quẻ chủ` : "Giữ nguyên quẻ chủ",
+                          note: hidden ? `Biến từ hào Ám động ${hidden.position} của quẻ chủ` : `Biến từ hào ${hexagram.moving.join(", ")} của quẻ chủ`,
                         },
                       ]}
                     />
@@ -409,7 +445,7 @@ export function IChingToolView({ defaultQuestion = "", compact = false }: FengSh
               <div className="hex-empty__seal" aria-hidden="true">易</div>
               <div className="empty-hex-lines"><span /><span /><span /><span /><span /><span /></div>
               <h3>Sáu hào đang chờ được lập</h3>
-              <p>Mỗi lần tung sẽ tạo một hào âm, hào dương hoặc hào động. Kết quả chỉ hiện khi đủ sáu lần để không ngắt nhịp tập trung.</p>
+              <p>Mỗi lần gieo sẽ tạo một hào âm, hào dương hoặc hào động. Kết quả chỉ hiện khi đủ sáu lần để không ngắt nhịp tập trung.</p>
               <div className="line-legend"><span><i className="solid-line" /> Dương</span><span><i className="broken-line" /> Âm</span><span><i className="moving-dot" /> Hào động</span></div>
             </div>
           )}
@@ -440,7 +476,7 @@ export function IChingToolView({ defaultQuestion = "", compact = false }: FengSh
       )}
 
       <div className={`casting-dock ${coinLines.length >= 6 ? "is-complete" : ""}`}>
-        {coinLines.length < 6 ? <button className="casting-trigger" onClick={tossCoins} disabled={tossing} aria-label={`Tung ba đồng xu để lập hào ${coinLines.length + 1}`}><span className="casting-trigger__coin"><Coins size={21} /></span><span className="casting-trigger__copy"><small>Lập hào {coinLines.length + 1} / 6</small><strong>{tossing ? "Đang tung…" : "Tung 3 đồng xu"}</strong></span><ArrowUp className="casting-trigger__arrow" size={17} /></button> : <button className="casting-reset" onClick={resetCoins}><RotateCcw size={17} /><span><strong>Quẻ mới</strong><small>Gieo lại</small></span></button>}
+        {coinLines.length < 6 ? <button className="casting-trigger" onClick={tossCoins} disabled={tossing} aria-label={`Gieo hào ${coinLines.length + 1}`}><span className="casting-trigger__coin"><Coins size={21} /></span><span className="casting-trigger__copy"><small>Lập hào {coinLines.length + 1} / 6</small><strong>{tossing ? "Đang gieo…" : "Gieo hào"}</strong></span><ArrowUp className="casting-trigger__arrow" size={17} /></button> : <button className="casting-reset" onClick={resetCoins}><RotateCcw size={17} /><span><strong>Quẻ mới</strong><small>Gieo lại</small></span></button>}
       </div>
 
       {tossing && <div className="coin-cast-overlay" role="status" aria-live="assertive">
@@ -457,14 +493,15 @@ export function IChingToolView({ defaultQuestion = "", compact = false }: FengSh
           ))}
           <div className="casting-vessel casting-vessel--foreground" aria-hidden="true" />
         </div>
-        <p><small>Đang lập hào {coinLines.length + 1}</small><strong>Chờ đồng xu dừng hẳn</strong></p>
+        <p><small>Đang lập hào {coinLines.length + 1}</small><strong>Chờ kết quả hiện ra</strong></p>
       </div>}
       {omenFlash && <div className="omen-flash" aria-hidden="true" />}
       {!compact && (
         <MethodNote
           title="Phương pháp lập và đọc quẻ"
           points={[
-            "Ba đồng xu có xác suất tự nhiên: lão âm 6 và lão dương 9 cùng 1/8; thiếu âm 8 và thiếu dương 7 cùng 3/8.",
+            "Mỗi hào được sinh ngẫu nhiên theo xác suất của phép gieo cổ truyền: lão âm 6 và lão dương 9 cùng 1/8; thiếu âm 8 và thiếu dương 7 cùng 3/8.",
+            "Khi sáu hào đều tĩnh, hệ thống tìm hào Ám động theo Thiên Can của ngày gieo (giờ Việt Nam): Đinh/Nhâm hào 3, Ất/Canh hào 4, Tân/Bính hào 1, Mậu/Quý hào 2, Giáp hào 5, Kỷ hào 6; hào ấy đảo âm dương để tạo quẻ biến.",
             "Sáu hào được lập từ dưới lên. Quẻ biến chỉ hình thành bằng cách đổi các hào động 6 và 9.",
             "Lời luận 64 quẻ là bản diễn giải tiếng Việt do SGEN biên soạn từ cấu trúc Thoán từ và Đại tượng, không phải lời tiên đoán tuyệt đối.",
           ]}

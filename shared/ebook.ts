@@ -1,8 +1,11 @@
 /**
  * Mã xuất ebook Thần số học.
  *
- * - Bản demo (20 trang, giống file PDF hiện có trên web): mỗi mã 100 lượt xuất, dành cho cộng tác viên.
+ * - Bản "Demo 3 chỉ số" (Sứ mệnh, Đường đời, Đam mê): mỗi mã 100 lượt xuất, dành cho cộng tác viên.
  * - Bản ebook đầy đủ: các combo 3 / 5 / 10 / 30 / 50 / 100 ebook, mỗi lượt xuất = 1 ebook.
+ *
+ * Khi xuất, người dùng chọn loại ebook (`EbookEdition`). Mã demo chỉ xuất được bản Demo; mã combo xuất được cả hai
+ * bản — mỗi lượt xuất (bản nào cũng vậy) trừ 1 lượt của mã.
  *
  * Quản trị viên tạo mã ở /admin/ma-ebook. Người dùng nhập mã (hoặc mở đường dẫn có mã) ở /ebook,
  * được tự động đăng nhập bằng mã và xuất file cho tới khi hết lượt.
@@ -24,7 +27,7 @@ export type EbookPlan = {
 };
 
 export const EBOOK_PLANS: Record<EbookPlanKey, EbookPlan> = {
-  demo: { key: "demo", label: "Bản demo 20 trang", edition: "demo", quota: 100, prefix: "DEMO", summary: "100 lượt xuất ebook demo" },
+  demo: { key: "demo", label: "Bản Demo 3 chỉ số", edition: "demo", quota: 100, prefix: "DEMO", summary: "100 lượt xuất ebook Demo 3 chỉ số" },
   combo3: { key: "combo3", label: "Combo 3 ebook", edition: "full", quota: 3, prefix: "C03", summary: "3 lượt xuất ebook đầy đủ" },
   combo5: { key: "combo5", label: "Combo 5 ebook", edition: "full", quota: 5, prefix: "C05", summary: "5 lượt xuất ebook đầy đủ" },
   combo10: { key: "combo10", label: "Combo 10 ebook", edition: "full", quota: 10, prefix: "C10", summary: "10 lượt xuất ebook đầy đủ" },
@@ -36,9 +39,20 @@ export const EBOOK_PLANS: Record<EbookPlanKey, EbookPlan> = {
 export const EBOOK_PLAN_KEYS = Object.keys(EBOOK_PLANS) as EbookPlanKey[];
 
 export const EBOOK_EDITION_LABEL: Record<EbookEdition, string> = {
-  demo: "Demo 20 trang",
+  demo: "Demo 3 chỉ số",
   full: "Ebook đầy đủ",
 };
+
+/** Tên hai lựa chọn hiển thị ở trang /ebook. */
+export const EBOOK_EDITION_CHOICES: Record<EbookEdition, { title: string; description: string }> = {
+  demo: { title: "Bản ebook TSH Demo 3 chỉ số", description: "Trang tổng hợp chỉ hiện 3 chỉ số: Sứ mệnh, Đường đời, Đam mê." },
+  full: { title: "Bản ebook TSH đầy đủ", description: "Đầy đủ các chỉ số và biểu đồ trong báo cáo Thần số học." },
+};
+
+/** Mã demo chỉ xuất được bản Demo; mã combo (bản đầy đủ) xuất được cả hai bản. */
+export function ebookAllowsEdition(codeEdition: EbookEdition, requested: EbookEdition): boolean {
+  return codeEdition === "full" || requested === "demo";
+}
 
 /** Bỏ ký tự dễ nhầm (0/O, 1/I/L) để người nhận gõ tay không sai. */
 export const EBOOK_CODE_ALPHABET = "23456789ABCDEFGHJKMNPQRSTUVWXYZ";

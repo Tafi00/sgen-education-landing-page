@@ -40,3 +40,15 @@ describe("trạng thái mã", () => {
     expect(ebookCodeState({ ...base, status: "disabled", used: 3 })).toBe("disabled");
   });
 });
+
+describe("loại ebook được phép theo mã", () => {
+  it("mã demo chỉ xuất bản Demo; mã combo xuất được cả hai bản", async () => {
+    const { ebookAllowsEdition, EBOOK_EDITION_CHOICES } = await import("../ebook");
+    expect(ebookAllowsEdition("demo", "demo")).toBe(true);
+    expect(ebookAllowsEdition("demo", "full")).toBe(false);
+    expect(ebookAllowsEdition("full", "demo")).toBe(true);
+    expect(ebookAllowsEdition("full", "full")).toBe(true);
+    expect(EBOOK_EDITION_CHOICES.demo.title).toBe("Bản ebook TSH Demo 3 chỉ số");
+    expect(EBOOK_EDITION_CHOICES.full.title).toBe("Bản ebook TSH đầy đủ");
+  });
+});

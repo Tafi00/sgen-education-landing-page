@@ -2,6 +2,7 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 import * as fontkit from "fontkit";
 import { PDFDocument, rgb, type PDFFont } from "pdf-lib";
+import type { EbookEdition } from "../../../shared/ebook.js";
 import type { NumerologyFullReport } from "../../../shared/numerology.js";
 
 /**
@@ -16,10 +17,30 @@ const ASSET_DIR = path.resolve(process.cwd(), "assets/numerology-pdf");
 
 const PURPLE = rgb(0.5, 0, 0.5);
 const RED = rgb(1, 0, 0);
+/**
+ * Màu hồng của bản gốc (`main3.py`: rgb 199,12,129) — màu đang dùng cho hai chỉ số "Nội tâm & Tương tác" và
+ * "Sứ mệnh & Đường đời" ở mục Nguồn lực hỗ trợ. Các chỉ số trong khung "Thế giới bên trong / bên ngoài /
+ * Phát triển bản thân" dùng đúng màu này để đồng nhất với hai chỉ số mẫu.
+ */
 const MAGENTA = rgb(199 / 255, 12 / 255, 129 / 255);
 const BLACK = rgb(0, 0, 0);
 
-type Overlay = { text: string; x: number; y: number; size: number; font: "bold" | "semi"; color: typeof PURPLE };
+export type Overlay = { text: string; x: number; y: number; size: number; font: "bold" | "semi"; color: typeof PURPLE };
+export type OverlayFonts = Record<Overlay["font"], Pick<PDFFont, "widthOfTextAtSize">>;
+
+export type NumerologyPdfOptions = {
+  /** Số điện thoại của KHÁCH HÀNG trong hồ sơ (đã chuẩn hoá), điền vào dòng "ĐIỆN THOẠI" trang Thông tin cá nhân. */
+  phone?: string;
+  /** `demo` chỉ hiện 3 chỉ số (Sứ mệnh, Đường đời, Đam mê) ở trang tổng hợp; `full` hiện đủ. */
+  edition?: EbookEdition;
+};
+
+/** Ba chỉ số của bản Demo (đã được chủ sản phẩm xác nhận). */
+export const DEMO_METRIC_KEYS = ["destiny", "lifePath", "passion"] as const;
+
+/** Tâm 6 cột ô chỉ số của trang tổng hợp (đo từ file mẫu `summary.pdf`, đơn vị pt) và bề rộng chữ tối đa trong ô. */
+export const SUMMARY_CELL_CENTERS = [106, 189.5, 272.5, 356, 438.5, 520] as const;
+export const SUMMARY_CELL_INNER_WIDTH = 62;
 
 function metric(report: NumerologyFullReport, sectionId: string, key: string) {
   return report.sections.find((section) => section.id === sectionId)?.metrics.find((item) => item.key === key);
@@ -38,7 +59,7 @@ async function loadDoc(file: string) {
   return PDFDocument.load(await readFile(file));
 }
 
-export async function buildNumerologyPdf(report: NumerologyFullReport): Promise<Uint8Array> {
+export async function buildNumerologyPdf(report: NumerologyFullReport, options: NumerologyPdfOptions = {}): Promise<Uint8Array> {
   const out = await PDFDocument.create();
   // @ts-expect-error fontkit types mismatch pdf-lib's bundled Fontkit interface but is runtime-compatible
   out.registerFontkit(fontkit);
@@ -74,6 +95,7 @@ export async function buildNumerologyPdf(report: NumerologyFullReport): Promise<
   await appendPages(page("Page_02"), [
     { text: name, x: 210, y: 330, size: 18, font: "bold", color: PURPLE },
     { text: birth, x: 210, y: 288, size: 18, font: "bold", color: PURPLE },
+    ...(options.phone ? [{ text: options.phone, x: 210, y: PHONE_LINE_Y, size: 18, font: "bold" as const, color: PURPLE }] : []),
   ]);
   // 3. Mục lục
   await appendPages(page("Page_03"));
@@ -101,7 +123,7 @@ export async function buildNumerologyPdf(report: NumerologyFullReport): Promise<
   // 15. Kết luận
   await appendPages(page("Page_15"));
   // 16. Trang tổng hợp — overlay toàn bộ chỉ số + biểu đồ
-  await appendPages(page("summary"), summaryOverlays(report, name, birth));
+  await appendPages(page("summary"), summaryOverlays(report, name, birth, fonts, options.edition ?? "full"));
   // 17. Lời cảm ơn
   await appendPages(page("Page_LoiCamOn"));
   // 18. Bìa sau
@@ -110,11 +132,36 @@ export async function buildNumerologyPdf(report: NumerologyFullReport): Promise<
   return out.save();
 }
 
-/** Overlay trang tổng hợp: tọa độ port nguyên từ `main3.py`, điền số thật thay "?". */
-function summaryOverlays(report: NumerologyFullReport, name: string, birth: string): Overlay[] {
+/** Dòng "ĐIỆN THOẠI" của trang Thông tin cá nhân nằm dưới dòng NGÀY SINH (y = 288) đúng một nhịp 42pt. */
+const PHONE_LINE_Y = 246;
+
+/**
+ * Overlay trang tổng hợp: tọa độ port từ `main3.py`, điền số thật thay "?".
+ *
+ * - Ô chỉ số (3 hàng × 6 cột) giữ vị trí/cỡ chữ gốc; chỉ khi giá trị dài hơn ô mới thu nhỏ chữ và căn giữa
+ *   để không tràn sang ô bên cạnh.
+ * - Giá trị trong khung "Thế giới bên trong / bên ngoài / Phát triển bản thân" (trừ Nội tâm, Tương tác) dùng màu hồng
+ *   đồng nhất với hai chỉ số ở Nguồn lực hỗ trợ; các chỉ số còn lại giữ màu đỏ.
+ * - Bản `demo` chỉ hiện Sứ mệnh, Đường đời, Đam mê (các ô khác và các biểu đồ để trống).
+ */
+export function summaryOverlays(report: NumerologyFullReport, name: string, birth: string, fonts: OverlayFonts, edition: EbookEdition = "full"): Overlay[] {
   const o: Overlay[] = [];
-  const put = (text: string, x: number, y: number, size = 22, font: Overlay["font"] = "semi", color = RED) => {
-    if (text) o.push({ text, x, y, size, font, color });
+  const demo = edition === "demo";
+  const put = (text: string, x: number, y: number, size = 22, font: Overlay["font"] = "semi", color = RED, cell?: number) => {
+    if (!text) return;
+    if (cell !== undefined) {
+      const center = SUMMARY_CELL_CENTERS[cell];
+      const half = SUMMARY_CELL_INNER_WIDTH / 2;
+      let width = fonts[font].widthOfTextAtSize(text, size);
+      if (width > SUMMARY_CELL_INNER_WIDTH) {
+        size = Math.max(8, (size * SUMMARY_CELL_INNER_WIDTH) / width);
+        width = fonts[font].widthOfTextAtSize(text, size);
+        x = center - width / 2;
+      } else if (x < center - half || x + width > center + half) {
+        x = center - width / 2;
+      }
+    }
+    o.push({ text, x, y, size, font, color });
   };
 
   // Tên + ngày sinh (đầu trang)
@@ -123,28 +170,44 @@ function summaryOverlays(report: NumerologyFullReport, name: string, birth: stri
 
   const wide = (value: string) => (value.length > 3 ? -10 : 0);
   const comma = (value: string) => (value.match(/,/g) ?? []).length * -8;
+  const keep = (key: (typeof DEMO_METRIC_KEYS)[number]) => !demo || DEMO_METRIC_KEYS.includes(key);
 
   // Hàng 1 — Thế giới bên trong: Nội tâm / Tiềm thức / Logic / Cảm xúc / Trực giác / Trải nghiệm
   const inner = "the-gioi-ben-trong";
-  put(metricValue(report, inner, "soul"), 100 + wide(metricValue(report, inner, "soul")), 677);
-  put(metricValue(report, inner, "subconscious"), 185 + wide(metricValue(report, inner, "subconscious")), 677);
-  put(metricValue(report, inner, "logic"), 265 + wide(metricValue(report, inner, "logic")), 677);
-  put(metricValue(report, inner, "emotion"), 350 + wide(metricValue(report, inner, "emotion")), 677);
-  put(metricValue(report, inner, "intuition"), 430 + wide(metricValue(report, inner, "intuition")), 677);
-  put(metricValue(report, inner, "experience"), 515 + wide(metricValue(report, inner, "experience")), 677);
+  const innerRow = [
+    ["soul", RED],
+    ["subconscious", MAGENTA],
+    ["logic", MAGENTA],
+    ["emotion", MAGENTA],
+    ["intuition", MAGENTA],
+    ["experience", MAGENTA],
+  ] as const;
+  const innerX = [100, 185, 265, 350, 430, 515];
+  if (!demo) {
+    innerRow.forEach(([key, color], cell) => {
+      const value = metricValue(report, inner, key);
+      put(value, innerX[cell] + wide(value), 677, 22, "semi", color, cell);
+    });
+  }
 
   // Hàng 2 — Bên ngoài + Phát triển: Tương tác / Thái độ / Số lặp / Cân bằng / Bài học / Nợ nghiệp
   const outer = "the-gioi-ben-ngoai";
   const growth = "phat-trien-ban-than";
-  const repeated = metricValue(report, outer, "repeated");
-  const missing = metricValue(report, growth, "missing");
-  const debts = metricValue(report, growth, "debts");
-  put(metricValue(report, outer, "interaction"), 100 + wide(metricValue(report, outer, "interaction")), 580);
-  put(metricValue(report, outer, "attitude"), 185 + wide(metricValue(report, outer, "attitude")), 580);
-  put(repeated, 265 + comma(repeated), 580);
-  put(metricValue(report, growth, "balance"), 350 + wide(metricValue(report, growth, "balance")), 580);
-  put(missing, 360 + comma(missing), 580);
-  put(debts, 515 + comma(debts), 580);
+  if (!demo) {
+    const interaction = metricValue(report, outer, "interaction");
+    const attitude = metricValue(report, outer, "attitude");
+    const repeated = metricValue(report, outer, "repeated");
+    const balance = metricValue(report, growth, "balance");
+    const missing = metricValue(report, growth, "missing");
+    const debts = metricValue(report, growth, "debts");
+    put(interaction, 100 + wide(interaction), 580, 22, "semi", RED, 0);
+    put(attitude, 185 + wide(attitude), 580, 22, "semi", MAGENTA, 1);
+    put(repeated, 265 + comma(repeated), 580, 22, "semi", MAGENTA, 2);
+    put(balance, 350 + wide(balance), 580, 22, "semi", MAGENTA, 3);
+    // Bài học nghiệp nằm ở cột thứ 5 (x ≈ 430); trước đây đặt nhầm ở x = 360 nên đè lên ô "Cân bằng".
+    put(missing, 430 + comma(missing), 580, 22, "semi", MAGENTA, 4);
+    put(debts, 515 + comma(debts), 580, 22, "semi", MAGENTA, 5);
+  }
 
   // Hàng 3 — Định hướng: Năm cá nhân / Sứ mệnh / Đường đời / Ngày sinh / Trưởng thành / Đam mê
   const career = "dinh-huong-su-nghiep";
@@ -154,12 +217,17 @@ function summaryOverlays(report: NumerologyFullReport, name: string, birth: stri
   const birthNumber = metricValue(report, career, "birthNumber");
   const maturity = metricValue(report, career, "maturity");
   const passion = metricValue(report, career, "passion");
-  put(personalYear, 100 + wide(personalYear), 480);
-  put(destiny, 185 + wide(destiny), 480);
-  put(lifePath, 265 + wide(lifePath), 480);
-  put(birthNumber, 350 + wide(birthNumber), 480);
-  put(maturity, 430 + wide(maturity), 480);
-  put(passion, 515 + comma(passion) + (passion.length > 7 ? 5 : 0), 480, passion.length > 7 ? 18 : 22);
+  if (!demo) {
+    put(personalYear, 100 + wide(personalYear), 480, 22, "semi", RED, 0);
+    put(birthNumber, 350 + wide(birthNumber), 480, 22, "semi", RED, 3);
+    put(maturity, 430 + wide(maturity), 480, 22, "semi", RED, 4);
+  }
+  if (keep("destiny")) put(destiny, 185 + wide(destiny), 480, 22, "semi", RED, 1);
+  if (keep("lifePath")) put(lifePath, 265 + wide(lifePath), 480, 22, "semi", RED, 2);
+  if (keep("passion")) put(passion, 515 + comma(passion) + (passion.length > 7 ? 5 : 0), 480, passion.length > 7 ? 18 : 22, "semi", RED, 5);
+
+  // Bản demo: chỉ 3 chỉ số ở trên; biểu đồ và Nguồn lực hỗ trợ (cần các chỉ số khác) để trống.
+  if (demo) return o;
 
   // Biểu đồ chặng đường đời: 3 gốc + 4 đỉnh + khoảng tuổi
   const chart = report.lifePathChart;

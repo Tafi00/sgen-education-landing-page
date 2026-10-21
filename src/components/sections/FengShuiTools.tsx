@@ -44,7 +44,7 @@ const tools = [
   {
     id: "iching" as const,
     title: "Gieo quẻ Kinh Dịch",
-    description: "Tung ba đồng xu sáu lần, lập quẻ chủ, hào động và quẻ biến.",
+    description: "Gieo sáu lần, lập quẻ chủ, hào động và quẻ biến.",
     image: ichingArtwork,
     icon: Coins,
     category: "Dịch học",

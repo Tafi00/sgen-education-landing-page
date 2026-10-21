@@ -452,7 +452,7 @@ const FENG_SHUI_LINKS = [
   {
     href: "/cong-cu-phong-thuy/gieo-que-kinh-dich",
     title: "Gieo quẻ Kinh Dịch",
-    text: "Lập quẻ chủ, hào động và quẻ biến từ sáu lần gieo ba đồng xu.",
+    text: "Lập quẻ chủ, hào động và quẻ biến từ sáu lần gieo.",
     icon: Coins,
   },
   {

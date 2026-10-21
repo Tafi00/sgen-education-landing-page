@@ -23,6 +23,7 @@ import { createCrudRouter } from "../../services/crud.js";
 import { asyncHandler } from "../../middleware/errors.js";
 import { hashPassword, requireAdmin } from "../../middleware/auth.js";
 import { adminAuthAdminRouter } from "./auth.js";
+import { adminCustomerRouter } from "./customers.js";
 import { adminDashboardRouter } from "./dashboard.js";
 import { adminEbookRouter } from "./ebook.js";
 import { adminLeadRouter } from "./leads.js";
@@ -62,6 +63,7 @@ adminApiRouter.use("/auth", adminAuthAdminRouter);
 adminApiRouter.use("/dashboard", adminDashboardRouter);
 adminApiRouter.use("/settings", adminSettingsRouter);
 adminApiRouter.use("/ebook-codes", adminEbookRouter);
+adminApiRouter.use("/customers", adminCustomerRouter);
 
 adminApiRouter.use("/media", adminMediaRouter);
 adminApiRouter.use(

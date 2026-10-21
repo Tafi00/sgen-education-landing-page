@@ -820,3 +820,97 @@
   width: 15px;
   height: 15px;
 }
+
+/* Lựa chọn loại ebook + ghi chú hồ sơ đang tra cứu ở trang /ebook. */
+.ux-member .ebook-edition {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.ux-member .ebook-edition legend {
+  margin-bottom: 8px;
+  padding: 0;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.ux-member .ebook-edition__options {
+  display: grid;
+  gap: 8px;
+}
+
+.ux-member .ebook-edition__option {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+  padding: 12px 14px;
+  background: rgba(122, 60, 255, 0.06);
+  border: 1px solid rgba(122, 60, 255, 0.28);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: border-color 0.18s ease, background-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.ux-member .ebook-edition__option:hover:not(.is-disabled) {
+  border-color: rgba(122, 60, 255, 0.6);
+}
+
+.ux-member .ebook-edition__option.is-selected {
+  background: rgba(122, 60, 255, 0.14);
+  border-color: #7a3cff;
+  box-shadow: 0 0 0 2px rgba(122, 60, 255, 0.22);
+}
+
+.ux-member .ebook-edition__option.is-disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.ux-member .ebook-edition__option input {
+  width: 18px;
+  height: 18px;
+  margin: 2px 0 0;
+  accent-color: #7a3cff;
+}
+
+.ux-member .ebook-edition__option input:focus-visible {
+  outline: 3px solid rgba(139, 92, 246, 0.6);
+  outline-offset: 2px;
+}
+
+.ux-member .ebook-edition__option strong {
+  display: block;
+  font-size: 0.92rem;
+  line-height: 1.35;
+}
+
+.ux-member .ebook-edition__option small {
+  display: block;
+  margin-top: 2px;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  opacity: 0.8;
+}
+
+.ux-member .ebook-profile-note {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  margin: 0 0 12px;
+  padding: 10px 12px;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  background: rgba(122, 60, 255, 0.1);
+  border-radius: 8px;
+}
+
+.ux-member .ebook-profile-note svg {
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+  margin-top: 2px;
+}

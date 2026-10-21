@@ -8,7 +8,8 @@ import { connectDb, disconnectDb } from "../db.js";
 import { setConnectionString } from "../db/pool.js";
 import { env } from "../env.js";
 import { hashPassword } from "../middleware/auth.js";
-import { Entitlement, Lead, MediaAsset, Order, SiteSetting, User } from "../models/index.js";
+import { PDFDocument } from "pdf-lib";
+import { Customer, EbookCode, EbookExport, Entitlement, Lead, LookupReport, MediaAsset, Order, SiteSetting, User } from "../models/index.js";
 import { seedAll } from "./seed.js";
 
 type Jar = { cookies: Map<string, string> };
@@ -56,6 +57,20 @@ async function call(
 /** Ảnh PNG 600x400 để kiểm thử luồng upload và sinh biến thể theo bề rộng. */
 async function samplePng() {
   return sharp({ create: { width: 600, height: 400, channels: 3, background: "#5a22e8" } }).png().toBuffer();
+}
+
+/** Gọi API trả file nhị phân (PDF xuất ebook): giữ cookie phiên như trình duyệt. */
+async function callBinary(base: string, pathname: string, body: unknown, jar: Jar) {
+  const cookieHeader = [...jar.cookies.entries()].map(([key, value]) => `${key}=${value}`).join("; ");
+  const response = await fetch(`${base}${pathname}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Accept: "application/pdf,application/json", ...(cookieHeader ? { Cookie: cookieHeader } : {}) },
+    body: JSON.stringify(body),
+  });
+  const contentType = response.headers.get("content-type") ?? "";
+  if (contentType.includes("application/pdf")) return { status: response.status, bytes: new Uint8Array(await response.arrayBuffer()), payload: null as unknown, headers: response.headers };
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return { status: response.status, bytes: null, payload: (await response.json()) as any, headers: response.headers };
 }
 
 /**
@@ -277,7 +292,7 @@ async function run() {
   const editorCourses = await call(base, "/api/admin/courses", { jar: editorJar });
   record("editor quản trị được nội dung (khóa học)", editorCourses.status === 200, `status=${editorCourses.status}`);
 
-  const businessPaths = ["/api/admin/leads", "/api/admin/orders", "/api/admin/members", "/api/admin/entitlements", "/api/admin/lookups", "/api/admin/dashboard/audit"];
+  const businessPaths = ["/api/admin/leads", "/api/admin/orders", "/api/admin/members", "/api/admin/entitlements", "/api/admin/lookups", "/api/admin/dashboard/audit", "/api/admin/customers"];
   const editorBusiness = await Promise.all(businessPaths.map((pathname) => call(base, pathname, { jar: editorJar })));
   record(
     "editor bị chặn khỏi dữ liệu kinh doanh và dữ liệu cá nhân",
@@ -303,6 +318,126 @@ async function run() {
     "API tài khoản quản trị không trả passwordHash",
     adminForHash.status === 200 && !JSON.stringify(adminForHash.payload).includes("passwordHash"),
     `status=${adminForHash.status}`,
+  );
+
+  /* ------------------- số điện thoại, khách hàng và xuất ebook ------------------- */
+  const customerLookup = await call(base, "/api/lookups/numerology", {
+    method: "POST",
+    body: { inputs: { name: "Phạm Thanh Tùng", birthDate: "2010-09-02", phone: "0912 345 678" }, save: true, source: "/" },
+  });
+  const lookupId: string = customerLookup.payload.report?.id;
+  const lookupToken: string = customerLookup.payload.report?.shareToken;
+  const lookupRow = await LookupReport.findById(lookupId).lean();
+  record(
+    "tra cứu kèm số điện thoại lưu hồ sơ khách hàng, SĐT không nằm trong inputs",
+    customerLookup.status === 200 && Boolean(lookupRow?.customerId) && !JSON.stringify(lookupRow?.inputs).includes("0912") && !JSON.stringify(lookupRow?.result).includes("0912"),
+  );
+
+  const sharedReport = await call(base, `/api/lookups/${lookupId}?token=${lookupToken}`);
+  record(
+    "link chia sẻ kết quả không lộ số điện thoại hay hồ sơ khách hàng",
+    sharedReport.status === 200 && !JSON.stringify(sharedReport.payload).includes("0912") && !("customerId" in (sharedReport.payload.report ?? {})),
+  );
+
+  const badPhoneLookup = await call(base, "/api/lookups/numerology", { method: "POST", body: { inputs: { name: "Nguyễn Văn An", birthDate: "1990-05-17", phone: "12345" } } });
+  record(
+    "tra cứu với số điện thoại sai bị từ chối ở máy chủ",
+    badPhoneLookup.status === 422 && badPhoneLookup.payload.error?.fields?.some((field: { path: string }) => field.path === "inputs.phone" || field.path === "phone"),
+    JSON.stringify(badPhoneLookup.payload.error?.fields),
+  );
+
+  const directPdf = await call(base, `/api/lookups/${lookupId}/pdf?token=${lookupToken}`);
+  record("PDF không còn tải trực tiếp, bắt buộc qua trang ebook", directPdf.status === 404, `status=${directPdf.status}`);
+
+  const demoCode = await call(base, "/api/admin/ebook-codes/generate", { method: "POST", jar: adminJar, body: { plan: "demo", count: 1 } });
+  const fullCode = await call(base, "/api/admin/ebook-codes/generate", { method: "POST", jar: adminJar, body: { plan: "combo3", count: 1 } });
+  const demoJar: Jar = { cookies: new Map() };
+  const fullJar: Jar = { cookies: new Map() };
+  const anonymousJar: Jar = { cookies: new Map() };
+  await call(base, "/api/ebook/me", { jar: demoJar });
+  await call(base, "/api/ebook/me", { jar: fullJar });
+  await call(base, "/api/ebook/redeem", { method: "POST", jar: demoJar, body: { code: demoCode.payload.items[0].code } });
+  await call(base, "/api/ebook/redeem", { method: "POST", jar: fullJar, body: { code: fullCode.payload.items[0].code } });
+  const demoDoc = await EbookCode.findOne({ plan: "demo" }).lean();
+  const fullDoc = await EbookCode.findOne({ plan: "combo3" }).lean();
+
+  const person = { name: "Phạm Thanh Tùng", birthDate: "2010-09-02", reportId: lookupId };
+  const anonymous = await callBinary(base, "/api/ebook/export", { ...person, phone: "0912345678", edition: "demo" }, anonymousJar);
+  record("chưa đăng nhập (chưa nhập mã) thì không xuất được ebook", anonymous.status === 401, `status=${anonymous.status}`);
+
+  const noPhone = await callBinary(base, "/api/ebook/export", { ...person, edition: "demo" }, demoJar);
+  const blankPhone = await callBinary(base, "/api/ebook/export", { ...person, phone: "   ", edition: "demo" }, demoJar);
+  const badPhone = await callBinary(base, "/api/ebook/export", { ...person, phone: "09123abc78", edition: "full" }, fullJar);
+  const hasPhoneError = (result: { status: number; payload: any }) => result.status === 422 && result.payload?.error?.fields?.some((field: { path: string }) => field.path === "phone");
+  record("xuất ebook thiếu / sai số điện thoại bị chặn ở máy chủ (cả hai bản)", hasPhoneError(noPhone) && hasPhoneError(blankPhone) && hasPhoneError(badPhone), `${noPhone.status}/${blankPhone.status}/${badPhone.status}`);
+  const afterBlocked = await EbookCode.findById(demoDoc?._id).lean();
+  record("xuất bị chặn không trừ lượt và không ghi lịch sử", afterBlocked?.used === 0 && (await EbookExport.countDocuments({})) === 0);
+
+  const demoForbidden = await callBinary(base, "/api/ebook/export", { ...person, phone: "0912345678", edition: "full" }, demoJar);
+  record("mã demo không xuất được bản đầy đủ", demoForbidden.status === 403 && demoForbidden.payload?.error?.code === "edition_not_allowed", `status=${demoForbidden.status}`);
+
+  const demoExport = await callBinary(base, "/api/ebook/export", { ...person, phone: "0912 345 678", edition: "demo" }, demoJar);
+  const demoPages = demoExport.bytes ? (await PDFDocument.load(demoExport.bytes)).getPageCount() : 0;
+  record("xuất bản Demo 3 chỉ số trả file PDF 18 trang", demoExport.status === 200 && demoPages === 18, `status=${demoExport.status} pages=${demoPages}`);
+
+  const fullExport = await callBinary(base, "/api/ebook/export", { ...person, phone: "+84 912 345 678", edition: "full" }, fullJar);
+  const fullPages = fullExport.bytes ? (await PDFDocument.load(fullExport.bytes)).getPageCount() : 0;
+  record("xuất bản đầy đủ trả file PDF", fullExport.status === 200 && fullPages === 18 && fullExport.bytes !== null && fullExport.bytes.length !== demoExport.bytes?.length, `status=${fullExport.status} pages=${fullPages}`);
+
+  const profiles = await Customer.find({ nameSearch: "pham thanh tung" }).lean();
+  record(
+    "xuất lại (cả viết 0912… lẫn +84912…) không tạo hồ sơ khách hàng trùng",
+    profiles.length === 1 && profiles[0].birthDate === "2010-09-02" && profiles[0].phoneKey === "0912345678",
+    `profiles=${profiles.length}`,
+  );
+  const exportRows = await EbookExport.find({}).sort({ createdAt: 1 }).lean();
+  record(
+    "lịch sử xuất ghi hồ sơ khách, loại ebook, số điện thoại và trạng thái thành công",
+    exportRows.length === 2 &&
+      exportRows.every((row) => row.status === "success" && row.customerId === profiles[0]._id && row.customerPhone.replace("+84", "0").endsWith("912345678")) &&
+      exportRows[0].edition === "demo" &&
+      exportRows[1].edition === "full",
+    exportRows.map((row) => `${row.edition}:${row.status}:${row.customerPhone}`).join(" "),
+  );
+  const usedAfter = await EbookCode.findById(fullDoc?._id).lean();
+  record("mỗi lượt xuất thành công trừ đúng 1 lượt của mã", usedAfter?.used === 1);
+
+  // Lỗi tạo file (tên không có chữ cái → không chọn được trang theo con số): hoàn lượt, ghi "failed", không ghi "success".
+  const brokenExport = await callBinary(base, "/api/ebook/export", { name: "123 456", birthDate: "1990-01-01", phone: "0987654321", edition: "full" }, fullJar);
+  const afterBroken = await EbookCode.findById(fullDoc?._id).lean();
+  const failedRows = await EbookExport.find({ status: "failed" }).lean();
+  record(
+    "lỗi tạo file hoàn lại lượt, ghi trạng thái lỗi và không ghi thành xuất thành công",
+    brokenExport.status >= 400 &&
+      afterBroken?.used === 1 &&
+      failedRows.length === 1 &&
+      !failedRows[0].customerId &&
+      (await EbookExport.countDocuments({ status: "success" })) === 2 &&
+      (await Customer.countDocuments({ nameSearch: "123 456" })) === 0,
+    `status=${brokenExport.status} used=${afterBroken?.used} failed=${failedRows.length}`,
+  );
+
+  const customerList = await call(base, "/api/admin/customers?q=tung", { jar: adminJar });
+  record("quản trị tìm khách theo họ tên không phân biệt dấu", customerList.status === 200 && customerList.payload.items.some((item: { name: string }) => item.name === "Phạm Thanh Tùng"), `total=${customerList.payload.total}`);
+  const byPhone = await Promise.all(["0912345678", "0912 345 678", "+84912345678", "912345"].map((q) => call(base, `/api/admin/customers?q=${encodeURIComponent(q)}`, { jar: adminJar })));
+  record("quản trị tìm khách theo số điện thoại (mọi cách viết)", byPhone.every((response) => response.payload.items?.some((item: { phoneKey: string }) => item.phoneKey === "0912345678")), byPhone.map((response) => response.payload.total).join("/"));
+  const byBirthday = await call(base, "/api/admin/customers?birthMonth=9&birthDay=2", { jar: adminJar });
+  const wrongBirthday = await call(base, "/api/admin/customers?birthMonth=1", { jar: adminJar });
+  record(
+    "quản trị lọc khách theo ngày/tháng sinh",
+    byBirthday.payload.items?.some((item: { name: string }) => item.name === "Phạm Thanh Tùng") && !wrongBirthday.payload.items?.some((item: { name: string }) => item.name === "Phạm Thanh Tùng"),
+  );
+  const target = customerList.payload.items.find((item: { name: string }) => item.name === "Phạm Thanh Tùng");
+  const customerDetail = await call(base, `/api/admin/customers/${target?._id}`, { jar: adminJar });
+  record(
+    "chi tiết khách gồm ngày sinh, số điện thoại, hai loại ebook và lịch sử xuất",
+    customerDetail.status === 200 &&
+      customerDetail.payload.item.birthDate === "2010-09-02" &&
+      customerDetail.payload.item.phoneKey === "0912345678" &&
+      customerDetail.payload.item.exportCount === 2 &&
+      customerDetail.payload.exports.filter((item: { status: string }) => item.status === "success").length === 2 &&
+      customerDetail.payload.reports.length >= 1,
+    `exports=${customerDetail.payload.exports?.length}`,
   );
 
   /* -------------------------------- tổng kết ------------------------------- */

@@ -47,7 +47,7 @@ export const PRIMARY_NAV: NavItem[] = [
     label: "Công cụ phong thủy",
     href: "/cong-cu-phong-thuy",
     children: [
-      { label: "Gieo Quẻ Kinh Dịch", href: "/cong-cu-phong-thuy/gieo-que-kinh-dich", description: "Tung 3 đồng xu, lập quẻ chủ và quẻ biến" },
+      { label: "Gieo Quẻ Kinh Dịch", href: "/cong-cu-phong-thuy/gieo-que-kinh-dich", description: "Gieo sáu hào, lập quẻ chủ và quẻ biến" },
       { label: "Tứ Trụ Bát Tự", href: "/cong-cu-phong-thuy/tu-tru-bat-tu", description: "An bốn trụ theo tiết khí" },
       { label: "Xem ngày tốt xấu", href: "/cong-cu-phong-thuy/xem-ngay", description: "Chọn thời điểm theo trực, kiến trừ" },
     ],

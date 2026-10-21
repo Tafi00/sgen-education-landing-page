@@ -10,7 +10,7 @@ import {
   Search,
   Share2,
   ShieldCheck,
-  Tag,
+  Phone,
   UserRound,
 } from "lucide-react";
 import { api, errorMessage } from "../../api/client";
@@ -18,10 +18,12 @@ import { LookupNavTabs } from "../../components/lookup/LookupNavTabs";
 import { ResultBlocks } from "../../components/lookup/ResultBlocks";
 import { useToast } from "../../components/ui/Toast";
 import type { LookupResultPayload } from "../../../shared/lookup-types";
-import { Button, ButtonAnchor } from "../../components/ui/Button";
+import { Button, ButtonLink } from "../../components/ui/Button";
 import { Callout, ToolHeader } from "../../components/ui/Layout";
 import { CheckboxField, TextField } from "../../components/form/Field";
 import { Eyebrow } from "../../components/ui/Eyebrow";
+import { saveEbookDraft } from "../../app/ebookDraft";
+import { normalizePhone } from "../../../shared/phone";
 
 const cosmicDarkClean = "/assets/backgrounds/cosmic-dark-clean.webp";
 
@@ -116,10 +118,10 @@ export function NumerologyPage() {
   const toast = useToast();
   const [name, setName] = useState("");
   const [birthDate, setBirthDate] = useState("");
-  const [commonName, setCommonName] = useState("");
+  const [phone, setPhone] = useState("");
   const [agreed, setAgreed] = useState(true);
   const [previewNumber, setPreviewNumber] = useState("1");
-  const [fieldErrors, setFieldErrors] = useState<{ name?: string; birthDate?: string }>({});
+  const [fieldErrors, setFieldErrors] = useState<{ name?: string; birthDate?: string; phone?: string }>({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [payload, setPayload] = useState<LookupResultPayload | null>(null);
@@ -132,9 +134,12 @@ export function NumerologyPage() {
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const errors: { name?: string; birthDate?: string } = {};
+    const errors: { name?: string; birthDate?: string; phone?: string } = {};
     if (name.trim().length < 2) errors.name = "Vui lòng nhập họ tên (ít nhất 2 ký tự).";
     if (!/^\d{4}-\d{2}-\d{2}$/.test(birthDate)) errors.birthDate = "Vui lòng chọn ngày sinh.";
+    // Số điện thoại không bắt buộc ở bước tra cứu, nhưng đã nhập thì phải hợp lệ (bắt buộc khi xuất ebook).
+    const phoneResult = phone.trim() ? normalizePhone(phone) : null;
+    if (phoneResult && !phoneResult.ok) errors.phone = phoneResult.message;
     setFieldErrors(errors);
     if (Object.keys(errors).length) {
       toast.error("Thiếu thông tin", "Vui lòng kiểm tra các ô được đánh dấu rồi thử lại.");
@@ -152,7 +157,7 @@ export function NumerologyPage() {
         inputs: {
           name: name.trim(),
           birthDate,
-          commonName: commonName.trim() || undefined,
+          phone: phoneResult?.ok ? phoneResult.value : undefined,
           referenceYear: new Date().getFullYear(),
         },
         save: true,
@@ -168,6 +173,8 @@ export function NumerologyPage() {
         ? `${window.location.origin}/tra-cuu/ket-qua/${data.report.id}?token=${data.report.shareToken}`
         : `${window.location.origin}/tra-cuu/ket-qua/${data.report.id}`;
       setReportRef({ id: data.report.id, token: data.report.shareToken ?? "" });
+      // Giữ hồ sơ vừa tra cứu để nút "Tải PDF" chuyển sang trang ebook mà không phải nhập lại.
+      saveEbookDraft({ name: name.trim(), birthDate, phone: phoneResult?.ok ? phoneResult.value : "", reportId: data.report.id });
       setShareUrl(url);
       setSaved(false);
       toast.success("Đã phân tích xong", "Báo cáo đầy đủ hiển thị bên dưới.");
@@ -251,11 +258,18 @@ export function NumerologyPage() {
                 onChange={(e) => setName(e.target.value)}
               />
               <TextField
-                label="Tên thường dùng (nếu có)"
-                placeholder="Ví dụ: Minh Anh, Anna"
-                icon={<Tag aria-hidden="true" />}
-                value={commonName}
-                onChange={(e) => setCommonName(e.target.value)}
+                label="Số điện thoại"
+                type="tel"
+                inputMode="tel"
+                autoComplete="tel"
+                placeholder="Nhập số điện thoại"
+                icon={<Phone aria-hidden="true" />}
+                value={phone}
+                error={fieldErrors.phone}
+                onChange={(e) => {
+                  setPhone(e.target.value);
+                  if (fieldErrors.phone) setFieldErrors((current) => ({ ...current, phone: undefined }));
+                }}
               />
               <TextField
                 label="Ngày sinh dương lịch"
@@ -308,13 +322,9 @@ export function NumerologyPage() {
                       <Share2 aria-hidden="true" /> Lưu kết quả
                     </Button>
                     {reportRef ? (
-                      <ButtonAnchor
-                        variant="secondary"
-                        href={`/api/lookups/${reportRef.id}/pdf?token=${encodeURIComponent(reportRef.token)}`}
-                        download
-                      >
+                      <ButtonLink variant="secondary" to="/ebook">
                         <Download aria-hidden="true" /> Tải PDF
-                      </ButtonAnchor>
+                      </ButtonLink>
                     ) : null}
                     <Button variant="secondary" onClick={() => window.print()}>
                       <Printer aria-hidden="true" /> In báo cáo

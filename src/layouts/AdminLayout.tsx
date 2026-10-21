@@ -24,6 +24,7 @@ import {
   Settings,
   ShieldCheck,
   Users,
+  UsersRound,
   X,
 } from "lucide-react";
 import { api, errorMessage } from "../api/client";
@@ -61,6 +62,7 @@ const NAV_GROUPS: NavGroup[] = [
       { to: "/admin/don-hang", label: "Đơn hàng", icon: CalendarCheck, roles: ["admin"] },
       { to: "/admin/quyen-noi-dung", label: "Quyền nội dung", icon: ShieldCheck, roles: ["admin"] },
       { to: "/admin/thanh-vien", label: "Thành viên", icon: Users, roles: ["admin"] },
+      { to: "/admin/khach-hang", label: "Khách hàng", icon: UsersRound, roles: ["admin"] },
       { to: "/admin/ma-ebook", label: "Mã ebook", icon: BookMarked, roles: ["admin"] },
     ],
   },

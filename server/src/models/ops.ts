@@ -111,6 +111,27 @@ export const EbookExport = new Model<EbookExportDoc>({
     customerName: { kind: "text" },
     birthDate: { kind: "text" },
     ip: { kind: "text" },
+    customerId: { kind: "uuid" },
+    customerPhone: { kind: "text" },
+    reportId: { kind: "uuid" },
+    status: { kind: "text" },
+    error: { kind: "text" },
+  },
+});
+
+export const Customer = new Model<CustomerDoc>({
+  table: "customers",
+  fields: {
+    name: { kind: "text" },
+    nameKey: { kind: "text" },
+    nameSearch: { kind: "text" },
+    birthDate: { kind: "text" },
+    birthMonth: { kind: "int" },
+    birthDay: { kind: "int" },
+    phone: { kind: "text" },
+    phoneKey: { kind: "text" },
+    source: { kind: "text" },
+    codeId: { kind: "uuid" },
   },
 });
 
@@ -234,5 +255,29 @@ export type EbookExportDoc = Doc & {
   customerName: string;
   birthDate: string;
   ip: string;
+  customerId: string | null;
+  customerPhone: string;
+  reportId: string | null;
+  /** `success` chỉ khi file PDF đã được tạo xong; `failed` khi lỗi tạo file (lượt đã hoàn lại). */
+  status: "success" | "failed";
+  error: string;
   createdAt: Date;
+};
+
+export type CustomerDoc = Doc & {
+  name: string;
+  nameKey: string;
+  nameSearch: string;
+  /** YYYY-MM-DD */
+  birthDate: string;
+  birthMonth: number;
+  birthDay: number;
+  /** Chuỗi, giữ số 0 đầu và mã quốc gia. */
+  phone: string;
+  phoneKey: string;
+  source: "lookup" | "ebook";
+  /** Mã ebook (tài khoản) thực hiện lần đầu. */
+  codeId: string | null;
+  createdAt: Date;
+  updatedAt: Date;
 };

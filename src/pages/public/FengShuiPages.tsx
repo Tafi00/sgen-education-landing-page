@@ -29,7 +29,7 @@ const TOOL_LINKS: { href: string; title: string; text: string; icon: LucideIcon 
   {
     href: "/cong-cu-phong-thuy/gieo-que-kinh-dich",
     title: "Gieo quẻ Kinh Dịch",
-    text: "Tung ba đồng xu sáu lần để lập quẻ chủ, xác định hào động và suy ra quẻ biến.",
+    text: "Gieo sáu lần để lập quẻ chủ, xác định hào động và suy ra quẻ biến.",
     icon: Coins,
   },
   {
@@ -223,7 +223,7 @@ export function FengShuiHubPage() {
   );
 }
 
-/** Trang gieo quẻ Kinh Dịch: công cụ lập quẻ theo ba đồng xu kèm phương pháp luận giải và FAQ. */
+/** Trang gieo quẻ Kinh Dịch: công cụ lập quẻ trực tuyến kèm văn khấn, phương pháp luận giải và FAQ. */
 export function GieoQuePage() {
   return (
     <>
@@ -233,7 +233,7 @@ export function GieoQuePage() {
           icon={Coins}
           title="Gieo quẻ"
           accent="Kinh Dịch"
-          description="Giữ một câu hỏi trong đầu, gieo ba đồng xu đủ sáu lần. Công cụ lập quẻ chủ từ sáu hào, xác định hào động rồi suy ra quẻ biến và phần luận giải tương ứng."
+          description="Đọc văn khấn, giữ một câu hỏi trong đầu rồi gieo đủ sáu lần. Công cụ lập quẻ chủ từ sáu hào, xác định hào động (hoặc hào Ám động khi không có hào động) rồi suy ra quẻ biến và phần luận giải tương ứng."
         />
         <div className="container fengshui-tools">
           <div className="fengshui-workspace is-open">
@@ -248,8 +248,8 @@ export function GieoQuePage() {
         items={[
           {
             icon: Coins,
-            title: "Ba đồng xu, sáu lần gieo",
-            text: "Mỗi lần gieo ba đồng xu cho một hào. Mặt ngửa tính 2, mặt sấp tính 3; tổng ba đồng cho ra 6, 7, 8 hoặc 9.",
+            title: "Sáu lần gieo, sáu hào",
+            text: "Mỗi lần gieo cho ra một hào với giá trị 6, 7, 8 hoặc 9, theo xác suất của phép gieo cổ truyền (ngửa tính 2, sấp tính 3).",
           },
           {
             icon: ArrowRight,
@@ -259,7 +259,7 @@ export function GieoQuePage() {
           {
             icon: ArrowLeftRight,
             title: "Hào động và quẻ biến",
-            text: "Hào 6 (lão âm) và hào 9 (lão dương) là hào động. Đổi âm dương tại các hào này sẽ cho quẻ biến, thể hiện chiều chuyển dịch.",
+            text: "Hào 6 (lão âm) và hào 9 (lão dương) là hào động. Đổi âm dương tại các hào này sẽ cho quẻ biến, thể hiện chiều chuyển dịch. Nếu cả sáu hào đều tĩnh, hệ thống tìm hào Ám động theo Thiên Can của ngày gieo (giờ Việt Nam) và đảo hào đó để tạo quẻ biến.",
           },
           {
             icon: BookOpen,
@@ -276,7 +276,7 @@ export function GieoQuePage() {
           {
             icon: ShieldCheck,
             title: "Nguồn ngẫu nhiên an toàn",
-            text: "Khi trình duyệt hỗ trợ, công cụ dùng crypto.getRandomValues để lấy bit ngẫu nhiên cho từng đồng xu.",
+            text: "Khi trình duyệt hỗ trợ, công cụ dùng crypto.getRandomValues để lấy bit ngẫu nhiên cho từng lần gieo.",
           },
           {
             icon: CircleAlert,

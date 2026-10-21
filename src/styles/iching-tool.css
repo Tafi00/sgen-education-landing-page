@@ -1215,9 +1215,9 @@
 
 .casting-instruction {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr);
   grid-template-rows: auto;
-  gap: 16px;
+  gap: 4px;
   align-items: center;
   margin-top: 14px;
   padding: 13px 15px;
@@ -1233,15 +1233,10 @@
 }
 
 .casting-instruction > span {
-  max-width: 46ch;
-  font-size: 0.55rem;
+  max-width: 56ch;
+  color: var(--ich-muted);
+  font-size: 0.7rem;
   line-height: 1.5;
-}
-
-.coin-key {
-  grid-column: 2;
-  grid-row: 1;
-  white-space: nowrap;
 }
 
 .casting-trigger__arrow {
@@ -1877,3 +1872,53 @@
   .iching-appendix { grid-template-columns: auto minmax(0, 1fr); padding: 16px; }
   .iching-appendix__link { grid-column: 1 / -1; }
 }
+
+/* Văn khấn khi gieo quẻ — nằm giữa nhóm "Chọn chủ đề" và ô "Điều bạn đang suy xét". */
+.iching-prayer {
+  margin-top: 16px;
+  padding: 16px 18px 18px;
+  border: 1px solid var(--ich-line);
+  border-left: 3px solid var(--ich-primary);
+  border-radius: 4px;
+  background: var(--ich-surface);
+}
+.iching-prayer h2 {
+  margin: 0;
+  color: var(--ich-primary-deep);
+  font-family: var(--ich-font-display);
+  font-size: 0.95rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  line-height: 1.4;
+  text-wrap: balance;
+}
+.iching-prayer__lead {
+  margin: 8px 0 0;
+  color: var(--ich-ink);
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+.iching-prayer__text {
+  margin: 12px 0 0;
+  padding: 0;
+  border: 0;
+  color: var(--ich-accent-deep);
+  font-family: var(--ich-font-display);
+  font-size: 0.92rem;
+  font-style: italic;
+  font-weight: 600;
+  line-height: 1.75;
+  text-align: center;
+}
+.iching-prayer__text p {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 640px) {
+  .iching-prayer { padding: 14px 14px 16px; }
+  .iching-prayer__text { font-size: 0.88rem; line-height: 1.7; }
+}
+
+/* Hào Ám động: giữ màu son của hào động, thêm viền để phân biệt với hào động từ kết quả gieo. */
+.iching-diagram-line.is-hidden > i em { box-shadow: 0 0 0 2px #fff, 0 0 0 3px #c52240; }
+.casting-line b[title^="Hào Ám động"] { color: #bf263e; }

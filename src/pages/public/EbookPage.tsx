@@ -1,24 +1,30 @@
 /**
- * Trang xuất ebook bằng mã (`/ebook`).
+ * Trang xuất ebook (`/ebook`) — đích của nút "TẢI PDF" ở trang kết quả tra cứu.
  *
- * Cộng tác viên / học viên nhập mã được cấp (hoặc mở đường dẫn dạng `/ebook?ma=MÃ` để tự đăng nhập),
- * nhập họ tên và ngày sinh rồi tải file PDF. Mỗi lần tải trừ 1 lượt của mã.
+ * Luồng: người dùng nhập mã SGEN cấp (hoặc mở đường dẫn `/ebook?ma=MÃ` để tự đăng nhập), chọn loại ebook
+ * ("Demo 3 chỉ số" hoặc "đầy đủ"), kiểm tra hồ sơ khách hàng (họ tên, ngày sinh, số điện thoại — bắt buộc) rồi tải PDF.
+ * Hồ sơ vừa tra cứu được giữ lại qua bước chuyển trang và đăng nhập (xem `app/ebookDraft.ts`).
+ * Mỗi lần tải file trừ một lượt của mã.
  */
 import { useEffect, useState, type CSSProperties, type FormEvent } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { AlertTriangle, BookOpen, CalendarDays, CheckCircle2, Download, KeyRound, Loader2, LogOut, ShieldCheck, Tag, UserRound } from "lucide-react";
-import { api, errorMessage } from "../../api/client";
+import { AlertTriangle, BookOpen, CalendarDays, CheckCircle2, Download, KeyRound, Loader2, LogOut, Phone, ShieldCheck, UserRound } from "lucide-react";
+import { api, ApiError, errorMessage } from "../../api/client";
+import { clearEbookDraft, loadEbookDraft } from "../../app/ebookDraft";
 import { TextField } from "../../components/form/Field";
 import { Button } from "../../components/ui/Button";
 import { Eyebrow } from "../../components/ui/Eyebrow";
 import { useToast } from "../../components/ui/Toast";
+import { EBOOK_EDITION_CHOICES, ebookAllowsEdition, type EbookEdition } from "../../../shared/ebook";
+import { normalizePhone } from "../../../shared/phone";
 
 const DARK_STYLE = { "--page-dark-bg": "url(/assets/backgrounds/cosmic-dark-clean.webp)" } as CSSProperties;
 
 type CodeInfo = {
   display: string;
   planLabel: string;
+  edition: EbookEdition;
   editionLabel: string;
   quota: number;
   used: number;
@@ -29,7 +35,11 @@ type CodeInfo = {
 
 type MeResponse = { code: CodeInfo | null };
 
-async function downloadEbook(body: { name: string; birthDate: string; commonName?: string }) {
+type ExportBody = { name: string; birthDate: string; phone: string; edition: EbookEdition; reportId?: string };
+type FieldKey = "name" | "birthDate" | "phone" | "edition";
+type FieldErrors = Partial<Record<FieldKey, string>>;
+
+async function downloadEbook(body: ExportBody) {
   const response = await fetch("/api/ebook/export", {
     method: "POST",
     headers: { "Content-Type": "application/json", Accept: "application/pdf,application/json" },
@@ -38,9 +48,9 @@ async function downloadEbook(body: { name: string; birthDate: string; commonName
   });
   if (!response.ok) {
     const payload = await response.json().catch(() => null);
-    const fieldMessage = Array.isArray(payload?.error?.fields) ? payload.error.fields[0]?.message : "";
-    const message = fieldMessage || payload?.error?.message || `Không xuất được file (${response.status}).`;
-    throw new Error(message);
+    const error = payload?.error;
+    const fields = Array.isArray(error?.fields) ? error.fields : [];
+    throw new ApiError(response.status, String(error?.code ?? "request_failed"), error?.message || `Không xuất được file (${response.status}).`, fields);
   }
   const blob = await response.blob();
   const remaining = Number(response.headers.get("X-Ebook-Remaining"));
@@ -57,6 +67,17 @@ async function downloadEbook(body: { name: string; birthDate: string; commonName
   return { remaining: Number.isFinite(remaining) ? remaining : null, filename };
 }
 
+/** Lỗi theo trường từ máy chủ (zod): `phone`, `name`, `birthDate`, `edition`. */
+function fieldErrorsFrom(error: unknown): FieldErrors {
+  const result: FieldErrors = {};
+  if (!(error instanceof ApiError)) return result;
+  for (const field of error.fields) {
+    const key = field.path.split(".").pop() as FieldKey;
+    if ((key === "name" || key === "birthDate" || key === "phone" || key === "edition") && !result[key]) result[key] = field.message;
+  }
+  return result;
+}
+
 export function EbookPage() {
   const [params, setParams] = useSearchParams();
   const queryClient = useQueryClient();
@@ -66,12 +87,17 @@ export function EbookPage() {
   const [redeeming, setRedeeming] = useState(false);
   const [codeError, setCodeError] = useState("");
 
-  const [name, setName] = useState("");
-  const [commonName, setCommonName] = useState("");
-  const [birthDate, setBirthDate] = useState("");
+  // Hồ sơ vừa tra cứu (nếu có) được điền sẵn để khách kiểm tra lại, kể cả sau khi đăng nhập bằng mã.
+  const [draft] = useState(loadEbookDraft);
+  const [name, setName] = useState(draft?.name ?? "");
+  const [birthDate, setBirthDate] = useState(draft?.birthDate ?? "");
+  const [phone, setPhone] = useState(draft?.phone ?? "");
+  const [edition, setEdition] = useState<EbookEdition | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [exporting, setExporting] = useState(false);
   const [exportError, setExportError] = useState("");
   const [lastFile, setLastFile] = useState("");
+  const [usedDraft, setUsedDraft] = useState(Boolean(draft));
 
   const meQuery = useQuery({
     queryKey: ["ebook-me"],
@@ -116,15 +142,42 @@ export function EbookPage() {
     void redeem(codeInput);
   };
 
+  /** Loại ebook đang chọn: mặc định bản đầy đủ nếu mã cho phép, mã demo chỉ có bản Demo. */
+  const allowed = (value: EbookEdition) => (info ? ebookAllowsEdition(info.edition, value) : false);
+  const chosen: EbookEdition = edition && allowed(edition) ? edition : info && allowed("full") ? "full" : "demo";
+
+  const clearFieldError = (key: FieldKey) => {
+    if (fieldErrors[key]) setFieldErrors((current) => ({ ...current, [key]: undefined }));
+    if (exportError) setExportError("");
+  };
+
   const submitExport = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (exporting) return;
-    if (name.trim().length < 2) return setExportError("Vui lòng nhập họ tên (ít nhất 2 ký tự).");
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(birthDate)) return setExportError("Vui lòng chọn ngày sinh dương lịch.");
+
+    // Kiểm tra ngay tại từng ô; máy chủ kiểm tra lại độc lập trước khi tạo file.
+    const errors: FieldErrors = {};
+    if (name.trim().length < 2) errors.name = "Vui lòng nhập họ tên (ít nhất 2 ký tự).";
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(birthDate)) errors.birthDate = "Vui lòng chọn ngày sinh dương lịch.";
+    const phoneResult = normalizePhone(phone);
+    if (!phoneResult.ok) errors.phone = phoneResult.message;
+    setFieldErrors(errors);
+    if (Object.keys(errors).length || !phoneResult.ok) {
+      setExportError("");
+      return;
+    }
+
     setExporting(true);
     setExportError("");
     try {
-      const result = await downloadEbook({ name: name.trim(), birthDate, commonName: commonName.trim() || undefined });
+      const sameProfile = draft?.reportId && draft.name === name.trim() && draft.birthDate === birthDate;
+      const result = await downloadEbook({
+        name: name.trim(),
+        birthDate,
+        phone: phoneResult.value,
+        edition: chosen,
+        reportId: sameProfile ? draft?.reportId : undefined,
+      });
       setLastFile(name.trim());
       toast.success("Đã xuất ebook", "File PDF đang được tải về máy của bạn.");
       queryClient.setQueryData<MeResponse>(["ebook-me"], (current) => {
@@ -132,11 +185,16 @@ export function EbookPage() {
         const remaining = result.remaining ?? Math.max(0, current.code.remaining - 1);
         return { code: { ...current.code, remaining, used: current.code.quota - remaining, state: remaining <= 0 ? "exhausted" : current.code.state } };
       });
+      clearEbookDraft();
+      setUsedDraft(false);
       setName("");
-      setCommonName("");
       setBirthDate("");
+      setPhone("");
+      setFieldErrors({});
     } catch (error) {
-      setExportError(errorMessage(error));
+      const serverFields = fieldErrorsFrom(error);
+      if (Object.keys(serverFields).length) setFieldErrors(serverFields);
+      else setExportError(errorMessage(error));
       await queryClient.invalidateQueries({ queryKey: ["ebook-me"] });
     } finally {
       setExporting(false);
@@ -156,6 +214,7 @@ export function EbookPage() {
   const loggedIn = Boolean(info);
   const usable = info?.state === "active" && info.remaining > 0;
   const percent = info ? Math.round((info.used / Math.max(1, info.quota)) * 100) : 0;
+  const pendingProfile = name.trim() && birthDate ? `${name.trim()} · ${birthDate.split("-").reverse().join("/")}` : "";
 
   return (
     <section className="login-stage ux-member" style={DARK_STYLE}>
@@ -164,14 +223,14 @@ export function EbookPage() {
           <Eyebrow variant="pill" icon={BookOpen}>Ebook Thần số học</Eyebrow>
           <h1>Xuất ebook bằng mã</h1>
           <p>
-            Nhập mã SGEN cấp cho bạn, điền họ tên và ngày sinh để nhận file ebook Thần số học dạng PDF. Mỗi lần tải file sẽ trừ một lượt của mã.
+            Nhập mã SGEN cấp cho bạn, chọn bản ebook, kiểm tra thông tin khách hàng (bắt buộc có số điện thoại) để nhận file PDF Thần số học. Mỗi lần tải file sẽ trừ một lượt của mã.
           </p>
           <div>
             <span>
               <KeyRound aria-hidden="true" /> Nhập mã một lần, trình duyệt tự nhớ cho lần sau
             </span>
             <span>
-              <Download aria-hidden="true" /> Tải file PDF ngay, không cần tạo tài khoản
+              <Download aria-hidden="true" /> Hồ sơ vừa tra cứu được giữ lại, không phải nhập lại
             </span>
             <span>
               <ShieldCheck aria-hidden="true" /> Hết lượt hoặc cần thêm lượt: liên hệ SGEN để được cấp mã mới
@@ -192,10 +251,18 @@ export function EbookPage() {
         ) : !loggedIn ? (
           <form className="login-card" onSubmit={submitCode} noValidate>
             <header>
-              <small>Mã ebook</small>
+              <small>Đăng nhập bằng mã ebook</small>
               <h2>Nhập mã của bạn</h2>
               <p>Mã gồm chữ và số, ví dụ DEMO-7KQ2-M9XP. Không phân biệt chữ hoa, chữ thường.</p>
             </header>
+            {usedDraft && pendingProfile ? (
+              <p className="ebook-profile-note">
+                <CheckCircle2 aria-hidden="true" />
+                <span>
+                  Hồ sơ đang tra cứu: <strong>{pendingProfile}</strong>. Hồ sơ được giữ lại sau khi bạn nhập mã.
+                </span>
+              </p>
+            ) : null}
             <div className="form-stack">
               <div className="form-grid">
                 <TextField
@@ -237,28 +304,53 @@ export function EbookPage() {
 
             {usable ? (
               <div className="form-stack">
+                <fieldset className="ebook-edition" aria-describedby={fieldErrors.edition ? "ebook-edition-error" : undefined}>
+                  <legend>Loại ebook</legend>
+                  <div className="ebook-edition__options">
+                    {(["demo", "full"] as const).map((value) => {
+                      const disabled = !allowed(value);
+                      return (
+                        <label key={value} className={`ebook-edition__option ${chosen === value ? "is-selected" : ""} ${disabled ? "is-disabled" : ""}`}>
+                          <input
+                            type="radio"
+                            name="edition"
+                            value={value}
+                            checked={chosen === value}
+                            disabled={disabled}
+                            onChange={() => {
+                              setEdition(value);
+                              clearFieldError("edition");
+                            }}
+                          />
+                          <span>
+                            <strong>{EBOOK_EDITION_CHOICES[value].title}</strong>
+                            <small>{disabled ? "Cần mã ebook đầy đủ để xuất bản này." : EBOOK_EDITION_CHOICES[value].description}</small>
+                          </span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                  {fieldErrors.edition ? (
+                    <p className="field__error" id="ebook-edition-error">
+                      {fieldErrors.edition}
+                    </p>
+                  ) : null}
+                </fieldset>
+
                 <div className="form-grid">
                   <TextField
                     label="Họ tên khai sinh"
                     required
                     wide
                     value={name}
+                    error={fieldErrors.name}
                     autoComplete="off"
                     icon={<UserRound aria-hidden="true" />}
                     onChange={(event) => {
                       setName(event.target.value);
-                      if (exportError) setExportError("");
+                      clearFieldError("name");
                     }}
                     placeholder="Ví dụ: NGUYỄN VĂN A"
-                  />
-                  <TextField
-                    label="Tên thường dùng (nếu có)"
-                    wide
-                    value={commonName}
-                    autoComplete="off"
-                    icon={<Tag aria-hidden="true" />}
-                    onChange={(event) => setCommonName(event.target.value)}
-                    placeholder="Ví dụ: Minh Anh"
                   />
                   <TextField
                     label="Ngày sinh dương lịch"
@@ -266,16 +358,34 @@ export function EbookPage() {
                     required
                     wide
                     value={birthDate}
+                    error={fieldErrors.birthDate}
                     icon={<CalendarDays aria-hidden="true" />}
                     onChange={(event) => {
                       setBirthDate(event.target.value);
-                      if (exportError) setExportError("");
+                      clearFieldError("birthDate");
                     }}
+                  />
+                  <TextField
+                    label="Số điện thoại khách hàng"
+                    type="tel"
+                    inputMode="tel"
+                    autoComplete="off"
+                    required
+                    wide
+                    value={phone}
+                    error={fieldErrors.phone}
+                    hint="Số của khách hàng, sẽ in vào ebook và lưu vào hồ sơ khách hàng."
+                    icon={<Phone aria-hidden="true" />}
+                    onChange={(event) => {
+                      setPhone(event.target.value);
+                      clearFieldError("phone");
+                    }}
+                    placeholder="Nhập số điện thoại"
                   />
                 </div>
 
                 {exportError ? (
-                  <p className="form-error">
+                  <p className="form-error" role="alert">
                     <AlertTriangle aria-hidden="true" /> {exportError}
                   </p>
                 ) : null}
@@ -286,7 +396,7 @@ export function EbookPage() {
                 </Button>
                 {lastFile ? (
                   <p className="muted">
-                    <CheckCircle2 aria-hidden="true" /> Đã xuất file cho {lastFile}. Bạn có thể nhập người tiếp theo.
+                    <CheckCircle2 aria-hidden="true" /> Đã xuất file cho {lastFile}. Bạn có thể nhập khách hàng tiếp theo.
                   </p>
                 ) : null}
               </div>

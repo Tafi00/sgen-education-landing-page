@@ -1,8 +1,10 @@
 import { useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
-import { CalendarDays, CircleCheck, Hash, Loader2, Search, ShieldCheck, Tag, UserRound } from "lucide-react";
+import { CalendarDays, CircleCheck, Hash, Loader2, Phone, Search, ShieldCheck, UserRound } from "lucide-react";
 import { api, errorMessage } from "../../api/client";
+import { saveEbookDraft } from "../../app/ebookDraft";
 import { keepTogether as keep } from "../../app/text";
+import { normalizePhone } from "../../../shared/phone";
 import type { LookupResultPayload } from "../../../shared/lookup-types";
 import { TextField } from "../form/Field";
 import { Button } from "../ui/Button";
@@ -21,7 +23,7 @@ const promises = [
   `Được tham gia 1 buổi học về ${keep("Thần số học")} cùng ${keep("Ths. Phạm Bá Nha")}`,
 ];
 
-type FieldErrors = { name?: string; birthDate?: string };
+type FieldErrors = { name?: string; birthDate?: string; phone?: string };
 
 export function HeroSection() {
   const navigate = useNavigate();
@@ -33,11 +35,14 @@ export function HeroSection() {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     const name = String(formData.get("name") ?? "").trim();
-    const commonName = String(formData.get("commonName") ?? "").trim();
+    const phoneRaw = String(formData.get("phone") ?? "").trim();
     const birthDate = String(formData.get("birthDate") ?? "");
     const nextErrors: FieldErrors = {};
     if (name.length < 2) nextErrors.name = "Vui lòng nhập họ tên (ít nhất 2 ký tự).";
     if (!/^\d{4}-\d{2}-\d{2}$/.test(birthDate)) nextErrors.birthDate = "Vui lòng chọn ngày sinh.";
+    // Số điện thoại không bắt buộc ở bước tra cứu, nhưng đã nhập thì phải hợp lệ (bắt buộc khi xuất ebook).
+    const phoneResult = phoneRaw ? normalizePhone(phoneRaw) : null;
+    if (phoneResult && !phoneResult.ok) nextErrors.phone = phoneResult.message;
     setErrors(nextErrors);
     if (Object.keys(nextErrors).length) {
       toast.error("Thiếu thông tin", "Vui lòng kiểm tra các ô được đánh dấu rồi thử lại.");
@@ -50,12 +55,13 @@ export function HeroSection() {
         inputs: {
           name,
           birthDate,
-          commonName: commonName || undefined,
+          phone: phoneResult?.ok ? phoneResult.value : undefined,
           referenceYear: new Date().getFullYear(),
         },
         save: true,
         source: "/",
       });
+      saveEbookDraft({ name, birthDate, phone: phoneResult?.ok ? phoneResult.value : "", reportId: data.report.id });
       navigate(
         data.report.shareToken
           ? `/tra-cuu/ket-qua/${data.report.id}?token=${data.report.shareToken}`
@@ -131,10 +137,15 @@ export function HeroSection() {
                 onChange={() => errors.name && setErrors((current) => ({ ...current, name: undefined }))}
               />
               <TextField
-                name="commonName"
-                label="Tên thường dùng (nếu có)"
-                placeholder="Ví dụ: Minh Anh, Anna"
-                icon={<Tag aria-hidden="true" />}
+                name="phone"
+                label="Số điện thoại"
+                type="tel"
+                inputMode="tel"
+                autoComplete="tel"
+                placeholder="Nhập số điện thoại"
+                icon={<Phone aria-hidden="true" />}
+                error={errors.phone}
+                onChange={() => errors.phone && setErrors((current) => ({ ...current, phone: undefined }))}
               />
               <TextField
                 name="birthDate"

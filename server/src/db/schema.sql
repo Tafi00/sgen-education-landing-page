@@ -382,3 +382,38 @@ CREATE TABLE IF NOT EXISTS "ebook_exports" (
   "updatedAt" timestamptz NOT NULL DEFAULT now()
 );
 CREATE INDEX IF NOT EXISTS "ebook_exports_code_created_idx" ON "ebook_exports" ("codeId", "createdAt");
+
+-- Hồ sơ khách hàng (người được xuất ebook / để lại số điện thoại ở bước tra cứu).
+-- Mỗi hồ sơ là duy nhất theo (họ tên chuẩn hoá, ngày sinh, số điện thoại) nên xuất lại không tạo bản ghi trùng.
+-- Số điện thoại luôn là chuỗi (giữ số 0 đầu và mã quốc gia); "phoneKey" chỉ phục vụ tìm kiếm / chống trùng.
+CREATE TABLE IF NOT EXISTS "customers" (
+  "_id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  "name" text NOT NULL,
+  "nameKey" text NOT NULL,
+  "nameSearch" text NOT NULL DEFAULT '',
+  "birthDate" text NOT NULL,
+  "birthMonth" integer NOT NULL,
+  "birthDay" integer NOT NULL,
+  "phone" text NOT NULL,
+  "phoneKey" text NOT NULL,
+  "source" text NOT NULL DEFAULT 'ebook',
+  "codeId" uuid,
+  "createdAt" timestamptz NOT NULL DEFAULT now(),
+  "updatedAt" timestamptz NOT NULL DEFAULT now()
+);
+CREATE UNIQUE INDEX IF NOT EXISTS "customers_identity_idx" ON "customers" ("nameKey", "birthDate", "phoneKey");
+CREATE INDEX IF NOT EXISTS "customers_phone_idx" ON "customers" ("phoneKey");
+CREATE INDEX IF NOT EXISTS "customers_birthday_idx" ON "customers" ("birthMonth", "birthDay");
+CREATE INDEX IF NOT EXISTS "customers_created_idx" ON "customers" ("createdAt");
+
+-- Báo cáo tra cứu gắn với hồ sơ khách hàng (số điện thoại không nằm trong "inputs" để không lộ qua link chia sẻ).
+ALTER TABLE "lookup_reports" ADD COLUMN IF NOT EXISTS "customerId" uuid;
+CREATE INDEX IF NOT EXISTS "lookup_reports_customer_idx" ON "lookup_reports" ("customerId");
+
+-- Lịch sử xuất ebook: gắn hồ sơ khách hàng, loại ebook, trạng thái. Chỉ dòng "success" mới là xuất thành công.
+ALTER TABLE "ebook_exports" ADD COLUMN IF NOT EXISTS "customerId" uuid;
+ALTER TABLE "ebook_exports" ADD COLUMN IF NOT EXISTS "customerPhone" text NOT NULL DEFAULT '';
+ALTER TABLE "ebook_exports" ADD COLUMN IF NOT EXISTS "reportId" uuid;
+ALTER TABLE "ebook_exports" ADD COLUMN IF NOT EXISTS "status" text NOT NULL DEFAULT 'success';
+ALTER TABLE "ebook_exports" ADD COLUMN IF NOT EXISTS "error" text NOT NULL DEFAULT '';
+CREATE INDEX IF NOT EXISTS "ebook_exports_customer_created_idx" ON "ebook_exports" ("customerId", "createdAt");

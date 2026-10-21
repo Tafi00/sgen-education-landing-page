@@ -1082,7 +1082,7 @@
 }
 
 .admin-shell .ebook-detail {
-  width: min(100%, 640px);
+  width: min(100%, 760px);
   max-height: 92vh;
   overflow-y: auto;
 }
@@ -1100,4 +1100,50 @@
 
 .admin-shell .ebook-detail__delete {
   margin-right: auto;
+}
+
+/* Trang Khách hàng: huy hiệu loại ebook, thông tin hồ sơ, báo cáo gắn kèm. */
+.admin-shell .customer-editions {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+
+.admin-shell .customer-editions small {
+  color: var(--a-text-2);
+  font-size: 12px;
+}
+
+.admin-shell .customer-facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 20px;
+  margin: 0;
+}
+
+.admin-shell .customer-facts dt {
+  color: var(--a-text-2);
+  font-size: 12px;
+}
+
+.admin-shell .customer-facts dd {
+  margin: 2px 0 0;
+  font-size: 14px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.admin-shell .customer-reports {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding-left: 18px;
+  font-size: 13px;
+}
+
+@media (max-width: 640px) {
+  .admin-shell .customer-facts {
+    grid-template-columns: 1fr;
+  }
 }

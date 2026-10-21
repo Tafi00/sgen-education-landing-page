@@ -8,10 +8,10 @@ import { asyncHandler, AppError } from "../../middleware/errors.js";
 import { currentMember } from "../../middleware/auth.js";
 import { lookupLimiter } from "../../middleware/rateLimit.js";
 import { numerologyPayload, simPayload } from "../../services/lookupResult.js";
-import { buildNumerologyPdf } from "../../services/numerologyPdf.js";
 import { scoreQuiz, loadPublicQuizSet } from "../../services/quizService.js";
 import { randomToken } from "../../services/crypto.js";
-import { numerologyLookupSchema, simLookupSchema } from "../schemas.js";
+import { upsertCustomer } from "../../services/customers.js";
+import { numerologyLookupWithPhoneSchema, simLookupSchema } from "../schemas.js";
 
 export const publicLookupRouter = Router();
 
@@ -74,11 +74,17 @@ publicLookupRouter.post(
     const member = currentMember(req);
     let payload: LookupResultPayload;
     let storedInputs: Record<string, unknown> = body.inputs;
+    let customerId: string | null = null;
 
     if (type === "numerology") {
-      const input = numerologyLookupSchema.parse(body.inputs);
+      const input = numerologyLookupWithPhoneSchema.parse(body.inputs);
       const report = calculateFullNumerologyReport(input.name, input.birthDate, input.referenceYear, input.commonName);
       payload = numerologyPayload(report);
+      // Số điện thoại lưu riêng ở hồ sơ khách hàng (không vào `inputs`, không dùng để tính chỉ số, không lộ qua link chia sẻ).
+      if (input.phone) {
+        const customer = await upsertCustomer({ name: report.displayName, birthDate: input.birthDate, phone: input.phone, source: "lookup" });
+        customerId = customer._id;
+      }
       storedInputs = {
         name: input.name,
         birthDate: input.birthDate,
@@ -118,6 +124,7 @@ publicLookupRouter.post(
       inputs: storedInputs,
       result: payload,
       memberId: member?.id ?? null,
+      customerId,
       source: body.source ?? "",
       shareToken,
       shareExpiresAt: shareToken ? new Date(Date.now() + 1000 * 60 * 60 * 24 * 30) : null,
@@ -144,26 +151,9 @@ publicLookupRouter.get(
     const isOwner = member && report.memberId && String(report.memberId) === member.id;
     const shareValid = report.shareToken && report.shareToken === token && report.shareExpiresAt && report.shareExpiresAt > new Date();
     if (!isOwner && !shareValid) throw new AppError(403, "Bạn không có quyền xem kết quả này.", "forbidden");
-    res.json({ report });
-  }),
-);
-
-publicLookupRouter.get(
-  "/:id/pdf",
-  asyncHandler(async (req, res) => {
-    const token = String(req.query.token ?? "");
-    const report = await LookupReport.findById(req.params.id).lean();
-    if (!report) throw new AppError(404, "Không tìm thấy kết quả tra cứu.", "not_found");
-    if (report.type !== "numerology") throw new AppError(422, "Chỉ báo cáo thần số học mới xuất được PDF.", "unsupported_lookup");
-    const member = currentMember(req);
-    const isOwner = member && report.memberId && String(report.memberId) === member.id;
-    const shareValid = report.shareToken && report.shareToken === token && report.shareExpiresAt && report.shareExpiresAt > new Date();
-    const inputs = numerologyLookupSchema.parse(report.inputs);
-    const full = calculateFullNumerologyReport(inputs.name, inputs.birthDate, inputs.referenceYear, inputs.commonName);
-    const pdf = await buildNumerologyPdf(full);
-    const filename = `bao-cao-than-so-hoc-${full.displayName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "ket-qua"}.pdf`;
-    res.setHeader("Content-Type", "application/pdf");
-    res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
-    res.send(Buffer.from(pdf));
+    // Hồ sơ khách hàng (kèm số điện thoại) chỉ dành cho quản trị, không trả qua link công khai.
+    const { customerId: _customerId, ...publicReport } = report;
+    void _customerId;
+    res.json({ report: publicReport });
   }),
 );

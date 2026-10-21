@@ -9,6 +9,7 @@ export const LookupReport = new Model<LookupReportDoc>({
     result: { kind: "json" },
     memberId: { kind: "uuid" },
     leadId: { kind: "uuid" },
+    customerId: { kind: "uuid" },
     shareToken: { kind: "text" },
     shareExpiresAt: { kind: "date" },
     source: { kind: "text" },
@@ -61,6 +62,7 @@ export type LookupReportDoc = Doc & {
   result: Record<string, unknown>;
   memberId: string | null;
   leadId: string | null;
+  customerId: string | null;
   shareToken: string;
   shareExpiresAt: Date | null;
   source: string;

@@ -5,7 +5,7 @@ import { api, errorMessage } from "../../api/client";
 import { ConfirmDialog } from "../../components/admin/ConfirmDialog";
 import { DataTable } from "../../components/admin/DataTable";
 import { useToast } from "../../components/ui/Toast";
-import { EBOOK_PLANS, EBOOK_PLAN_KEYS, EBOOK_STATE_LABEL, formatEbookCode, type EbookCodeState, type EbookPlanKey } from "../../../shared/ebook";
+import { EBOOK_EDITION_LABEL, EBOOK_PLANS, EBOOK_PLAN_KEYS, EBOOK_STATE_LABEL, formatEbookCode, type EbookCodeState, type EbookPlanKey } from "../../../shared/ebook";
 import type { ColumnConfig } from "../../admin/types";
 
 type CodeRow = {
@@ -30,7 +30,7 @@ type CodeRow = {
 };
 
 type ListResponse = { items: CodeRow[]; total: number; page: number; pageSize: number; totalPages: number };
-type ExportRow = { _id: string; customerName: string; birthDate: string; edition: string; createdAt: string };
+type ExportRow = { _id: string; customerName: string; birthDate: string; customerPhone?: string; edition: string; status?: "success" | "failed"; error?: string; createdAt: string };
 
 const STATE_BADGE: Record<EbookCodeState, string> = {
   active: "active",
@@ -263,7 +263,7 @@ export function EbookCodesPage() {
       <header className="admin-page__header">
         <div>
           <h1>Mã ebook</h1>
-          <p>Tạo mã xuất ebook cho cộng tác viên (bản demo 100 lượt) và học viên (combo 3–100 ebook). Người nhận vào trang /ebook, nhập mã là tải được file.</p>
+          <p>Tạo mã xuất ebook cho cộng tác viên (bản Demo 3 chỉ số, 100 lượt) và học viên (combo 3–100 ebook). Người nhận vào trang /ebook, nhập mã là tải được file.</p>
         </div>
         <div className="admin-page__actions">
           <a className="btn btn--secondary" href="/ebook" target="_blank" rel="noreferrer">
@@ -274,7 +274,7 @@ export function EbookCodesPage() {
 
       <div className="admin-banner admin-banner--info">
         <Info aria-hidden="true" />
-        Các combo ebook đầy đủ hiện xuất bằng mẫu demo 18 trang cho tới khi có tệp mẫu ebook đầy đủ. Hệ thống mã và lượt dùng đã hoạt động bình thường.
+        Khi xuất, người dùng chọn bản “Demo 3 chỉ số” hoặc “Đầy đủ” (mã demo chỉ chọn được bản Demo). Bản đầy đủ hiện dùng mẫu 18 trang với đủ mọi chỉ số cho tới khi có tệp mẫu ebook đầy đủ. Hồ sơ khách hàng và lịch sử xuất xem ở mục Khách hàng.
       </div>
 
       <form className="admin-card" onSubmit={submitGenerate} noValidate>
@@ -614,6 +614,9 @@ function CodeDetailDialog({ row, onClose, onChanged, onDelete }: { row: CodeRow;
                     <th>Thời gian</th>
                     <th>Họ tên</th>
                     <th>Ngày sinh</th>
+                    <th>Số điện thoại</th>
+                    <th>Loại ebook</th>
+                    <th>Trạng thái</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -622,6 +625,13 @@ function CodeDetailDialog({ row, onClose, onChanged, onDelete }: { row: CodeRow;
                       <td>{formatDateTime(item.createdAt)}</td>
                       <td>{item.customerName || "—"}</td>
                       <td>{item.birthDate || "—"}</td>
+                      <td>{item.customerPhone || "—"}</td>
+                      <td>{EBOOK_EDITION_LABEL[item.edition as keyof typeof EBOOK_EDITION_LABEL] ?? item.edition}</td>
+                      <td>
+                        <span className={`status-badge status-badge--${item.status === "failed" ? "cancelled" : "active"}`} title={item.error || undefined}>
+                          {item.status === "failed" ? "Lỗi tạo file" : "Thành công"}
+                        </span>
+                      </td>
                     </tr>
                   ))}
                 </tbody>

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { normalizePhone, PHONE_INVALID_MESSAGE } from "../../../shared/phone.js";
 
 export const statusEnum = z.enum(["draft", "published", "archived"]);
 
@@ -317,6 +318,34 @@ export const numerologyLookupSchema = z.object({
   birthDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Ngày sinh cần theo định dạng YYYY-MM-DD."),
   commonName: z.string().max(160).optional(),
   referenceYear: z.number().min(1900).max(2200).optional(),
+});
+
+/**
+ * Số điện thoại khách hàng: chuẩn hoá và kiểm tra bằng đúng bộ luật dùng ở giao diện (`shared/phone.ts`),
+ * kết quả là CHUỖI đã chuẩn hoá. Bắt buộc khi xuất ebook; ở bước tra cứu số điện thoại là tuỳ chọn (rỗng = bỏ qua).
+ */
+const normalizedPhone = (allowEmpty: boolean) =>
+  z
+    .string()
+    .max(40, PHONE_INVALID_MESSAGE)
+    .transform((raw, ctx): string => {
+      if (allowEmpty && raw.trim() === "") return "";
+      const result = normalizePhone(raw);
+      if (!result.ok) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, message: result.message });
+        return z.NEVER;
+      }
+      return result.value;
+    });
+
+/** Bước tra cứu: họ tên + ngày sinh (+ số điện thoại tuỳ chọn). Số điện thoại KHÔNG phải đầu vào tính chỉ số. */
+export const numerologyLookupWithPhoneSchema = numerologyLookupSchema.extend({ phone: normalizedPhone(true).optional() });
+
+/** Xuất ebook: bắt buộc số điện thoại khách hàng và loại ebook. */
+export const ebookExportSchema = numerologyLookupSchema.omit({ commonName: true }).extend({
+  phone: normalizedPhone(false),
+  edition: z.enum(["demo", "full"], { errorMap: () => ({ message: "Vui lòng chọn loại ebook." }) }),
+  reportId: z.string().uuid().optional(),
 });
 
 export const simLookupSchema = z.object({

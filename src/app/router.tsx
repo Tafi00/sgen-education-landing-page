@@ -70,6 +70,7 @@ const A_AdminLoginPage_AdminLoginPage = lazy(() => import("../pages/admin/AdminL
 const A_DashboardPage_DashboardPage = lazy(() => import("../pages/admin/DashboardPage").then((module) => ({ default: module.DashboardPage })));
 const A_MediaLibraryPage_MediaLibraryPage = lazy(() => import("../pages/admin/MediaLibraryPage").then((module) => ({ default: module.MediaLibraryPage })));
 const A_SettingsPage_SettingsPage = lazy(() => import("../pages/admin/SettingsPage").then((module) => ({ default: module.SettingsPage })));
+const A_CustomersPage = lazy(() => import("../pages/admin/CustomersPage").then((module) => ({ default: module.CustomersPage })));
 const A_EbookCodesPage = lazy(() => import("../pages/admin/EbookCodesPage").then((module) => ({ default: module.EbookCodesPage })));
 const A_UsersPage_AdminUsersPage = lazy(() => import("../pages/admin/UsersPage").then((module) => ({ default: module.AdminUsersPage })));
 const A_LeadsPages_LeadsListPage = lazy(() => import("../pages/admin/LeadsPages").then((module) => ({ default: module.LeadsListPage })));
@@ -204,6 +205,7 @@ export const router = createBrowserRouter([
       { path: "cai-dat", element: <A_SettingsPage_SettingsPage />, handle: handle("Cài đặt website") },
       { path: "tai-khoan", element: <A_UsersPage_AdminUsersPage />, handle: handle("Tài khoản quản trị") },
       { path: "ma-ebook", element: <A_EbookCodesPage />, handle: handle("Mã ebook") },
+      { path: "khach-hang", element: <A_CustomersPage />, handle: handle("Khách hàng") },
       { path: "*", element: <NotFoundPage />, handle: handle("Không tìm thấy trang quản trị") },
     ],
   },
