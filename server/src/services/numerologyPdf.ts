@@ -10,10 +10,13 @@ import type { NumerologyFullReport } from "../../../shared/numerology.js";
  * merge 18 trang template + vẽ overlay tên/ngày sinh/chỉ số/biểu đồ bằng font Faustina.
  * Khác bản gốc: các ô bản gốc in "?" (bug) được điền số thật; trang Sứ mệnh/Đường đời/Đam mê
  * chọn đúng file theo con số thay vì file cứng.
+ *
+ * Đây là bản 18 trang (dùng cho ebook Demo). Ebook bản đầy đủ (hơn 70 trang) dựng ở `numerologyFullPdf.ts`, dùng lại
+ * các overlay trang đầu và trang tổng hợp ở file này.
  */
 
 // Asset đặt ở <cwd>/assets/numerology-pdf — khớp cả chạy tsx (project root) lẫn Docker (/app).
-const ASSET_DIR = path.resolve(process.cwd(), "assets/numerology-pdf");
+export const ASSET_DIR = path.resolve(process.cwd(), "assets/numerology-pdf");
 
 const PURPLE = rgb(0.5, 0, 0.5);
 const RED = rgb(1, 0, 0);
@@ -22,7 +25,7 @@ const RED = rgb(1, 0, 0);
  * "Sứ mệnh & Đường đời" ở mục Nguồn lực hỗ trợ. Các chỉ số trong khung "Thế giới bên trong / bên ngoài /
  * Phát triển bản thân" dùng đúng màu này để đồng nhất với hai chỉ số mẫu.
  */
-const MAGENTA = rgb(199 / 255, 12 / 255, 129 / 255);
+export const MAGENTA = rgb(199 / 255, 12 / 255, 129 / 255);
 const BLACK = rgb(0, 0, 0);
 
 export type Overlay = { text: string; x: number; y: number; size: number; font: "bold" | "semi"; color: typeof PURPLE };
@@ -61,7 +64,7 @@ function metricValue(report: NumerologyFullReport, sectionId: string, key: strin
 }
 
 /** Tử số của giá trị dạng "13/4" → "13"; giá trị thường giữ nguyên. */
-function numerator(value: string) {
+export function numerator(value: string) {
   return value.split("/")[0];
 }
 
@@ -97,20 +100,13 @@ export async function buildNumerologyPdf(report: NumerologyFullReport, options: 
   const page = (name_: string) => path.join(ASSET_DIR, "pages", `${name_}.pdf`);
 
   // 1. Bìa trước — tên + ngày sinh
-  await appendPages(page("Page_01"), [
-    { text: name, x: 300 - name.length * 6, y: 100, size: 28, font: "bold", color: PURPLE },
-    { text: birth, x: 250, y: 60, size: 26, font: "bold", color: PURPLE },
-  ]);
+  await appendPages(page("Page_01"), coverOverlays(name, birth));
   // 2. Thông tin cá nhân
-  await appendPages(page("Page_02"), [
-    { text: name, x: 210, y: 330, size: 18, font: "bold", color: PURPLE },
-    { text: birth, x: 210, y: 288, size: 18, font: "bold", color: PURPLE },
-    ...(options.phone ? [{ text: options.phone, x: 210, y: PHONE_LINE_Y, size: 18, font: "bold" as const, color: PURPLE }] : []),
-  ]);
+  await appendPages(page("Page_02"), infoOverlays(name, birth, options.phone));
   // 3. Mục lục
   await appendPages(page("Page_03"));
   // 4. Thư ngỏ — tên
-  await appendPages(page("Page_04"), [{ text: name, x: 125, y: 746, size: 22, font: "bold", color: BLACK }]);
+  await appendPages(page("Page_04"), letterOverlays(name));
   // 5-7. Intro Pythagoras + mục đích
   await appendPages(page("Page_05"));
   await appendPages(page("Page_06"));
@@ -128,8 +124,7 @@ export async function buildNumerologyPdf(report: NumerologyFullReport, options: 
   // 13. Intro Đam mê
   await appendPages(page("Page_13"));
   // 14. Trang Đam mê theo con số (lấy số đầu nếu nhiều)
-  const passionValue = metric(report, "dinh-huong-su-nghiep", "passion")?.values?.[0] ?? metricValue(report, "dinh-huong-su-nghiep", "passion").split(",")[0];
-  await appendPages(path.join(ASSET_DIR, "dam-me", `DamMe_00${numerator(passionValue)}.pdf`));
+  await appendPages(path.join(ASSET_DIR, "dam-me", `DamMe_00${numerator(firstPassion(report))}.pdf`));
   // 15. Kết luận
   await appendPages(page("Page_15"));
   // 16. Trang tổng hợp — overlay toàn bộ chỉ số + biểu đồ
@@ -144,6 +139,33 @@ export async function buildNumerologyPdf(report: NumerologyFullReport, options: 
 
 /** Dòng "ĐIỆN THOẠI" của trang Thông tin cá nhân nằm dưới dòng NGÀY SINH (y = 288) đúng một nhịp 42pt. */
 const PHONE_LINE_Y = 246;
+
+/** Bìa trước: tên + ngày sinh. */
+export function coverOverlays(name: string, birth: string): Overlay[] {
+  return [
+    { text: name, x: 300 - name.length * 6, y: 100, size: 28, font: "bold", color: PURPLE },
+    { text: birth, x: 250, y: 60, size: 26, font: "bold", color: PURPLE },
+  ];
+}
+
+/** Trang Thông tin cá nhân: tên, ngày sinh và số điện thoại khách hàng (nếu có). */
+export function infoOverlays(name: string, birth: string, phone?: string): Overlay[] {
+  return [
+    { text: name, x: 210, y: 330, size: 18, font: "bold", color: PURPLE },
+    { text: birth, x: 210, y: 288, size: 18, font: "bold", color: PURPLE },
+    ...(phone ? [{ text: phone, x: 210, y: PHONE_LINE_Y, size: 18, font: "bold" as const, color: PURPLE }] : []),
+  ];
+}
+
+/** Thư ngỏ: lời chào theo tên. */
+export function letterOverlays(name: string): Overlay[] {
+  return [{ text: name, x: 125, y: 746, size: 22, font: "bold", color: BLACK }];
+}
+
+/** Con số Đam mê đầu tiên — trang luận giải Đam mê của mẫu gốc chỉ có một con số. */
+export function firstPassion(report: NumerologyFullReport) {
+  return metric(report, "dinh-huong-su-nghiep", "passion")?.values?.[0] ?? metricValue(report, "dinh-huong-su-nghiep", "passion").split(",")[0];
+}
 
 /**
  * Overlay trang tổng hợp: tọa độ port từ `main3.py`, điền số thật thay "?".

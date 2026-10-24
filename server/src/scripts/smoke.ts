@@ -382,7 +382,7 @@ async function run() {
 
   const fullExport = await callBinary(base, "/api/ebook/export", { ...person, phone: "+84 912 345 678", edition: "full" }, fullJar);
   const fullPages = fullExport.bytes ? (await PDFDocument.load(fullExport.bytes)).getPageCount() : 0;
-  record("xuất bản đầy đủ trả file PDF", fullExport.status === 200 && fullPages === 18, `status=${fullExport.status} pages=${fullPages}`);
+  record("xuất bản đầy đủ trả file PDF hơn 70 trang", fullExport.status === 200 && fullPages > 70, `status=${fullExport.status} pages=${fullPages}`);
 
   const profiles = await Customer.find({ nameSearch: "pham thanh tung" }).lean();
   record(
