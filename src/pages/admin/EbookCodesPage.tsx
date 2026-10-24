@@ -5,12 +5,25 @@ import { api, errorMessage } from "../../api/client";
 import { ConfirmDialog } from "../../components/admin/ConfirmDialog";
 import { DataTable } from "../../components/admin/DataTable";
 import { useToast } from "../../components/ui/Toast";
-import { EBOOK_EDITION_LABEL, EBOOK_PLANS, EBOOK_PLAN_KEYS, EBOOK_STATE_LABEL, formatEbookCode, type EbookCodeState, type EbookPlanKey } from "../../../shared/ebook";
+import {
+  EBOOK_EDITION_LABEL,
+  EBOOK_PLANS,
+  EBOOK_PLAN_KEYS,
+  EBOOK_STATE_LABEL,
+  EBOOK_SUFFIX_MAX,
+  ebookCodePrefix,
+  normalizeEbookSuffix,
+  validateEbookSuffix,
+  type EbookCodeState,
+  type EbookPlanKey,
+} from "../../../shared/ebook";
 import type { ColumnConfig } from "../../admin/types";
 
 type CodeRow = {
   _id: string;
   code: string;
+  /** Đuôi mã tự đặt; rỗng = mã ngẫu nhiên. */
+  suffix: string;
   display: string;
   plan: EbookPlanKey;
   planLabel: string;
@@ -122,6 +135,8 @@ export function EbookCodesPage() {
   const [holderContact, setHolderContact] = useState("");
   const [note, setNote] = useState("");
   const [expiresInDays, setExpiresInDays] = useState("");
+  const [suffix, setSuffix] = useState("");
+  const customSuffix = normalizeEbookSuffix(suffix);
   const [createError, setCreateError] = useState("");
   const [generated, setGenerated] = useState<CodeRow[]>([]);
   const [copied, setCopied] = useState("");
@@ -158,9 +173,11 @@ export function EbookCodesPage() {
         holderContact: holderContact.trim() || undefined,
         note: note.trim() || undefined,
         expiresInDays: expiresInDays ? Number(expiresInDays) : undefined,
+        suffix: customSuffix || undefined,
       }),
     onSuccess: async (result) => {
       setGenerated(result.items);
+      setSuffix("");
       setCreateError("");
       toast.success("Đã tạo mã", `${result.items.length} mã ${EBOOK_PLANS[plan].label} đã sẵn sàng để cấp.`);
       await refresh();
@@ -171,7 +188,7 @@ export function EbookCodesPage() {
   const toggleMutation = useMutation({
     mutationFn: (row: CodeRow) => api.patch(`/api/admin/ebook-codes/${row._id}`, { status: row.status === "active" ? "disabled" : "active" }),
     onSuccess: async (_result, row) => {
-      toast.success(row.status === "active" ? "Đã khoá mã" : "Đã mở lại mã", formatEbookCode(row.code));
+      toast.success(row.status === "active" ? "Đã khoá mã" : "Đã mở lại mã", row.display);
       await refresh();
     },
     onError: (error) => toast.error("Không cập nhật được", errorMessage(error)),
@@ -200,6 +217,17 @@ export function EbookCodesPage() {
     if (expiresInDays && (!Number.isInteger(Number(expiresInDays)) || Number(expiresInDays) < 1)) {
       setCreateError("Số ngày hiệu lực phải là số nguyên dương, hoặc để trống nếu mã không hết hạn.");
       return;
+    }
+    if (customSuffix && n !== 1) {
+      setCreateError("Đuôi mã tự đặt chỉ dùng khi tạo 1 mã. Đổi số lượng về 1 hoặc xoá đuôi mã.");
+      return;
+    }
+    if (suffix.trim()) {
+      const checked = validateEbookSuffix(suffix);
+      if (!checked.ok) {
+        setCreateError(checked.message);
+        return;
+      }
     }
     setCreateError("");
     generateMutation.mutate();
@@ -299,6 +327,27 @@ export function EbookCodesPage() {
               <input id="ebook-count" type="number" min={1} max={100} inputMode="numeric" value={count} onChange={(event) => setCount(event.target.value)} />
             </span>
             <p className="field__hint">Tối đa 100 mã mỗi lần.</p>
+          </div>
+          <div className="field">
+            <label className="field__label" htmlFor="ebook-suffix">Đuôi mã (không bắt buộc)</label>
+            <span className="field__control ebook-suffix-control">
+              <span className="ebook-suffix-control__prefix" aria-hidden="true">{selectedPlan.prefix}-</span>
+              <input
+                id="ebook-suffix"
+                value={suffix}
+                maxLength={EBOOK_SUFFIX_MAX + 10}
+                placeholder="Để trống = tự sinh ngẫu nhiên"
+                disabled={Number(count) > 1}
+                onChange={(event) => setSuffix(event.target.value)}
+              />
+            </span>
+            <p className="field__hint">
+              {Number(count) > 1
+                ? "Chỉ tự đặt đuôi được khi tạo 1 mã."
+                : customSuffix
+                  ? `Mã sẽ là ${selectedPlan.prefix}-${customSuffix}. Nên kèm vài chữ số để khó đoán.`
+                  : `Ví dụ: AnhVinh01 → ${selectedPlan.prefix}-ANHVINH01. Chữ có dấu tự bỏ dấu.`}
+            </p>
           </div>
           <div className="field">
             <label className="field__label" htmlFor="ebook-holder">Người nhận / cộng tác viên</label>
@@ -511,6 +560,11 @@ function CodeDetailDialog({ row, onClose, onChanged, onDelete }: { row: CodeRow;
   const [note, setNote] = useState(row.note);
   const [addQuota, setAddQuota] = useState("");
   const [expiresAt, setExpiresAt] = useState(row.expiresAt ? row.expiresAt.slice(0, 10) : "");
+  const currentSuffix = row.suffix || row.code.slice(-8);
+  const [suffix, setSuffix] = useState(currentSuffix);
+  const nextSuffix = normalizeEbookSuffix(suffix);
+  const suffixChanged = nextSuffix !== currentSuffix;
+  const prefix = ebookCodePrefix(row.code, row.suffix);
   const [error, setError] = useState("");
 
   const historyQuery = useQuery({
@@ -526,9 +580,10 @@ function CodeDetailDialog({ row, onClose, onChanged, onDelete }: { row: CodeRow;
         note,
         addQuota: addQuota ? Number(addQuota) : undefined,
         expiresAt: expiresAt ? new Date(`${expiresAt}T23:59:59`).toISOString() : null,
+        suffix: suffixChanged ? nextSuffix : undefined,
       }),
     onSuccess: async () => {
-      toast.success("Đã lưu", `Mã ${row.display} đã được cập nhật.`);
+      toast.success("Đã lưu", suffixChanged ? `Mã ${row.display} đã đổi thành ${prefix}-${nextSuffix}.` : `Mã ${row.display} đã được cập nhật.`);
       setAddQuota("");
       await onChanged();
       onClose();
@@ -541,6 +596,13 @@ function CodeDetailDialog({ row, onClose, onChanged, onDelete }: { row: CodeRow;
     if (addQuota && (!Number.isInteger(Number(addQuota)) || Number(addQuota) < 1)) {
       setError("Số lượt cộng thêm phải là số nguyên dương.");
       return;
+    }
+    if (suffixChanged) {
+      const checked = validateEbookSuffix(suffix);
+      if (!checked.ok) {
+        setError(checked.message);
+        return;
+      }
     }
     setError("");
     save.mutate();
@@ -563,6 +625,18 @@ function CodeDetailDialog({ row, onClose, onChanged, onDelete }: { row: CodeRow;
         </header>
 
         <div className="admin-form__grid">
+          <div className="field field--wide admin-form__cell--wide">
+            <label className="field__label" htmlFor="d-suffix">Đuôi mã</label>
+            <span className="field__control ebook-suffix-control">
+              <span className="ebook-suffix-control__prefix" aria-hidden="true">{prefix}-</span>
+              <input id="d-suffix" value={suffix} maxLength={EBOOK_SUFFIX_MAX + 10} onChange={(event) => setSuffix(event.target.value)} />
+            </span>
+            <p className={`field__hint${suffixChanged ? " ebook-suffix-warning" : ""}`}>
+              {suffixChanged
+                ? `Mã mới: ${prefix}-${nextSuffix || "…"}. Mã cũ và đường dẫn tự đăng nhập cũ sẽ không dùng được nữa (người đang đăng nhập vẫn dùng tiếp); nhớ gửi lại mã mới cho người nhận.`
+                : "Đổi phần sau dấu gạch đầu tiên; tiền tố gói giữ nguyên."}
+            </p>
+          </div>
           <div className="field">
             <label className="field__label" htmlFor="d-holder">Người nhận</label>
             <span className="field__control">

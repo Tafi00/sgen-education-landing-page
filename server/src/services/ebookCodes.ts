@@ -9,6 +9,7 @@ import {
   type EbookPlanKey,
 } from "../../../shared/ebook.js";
 import { query } from "../db/pool.js";
+import { AppError } from "../middleware/errors.js";
 import { EbookCode, type EbookCodeDoc } from "../models/index.js";
 
 /** Phần ngẫu nhiên 8 ký tự (~40 bit) lấy từ nguồn ngẫu nhiên mật mã. */
@@ -26,22 +27,33 @@ export type GenerateInput = {
   note?: string;
   /** Số ngày hiệu lực kể từ lúc tạo; bỏ trống = không hết hạn. */
   expiresInDays?: number;
+  /** Đuôi mã tự đặt, đã chuẩn hoá (`validateEbookSuffix`); chỉ dùng khi tạo đúng 1 mã. */
+  suffix?: string;
   createdBy?: string | null;
 };
 
-/** Tạo `count` mã cùng gói; trả về các bản ghi vừa tạo theo thứ tự. */
+/** Lỗi trùng khoá UNIQUE của PostgreSQL (mã đã tồn tại). */
+export function isUniqueViolation(error: unknown) {
+  return typeof error === "object" && error !== null && "code" in error && String((error as { code: unknown }).code) === "23505";
+}
+
+/** Tạo `count` mã cùng gói (hoặc 1 mã có đuôi tự đặt); trả về các bản ghi vừa tạo theo thứ tự. */
 export async function generateEbookCodes(input: GenerateInput): Promise<EbookCodeDoc[]> {
   const plan = EBOOK_PLANS[input.plan];
   const batchId = crypto.randomBytes(5).toString("hex");
   const expiresAt = input.expiresInDays && input.expiresInDays > 0 ? new Date(Date.now() + input.expiresInDays * 24 * 60 * 60 * 1000) : null;
   const created: EbookCodeDoc[] = [];
 
+  const suffix = input.suffix ?? "";
+  if (suffix && input.count !== 1) throw new AppError(422, "Đuôi mã tự đặt chỉ dùng khi tạo 1 mã.", "suffix_requires_single");
+
   for (let index = 0; index < input.count; index += 1) {
     for (let attempt = 0; attempt < 6; attempt += 1) {
-      const code = `${plan.prefix}${randomBody()}`;
+      const code = `${plan.prefix}${suffix || randomBody()}`;
       try {
         const doc = await EbookCode.create({
           code,
+          suffix,
           plan: plan.key,
           edition: plan.edition,
           quota: plan.quota,
@@ -57,8 +69,10 @@ export async function generateEbookCodes(input: GenerateInput): Promise<EbookCod
         created.push(doc.toObject() as EbookCodeDoc);
         break;
       } catch (error) {
-        const pgCode = typeof error === "object" && error !== null && "code" in error ? String((error as { code: unknown }).code) : "";
-        if (pgCode !== "23505" || attempt === 5) throw error;
+        if (suffix && isUniqueViolation(error)) {
+          throw new AppError(409, `Mã ${formatEbookCode(code, suffix)} đã có. Vui lòng chọn đuôi mã khác.`, "code_taken");
+        }
+        if (!isUniqueViolation(error) || attempt === 5) throw error;
       }
     }
   }
@@ -68,7 +82,8 @@ export async function generateEbookCodes(input: GenerateInput): Promise<EbookCod
 /** Tìm mã theo chuỗi người dùng nhập (không phân biệt hoa thường, dấu gạch, khoảng trắng). */
 export async function findEbookCode(raw: string) {
   const code = normalizeEbookCode(raw);
-  if (code.length < 10) return null;
+  // Ngắn nhất: tiền tố cũ 3 ký tự (C03) + đuôi tự đặt 4 ký tự.
+  if (code.length < 7) return null;
   return EbookCode.findOne({ code }).lean<EbookCodeDoc>();
 }
 
@@ -82,7 +97,7 @@ export function publicEbookInfo(doc: EbookCodeDoc) {
   const state = ebookCodeState(doc);
   return {
     code: doc.code,
-    display: formatEbookCode(doc.code),
+    display: formatEbookCode(doc.code, doc.suffix),
     plan: doc.plan,
     planLabel: plan?.label ?? doc.plan,
     edition: doc.edition,

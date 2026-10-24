@@ -88,6 +88,7 @@ export const EbookCode = new Model<EbookCodeDoc>({
   table: "ebook_codes",
   fields: {
     code: { kind: "text" },
+    suffix: { kind: "text" },
     plan: { kind: "text" },
     edition: { kind: "text" },
     quota: { kind: "int" },
@@ -233,6 +234,8 @@ export type AuditLogDoc = Doc & {
 
 export type EbookCodeDoc = Doc & {
   code: string;
+  /** Đuôi mã do quản trị tự đặt (rỗng = 8 ký tự ngẫu nhiên); `code` = tiền tố + đuôi. */
+  suffix: string;
   plan: string;
   edition: "demo" | "full";
   quota: number;

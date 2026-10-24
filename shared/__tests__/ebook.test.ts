@@ -1,5 +1,14 @@
 import { describe, expect, it } from "vitest";
-import { EBOOK_PLANS, EBOOK_PLAN_KEYS, ebookCodeState, formatEbookCode, normalizeEbookCode } from "../ebook";
+import {
+  EBOOK_PLANS,
+  EBOOK_PLAN_KEYS,
+  ebookCodePrefix,
+  ebookCodeState,
+  formatEbookCode,
+  normalizeEbookCode,
+  normalizeEbookSuffix,
+  validateEbookSuffix,
+} from "../ebook";
 
 describe("gói mã ebook", () => {
   it("demo 100 lượt, combo đúng số ebook", () => {
@@ -24,6 +33,32 @@ describe("chuẩn hoá và hiển thị mã", () => {
     expect(formatEbookCode("DEMO2QYMNVX9")).toBe("DEMO-2QYM-NVX9");
     expect(formatEbookCode("C100D47UUF6Q")).toBe("C100-D47U-UF6Q");
     expect(formatEbookCode("C03N5PAJPV2")).toBe("C03-N5PA-JPV2");
+  });
+});
+
+describe("đuôi mã tự đặt", () => {
+  it("bỏ dấu tiếng Việt, chữ hoa, chỉ giữ chữ và số", () => {
+    expect(normalizeEbookSuffix("Anh Vĩnh 01")).toBe("ANHVINH01");
+    expect(normalizeEbookSuffix("Đức-CTV")).toBe("DUCCTV");
+  });
+
+  it("độ dài 4–20 ký tự sau chuẩn hoá", () => {
+    expect(validateEbookSuffix("Vĩnh")).toEqual({ ok: true, value: "VINH" });
+    expect(validateEbookSuffix("ab!").ok).toBe(false);
+    expect(validateEbookSuffix("A".repeat(21)).ok).toBe(false);
+  });
+
+  it("hiển thị tiền tố + đuôi, kể cả khi đuôi dài 8 ký tự hoặc tiền tố có số", () => {
+    expect(formatEbookCode("DEMOANHVINH", "ANHVINH")).toBe("DEMO-ANHVINH");
+    expect(formatEbookCode("FULL100ABCDEFGH", "ABCDEFGH")).toBe("FULL100-ABCDEFGH");
+    expect(formatEbookCode("FULL1001234", "01234")).toBe("FULL10-01234");
+  });
+
+  it("tiền tố của mã có sẵn để đổi đuôi", () => {
+    expect(ebookCodePrefix("DEMO5ET3RK8W")).toBe("DEMO");
+    expect(ebookCodePrefix("FULL03N5PAJPV2")).toBe("FULL03");
+    expect(ebookCodePrefix("C03N5PAJPV2")).toBe("C03");
+    expect(ebookCodePrefix("DEMOANHVINH", "ANHVINH")).toBe("DEMO");
   });
 });
 

@@ -370,6 +370,8 @@ CREATE TABLE IF NOT EXISTS "ebook_codes" (
 );
 CREATE INDEX IF NOT EXISTS "ebook_codes_plan_created_idx" ON "ebook_codes" ("plan", "createdAt");
 CREATE INDEX IF NOT EXISTS "ebook_codes_batch_idx" ON "ebook_codes" ("batchId");
+-- Đuôi mã do quản trị tự đặt (VD: DEMO-ANHVINH). Rỗng = mã ngẫu nhiên tiền tố + 8 ký tự.
+ALTER TABLE "ebook_codes" ADD COLUMN IF NOT EXISTS "suffix" text NOT NULL DEFAULT '';
 
 CREATE TABLE IF NOT EXISTS "ebook_exports" (
   "_id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),

@@ -1102,6 +1102,29 @@
   margin-right: auto;
 }
 
+/* Ô "Đuôi mã": tiền tố gói (DEMO-, FULL03-…) cố định đứng trước phần quản trị tự đặt. */
+.admin-shell .ebook-suffix-control {
+  gap: 2px;
+}
+
+.admin-shell .ebook-suffix-control__prefix {
+  flex: none;
+  color: var(--a-text-2);
+  font-weight: 600;
+}
+
+.admin-shell .ebook-suffix-control input {
+  text-transform: uppercase;
+}
+
+.admin-shell .ebook-suffix-control input::placeholder {
+  text-transform: none;
+}
+
+.admin-shell .ebook-suffix-warning {
+  color: var(--a-warning-text);
+}
+
 /* Trang Khách hàng: huy hiệu loại ebook, thông tin hồ sơ, báo cáo gắn kèm. */
 .admin-shell .customer-editions {
   display: inline-flex;

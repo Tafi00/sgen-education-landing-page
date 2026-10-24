@@ -64,13 +64,47 @@ export function normalizeEbookCode(raw: string): string {
     .replace(/[^A-Z0-9]/g, "");
 }
 
-/** Dạng hiển thị: DEMO-7KQ2-M9XP (tiền tố + 2 nhóm 4 ký tự). */
-export function formatEbookCode(compact: string): string {
+/**
+ * Dạng hiển thị: DEMO-7KQ2-M9XP (tiền tố + 2 nhóm 4 ký tự ngẫu nhiên). Mã có đuôi do quản trị tự đặt (`suffix`, lưu
+ * riêng trong CSDL) hiển thị dạng tiền tố + đuôi: DEMO-ANHVINH.
+ */
+export function formatEbookCode(compact: string, suffix = ""): string {
   const clean = normalizeEbookCode(compact);
+  if (suffix && clean.length > suffix.length && clean.endsWith(suffix)) return `${clean.slice(0, -suffix.length)}-${suffix}`;
   const body = clean.slice(-8);
   const prefix = clean.slice(0, clean.length - 8);
   if (clean.length <= 8) return clean;
   return `${prefix}-${body.slice(0, 4)}-${body.slice(4)}`;
+}
+
+/** Tiền tố của mã đã có (DEMO, FULL03, C03 cũ…): bỏ đuôi tự đặt, hoặc bỏ 8 ký tự ngẫu nhiên. */
+export function ebookCodePrefix(compact: string, suffix = ""): string {
+  const clean = normalizeEbookCode(compact);
+  if (suffix && clean.length > suffix.length && clean.endsWith(suffix)) return clean.slice(0, -suffix.length);
+  return clean.slice(0, Math.max(0, clean.length - 8));
+}
+
+export const EBOOK_SUFFIX_MIN = 4;
+export const EBOOK_SUFFIX_MAX = 20;
+
+/** Đuôi mã tự đặt: bỏ dấu tiếng Việt (Vĩnh → VINH, Đức → DUC), chữ hoa, chỉ giữ chữ và số. */
+export function normalizeEbookSuffix(raw: string): string {
+  return String(raw ?? "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[đĐ]/g, "D")
+    .toUpperCase()
+    .replace(/[^A-Z0-9]/g, "");
+}
+
+export type EbookSuffixResult = { ok: true; value: string } | { ok: false; message: string };
+
+export function validateEbookSuffix(raw: string): EbookSuffixResult {
+  const value = normalizeEbookSuffix(raw);
+  if (value.length < EBOOK_SUFFIX_MIN || value.length > EBOOK_SUFFIX_MAX) {
+    return { ok: false, message: `Đuôi mã cần từ ${EBOOK_SUFFIX_MIN} đến ${EBOOK_SUFFIX_MAX} chữ cái hoặc chữ số (không tính dấu).` };
+  }
+  return { ok: true, value };
 }
 
 export type EbookCodeState = "active" | "exhausted" | "expired" | "disabled";

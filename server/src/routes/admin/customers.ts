@@ -116,8 +116,8 @@ adminCustomerRouter.get(
     const row = customer.rows[0];
     if (!row) throw new AppError(404, "Không tìm thấy khách hàng.", "not_found");
 
-    const exports = await query<{ _id: string; edition: string; status: string; error: string; createdAt: string; customerPhone: string; code: string | null; holderName: string | null }>(
-      `SELECT e."_id", e."edition", e."status", e."error", e."createdAt", e."customerPhone", k."code", k."holderName"
+    const exports = await query<{ _id: string; edition: string; status: string; error: string; createdAt: string; customerPhone: string; code: string | null; suffix: string | null; holderName: string | null }>(
+      `SELECT e."_id", e."edition", e."status", e."error", e."createdAt", e."customerPhone", k."code", k."suffix", k."holderName"
          FROM "ebook_exports" e LEFT JOIN "ebook_codes" k ON k."_id" = e."codeId"
         WHERE e."customerId" = $1 ORDER BY e."createdAt" DESC LIMIT 200`,
       [req.params.id],
@@ -131,8 +131,9 @@ adminCustomerRouter.get(
       exports: exports.rows.map((item) => ({
         ...item,
         editionLabel: EBOOK_EDITION_LABEL[item.edition as keyof typeof EBOOK_EDITION_LABEL] ?? item.edition,
-        codeDisplay: item.code ? formatEbookCode(item.code) : "",
+        codeDisplay: item.code ? formatEbookCode(item.code, item.suffix ?? "") : "",
         code: undefined,
+        suffix: undefined,
       })),
       reports: reports.rows,
     });

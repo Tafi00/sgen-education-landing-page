@@ -1,13 +1,21 @@
 import { Router } from "express";
 import { z } from "zod";
-import { EBOOK_PLAN_KEYS, EBOOK_PLANS, ebookCodeState, formatEbookCode, type EbookPlanKey } from "../../../../shared/ebook.js";
+import {
+  EBOOK_PLAN_KEYS,
+  EBOOK_PLANS,
+  ebookCodePrefix,
+  ebookCodeState,
+  formatEbookCode,
+  validateEbookSuffix,
+  type EbookPlanKey,
+} from "../../../../shared/ebook.js";
 import { asyncHandler, AppError, parseBody } from "../../middleware/errors.js";
 import { requireAdmin } from "../../middleware/auth.js";
 import { query } from "../../db/pool.js";
 import { AuditLog, EbookCode, EbookExport, type EbookCodeDoc } from "../../models/index.js";
-import { generateEbookCodes } from "../../services/ebookCodes.js";
+import { generateEbookCodes, isUniqueViolation } from "../../services/ebookCodes.js";
 
-/** Quản trị mã xuất ebook: tạo hàng loạt, tra cứu, khoá/mở, cộng thêm lượt, xem lịch sử xuất file. */
+/** Quản trị mã xuất ebook: tạo hàng loạt hoặc tự đặt đuôi mã, tra cứu, khoá/mở, cộng thêm lượt, xem lịch sử xuất file. */
 export const adminEbookRouter = Router();
 
 const ID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -19,7 +27,17 @@ const generateSchema = z.object({
   holderContact: z.string().max(120).optional(),
   note: z.string().max(300).optional(),
   expiresInDays: z.number().int().min(1).max(3650).optional(),
+  /** Đuôi mã tự đặt (VD: "AnhVinh" → DEMO-ANHVINH); bỏ trống = sinh ngẫu nhiên. */
+  suffix: z.string().max(60).optional(),
 });
+
+/** Chuẩn hoá đuôi mã tự đặt; chuỗi rỗng = không đặt. */
+function parseSuffix(raw: string | undefined) {
+  if (!raw?.trim()) return "";
+  const result = validateEbookSuffix(raw);
+  if (!result.ok) throw new AppError(422, result.message, "invalid_suffix");
+  return result.value;
+}
 
 const updateSchema = z.object({
   status: z.enum(["active", "disabled"]).optional(),
@@ -29,12 +47,14 @@ const updateSchema = z.object({
   /** Cộng thêm lượt xuất vào mã hiện có. */
   addQuota: z.number().int().min(1).max(10000).optional(),
   expiresAt: z.string().max(40).nullable().optional(),
+  /** Đổi đuôi mã (giữ tiền tố). Đường dẫn tự đăng nhập cũ hết dùng được; người đang đăng nhập không bị ảnh hưởng. */
+  suffix: z.string().max(60).optional(),
 });
 
 function present(doc: EbookCodeDoc) {
   return {
     ...doc,
-    display: formatEbookCode(doc.code),
+    display: formatEbookCode(doc.code, doc.suffix),
     remaining: Math.max(0, doc.quota - doc.used),
     state: ebookCodeState(doc),
     planLabel: EBOOK_PLANS[doc.plan as EbookPlanKey]?.label ?? doc.plan,
@@ -62,7 +82,7 @@ adminEbookRouter.post(
   "/generate",
   asyncHandler(async (req, res) => {
     const input = parseBody(generateSchema, req.body);
-    const items = await generateEbookCodes({ ...input, createdBy: req.session.adminId ?? null });
+    const items = await generateEbookCodes({ ...input, suffix: parseSuffix(input.suffix), createdBy: req.session.adminId ?? null });
     await audit(req, "ebook.generate", items[0]?.batchId ?? "", { plan: input.plan, count: items.length, holder: input.holderName ?? "" });
     res.status(201).json({ items: items.map(present), batchId: items[0]?.batchId ?? "" });
   }),
@@ -153,13 +173,28 @@ adminEbookRouter.patch(
       doc.quota += input.addQuota;
       diff.addQuota = input.addQuota;
     }
+    if (input.suffix !== undefined) {
+      const suffix = parseSuffix(input.suffix);
+      if (!suffix) throw new AppError(422, "Vui lòng nhập đuôi mã mới.", "invalid_suffix");
+      const code = `${ebookCodePrefix(doc.code, doc.suffix)}${suffix}`;
+      if (code !== doc.code) {
+        diff.code = { from: formatEbookCode(doc.code, doc.suffix), to: formatEbookCode(code, suffix) };
+        doc.code = code;
+        doc.suffix = suffix;
+      }
+    }
     if (input.expiresAt !== undefined) {
       const next = input.expiresAt ? new Date(input.expiresAt) : null;
       if (next && Number.isNaN(next.getTime())) throw new AppError(422, "Ngày hết hạn không hợp lệ.", "invalid_date");
       doc.expiresAt = next;
       diff.expiresAt = next ? next.toISOString() : null;
     }
-    await doc.save();
+    try {
+      await doc.save();
+    } catch (error) {
+      if (isUniqueViolation(error)) throw new AppError(409, `Mã ${formatEbookCode(doc.code, doc.suffix)} đã có. Vui lòng chọn đuôi mã khác.`, "code_taken");
+      throw error;
+    }
     if (Object.keys(diff).length) await audit(req, "ebook.update", String(doc._id), { code: doc.code, ...diff });
     res.json({ item: present(doc.toObject() as EbookCodeDoc) });
   }),
