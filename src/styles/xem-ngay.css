@@ -504,6 +504,18 @@
 .xn-card__grid:not(.xn-card__grid--days) td:last-child { white-space: nowrap; }
 .xn-card__grid td:nth-child(2) { text-align: left; }
 .xn-card__good { color: var(--xn-luck-good); }
+
+/* Nhị thập tứ khí: bài thơ chọn ngày của tháng tiết khí, căn giữa như trang mẫu. */
+.xn-pop--rich:has(.xn-tho) { width: min(360px, calc(100vw - 16px)); }
+.xn-tho__subtitle { font-weight: 700; }
+.xn-tho { padding: 6px 16px 14px; color: var(--xn-ink); text-align: center; }
+.xn-tho p { margin: 0; }
+.xn-tho__sep { color: var(--xn-text); letter-spacing: 0.2em; }
+.xn-tho__verse { padding: 4px 0; font-size: 14.5px; line-height: 1.6; }
+.xn-tho__break { display: block; height: 8px; }
+.xn-tho__notes { display: grid; gap: 2px; padding-top: 4px; font-size: 13.5px; }
+.xn-tho__notes b { color: var(--xn-violet); font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; }
+.xn-tho .xn-tho__astro { margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--xn-card-line); color: var(--xn-text); font-size: 12.5px; }
 .xn-card__grid--days { min-width: 560px; }
 .xn-card__grid--days td span { display: block; }
 .xn-card__grid--days td:nth-child(2) { text-align: center; }

@@ -27,6 +27,7 @@ import {
   findInfo,
 } from "../../../shared/xem-ngay/content";
 import { TRANG_TRINH_MUC } from "../../../shared/xem-ngay/trang-trinh";
+import { tietKhiTho } from "../../../shared/xem-ngay/tiet-khi-tho";
 import "../../styles/xem-ngay.css";
 
 /**
@@ -522,6 +523,11 @@ function InfoPanel({ profile, link, note }: { profile: XemNgayProfile; link: Lin
   const lucNham = findInfo(LUC_NHAM_INFO, info.lucNham);
   const xuatHanh = findInfo(XUAT_HANH_INFO, info.xuatHanh);
   const folk = findInfo(DAN_GIAN_INFO, info.folk);
+  // Rê chuột vào tiết khí: bài thơ chọn ngày của tháng tiết khí như trang mẫu (xem `tiet-khi-tho.ts`).
+  const tietKhiLink = (name: string) =>
+    tietKhiTho(name)
+      ? link(name, name, <TietKhiCard name={name} />, "", "rich", <TietKhiCard name={name} withAstronomy />)
+      : note(name, name, TIET_KHI_INFO[name]?.summary, "", tietKhiDetail(name));
   return (
     <Panel title="Thông tin" className="xn-info">
       <Rows
@@ -531,13 +537,7 @@ function InfoPanel({ profile, link, note }: { profile: XemNgayProfile; link: Lin
           ["Ngày cửu tinh", starLink(info.dayStar)],
           ["Giờ cửu tinh", starLink(info.hourStar, `${info.hourStar} (${profile.overview.hour})`)],
           ["Ngày Lục Nhâm", note(info.lucNham, `Ngày ${info.lucNham}`, lucNham ? `${lucNham.luck}. ${lucNham.summary}` : undefined, luckClass(lucNham?.luck), lucNhamDetail(info.lucNham, `Ngày ${info.lucNham}`))],
-          [
-            "Nhị thập tứ khí",
-            <>
-              {note(info.solarTerms[0], info.solarTerms[0], TIET_KHI_INFO[info.solarTerms[0]]?.summary, "", tietKhiDetail(info.solarTerms[0]))} –{" "}
-              {note(info.solarTerms[1], info.solarTerms[1], TIET_KHI_INFO[info.solarTerms[1]]?.summary, "", tietKhiDetail(info.solarTerms[1]))}
-            </>,
-          ],
+          ["Nhị thập tứ khí", <>{tietKhiLink(info.solarTerms[0])} – {tietKhiLink(info.solarTerms[1])}</>],
           ["Ngày xuất hành", note(info.xuatHanh, `Xuất hành ${info.xuatHanh}`, xuatHanh?.summary, luckClass(xuatHanh?.luck), xuatHanhDetail(info.xuatHanh))],
           ["Ngày đầu tháng", note(info.monthFirstDay, "Ngày đầu tháng", `Mùng 1 tháng ${profile.lunar.month}${profile.lunar.leap ? " nhuận" : ""} âm lịch là ngày ${info.monthFirstDay}.`)],
           ["Quan niệm dân gian", note(info.folk, info.folk, folk?.summary, luckClass(folk?.luck), danGianDetail(info.folk))],
@@ -871,6 +871,39 @@ function tuongQuanDetail(name: string) {
   return (
     <Card title={info.name} sub={<p>{info.relation} · {info.luck}</p>}>
       <CardRows rows={[["Quan hệ Can – Chi", info.relation], ["Tính chất", info.luck, luckTone(info.luck)], ["Ví dụ", info.example], ["Ý nghĩa", info.summary]]} />
+    </Card>
+  );
+}
+
+/** Lời tiết khí theo lịch dân gian: tên gọi, vị trí trong tháng, bài thơ chọn ngày và chú thích của tháng. */
+function TietKhiCard({ name, withAstronomy = false }: { name: string; withAstronomy?: boolean }) {
+  const tho = tietKhiTho(name);
+  if (!tho) return null;
+  const astronomy = TIET_KHI_INFO[name];
+  return (
+    <Card
+      title={name}
+      sub={
+        <>
+          <p className="xn-tho__subtitle">{tho.subtitle}</p>
+          <p>{tho.period}</p>
+        </>
+      }
+    >
+      <div className="xn-tho">
+        <p className="xn-tho__sep" aria-hidden="true">*****</p>
+        <div className="xn-tho__verse">
+          {tho.verse.map((line, index) => (line ? <p key={index}>{line}</p> : <span key={index} className="xn-tho__break" aria-hidden="true" />))}
+        </div>
+        <p className="xn-tho__sep" aria-hidden="true">*****</p>
+        <div className="xn-tho__notes">
+          <b>Chú thích thêm</b>
+          {tho.notes.map((line) => (
+            <p key={line}>{line}</p>
+          ))}
+        </div>
+        {withAstronomy && astronomy && <p className="xn-tho__astro">{astronomy.summary}</p>}
+      </div>
     </Card>
   );
 }
