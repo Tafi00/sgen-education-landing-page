@@ -412,6 +412,15 @@ export function getNaYin(pillar: Pillar) {
   return NA_YIN[Math.floor(cycleIndex / 2)];
 }
 
+/**
+ * Nạp âm (Lục Thập Hoa Giáp) của một năm âm lịch theo khí tiết: Giáp Tý = năm 4, 64, 1984…
+ * Hai năm liền nhau (Can Chi liền kề) chung một nạp âm. Dùng cho "Bản mệnh" của mọi năm sinh, không giới hạn khoảng năm.
+ */
+export function getNaYinByYear(year: number) {
+  const cycleIndex = (((Math.trunc(year) - 4) % 60) + 60) % 60;
+  return NA_YIN[Math.floor(cycleIndex / 2)];
+}
+
 export function getLifeStage(dayStem: string, branch: string) {
   const stemIndex = STEMS.findIndex((item) => item.name === dayStem);
   const branchIndex = BRANCHES.findIndex((item) => item.name === branch);

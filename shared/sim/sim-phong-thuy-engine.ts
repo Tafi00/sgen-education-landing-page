@@ -6,6 +6,7 @@ import {
   getElementBalance,
   getBaziRelations,
   getNaYin,
+  getNaYinByYear,
   isValidDateString,
   isValidTimeString,
 } from "../menh-thu/metaphysics.js";
@@ -545,30 +546,6 @@ export const CUNG_PHI_NU: Record<number, string> = {
   6: "Khảm", 7: "Khôn", 8: "Chấn", 9: "Tốn", 0: "Tốn",
 };
 
-export const MENH_60: Record<number, string> = {
-  1984: "Hải Trung Kim", 1985: "Hải Trung Kim",
-  1986: "Lư Trung Hỏa", 1987: "Lư Trung Hỏa",
-  1988: "Đại Lâm Mộc", 1989: "Đại Lâm Mộc",
-  1990: "Lộ Bàng Thổ", 1991: "Lộ Bàng Thổ",
-  1992: "Kiếm Phong Kim", 1993: "Kiếm Phong Kim",
-  1994: "Sơn Đầu Hỏa", 1995: "Sơn Đầu Hỏa",
-  1996: "Giản Hạ Thủy", 1997: "Giản Hạ Thủy",
-  1998: "Thành Đầu Thổ", 1999: "Thành Đầu Thổ",
-  2000: "Bạch Lạp Kim", 2001: "Bạch Lạp Kim",
-  2002: "Dương Liễu Mộc", 2003: "Dương Liễu Mộc",
-  2004: "Tuyền Trung Thủy", 2005: "Tuyền Trung Thủy",
-  2006: "Ốc Thượng Thổ", 2007: "Ốc Thượng Thổ",
-  2008: "Tích Lịch Hỏa", 2009: "Tích Lịch Hỏa",
-  2010: "Tùng Bách Mộc", 2011: "Tùng Bách Mộc",
-  2012: "Trường Lưu Thủy", 2013: "Trường Lưu Thủy",
-  2014: "Sa Trung Kim", 2015: "Sa Trung Kim",
-  2016: "Sơn Hạ Hỏa", 2017: "Sơn Hạ Hỏa",
-  2018: "Bình Địa Mộc", 2019: "Bình Địa Mộc",
-  2020: "Bích Thượng Thổ", 2021: "Bích Thượng Thổ",
-  2022: "Kim Bạch Kim", 2023: "Kim Bạch Kim",
-  2024: "Phú Đăng Hỏa", 2025: "Phú Đăng Hỏa",
-};
-
 export const LAP_XUAN_MAPPING: Record<number, string> = {
   1984: "02-04", 1985: "02-04", 1986: "02-04", 1987: "02-04", 1988: "02-04",
   1989: "02-04", 1990: "02-04", 1991: "02-04", 1992: "02-04", 1993: "02-04",
@@ -636,7 +613,8 @@ export function buildPersonFromBirth(birthDateStr: string, gender: "Nam" | "Nữ
   const chiIdx = (astroYear - 4) % 12;
   const canChi = `${CAN_NAMES[(canIdx + 10) % 10]} ${CHI_NAMES[(chiIdx + 12) % 12]}`;
 
-  const menh = MENH_60[astroYear] || "Lộ Bàng Thổ";
+  // Bản mệnh = nạp âm của năm khí tiết, tính từ chu kỳ Lục Thập Hoa Giáp nên đúng với mọi năm sinh.
+  const menh = getNaYinByYear(astroYear);
   const menhElement = napAmHanh(menh);
 
   // Quái số dùng năm khí tiết (đổi năm tại Lập Xuân), không tự tăng năm ở

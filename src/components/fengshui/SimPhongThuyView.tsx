@@ -4,7 +4,6 @@ import {
   calcSimLifeHexagrams,
   isValidSimDigits,
   normalizeVietnamesePhone,
-  type SimFortuneHexagram,
   type SimAnalysisResult,
   validateSimPhongThuyInput,
 } from "../../../shared/sim/sim-phong-thuy-engine";
@@ -182,15 +181,14 @@ export default function SimPhongThuyView({
   const lifeHexagramItems = useMemo<IChingReadingItem[]>(() => {
     if (!hasValidPhone) return [];
     const life = calcSimLifeHexagrams(submittedQuery.phone);
-    const fortuneNote = (fortune: SimFortuneHexagram, scope: string) =>
-      `${scope} ${fortune.digits}: thượng ${fortune.upperDigits.split("").join(" + ")} → ${fortune.upperQuai}, hạ ${fortune.lowerDigits.split("").join(" + ")} → ${fortune.lowerQuai}`;
     const items: IChingReadingItem[] = [
       { key: "primary", label: "Quẻ Chủ", number: life.primary, highlightLines: [life.movingLine], note: `Động hào ${life.movingLine}` },
       { key: "changed", label: "Quẻ Biến", number: life.changed, highlightLines: [life.movingLine], note: `Biến từ hào ${life.movingLine} của quẻ chủ` },
     ];
-    if (life.tienVan) items.push({ key: "tien", label: "Quẻ Tiền Vận", number: life.tienVan.hexNum, note: fortuneNote(life.tienVan, "Xét số đầu") });
-    if (life.trungVan) items.push({ key: "trung", label: "Quẻ Trung Vận", number: life.trungVan.hexNum, note: fortuneNote(life.trungVan, "Xét số giữa") });
-    if (life.hauVan) items.push({ key: "hau", label: "Quẻ Hậu Vận", number: life.hauVan.hexNum, note: fortuneNote(life.hauVan, "Xét số cuối") });
+    // Công thức "Cách lập" (xét số đầu/giữa/cuối) của quẻ Tiền vận, Trung vận, Hậu vận được ẩn theo yêu cầu của khách.
+    if (life.tienVan) items.push({ key: "tien", label: "Quẻ Tiền Vận", number: life.tienVan.hexNum });
+    if (life.trungVan) items.push({ key: "trung", label: "Quẻ Trung Vận", number: life.trungVan.hexNum });
+    if (life.hauVan) items.push({ key: "hau", label: "Quẻ Hậu Vận", number: life.hauVan.hexNum });
     return items;
   }, [hasValidPhone, submittedQuery.phone]);
   const aspectAnalysisItems = result ? [
