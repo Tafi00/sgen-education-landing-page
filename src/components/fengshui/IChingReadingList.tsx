@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type KeyboardEvent as ReactKeyboardEvent } from "react";
 import { createPortal } from "react-dom";
 import { BriefcaseBusiness, Eye, HeartPulse, Users, Wallet, X } from "lucide-react";
+import { HEXAGRAM_RATING_LABEL, hexagramRating } from "../../../shared/menh-thu/hexagram-rating";
 import { getHexagramInfo, type MovingLineDetail } from "../../../shared/menh-thu/metaphysics";
 import { ICHING_DOCUMENT_READINGS } from "./iching-document-readings";
 import "../../styles/iching-reading.css";
@@ -35,6 +36,20 @@ function resolveItem(item: IChingReadingItem) {
   return { info, reading, name, upperElement, lowerElement, lines };
 }
 
+/**
+ * Mức Tốt / Trung Bình / Xấu của quẻ (bảng 64 quẻ SGEN): chữ đỏ = Tốt, chữ xanh = Trung Bình, chữ đen nền vàng = Xấu.
+ * Luôn kèm chữ nên không phụ thuộc riêng vào màu.
+ */
+function RatingBadge({ number, onDark = false }: { number: number; onDark?: boolean }) {
+  const rating = hexagramRating(number);
+  if (!rating) return null;
+  return (
+    <span className={`iching-rating ${onDark ? "iching-rating--on-dark" : ""}`} data-rating={rating}>
+      {HEXAGRAM_RATING_LABEL[rating]}
+    </span>
+  );
+}
+
 function HexagramFigure({ lines, highlight = [] }: { lines: boolean[]; highlight?: number[] }) {
   return (
     <div className="iching-figure" aria-hidden="true">
@@ -54,10 +69,13 @@ function HexagramFigure({ lines, highlight = [] }: { lines: boolean[]; highlight
 function ReadingCard({ item, onOpen }: { item: IChingReadingItem; onOpen: () => void }) {
   const { info, reading, name, upperElement, lowerElement } = resolveItem(item);
   return (
-    <section className="iching-reading-block">
+    <section className="iching-reading-block" data-rating={hexagramRating(item.number) ?? undefined}>
       <header>
-        <small>{item.label} · {reading?.pair ?? `Quẻ ${item.number}`}</small>
-        <h4>Luận Quẻ {name}</h4>
+        <div>
+          <small>{item.label} · {reading?.pair ?? `Quẻ ${item.number}`}</small>
+          <h4>Luận Quẻ {name}</h4>
+        </div>
+        <RatingBadge number={item.number} />
       </header>
       <div className="iching-reading-table-wrap">
         <table className="iching-reading-table">
@@ -157,6 +175,7 @@ function HexagramDialog({
             <small>{item.label} · Quẻ số {item.number}{reading ? ` · ${reading.pair}` : ""}</small>
             <h3 id="iching-dialog-title">{name}{upperElement ? ` (${upperElement}/${lowerElement})` : ""}</h3>
           </div>
+          <RatingBadge number={item.number} onDark />
           <button type="button" ref={closeRef} onClick={onClose} aria-label="Đóng">
             <X size={20} aria-hidden="true" />
           </button>
