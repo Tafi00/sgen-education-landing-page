@@ -60,7 +60,7 @@ export const SETTINGS_DEFAULTS: SiteSettingShape = {
   contact: {
     company: "Công ty TNHH SGEN Education",
     phone: "0903891839",
-    phoneAlt: "0982935131",
+    phoneAlt: "0902931839",
     email: "sgen.vn@gmail.com",
     address: "400/6 Mã Lò, Phường Bình Hưng Hòa, Thành Phố Hồ Chí Minh",
     officeAddress: "",

@@ -417,3 +417,9 @@ ALTER TABLE "ebook_exports" ADD COLUMN IF NOT EXISTS "reportId" uuid;
 ALTER TABLE "ebook_exports" ADD COLUMN IF NOT EXISTS "status" text NOT NULL DEFAULT 'success';
 ALTER TABLE "ebook_exports" ADD COLUMN IF NOT EXISTS "error" text NOT NULL DEFAULT '';
 CREATE INDEX IF NOT EXISTS "ebook_exports_customer_created_idx" ON "ebook_exports" ("customerId", "createdAt");
+
+-- 24/10/2026: khách đổi số "Điện thoại phụ" 0982.935.131 → 0902.931.839. Chỉ sửa bản ghi còn đúng số cũ,
+-- nên chạy lại mỗi lần khởi động vẫn an toàn và không đè số khác do quản trị nhập.
+UPDATE "site_settings"
+SET "contact" = jsonb_set("contact", '{phoneAlt}', '"0902931839"'), "updatedAt" = now()
+WHERE "contact"->>'phoneAlt' = '0982935131';

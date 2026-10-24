@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from "react";
 import { AlertCircle, Clock, Loader2 } from "lucide-react";
 import { api, errorMessage } from "../../api/client";
+import { useSiteSettings } from "../../api/hooks";
 import {
   CalendarDays,
   CalendarCheck,
@@ -39,7 +40,18 @@ const benefits = [
   },
 ];
 
+/** Số di động 10 chữ số hiển thị dạng 0903.891.839 như các ấn phẩm của SGEN; dạng khác giữ nguyên. */
+function dottedPhone(value: string) {
+  const digits = value.replace(/\D/g, "");
+  return digits.length === 10 ? `${digits.slice(0, 4)}.${digits.slice(4, 7)}.${digits.slice(7)}` : value.trim();
+}
+
 export function ConsultationSection() {
+  const { settings } = useSiteSettings();
+  // Hai số lấy từ Quản trị → Cài đặt → Liên hệ ("Điện thoại", "Điện thoại phụ"), không ghi cứng trong giao diện.
+  const phones = [settings.contact.phone || settings.brand.hotline, settings.contact.phoneAlt]
+    .map((value) => value.trim())
+    .filter(Boolean);
   const [sent, setSent] = useState(false);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
@@ -95,10 +107,19 @@ export function ConsultationSection() {
             ))}
           </div>
 
-          <a className="consultation-phone" href="tel:0903891839">
-            <IconOrb icon={Phone} size="sm" />
-            <span>0903.891.839 — 0982.935.131</span>
-          </a>
+          {phones.length > 0 && (
+            <div className="consultation-phone">
+              <IconOrb icon={Phone} size="sm" />
+              <span>
+                {phones.map((phone, index) => (
+                  <span key={phone}>
+                    {index > 0 && " — "}
+                    <a href={`tel:${phone.replace(/[^\d+]/g, "")}`}>{dottedPhone(phone)}</a>
+                  </span>
+                ))}
+              </span>
+            </div>
+          )}
         </Reveal>
 
         <Reveal className="consultation-form-card" direction="left" delay={100}>
