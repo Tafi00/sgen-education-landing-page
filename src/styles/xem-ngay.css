@@ -16,6 +16,10 @@
   --xn-tint: #f6f3fd;
   --xn-good: #0f7a43;
   --xn-bad: #b42318;
+  /* Cát / hung (sao, giờ, ngày, hướng) theo lối lịch vạn sự: cát chữ đỏ, hung chữ đen — khách yêu cầu 24/10/2026.
+     --xn-good / --xn-bad giữ cho lịch (Chủ nhật, Thứ bảy) và thông báo lỗi. */
+  --xn-luck-good: #b42318;
+  --xn-luck-bad: #141414;
 }
 
 .xn {
@@ -107,8 +111,8 @@
 .xn-link:hover,
 .xn-link[aria-expanded="true"] { text-decoration-color: currentColor; text-decoration-style: solid; }
 .xn-link:focus-visible { outline: 2px solid var(--xn-violet); outline-offset: 2px; border-radius: 3px; }
-.xn .is-good { color: var(--xn-good); }
-.xn .is-bad { color: var(--xn-bad); }
+.xn .is-good { color: var(--xn-luck-good); }
+.xn .is-bad { color: var(--xn-luck-bad); }
 .xn .is-strong { font-weight: 800; }
 .xn-center { margin: 0; text-align: center; color: var(--xn-ink); font-weight: 600; }
 .xn-muted { margin: 0; color: var(--xn-text); font-style: italic; }
@@ -370,9 +374,8 @@
 .xn-ages { display: grid; gap: 3px; margin: 0; padding: 0; list-style: none; color: var(--xn-ink); font-weight: 600; }
 
 .xn-stars { margin: 0; line-height: 1.8; }
-.xn-stars.is-good .xn-link { color: var(--xn-good); }
-.xn-stars.is-bad .xn-link { color: var(--xn-ink); }
-.xn-stars.is-bad .xn-link.is-strong { color: var(--xn-bad); }
+.xn-stars.is-good .xn-link { color: var(--xn-luck-good); }
+.xn-stars.is-bad .xn-link { color: var(--xn-luck-bad); }
 .xn-stars .xn-link { font-weight: 500; }
 .xn-stars .xn-link.is-strong { font-weight: 800; }
 
@@ -484,8 +487,8 @@
   font-weight: 700;
 }
 .xn-card__rows td { color: var(--xn-ink); }
-.xn-card__rows tr.is-good th { color: var(--xn-good); }
-.xn-card__rows tr.is-bad th { color: var(--xn-bad); }
+.xn-card__rows tr.is-good th { color: var(--xn-luck-good); }
+.xn-card__rows tr.is-bad th { color: var(--xn-luck-bad); }
 .xn-card__rows--center td { text-align: center; }
 .xn-card__rows tr.is-current td { background: var(--xn-card-hit); font-weight: 700; }
 .xn-phoique td { padding-block: 6px; }
@@ -500,7 +503,7 @@
 .xn-card__grid:not(.xn-card__grid--days) td:first-child,
 .xn-card__grid:not(.xn-card__grid--days) td:last-child { white-space: nowrap; }
 .xn-card__grid td:nth-child(2) { text-align: left; }
-.xn-card__good { color: var(--xn-good); }
+.xn-card__good { color: var(--xn-luck-good); }
 .xn-card__grid--days { min-width: 560px; }
 .xn-card__grid--days td span { display: block; }
 .xn-card__grid--days td:nth-child(2) { text-align: center; }
