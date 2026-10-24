@@ -21,19 +21,19 @@ export type EbookPlan = {
   edition: EbookEdition;
   /** Số lượt xuất file của mỗi mã. */
   quota: number;
-  /** Tiền tố đứng đầu mã để nhìn là biết loại. */
+  /** Tiền tố đứng đầu mã để nhìn là biết loại: DEMO… = bản Demo, FULL… = bản đầy đủ (kèm số ebook của combo). */
   prefix: string;
   summary: string;
 };
 
 export const EBOOK_PLANS: Record<EbookPlanKey, EbookPlan> = {
   demo: { key: "demo", label: "Bản Demo 3 chỉ số", edition: "demo", quota: 100, prefix: "DEMO", summary: "100 lượt xuất ebook Demo 3 chỉ số" },
-  combo3: { key: "combo3", label: "Combo 3 ebook", edition: "full", quota: 3, prefix: "C03", summary: "3 lượt xuất ebook đầy đủ" },
-  combo5: { key: "combo5", label: "Combo 5 ebook", edition: "full", quota: 5, prefix: "C05", summary: "5 lượt xuất ebook đầy đủ" },
-  combo10: { key: "combo10", label: "Combo 10 ebook", edition: "full", quota: 10, prefix: "C10", summary: "10 lượt xuất ebook đầy đủ" },
-  combo30: { key: "combo30", label: "Combo 30 ebook", edition: "full", quota: 30, prefix: "C30", summary: "30 lượt xuất ebook đầy đủ" },
-  combo50: { key: "combo50", label: "Combo 50 ebook", edition: "full", quota: 50, prefix: "C50", summary: "50 lượt xuất ebook đầy đủ" },
-  combo100: { key: "combo100", label: "Combo 100 ebook", edition: "full", quota: 100, prefix: "C100", summary: "100 lượt xuất ebook đầy đủ" },
+  combo3: { key: "combo3", label: "Combo 3 ebook", edition: "full", quota: 3, prefix: "FULL03", summary: "3 lượt xuất ebook đầy đủ" },
+  combo5: { key: "combo5", label: "Combo 5 ebook", edition: "full", quota: 5, prefix: "FULL05", summary: "5 lượt xuất ebook đầy đủ" },
+  combo10: { key: "combo10", label: "Combo 10 ebook", edition: "full", quota: 10, prefix: "FULL10", summary: "10 lượt xuất ebook đầy đủ" },
+  combo30: { key: "combo30", label: "Combo 30 ebook", edition: "full", quota: 30, prefix: "FULL30", summary: "30 lượt xuất ebook đầy đủ" },
+  combo50: { key: "combo50", label: "Combo 50 ebook", edition: "full", quota: 50, prefix: "FULL50", summary: "50 lượt xuất ebook đầy đủ" },
+  combo100: { key: "combo100", label: "Combo 100 ebook", edition: "full", quota: 100, prefix: "FULL100", summary: "100 lượt xuất ebook đầy đủ" },
 };
 
 export const EBOOK_PLAN_KEYS = Object.keys(EBOOK_PLANS) as EbookPlanKey[];

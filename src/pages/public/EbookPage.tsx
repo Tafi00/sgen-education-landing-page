@@ -253,7 +253,7 @@ export function EbookPage() {
             <header>
               <small>Đăng nhập bằng mã ebook</small>
               <h2>Nhập mã của bạn</h2>
-              <p>Mã gồm chữ và số, ví dụ DEMO-7KQ2-M9XP. Không phân biệt chữ hoa, chữ thường.</p>
+              <p>Mã gồm chữ và số, ví dụ DEMO-7KQ2-M9XP hoặc FULL03-7KQ2-M9XP. Không phân biệt chữ hoa, chữ thường.</p>
             </header>
             {usedDraft && pendingProfile ? (
               <p className="ebook-profile-note">
@@ -283,6 +283,14 @@ export function EbookPage() {
                   placeholder="DEMO-XXXX-XXXX"
                 />
               </div>
+              <ul className="ebook-code-guide" aria-label="Loại ebook theo mã">
+                <li>
+                  <strong>DEMO…</strong> — {EBOOK_EDITION_CHOICES.demo.title}
+                </li>
+                <li>
+                  <strong>FULL…</strong> — {EBOOK_EDITION_CHOICES.full.title} (dùng được cả bản Demo)
+                </li>
+              </ul>
               <Button variant="primary" type="submit" disabled={redeeming}>
                 <KeyRound aria-hidden="true" /> Xác nhận mã
               </Button>

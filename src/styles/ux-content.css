@@ -914,3 +914,21 @@
   height: 16px;
   margin-top: 2px;
 }
+
+/* Gợi ý ở màn nhập mã: mã bắt đầu bằng DEMO hay FULL thì xuất bản nào. */
+.ux-member .ebook-code-guide {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.ux-member .ebook-code-guide li {
+  padding: 8px 12px;
+  background: rgba(122, 60, 255, 0.08);
+  border-radius: 8px;
+}
+
