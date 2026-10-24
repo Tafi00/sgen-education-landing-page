@@ -1,13 +1,13 @@
-import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import {
   ArrowUp,
+  BookOpen,
   Bot,
   Check,
   ChevronRight,
   CircleCheck,
   ClipboardCopy,
   Coins,
-  Download,
   ExternalLink,
   FileText,
   LibraryBig,
@@ -19,6 +19,7 @@ import type { HexagramResult } from "../../../shared/menh-thu/metaphysics";
 import { castHexagram, castMomentVN, type HiddenMovingLine } from "../../../shared/menh-thu/hidden-moving";
 import { ICHING_DOCUMENT_READINGS } from "./iching-document-readings";
 import { IChingReadingList } from "./IChingReadingList";
+import { AppendixReader, type AppendixDocument } from "./AppendixReader";
 import { LucHaoSheet } from "./LucHaoSheet";
 import { buildLucHaoSheet } from "../../../shared/sim/sim-phong-thuy-engine";
 import "../../styles/iching-tool.css";
@@ -31,11 +32,17 @@ export type FengShuiToolViewProps = {
   compact?: boolean;
 };
 
-/** Phụ lục chi tiết 64 quẻ do SGEN biên soạn, phát hành kèm công cụ Gieo quẻ. */
-const APPENDIX_PDF = {
-  href: "/assets/downloads/phu-luc-64-que-kinh-dich.pdf",
+/**
+ * Phụ lục chi tiết 64 quẻ do SGEN biên soạn (tài liệu lưu hành nội bộ). Khách yêu cầu chỉ cho XEM, không cho tải về:
+ * web chỉ phát hành ảnh từng trang, sinh từ PDF gốc bằng `scripts/render_phu_luc_64_que.py`.
+ */
+const APPENDIX: AppendixDocument = {
   title: "Phụ lục chi tiết 64 quẻ Kinh Dịch",
-  detail: "Tệp PDF · 133 trang · khoảng 4,8 MB",
+  pagesDir: "/assets/phu-luc-64-que",
+  pageCount: 133,
+  firstPrintedPage: 49,
+  pageWidth: 1000,
+  pageHeight: 1295,
 };
 
 /** Văn khấn khi gieo quẻ — chép nguyên văn tài liệu SGEN (trang 26), giữ dấu, thứ tự câu và cách xuống dòng. */
@@ -182,6 +189,8 @@ export function IChingToolView({ defaultQuestion = "", compact = false }: FengSh
   const [tossRound, setTossRound] = useState(0);
   const [omenFlash, setOmenFlash] = useState(false);
   const [copiedAi, setCopiedAi] = useState(false);
+  const [appendixOpen, setAppendixOpen] = useState(false);
+  const closeAppendix = useCallback(() => setAppendixOpen(false), []);
   const tossTimer = useRef<number | undefined>(undefined);
   const flashTimer = useRef<number | undefined>(undefined);
   const resultRef = useRef<HTMLDivElement>(null);
@@ -456,13 +465,14 @@ export function IChingToolView({ defaultQuestion = "", compact = false }: FengSh
         <span className="iching-appendix__icon" aria-hidden="true"><FileText size={26} strokeWidth={1.6} /></span>
         <div className="iching-appendix__copy">
           <small>Tài liệu đính kèm</small>
-          <strong>{APPENDIX_PDF.title}</strong>
-          <p>Đối chiếu lời luận đầy đủ của từng quẻ sau khi gieo. {APPENDIX_PDF.detail}.</p>
+          <strong>{APPENDIX.title}</strong>
+          <p>Đối chiếu lời luận đầy đủ của từng quẻ sau khi gieo. {APPENDIX.pageCount} trang · chỉ xem trực tuyến.</p>
         </div>
-        <a className="iching-appendix__link" href={APPENDIX_PDF.href} download="Phu-luc-chi-tiet-64-que-Kinh-Dich.pdf">
-          <Download size={17} aria-hidden="true" /><span>Tải PDF</span>
-        </a>
+        <button type="button" className="iching-appendix__link" onClick={() => setAppendixOpen(true)} aria-haspopup="dialog">
+          <BookOpen size={17} aria-hidden="true" /><span>Xem tài liệu</span>
+        </button>
       </aside>
+      {appendixOpen && <AppendixReader doc={APPENDIX} onClose={closeAppendix} />}
 
       {lucHao && (
         <section className="skd-luc-hao-sheet iching-luc-hao" aria-labelledby="iching-lh-title">
