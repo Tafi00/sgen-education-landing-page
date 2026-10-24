@@ -14151,10 +14151,19 @@ main.view-shell--calendar {
   justify-content: center !important;
 }
 
+/*
+ * Khung chứa SVG lá số dùng bố cục block, KHÔNG dùng flex: trên Safari (macOS/iPad), SVG chỉ có viewBox làm phần tử flex
+ * với `height: auto` bị co về chiều cao mặc định 150px nên lá số chỉ hiện một dải nhỏ giữa khung. Ở bố cục block, SVG
+ * `width: 100%; height: auto; margin: 0 auto` tự tính chiều cao theo tỉ lệ viewBox trên mọi trình duyệt.
+ * Khung "đang tải" / "không vẽ được" vẫn giữ bố cục flex.
+ */
+.ziwei-reference-board:not(.bazi-chart-loading):not(.bazi-chart-fallback) {
+  display: block !important;
+}
+
 #tutru-svg-container {
   width: 100% !important;
-  display: flex !important;
-  justify-content: center !important;
+  display: block !important;
 }
 
 #tutru-svg-container svg {
