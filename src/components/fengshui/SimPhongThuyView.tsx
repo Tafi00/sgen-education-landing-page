@@ -22,6 +22,10 @@ import { IChingReadingList, type IChingReadingItem } from "./IChingReadingList";
 import "../../styles/sim-phong-thuy.css";
 import { LucHaoSheet } from "./LucHaoSheet";
 import { BatCucPairs } from "./BatCucPairs";
+import { ExpertCallout } from "../ui/ExpertCallout";
+
+/** Lời kêu gọi khách yêu cầu chèn sau quẻ Hậu Vận, sau Bát Cực và cuối kết quả (số chính trong Cài đặt). */
+const SIM_EXPERT_CALLOUT = "Liên hệ Chuyên Gia để được luận giải Chuyên Sâu Miễn Phí";
 
 interface SimPhongThuyViewProps {
   initialPhone?: string;
@@ -347,7 +351,7 @@ export default function SimPhongThuyView({
               ref={phoneInputRef}
               type="tel"
               className="skd-sim-input"
-              placeholder="0932 601 616"
+              placeholder="0903 891 839"
               value={phone}
               onChange={(e) => {
                 setPhone(e.target.value);
@@ -650,6 +654,8 @@ export default function SimPhongThuyView({
           </section>
         )}
 
+        <ExpertCallout phones="primary" title={SIM_EXPERT_CALLOUT} className="skd-expert-callout" />
+
         {/* LÁ QUẺ LỤC HÀO SHEET */}
         <section id="skd-luc-hao" className="skd-luc-hao-sheet" aria-labelledby="skd-lh-title">
           <header className="skd-lh-section-intro">
@@ -907,6 +913,8 @@ export default function SimPhongThuyView({
 
         </section>
 
+        <ExpertCallout phones="primary" title={SIM_EXPERT_CALLOUT} className="skd-expert-callout" />
+
         {/* LUẬN GIẢI CHUYÊN SÂU THEO QUẺ SIM & BÁT TỰ */}
         <details id="skd-deep-reading" className="skd-accordion">
           <summary>Luận giải chuyên sâu theo quẻ sim và bát tự</summary>
@@ -980,6 +988,8 @@ export default function SimPhongThuyView({
             </button>
           </div>
         </section>
+
+        <ExpertCallout phones="primary" title={SIM_EXPERT_CALLOUT} className="skd-expert-callout" />
       </div>
       )}
     </div>
