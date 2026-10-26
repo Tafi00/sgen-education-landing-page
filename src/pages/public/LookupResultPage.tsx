@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { AlertTriangle, ArrowLeft, Download, Loader2 } from "lucide-react";
 import { api, errorMessage } from "../../api/client";
 import { ResultBlocks } from "../../components/lookup/ResultBlocks";
-import { ExpertCallout } from "../../components/ui/ExpertCallout";
+import { ExpertContactBar } from "../../components/ui/ExpertCallout";
 import type { LookupResultPayload } from "../../../shared/lookup-types";
 import { ButtonLink } from "../../components/ui/Button";
 import { Callout } from "../../components/ui/Layout";
@@ -64,6 +64,9 @@ export function LookupResultPage() {
         ) : query.data ? (
           <>
             <div className="lookup-workspace">
+              {query.data.report.type === "numerology" ? (
+                <ExpertContactBar title="Liên hệ Chuyên Gia để được Tư Vấn Chuyên Sâu" />
+              ) : null}
               <ResultBlocks
                 payload={query.data.report.result}
                 actions={
@@ -71,11 +74,6 @@ export function LookupResultPage() {
                     <ButtonLink variant="primary" to="/ebook" onClick={rememberProfile}>
                       <Download aria-hidden="true" /> Tải PDF
                     </ButtonLink>
-                  ) : undefined
-                }
-                callout={
-                  query.data.report.type === "numerology" ? (
-                    <ExpertCallout tone="dark" title="Liên hệ Chuyên Gia để được Tư Vấn Chuyên Sâu" />
                   ) : undefined
                 }
               />

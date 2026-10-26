@@ -1,88 +1,95 @@
-/* Khối "Liên hệ Chuyên Gia": viền gradient chạy vòng, biểu tượng điện thoại rung, số điện thoại có vệt sáng lướt qua. */
+/* Thanh "Liên hệ Chuyên Gia" dính đáy màn hình: viền gradient chạy vòng, điện thoại rung, nút số có vệt sáng, nút Zalo. */
 @property --expert-angle {
   syntax: "<angle>";
   initial-value: 0deg;
   inherits: false;
 }
 
-.expert-callout {
+/* --expert-bar-h do ExpertContactBar đo và ghi lên body; giá trị dưới chỉ là dự phòng.
+   Chừa chỗ ngay trong chân trang (nền tối liền mạch, không lộ dải trắng dưới footer). */
+body.has-expert-bar footer.site-footer::after {
+  content: "";
+  display: block;
+  height: calc(var(--expert-bar-h, 84px) + 26px);
+}
+
+body.has-expert-bar .scroll-top,
+body.has-expert-bar .toast-stack {
+  bottom: calc(var(--expert-bar-h, 84px) + 26px + env(safe-area-inset-bottom, 0px));
+}
+
+.expert-bar {
   /* Giá trị khởi đầu cho trình duyệt chưa hỗ trợ @property (viền đứng yên nhưng vẫn hiện gradient). */
   --expert-angle: 0deg;
-  --expert-ink: #2a1160;
-  --expert-surface: #fff;
   --expert-chip: linear-gradient(104deg, #e81491 0%, #a31ac9 44%, #5721e8 100%);
-  position: relative;
+  position: fixed;
+  left: 50%;
+  bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+  z-index: 60;
   display: flex;
   gap: 14px;
   align-items: center;
-  margin: 18px 0;
-  padding: 14px 18px;
-  color: var(--expert-ink);
+  width: min(980px, calc(100vw - 24px));
+  min-height: 70px;
+  padding: 10px 14px 10px 12px;
+  color: #2a1160;
   border: 2px solid transparent;
-  border-radius: 16px;
+  border-radius: 999px;
   background:
-    linear-gradient(var(--expert-surface), var(--expert-surface)) padding-box,
+    linear-gradient(#fff, #fff) padding-box,
     conic-gradient(from var(--expert-angle), #e81491, #a31ac9, #5721e8, #f2b71e, #e81491) border-box;
-  box-shadow: 0 10px 28px rgba(87, 33, 232, 0.14);
+  box-shadow: 0 14px 36px rgba(42, 17, 96, 0.28);
+  transform: translateX(-50%);
   animation: expert-border 6s linear infinite;
 }
 
-.expert-callout--dark {
-  --expert-ink: #fff;
-  --expert-surface: #1d0f4d;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
-}
-
-.expert-callout__icon {
+.expert-bar__icon {
   position: relative;
   display: grid;
   flex: none;
   place-items: center;
-  width: 48px;
-  height: 48px;
+  width: 46px;
+  height: 46px;
   color: #fff;
   border-radius: 50%;
   background: var(--expert-chip);
 }
 
-.expert-callout__icon svg {
+.expert-bar__icon svg {
   width: 22px;
   height: 22px;
   animation: expert-ring 2.6s ease-in-out infinite;
 }
 
 /* Vòng sóng lan ra quanh biểu tượng. */
-.expert-callout__icon::after {
+.expert-bar__icon::after {
   content: "";
   position: absolute;
   inset: 0;
-  border-radius: 50%;
   border: 2px solid #e81491;
+  border-radius: 50%;
   animation: expert-wave 2.6s ease-out infinite;
 }
 
-.expert-callout__copy {
-  display: grid;
-  gap: 6px;
+.expert-bar__title {
+  flex: 1;
   min-width: 0;
-}
-
-.expert-callout__copy strong {
-  font-size: 1rem;
+  font-size: 0.98rem;
   font-weight: 800;
-  line-height: 1.35;
+  line-height: 1.3;
 }
 
-.expert-callout__phones {
+.expert-bar__actions {
   display: flex;
-  flex-wrap: wrap;
+  flex: none;
   gap: 8px;
+  align-items: center;
 }
 
-.expert-callout__phones a {
+.expert-bar__phone {
   position: relative;
   overflow: hidden;
-  padding: 6px 14px;
+  padding: 8px 16px;
   color: #fff;
   border-radius: 999px;
   background: var(--expert-chip);
@@ -90,10 +97,11 @@
   font-weight: 800;
   letter-spacing: 0.02em;
   text-decoration: none;
+  white-space: nowrap;
   font-variant-numeric: tabular-nums;
 }
 
-.expert-callout__phones a::before {
+.expert-bar__phone::before {
   content: "";
   position: absolute;
   top: 0;
@@ -105,11 +113,24 @@
   animation: expert-shine 3.2s ease-in-out infinite;
 }
 
-.expert-callout__phones a:nth-child(2)::before { animation-delay: 0.6s; }
+.expert-bar__phone:nth-child(2)::before { animation-delay: 0.6s; }
 
-.expert-callout__phones a:hover { filter: brightness(1.08); }
+.expert-bar__zalo {
+  display: grid;
+  flex: none;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  box-shadow: 0 6px 16px rgba(0, 104, 255, 0.35);
+  animation: expert-bounce 3.2s ease-in-out infinite;
+}
 
-.expert-callout__phones a:focus-visible {
+.expert-bar__zalo svg { width: 100%; height: 100%; }
+
+.expert-bar__phone:hover,
+.expert-bar__zalo:hover { filter: brightness(1.08); }
+
+.expert-bar a:focus-visible {
   outline: 3px solid #8b5cf6;
   outline-offset: 2px;
 }
@@ -137,22 +158,51 @@
   85%, 100% { left: 120%; }
 }
 
-@media (max-width: 520px) {
-  .expert-callout { gap: 12px; padding: 12px 14px; }
-  .expert-callout__icon { width: 40px; height: 40px; }
-  .expert-callout__copy strong { font-size: 0.92rem; }
-  .expert-callout__phones a { padding: 5px 12px; font-size: 0.95rem; }
+@keyframes expert-bounce {
+  0%, 70%, 100% { transform: translateY(0); }
+  78% { transform: translateY(-5px); }
+  86% { transform: translateY(0); }
+  92% { transform: translateY(-2px); }
+}
+
+/* Điện thoại: thanh hai tầng — lời mời ở trên, các nút ở dưới; sát đáy, bo góc nhỏ. */
+@media (max-width: 720px) {
+  .expert-bar {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 6px 10px;
+    bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+    width: calc(100vw - 16px);
+    padding: 8px 10px;
+    border-radius: 18px;
+  }
+
+  .expert-bar__icon { grid-row: 1 / 3; width: 40px; height: 40px; }
+  .expert-bar__icon svg { width: 19px; height: 19px; }
+  .expert-bar__title { font-size: 12.5px; line-height: 1.3; }
+  .expert-bar__actions { gap: 6px; }
+  .expert-bar__phone { padding: 6px 11px; font-size: 13.5px; }
+  .expert-bar__zalo { width: 32px; height: 32px; border-radius: 9px; }
+}
+
+/* Màn hẹp: biểu tượng nhỏ đứng cạnh lời mời, hàng nút dùng hết bề ngang để hai số không bị cắt. */
+@media (max-width: 400px) {
+  .expert-bar { gap: 6px 8px; padding: 8px; }
+  .expert-bar__icon { grid-row: auto; width: 30px; height: 30px; }
+  .expert-bar__icon svg { width: 15px; height: 15px; }
+  .expert-bar__actions { grid-column: 1 / -1; justify-content: center; }
+  .expert-bar__phone { flex: none; padding: 6px 9px; font-size: 12.5px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .expert-callout,
-  .expert-callout__icon svg,
-  .expert-callout__icon::after,
-  .expert-callout__phones a::before { animation: none; }
+  .expert-bar,
+  .expert-bar__icon svg,
+  .expert-bar__icon::after,
+  .expert-bar__phone::before,
+  .expert-bar__zalo { animation: none; }
 }
 
 @media print {
-  .expert-callout { animation: none; box-shadow: none; }
-  .expert-callout__icon::after,
-  .expert-callout__phones a::before { display: none; }
+  .expert-bar { display: none; }
+  body.has-expert-bar footer.site-footer::after { display: none; }
 }

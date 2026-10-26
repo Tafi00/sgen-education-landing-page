@@ -16,7 +16,7 @@ import {
 import { api, errorMessage } from "../../api/client";
 import { LookupNavTabs } from "../../components/lookup/LookupNavTabs";
 import { ResultBlocks } from "../../components/lookup/ResultBlocks";
-import { ExpertCallout } from "../../components/ui/ExpertCallout";
+import { ExpertContactBar } from "../../components/ui/ExpertCallout";
 import { useToast } from "../../components/ui/Toast";
 import type { LookupResultPayload } from "../../../shared/lookup-types";
 import { Button, ButtonLink } from "../../components/ui/Button";
@@ -311,9 +311,9 @@ export function NumerologyPage() {
         <div ref={resultRef} className="lookup-result-area">
           {payload ? (
             <div className="lookup-workspace__grid lookup-workspace__grid--result" style={{ marginTop: 40 }}>
+              <ExpertContactBar title="Liên hệ Chuyên Gia để được Tư Vấn Chuyên Sâu" />
               <ResultBlocks
                 payload={payload}
-                callout={<ExpertCallout tone="dark" title="Liên hệ Chuyên Gia để được Tư Vấn Chuyên Sâu" />}
                 actions={
                   <>
                     <Button

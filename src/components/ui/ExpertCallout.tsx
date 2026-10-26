@@ -1,3 +1,5 @@
+import { useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import { PhoneCall } from "lucide-react";
 import { useSiteSettings } from "../../api/hooks";
 import "../../styles/expert-callout.css";
@@ -8,42 +10,77 @@ export function formatHotline(value: string) {
   return digits.length === 10 ? `${digits.slice(0, 4)}.${digits.slice(4, 7)}.${digits.slice(7)}` : value.trim();
 }
 
+/** Link Zalo từ Cài đặt → Mạng xã hội: chấp nhận link đầy đủ hoặc số điện thoại; trống thì mở Zalo theo số chính. */
+function zaloHref(value: string, fallbackPhone: string) {
+  const text = value.trim();
+  if (/^https?:\/\//i.test(text)) return text;
+  const digits = (text || fallbackPhone).replace(/\D/g, "");
+  return digits ? `https://zalo.me/${digits}` : "";
+}
+
+function ZaloMark() {
+  return (
+    <svg viewBox="0 0 48 48" aria-hidden="true" focusable="false">
+      <rect width="48" height="48" rx="12" fill="#0068ff" />
+      <path d="M17 9h14a13 13 0 0 1 0 26H19l-8 5 2.5-7.2A13 13 0 0 1 17 9z" fill="#fff" />
+      <text x="24" y="26.4" textAnchor="middle" fill="#0068ff" fontFamily="Arial, Helvetica, sans-serif" fontSize="11" fontWeight="700">
+        Zalo
+      </text>
+    </svg>
+  );
+}
+
 /**
- * Khối kêu gọi "Liên hệ Chuyên Gia" (khách yêu cầu nội dung "động"): biểu tượng điện thoại rung nhẹ, viền chuyển màu,
- * số điện thoại bấm gọi được. Số lấy từ Quản trị → Cài đặt → Liên hệ: `primary` chỉ số chính, `all` thêm số phụ.
- * Người dùng bật "giảm chuyển động" thì khối đứng yên.
+ * Thanh "Liên hệ Chuyên Gia" dính đáy màn hình (khách: thay vì chèn giữa các mục, cho hiện xuyên suốt để lúc nào cũng
+ * thấy). Gồm số chính, số phụ (Quản trị → Cài đặt → Liên hệ) và nút Zalo; biểu tượng điện thoại rung, nút số có vệt sáng.
+ * Người dùng bật "giảm chuyển động" thì thanh đứng yên.
  */
-export function ExpertCallout({
-  title,
-  phones = "all",
-  tone = "light",
-  className = "",
-}: {
-  title: string;
-  phones?: "all" | "primary";
-  tone?: "light" | "dark";
-  className?: string;
-}) {
+export function ExpertContactBar({ title }: { title: string }) {
   const { settings } = useSiteSettings();
-  const numbers = [settings.contact.phone || settings.brand.hotline, phones === "all" ? settings.contact.phoneAlt : ""]
+  const phones = [settings.contact.phone || settings.brand.hotline, settings.contact.phoneAlt]
     .map((value) => value.trim())
     .filter(Boolean);
-  if (numbers.length === 0) return null;
-  return (
-    <aside className={`expert-callout expert-callout--${tone} ${className}`.trim()} aria-label={title}>
-      <span className="expert-callout__icon" aria-hidden="true">
+  const zalo = zaloHref(settings.socials.zalo ?? "", phones[0] ?? "");
+  const visible = phones.length > 0 || Boolean(zalo);
+  const barRef = useRef<HTMLElement>(null);
+
+  /** Ghi chiều cao thanh vào CSS var để chừa chỗ cuối trang và đẩy nút lên đầu trang lên trên thanh. */
+  useEffect(() => {
+    const node = barRef.current;
+    if (!visible || !node) return;
+    const body = document.body;
+    const apply = () => body.style.setProperty("--expert-bar-h", `${Math.ceil(node.getBoundingClientRect().height)}px`);
+    body.classList.add("has-expert-bar");
+    apply();
+    const observer = new ResizeObserver(apply);
+    observer.observe(node);
+    return () => {
+      observer.disconnect();
+      body.classList.remove("has-expert-bar");
+      body.style.removeProperty("--expert-bar-h");
+    };
+  }, [visible]);
+
+  if (!visible) return null;
+  return createPortal(
+    <aside ref={barRef} className="expert-bar" aria-label={title}>
+      <span className="expert-bar__icon" aria-hidden="true">
         <PhoneCall />
       </span>
-      <div className="expert-callout__copy">
-        <strong>{title}</strong>
-        <span className="expert-callout__phones">
-          {numbers.map((phone) => (
-            <a key={phone} href={`tel:${phone.replace(/[^\d+]/g, "")}`}>
-              {formatHotline(phone)}
-            </a>
-          ))}
-        </span>
-      </div>
-    </aside>
+      <strong className="expert-bar__title">{title}</strong>
+      <span className="expert-bar__actions">
+        {phones.map((phone) => (
+          <a key={phone} className="expert-bar__phone" href={`tel:${phone.replace(/[^\d+]/g, "")}`}>
+            {formatHotline(phone)}
+          </a>
+        ))}
+        {zalo && (
+          <a className="expert-bar__zalo" href={zalo} target="_blank" rel="noreferrer" aria-label="Nhắn Zalo cho chuyên gia">
+            <ZaloMark />
+          </a>
+        )}
+      </span>
+    </aside>,
+    document.body,
   );
 }

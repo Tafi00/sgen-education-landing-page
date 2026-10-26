@@ -248,8 +248,8 @@ export function SettingsPage() {
       {activeTab === "contact" ? (
         <SettingsSection title="Liên hệ">
           <TextField label="Công ty" wide value={form.contact.company} onChange={(e) => patchGroup("contact", { company: e.target.value })} />
-          <TextField label="Điện thoại chính" hint="Hiện ở khối Liên hệ trang chủ và trang Liên hệ." value={form.contact.phone} onChange={(e) => patchGroup("contact", { phone: e.target.value })} />
-          <TextField label="Điện thoại phụ" hint="Số thứ hai cạnh số chính ở khối Liên hệ trang chủ." value={form.contact.phoneAlt} onChange={(e) => patchGroup("contact", { phoneAlt: e.target.value })} />
+          <TextField label="Điện thoại chính" hint="Hiện ở khối Liên hệ trang chủ, trang Liên hệ và thanh Liên hệ Chuyên Gia." value={form.contact.phone} onChange={(e) => patchGroup("contact", { phone: e.target.value })} />
+          <TextField label="Điện thoại phụ" hint="Số thứ hai cạnh số chính ở khối Liên hệ trang chủ và thanh Liên hệ Chuyên Gia." value={form.contact.phoneAlt} onChange={(e) => patchGroup("contact", { phoneAlt: e.target.value })} />
           <TextField label="Email" type="email" value={form.contact.email} onChange={(e) => patchGroup("contact", { email: e.target.value })} />
           <TextField label="Giờ làm việc" value={form.contact.workingHours} onChange={(e) => patchGroup("contact", { workingHours: e.target.value })} />
           <TextField label="Địa chỉ" wide value={form.contact.address} onChange={(e) => patchGroup("contact", { address: e.target.value })} />
@@ -264,6 +264,7 @@ export function SettingsPage() {
             <TextField
               key={key}
               label={key}
+              hint={key === "zalo" ? "Link hoặc số Zalo cho nút Zalo ở thanh Liên hệ Chuyên Gia; để trống thì mở Zalo theo điện thoại chính." : undefined}
               wide
               value={value}
               onChange={(e) => patchGroup("socials", { [key]: e.target.value })}

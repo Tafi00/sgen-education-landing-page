@@ -432,25 +432,18 @@ export function ResultBlockView({ block }: { block: ResultBlock }) {
   }
 }
 
-export type ResultBlocksProps = {
-  payload: LookupResultPayload;
-  actions?: ReactNode;
-  /** Khối kêu gọi (VD "Liên hệ Chuyên Gia") chèn sau phần đầu kết quả, sau mục thứ hai và cuối báo cáo. */
-  callout?: ReactNode;
-};
+export type ResultBlocksProps = { payload: LookupResultPayload; actions?: ReactNode };
 
 /**
  * Hiển thị đầy đủ một `LookupResultPayload`: tiêu đề, mô tả, toàn bộ block và disclaimer bắt buộc.
  * Không tự render header/footer của site.
  */
-export function ResultBlocks({ payload, actions, callout }: ResultBlocksProps) {
+export function ResultBlocks({ payload, actions }: ResultBlocksProps) {
   const disclaimer = payload.disclaimer?.trim() || RESULTS_DISCLAIMER;
   const navSections = payload.blocks.filter((block): block is Extract<ResultBlock, { kind: "section" }> => block.kind === "section");
   const coreMetric = payload.blocks.find((block): block is Extract<ResultBlock, { kind: "metrics" }> => block.kind === "metrics")?.items[0];
   const coreAsset = coreMetric ? numeralAsset(coreMetric.value) : null;
   const [activeSection, setActiveSection] = useState(navSections[0]?.id ?? "");
-  // Chèn khối kêu gọi giữa báo cáo, sau mục thứ hai (chỉ khi còn mục phía sau).
-  const midCalloutAfter = navSections.length > 2 ? navSections[1].id : "";
 
   useEffect(() => {
     const sections = navSections
@@ -494,8 +487,6 @@ export function ResultBlocks({ payload, actions, callout }: ResultBlocksProps) {
         ) : null}
       </header>
 
-      {callout}
-
       <div className="report-layout">
         {navSections.length >= 2 || actions ? (
           <aside className="report-sidebar">
@@ -517,12 +508,8 @@ export function ResultBlocks({ payload, actions, callout }: ResultBlocksProps) {
 
         <div className="report-body article-content">
           {payload.blocks.map((block, index) => (
-            <Fragment key={index}>
-              <ResultBlockView block={block} />
-              {callout && block.kind === "section" && block.id === midCalloutAfter ? callout : null}
-            </Fragment>
+            <ResultBlockView block={block} key={index} />
           ))}
-          {callout}
         </div>
       </div>
 
