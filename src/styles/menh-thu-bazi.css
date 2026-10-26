@@ -14354,3 +14354,21 @@ footer.site-footer .site-footer__bottom p {
     top: auto !important;
   }
 }
+
+/* ≤1080px còn 1 cột: "1fr" không co dưới bề rộng tối thiểu của nội dung (≈360px) nên khung lá số lố mép phải màn hình
+   điện thoại và bị cắt — dùng minmax(0, 1fr). Tiêu đề (max-width ≈10ch) canh giữa thay vì dạt trái. */
+@media (max-width: 1080px) {
+  .bazi-reference-page .bazi-section.tool-page {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  .bazi-reference-page .bazi-section > .tool-intro .tool-intro__copy h1 {
+    margin-inline: auto !important;
+  }
+
+  /* Rule cột cấu hình 360px của máy tính (không đặt trong media) đứng sau rule 1 cột nên vẫn đè: chặn lại ở đây. */
+  .bazi-reference-page .bazi-inline-config {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+}
