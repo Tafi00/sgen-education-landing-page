@@ -165,12 +165,19 @@
 }
 
 .site-nav__dropdown small {
+  display: -webkit-box;
+  max-width: 340px;
+  overflow: hidden;
   color: #6f6b85;
   font-family: var(--font-body);
   font-size: 0.72rem;
   font-weight: 500;
   letter-spacing: 0;
   text-transform: none;
+  white-space: normal;
+  /* Mô tả lấy từ tagline dịch vụ trong CMS có thể dài: giữ tối đa 2 dòng. */
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 }
 
 .site-header__actions {

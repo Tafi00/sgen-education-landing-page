@@ -98,3 +98,24 @@ export const FOOTER_NAV: NavItem[] = [
 ];
 
 export const AUTH_NAV: NavItem = { label: "Đăng nhập", href: "/dang-nhap" };
+
+export type NavService = { slug: string; name: string; tagline: string; order: number };
+
+/** Câu đầu của tagline làm dòng mô tả ngắn dưới tên dịch vụ trong menu (CSS cắt còn 2 dòng). */
+function firstSentence(text: string) {
+  const clean = text.trim();
+  const match = clean.match(/^.*?[.!?](?=\s|$)/);
+  return (match ? match[0] : clean).trim();
+}
+
+/**
+ * Menu "Dịch vụ" lấy theo danh sách dịch vụ trong CMS (Quản trị → Dịch vụ): tên, thứ tự và mô tả ngắn đổi theo nội dung
+ * quản trị đã sửa, thay cho nhãn ghi cứng ở `PRIMARY_NAV`. Khi chưa có dữ liệu thì giữ nhãn mặc định.
+ */
+export function withServiceLinks(nav: NavItem[], services: NavService[]): NavItem[] {
+  if (services.length === 0) return nav;
+  const children = [...services]
+    .sort((a, b) => a.order - b.order)
+    .map((service) => ({ label: service.name.trim(), href: `/dich-vu/${service.slug}`, description: firstSentence(service.tagline) }));
+  return nav.map((item) => (item.href === "/dich-vu" ? { ...item, children } : item));
+}

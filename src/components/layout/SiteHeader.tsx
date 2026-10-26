@@ -1,8 +1,8 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { ChevronDown, LogIn, Menu, Phone, X } from "lucide-react";
-import { AUTH_NAV, PRIMARY_NAV } from "../../app/nav";
-import { useSiteSettings } from "../../api/hooks";
+import { AUTH_NAV, PRIMARY_NAV, withServiceLinks } from "../../app/nav";
+import { useServices, useSiteSettings } from "../../api/hooks";
 
 const AUTO_HIDE_BREAKPOINT = 1240;
 const AUTO_HIDE_AFTER = 200;
@@ -21,6 +21,8 @@ export function SiteHeader() {
   const hoverCloseTimerRef = useRef<number | null>(null);
   const location = useLocation();
   const { settings } = useSiteSettings();
+  const { services } = useServices();
+  const navItems = useMemo(() => withServiceLinks(PRIMARY_NAV, services), [services]);
 
   /** Chỉ mở menu bằng hover trên thiết bị có chuột thật; cảm ứng vẫn dùng nút như cũ. */
   useEffect(() => {
@@ -156,7 +158,7 @@ export function SiteHeader() {
 
         <nav id="site-navigation" className={`site-nav ${menuOpen ? "site-nav--open" : ""}`} aria-label="Điều hướng chính">
           <ul className="site-nav__list">
-            {PRIMARY_NAV.map((item) => (
+            {navItems.map((item) => (
               <li
                 key={item.label}
                 className={`site-nav__item ${openGroup === item.label ? "is-open" : ""} ${item.children ? "has-children" : ""}`}
