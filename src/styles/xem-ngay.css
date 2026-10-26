@@ -524,6 +524,32 @@
 .xn-card__rows tr.is-bad th { color: var(--xn-luck-bad); }
 .xn-card__rows--center td { text-align: center; }
 .xn-card__rows tr.is-current td { background: var(--xn-card-hit); font-weight: 700; }
+
+/* Thẻ Thập nhị trực / Nhị thập bát tú (nguyên lời giáo trình "Trạch Cát Lý Số"); thẻ dài thì cuộn trong popover. */
+.xn-card__han { display: block; margin-bottom: 2px; font-style: italic; }
+.xn-card__list { margin: 0; padding-left: 18px; }
+.xn-card__list li + li { margin-top: 4px; }
+.xn-tu-tho {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 12px 18px;
+  padding: 12px 14px 14px;
+  border-top: 1px solid var(--xn-card-line);
+  background: var(--xn-card-label);
+}
+/* Mỗi bài chiếm 2 hàng (tên bài, lời) của lưới cha để thơ chữ Hán và bài dịch đặt cạnh nhau thẳng hàng. */
+.xn-tu-tho__poem { display: grid; grid-row: span 2; grid-template-rows: subgrid; row-gap: 4px; align-content: start; }
+.xn-tu-tho__poem.is-wide { grid-column: 1 / -1; }
+.xn-tu-tho__poem b { display: block; align-self: end; color: var(--xn-violet); font-size: 12px; letter-spacing: 0.04em; text-transform: uppercase; }
+.xn-tu-tho__stanzas { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 6px 18px; }
+.xn-tu-tho__stanzas p { margin: 0; color: var(--xn-ink); font-size: 13.5px; line-height: 1.55; }
+.xn-tu-tho__stanzas span { display: block; }
+/* Điện thoại: nhãn dài của thẻ sao ("Theo Tuyển Trạch Thông Thư…") nằm trên, lời bên dưới, khỏi bẻ chữ thành cột hẹp. */
+@media (max-width: 480px) {
+  .xn-card:has(.xn-tu-tho) .xn-card__rows th,
+  .xn-card:has(.xn-tu-tho) .xn-card__rows td { display: block; width: auto; }
+  .xn-card:has(.xn-tu-tho) .xn-card__rows td { border-top: 0; padding-top: 4px; }
+}
 .xn-phoique td { padding-block: 6px; }
 .xn-phoique__num { color: var(--xn-violet) !important; font-size: 18px; font-weight: 800; }
 .xn-phoique__gua { font-weight: 700; letter-spacing: 0.01em; }

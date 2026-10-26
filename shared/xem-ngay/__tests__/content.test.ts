@@ -15,6 +15,8 @@ import {
   findInfo,
   type InfoEntry,
 } from "../content";
+import { tu28Luck, TRUC_NAMES, TU28 } from "../rules";
+import { KIM_THAN_THAT_SAT, TRUC_GIAO_TRINH, TU28_GIAO_TRINH } from "../truc-tu-data";
 import names from "./fixtures/content-names.json";
 
 /** Mỗi nhóm tên trong fixture (lấy từ trang tham chiếu) ứng với một từ điển. */
@@ -73,7 +75,6 @@ describe("từ điển nội dung xem ngày", () => {
     for (const dict of [HOUR_STAR_INFO, LUC_NHAM_INFO, XUAT_HANH_INFO, DAN_GIAN_INFO, TUONG_QUAN_INFO]) {
       for (const entry of Object.values(dict)) expect(LUCK3).toContain(entry.luck);
     }
-    for (const entry of Object.values(TU28_INFO)) expect(["Tốt", "Xấu"]).toContain(entry.luck);
     const hoangDao = Object.values(DAY_OFFICER_INFO).filter((entry) => entry.type === "Hoàng Đạo");
     expect(hoangDao.map((entry) => entry.name).sort()).toEqual(
       ["Kim Quỹ", "Kim Đường", "Minh Đường", "Ngọc Đường", "Thanh Long", "Tư Mệnh"].sort(),
@@ -87,6 +88,37 @@ describe("từ điển nội dung xem ngày", () => {
     expect(TU28_INFO["Chẩn Thủy Dẫn"]).toMatchObject({ order: 28, element: "Thủy", weekday: "Thứ Tư" });
     expect(TU28_INFO["Tinh Nhật Mã"].weekday).toBe("Chủ Nhật");
     expect(TU28_INFO["Tâm Nguyệt Hồ"].weekday).toBe("Thứ Hai");
+  });
+
+  it("Thập nhị trực đủ 12 trực, mỗi trực đủ lời giáo trình", () => {
+    expect(TRUC_GIAO_TRINH.map((item) => item.name)).toEqual([...TRUC_NAMES]);
+    for (const item of TRUC_GIAO_TRINH) {
+      for (const field of [item.otherName, item.nature, item.element, item.nen, item.ki]) expect(field.trim(), item.name).not.toBe("");
+      expect(item.banhTo, item.name).toHaveLength(2);
+    }
+    expect(TRUC_INFO["Kiên"]).toMatchObject({ name: "Trực Kiên", otherName: "Nguyên Cát", nature: "Kiết Hung", element: "Thổ", dao: "Hắc đạo" });
+    expect(TRUC_INFO["Bế"].nen).toBe("Cầu y hợp thuốc, xây đắp tường, gắn cửa, gác đòn dông, khởi công, uống thuốc, trị bệnh.");
+    expect(TRUC_GIAO_TRINH.filter((item) => item.dao === "Hoàng đạo").map((item) => item.name)).toEqual(["Trừ", "Định", "Chấp", "Nguy", "Thành", "Khai"]);
+  });
+
+  it("Nhị thập bát tú đủ 28 sao theo thứ tự engine, mỗi sao đủ lời giáo trình", () => {
+    expect(TU28_GIAO_TRINH.map((item) => item.key)).toEqual([...TU28]);
+    for (const item of TU28_GIAO_TRINH) {
+      for (const field of [item.tuongTinh, item.chuTri, item.thuoc, item.thanBi, item.thaiBaLe, item.nen, item.ky]) expect(field.trim(), item.key).not.toBe("");
+      expect(item.ngoaiLe.length, item.key).toBeGreaterThan(0);
+      expect([item.tuTuyet.length, item.dich.length, item.batCu.filter(Boolean).length], item.key).toEqual([4, 4, 8]);
+    }
+    expect(TU28_GIAO_TRINH.filter((item) => item.kimThan).map((item) => item.name)).toEqual(["Giác", "Cang", "Ngưu", "Khuê", "Lâu", "Quỷ", "Tinh"]);
+    expect(KIM_THAN_THAT_SAT).toMatch(/Đó là: Giác, Cang, Khuê, Lâu, Ngưu, Quỷ, Tinh\.$/);
+    const count = (nhom: string) => TU28_GIAO_TRINH.filter((item) => item.nhom === nhom).length;
+    expect([count("toàn cát"), count("toàn hung"), count("trung bình")]).toEqual([11, 10, 7]);
+  });
+
+  it("Tốt/Xấu của sao trên bảng khớp nhóm toàn cát / toàn hung của giáo trình", () => {
+    for (const entry of Object.values(TU28_INFO)) {
+      if (entry.nhom === "toàn cát") expect(tu28Luck(entry.name), entry.name).toBe("Tốt");
+      if (entry.nhom === "toàn hung") expect(tu28Luck(entry.name), entry.name).toBe("Xấu");
+    }
   });
 
   it("findInfo nhận cả nhãn có tiền tố, hậu tố, tên lệch", () => {

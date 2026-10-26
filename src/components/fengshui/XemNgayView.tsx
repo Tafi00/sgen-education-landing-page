@@ -28,6 +28,7 @@ import {
   findInfo,
 } from "../../../shared/xem-ngay/content";
 import { TRANG_TRINH_MUC } from "../../../shared/xem-ngay/trang-trinh";
+import { KIM_THAN_THAT_SAT } from "../../../shared/xem-ngay/truc-tu-data";
 import { tietKhiTho } from "../../../shared/xem-ngay/tiet-khi-tho";
 import "../../styles/xem-ngay.css";
 
@@ -278,6 +279,9 @@ function luckClass(luck?: string) {
   return "";
 }
 
+/** Tính chất trực theo giáo trình: Kiết tô tốt, Hung tô xấu, "Kiết Hung" (tùy việc) để màu thường. */
+const natureClass = (nature?: string) => (nature === "Kiết Hung" ? "" : luckClass(nature));
+
 export function XemNgayView() {
   const [searchParams, setSearchParams] = useSearchParams();
   const today = useMemo(todayValue, []);
@@ -471,7 +475,7 @@ function OverviewPanel({ profile, link, note }: { profile: XemNgayProfile; link:
         rows={[
           ["Giờ đang xem", link(overview.hour, "Can Chi giờ theo ngày", <HourCard profile={profile} />)],
           ["Nạp âm ngày", overview.napAm],
-          ["Thập nhị trực", link(`Trực ${overview.truc}`, `Trực ${overview.truc}`, <TrucCard name={overview.truc} />, luckClass(truc?.luck))],
+          ["Thập nhị trực", link(`Trực ${overview.truc}`, `Trực ${overview.truc}`, <TrucCard name={overview.truc} />, natureClass(truc?.nature))],
           [
             "Kiết hung nhật",
             note(
@@ -968,8 +972,6 @@ function CardRows({ rows }: { rows: Array<[string, ReactNode, string?] | false |
   );
 }
 
-const joinList = (items?: string[]) => (items && items.length ? `${items.join(", ")}.` : "");
-
 function HourCard({ profile }: { profile: XemNgayProfile }) {
   const fmt = (range: string) => {
     const [from, to] = range.split("-").map(Number);
@@ -1079,39 +1081,94 @@ function PhoiQueCard({ name, upper, luck, hexagram }: { name: string; upper: num
   );
 }
 
+/** Thập nhị trực: nguyên lời giáo trình "Trạch Cát Lý Số" (mục 4 Ý nghĩa Cát – Hung, bảng tên khác, ngũ hành, Bành Tổ). */
 function TrucCard({ name }: { name: string }) {
   const info = findInfo(TRUC_INFO, name);
   if (!info) return <Card title={`Trực ${name}`} />;
+  const [han, viet] = info.banhTo;
+  const tone = info.nature === "Kiết" ? "good" : info.nature === "Hung" ? "bad" : undefined;
   return (
-    <Card title={`Trực ${name}`} sub={<><p>{info.luck}{info.luckNote ? ` — ${info.luckNote}` : ""}</p><p>{info.summary}</p></>} wide>
+    <Card title={info.name} wide>
       <CardRows
         rows={[
-          ["Bành Tổ kị nhật", info.saying],
-          [`Ý nghĩa trực ${name}`, info.meaning],
-          ["Trực thuộc ngũ hành", info.element],
-          ["Nên", joinList(info.suitable), "good"],
-          ["Kị", joinList(info.avoid), "bad"],
+          ["Tên khác", info.otherName],
+          ["Tính chất", info.nature, tone],
+          ["Ngũ hành", info.element],
+          ["Hoàng / Hắc đạo", info.dao],
+          ["Nên", info.nen, "good"],
+          ["Kị", info.ki, "bad"],
+          ["Bành Tổ kỵ nhật", <><span className="xn-card__han">{han}</span>{viet}</>],
         ]}
       />
     </Card>
   );
 }
 
+/** Một bài thơ của sao: các khổ ngăn bởi dòng rỗng. */
+function Verse({ title, lines, wide = false }: { title: string; lines: string[]; wide?: boolean }) {
+  const stanzas = lines.join("\n").split("\n\n").map((stanza) => stanza.split("\n"));
+  return (
+    <div className={`xn-tu-tho__poem ${wide ? "is-wide" : ""}`}>
+      <b>{title}</b>
+      <div className="xn-tu-tho__stanzas">
+        {stanzas.map((stanza, index) => (
+          <p key={index}>
+            {stanza.map((line, row) => (
+              <span key={row}>{line}</span>
+            ))}
+          </p>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/** Nhị thập bát tú: nguyên lời giáo trình "Trạch Cát Lý Số" (Nhị thập bát tú luận kiết hung, lời từng sao). */
 function TuCard({ name }: { name: string }) {
   const info = findInfo(TU28_INFO, name);
   if (!info) return <Card title={name} />;
   return (
-    <Card title={info.name} sub={<p>Tướng tinh: {info.animal} · {info.luck} · chủ trị {info.weekday}</p>} wide>
+    <Card
+      title={info.name}
+      sub={
+        <>
+          <p>Tướng tinh: {info.tuongTinh} - Chủ trì {info.chuTri}</p>
+          <p>
+            Tú “{info.nhom}”{info.nhomNote ? ` [${info.nhomNote}]` : ""}
+            {info.kimThan ? " · Kim thần Thất sát" : ""}
+          </p>
+        </>
+      }
+      wide
+    >
       <CardRows
         rows={[
-          ["Thất diệu", info.element],
+          ["Thuộc", info.thuoc],
           ["Tứ tượng", info.group],
-          ["Ý nghĩa", info.summary],
-          ["Nên làm", joinList(info.suitable), "good"],
-          ["Kiêng cữ", joinList(info.avoid), "bad"],
-          ["Ngoại lệ", info.exception],
+          ["Theo Thần Bí Trạch Cát TQ", info.thanBi],
+          ["Theo Tuyển Trạch Thông Thư và Thái Bá Lệ", info.thaiBaLe],
+          ["Nên làm", info.nen, "good"],
+          ["Kiêng cữ", info.ky, "bad"],
+          [
+            "Ngoại lệ",
+            info.ngoaiLe.length > 1 ? (
+              <ul className="xn-card__list">
+                {info.ngoaiLe.map((line) => (
+                  <li key={line}>{line}</li>
+                ))}
+              </ul>
+            ) : (
+              info.ngoaiLe[0]
+            ),
+          ],
+          info.kimThan && ["Kim thần Thất sát", KIM_THAN_THAT_SAT, "bad"],
         ]}
       />
+      <div className="xn-tu-tho">
+        <Verse title="Thất ngôn tứ tuyệt (Trạch cát thông thư)" lines={info.tuTuyet} />
+        <Verse title="Dịch thơ" lines={info.dich} />
+        <Verse title="Thất ngôn bát cú (Hứa Chân Quân)" lines={info.batCu} wide />
+      </div>
     </Card>
   );
 }

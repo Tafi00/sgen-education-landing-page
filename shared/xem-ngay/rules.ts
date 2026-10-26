@@ -46,13 +46,17 @@ export const TU28 = [
   "Khuê Mộc Lang", "Lâu Kim Cẩu", "Vị Thổ Trĩ", "Mão Nhật Kê", "Tất Nguyệt Ô", "Chủy Hỏa Hầu", "Sâm Thủy Viên",
   "Tỉnh Mộc Can", "Quỷ Kim Dương", "Liễu Thổ Chương", "Tinh Nhật Mã", "Trương Nguyệt Lộc", "Dực Hỏa Xà", "Chẩn Thủy Dẫn",
 ] as const;
-/** Đánh giá Tốt/Xấu của 28 sao theo trang mẫu. */
+/**
+ * Đánh giá Tốt/Xấu của 28 sao theo trang mẫu. Khớp nhóm của giáo trình "Trạch Cát Lý Số": 11 sao "toàn cát" đều Tốt,
+ * 10 sao "toàn hung" đều Xấu (kiểm ở content.test.ts); 7 sao "trung bình" giữ theo trang mẫu.
+ */
 const TU28_GOOD = new Set(["Giác Mộc Giao", "Phòng Nhật Thố", "Vĩ Hỏa Hổ", "Cơ Thủy Báo", "Đẩu Mộc Giải", "Thất Hỏa Trư", "Bích Thủy Du", "Lâu Kim Cẩu", "Vị Thổ Trĩ", "Tất Nguyệt Ô", "Sâm Thủy Viên", "Tỉnh Mộc Can", "Trương Nguyệt Lộc", "Chẩn Thủy Dẫn"]);
+export const tu28Luck = (name: string) => (TU28_GOOD.has(name) ? "Tốt" : "Xấu");
 
 /** Nhị thập bát tú: chu kỳ 28 ngày (ngày 14/10/2026 là sao Chẩn). */
 export function getTu28(ctx: DayContext) {
   const name = TU28[mod(ctx.jd - 2461328 + 27, 28)];
-  return { name, luck: TU28_GOOD.has(name) ? "Tốt" : "Xấu" };
+  return { name, luck: tu28Luck(name) };
 }
 
 export const CUU_TINH = ["Nhất Bạch", "Nhị Hắc", "Tam Bích", "Tứ Lục", "Ngũ Hoàng", "Lục Bạch", "Thất Xích", "Bát Bạch", "Cửu Tử"] as const;
