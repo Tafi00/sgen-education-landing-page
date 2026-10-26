@@ -397,6 +397,8 @@
 .xn-dongcong b { color: var(--xn-ink); }
 .xn-dongcong em { font-style: normal; font-weight: 800; }
 .xn-dongcong:hover span { color: var(--xn-ink); }
+/* Lời Nghi – Kị của giáo trình hiện đủ, giữ chỗ xuống dòng như bảng gốc. */
+.xn-dongcong__text { white-space: pre-line; }
 
 .xn-muc { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 3px 18px; margin: 0; padding: 0; list-style: none; }
 .xn-muc .xn-link { font-weight: 500; text-decoration: none; }
@@ -510,7 +512,6 @@
 .xn-card__grid:not(.xn-card__grid--days) td:first-child,
 .xn-card__grid:not(.xn-card__grid--days) td:last-child { white-space: nowrap; }
 .xn-card__grid td:nth-child(2) { text-align: left; }
-.xn-card__good { color: var(--xn-luck-good); }
 
 /* Nhị thập tứ khí: bài thơ chọn ngày của tháng tiết khí, căn giữa như trang mẫu. */
 .xn-pop--rich:has(.xn-tho) { width: min(360px, calc(100vw - 16px)); }
@@ -531,8 +532,34 @@
 .xn-muc-table { padding: 10px 12px 0; }
 .xn-muc-table__caption { margin: 0 0 6px; color: var(--xn-ink); font-size: 13.5px; font-weight: 700; }
 .xn-muc-table__scroll { overflow-x: auto; border: 1px solid var(--xn-card-line); border-radius: 6px; }
-.xn-card__notes { margin: 0; padding: 10px 14px 12px 30px; color: var(--xn-ink); font-size: 13.5px; }
-.xn-card__notes li + li { margin-top: 3px; }
+
+/* Đổng Công: bảng 4 cột Ngày · Nghi – Kị · Ảnh hưởng · Kiết – Hung như giáo trình (cát chữ đỏ, hung chữ đen). */
+.xn-dongcong-scroll { margin: 10px 12px 12px; }
+.xn-dongcong-table { min-width: 520px; }
+.xn-dongcong-table td:nth-child(2),
+.xn-dongcong-table td:nth-child(3) { text-align: left; white-space: pre-line; vertical-align: top; }
+.xn-dongcong-table td.is-good { color: var(--xn-luck-good); }
+.xn-dongcong-table td.is-bad { color: var(--xn-luck-bad); }
+.xn-card .xn-dongcong-scroll + .xn-muc-table { padding-top: 0; padding-bottom: 12px; }
+@media (max-width: 640px) {
+  /* Điện thoại: bảng Đổng Công xếp thành từng dòng "nhãn: nội dung" thay vì cuộn ngang. */
+  .xn-dongcong-table { min-width: 0; }
+  .xn-dongcong-table thead { display: none; }
+  .xn-dongcong-table tr,
+  .xn-dongcong-table td { display: block; }
+  .xn-dongcong-table.xn-card__grid td { border: 0; border-top: 1px solid var(--xn-card-line); text-align: left; white-space: pre-line; }
+  .xn-dongcong-table td:first-child { border-top: 0; }
+  .xn-dongcong-table td::before { content: attr(data-label); display: block; margin-bottom: 2px; color: var(--xn-text); font-size: 12px; font-weight: 700; }
+}
+
+/* Trạng Trình: nội dung một mục theo thứ tự giáo trình (lời dẫn, bảng ngày tốt, bảng phụ, ghi chú). */
+.xn-muc-body { display: grid; gap: 10px; padding: 10px 12px 12px; color: var(--xn-ink); font-size: 13.5px; line-height: 1.55; }
+.xn-muc-text p { margin: 0; }
+.xn-muc-text p + p { margin-top: 3px; }
+.xn-muc-text__gap { display: block; height: 6px; }
+.xn-muc-grid.xn-card__grid td,
+.xn-muc-grid.xn-card__grid td:first-child,
+.xn-muc-grid.xn-card__grid td:last-child { text-align: left; white-space: pre-line; vertical-align: top; }
 
 /* Lưới phi tinh 3×3 */
 .xn-loshu {

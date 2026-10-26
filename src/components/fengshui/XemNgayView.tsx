@@ -416,12 +416,14 @@ export function XemNgayView() {
             link(
               <>
                 <b>Ngày {profile.ctx.day.name}:</b>
-                <span>{profile.dongCong.summary}</span>
+                <span className="xn-dongcong__text">{profile.dongCong.nghiKi}</span>
                 <em className={luckClass(profile.dongCong.rating)}>{profile.dongCong.rating}</em>
               </>,
               profile.dongCong.title,
               <DongCongCard entry={profile.dongCong} day={profile.ctx.day.name} />,
               "xn-dongcong",
+              "rich",
+              <DongCongCard entry={profile.dongCong} day={profile.ctx.day.name} withMonth />,
             )
           ) : (
             <p className="xn-muted">Chưa có lời luận Đổng Công cho ngày này.</p>
@@ -1066,67 +1068,102 @@ function CuuTinhCard({ name }: { name: string }) {
   );
 }
 
-function DongCongCard({ entry, day }: { entry: NonNullable<XemNgayProfile["dongCong"]>; day: string }) {
+/** Bảng Đổng Công của ngày như giáo trình: Ngày · Nghi – Kị · Ảnh hưởng · Kiết – Hung (hộp thoại thêm hung sát của tháng). */
+function DongCongCard({ entry, day, withMonth = false }: { entry: NonNullable<XemNgayProfile["dongCong"]>; day: string; withMonth?: boolean }) {
   return (
-    <Card title={entry.title} wide>
-      <table className="xn-card__grid">
-        <thead>
-          <tr><th>Ngày</th><th>Nghi – Kị</th><th>Kiết – Hung</th></tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><b>{day}</b></td>
-            <td>
-              {entry.summary}
-              {entry.suitable.length > 0 && <span className="xn-card__good"> Nên: {joinList(entry.suitable)}</span>}
-            </td>
-            <td className={luckClass(entry.rating)}><b>{entry.rating}</b></td>
-          </tr>
-        </tbody>
-      </table>
+    <Card title={entry.title} sub={entry.label ? <p>{entry.label}</p> : undefined} wide>
+      <div className="xn-muc-table__scroll xn-dongcong-scroll">
+        <table className="xn-card__grid xn-dongcong-table">
+          <thead>
+            <tr><th>Ngày</th><th>Nghi – Kị</th><th>Ảnh hưởng</th><th>Kiết – Hung</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td className={luckClass(entry.rating)} data-label="Ngày"><b>{day}</b></td>
+              <td className={luckClass(entry.rating)} data-label="Nghi – Kị">{entry.nghiKi}</td>
+              <td className={luckClass(entry.rating)} data-label="Ảnh hưởng">{entry.anhHuong}</td>
+              <td className={luckClass(entry.rating)} data-label="Kiết – Hung"><b>{entry.rating}</b></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      {withMonth && entry.hungSat.length > 0 && (
+        <div className="xn-muc-table">
+          <p className="xn-muc-table__caption">Hung sát {entry.month.toLowerCase()} ({entry.terms})</p>
+          <div className="xn-muc-table__scroll">
+            <table className="xn-card__grid xn-muc-grid">
+              <thead>
+                <tr><th>Thời gian</th><th>Hung sát</th><th>Phương</th><th>Hướng</th><th>Kị</th></tr>
+              </thead>
+              <tbody>
+                {entry.hungSat.map((row, index) => (
+                  <tr key={index}>{row.map((cell, col) => <td key={col}>{cell}</td>)}</tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
     </Card>
   );
 }
 
+/** Bảng Can → Chi ngày tốt của một mục; tô cột Can và ô Chi của ngày đang xem. */
+function MucDaysTable({ days, stem, branch }: { days: Record<string, string[]>; stem: string; branch: string }) {
+  return (
+    <div className="xn-muc-table__scroll">
+      <table className="xn-card__grid xn-card__grid--days">
+        <thead>
+          <tr>
+            <th scope="row">Can</th>
+            {STEMS.map((name) => <th key={name} className={name === stem ? "is-current" : ""}>{name}</th>)}
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">Chi</th>
+            {STEMS.map((name) => (
+              <td key={name} className={name === stem ? "is-current" : ""}>
+                {(days[name] ?? []).map((chi) => <span key={chi} className={name === stem && chi === branch ? "is-hit" : ""}>{chi}</span>)}
+              </td>
+            ))}
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+/** Nội dung một mục Trạng Trình theo đúng thứ tự giáo trình: lời dẫn, bảng ngày tốt, các bảng phụ và ghi chú. */
 function MucCard({ no, highlight }: { no: number; highlight: string }) {
   const muc = TRANG_TRINH_MUC[no];
   if (!muc) return <Card title={`Mục ${pad(no)}`} />;
   const [stem, branch] = highlight.split(" ");
   return (
-    <Card title={`Mục ${pad(no)} · ${muc.title}`} sub={<p>{muc.summary}</p>} wide>
-      {muc.tables.map((table, index) => (
-        <div className="xn-muc-table" key={index}>
-          {table.caption && <p className="xn-muc-table__caption">{table.caption}</p>}
-          <div className="xn-muc-table__scroll">
-            <table className="xn-card__grid xn-card__grid--days">
-              <thead>
-                <tr>
-                  <th scope="row">Can</th>
-                  {STEMS.map((name) => <th key={name} className={name === stem ? "is-current" : ""}>{name}</th>)}
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <th scope="row">Chi</th>
-                  {STEMS.map((name) => {
-                    const days = (table.days as Record<string, string[] | undefined>)[name] ?? [];
-                    return (
-                      <td key={name} className={name === stem ? "is-current" : ""}>
-                        {days.map((chi) => <span key={chi} className={name === stem && chi === branch ? "is-hit" : ""}>{chi}</span>)}
-                      </td>
-                    );
-                  })}
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      ))}
-      {muc.notes.length > 0 && (
-        <ul className="xn-card__notes">
-          {muc.notes.map((note) => <li key={note}>{note}</li>)}
-        </ul>
-      )}
+    <Card title={`Mục ${pad(no)} · ${muc.title}`} wide>
+      <div className="xn-muc-body">
+        {muc.blocks.map((block, index) => {
+          if (block.kind === "text") {
+            return (
+              <div className="xn-muc-text" key={index}>
+                {block.lines.map((line, lineIndex) => (line ? <p key={lineIndex}>{line}</p> : <span key={lineIndex} className="xn-muc-text__gap" aria-hidden="true" />))}
+              </div>
+            );
+          }
+          if (block.kind === "days") return <MucDaysTable key={index} days={block.days} stem={stem} branch={branch} />;
+          return (
+            <div className="xn-muc-table__scroll" key={index}>
+              <table className="xn-card__grid xn-muc-grid">
+                <tbody>
+                  {block.rows.map((row, rowIndex) => (
+                    <tr key={rowIndex}>{row.map((cell, col) => <td key={col}>{cell}</td>)}</tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          );
+        })}
+      </div>
     </Card>
   );
 }
