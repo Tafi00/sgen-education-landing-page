@@ -371,8 +371,8 @@ export function XemNgayPage() {
         <ToolHero
           kicker="Công cụ phong thủy"
           icon={CalendarCheck}
-          title="Xem ngày"
-          accent="tốt — xấu theo lịch pháp"
+          title="Phong thủy xem ngày"
+          accent="tốt xấu"
           description="Chọn ngày dương lịch hoặc âm lịch và giờ muốn xem để tra Can Chi, Thập nhị Trực, Nhị thập bát tú, kiết hung tinh, giờ hoàng đạo, Đổng Công và các mục chọn ngày của Trạng Trình."
         />
       </section>
