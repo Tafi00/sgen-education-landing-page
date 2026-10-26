@@ -140,17 +140,21 @@ export default function SimPhongThuyView({
     if (!hasValidPhone || !analysis.result) return;
 
     const [y, m, d] = submittedQuery.birthDate.split("-");
-    const [h, min] = submittedQuery.birthTime.split(":");
     const params = new URLSearchParams({
       so: submittedQuery.phone,
       ngay: String(Number(d)),
       thang: String(Number(m)),
       nam: y,
-      gio: String(Number(h)),
-      phut: String(Number(min)),
       gioitinh: submittedQuery.gender === "Nữ" ? "nu" : "nam",
       lich: submittedQuery.calendarType === "lunar" ? "al" : "dl",
     });
+    // Không nhập giờ sinh thì không gửi gio/phut: trước đây gửi "phut=NaN" nên máy chủ trả 400 và trang luôn
+    // báo "Chưa thể đối chiếu nguồn trực tuyến".
+    if (submittedQuery.birthTime) {
+      const [h, min] = submittedQuery.birthTime.split(":");
+      params.set("gio", String(Number(h)));
+      params.set("phut", String(Number(min)));
+    }
     if (submittedQuery.lunarLeapMonth) params.set("nhuan", "1");
 
     const controller = new AbortController();
