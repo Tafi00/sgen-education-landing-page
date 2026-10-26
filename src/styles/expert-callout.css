@@ -1,0 +1,158 @@
+/* Khối "Liên hệ Chuyên Gia": viền gradient chạy vòng, biểu tượng điện thoại rung, số điện thoại có vệt sáng lướt qua. */
+@property --expert-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+.expert-callout {
+  /* Giá trị khởi đầu cho trình duyệt chưa hỗ trợ @property (viền đứng yên nhưng vẫn hiện gradient). */
+  --expert-angle: 0deg;
+  --expert-ink: #2a1160;
+  --expert-surface: #fff;
+  --expert-chip: linear-gradient(104deg, #e81491 0%, #a31ac9 44%, #5721e8 100%);
+  position: relative;
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  margin: 18px 0;
+  padding: 14px 18px;
+  color: var(--expert-ink);
+  border: 2px solid transparent;
+  border-radius: 16px;
+  background:
+    linear-gradient(var(--expert-surface), var(--expert-surface)) padding-box,
+    conic-gradient(from var(--expert-angle), #e81491, #a31ac9, #5721e8, #f2b71e, #e81491) border-box;
+  box-shadow: 0 10px 28px rgba(87, 33, 232, 0.14);
+  animation: expert-border 6s linear infinite;
+}
+
+.expert-callout--dark {
+  --expert-ink: #fff;
+  --expert-surface: #1d0f4d;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+}
+
+.expert-callout__icon {
+  position: relative;
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  color: #fff;
+  border-radius: 50%;
+  background: var(--expert-chip);
+}
+
+.expert-callout__icon svg {
+  width: 22px;
+  height: 22px;
+  animation: expert-ring 2.6s ease-in-out infinite;
+}
+
+/* Vòng sóng lan ra quanh biểu tượng. */
+.expert-callout__icon::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid #e81491;
+  animation: expert-wave 2.6s ease-out infinite;
+}
+
+.expert-callout__copy {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.expert-callout__copy strong {
+  font-size: 1rem;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.expert-callout__phones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.expert-callout__phones a {
+  position: relative;
+  overflow: hidden;
+  padding: 6px 14px;
+  color: #fff;
+  border-radius: 999px;
+  background: var(--expert-chip);
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  font-variant-numeric: tabular-nums;
+}
+
+.expert-callout__phones a::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -60%;
+  width: 45%;
+  background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.55), transparent);
+  transform: skewX(-18deg);
+  animation: expert-shine 3.2s ease-in-out infinite;
+}
+
+.expert-callout__phones a:nth-child(2)::before { animation-delay: 0.6s; }
+
+.expert-callout__phones a:hover { filter: brightness(1.08); }
+
+.expert-callout__phones a:focus-visible {
+  outline: 3px solid #8b5cf6;
+  outline-offset: 2px;
+}
+
+@keyframes expert-border {
+  to { --expert-angle: 360deg; }
+}
+
+@keyframes expert-ring {
+  0%, 52%, 100% { transform: rotate(0); }
+  56% { transform: rotate(-14deg); }
+  62% { transform: rotate(12deg); }
+  68% { transform: rotate(-10deg); }
+  74% { transform: rotate(8deg); }
+  80% { transform: rotate(0); }
+}
+
+@keyframes expert-wave {
+  0% { opacity: 0.75; transform: scale(1); }
+  70%, 100% { opacity: 0; transform: scale(1.55); }
+}
+
+@keyframes expert-shine {
+  0%, 55% { left: -60%; }
+  85%, 100% { left: 120%; }
+}
+
+@media (max-width: 520px) {
+  .expert-callout { gap: 12px; padding: 12px 14px; }
+  .expert-callout__icon { width: 40px; height: 40px; }
+  .expert-callout__copy strong { font-size: 0.92rem; }
+  .expert-callout__phones a { padding: 5px 12px; font-size: 0.95rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .expert-callout,
+  .expert-callout__icon svg,
+  .expert-callout__icon::after,
+  .expert-callout__phones a::before { animation: none; }
+}
+
+@media print {
+  .expert-callout { animation: none; box-shadow: none; }
+  .expert-callout__icon::after,
+  .expert-callout__phones a::before { display: none; }
+}

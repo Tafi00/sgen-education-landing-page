@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 const cosmicLight = "/assets/backgrounds/cosmic-light.webp";
 import { IconOrb } from "../ui/IconOrb";
+import { formatHotline } from "../ui/ExpertCallout";
 import { Reveal } from "../ui/Reveal";
 import { Eyebrow } from "../ui/Eyebrow";
 import { Button } from "../ui/Button";
@@ -39,12 +40,6 @@ const benefits = [
     description: "Đội ngũ chuyên gia giàu kinh nghiệm luôn sẵn sàng hỗ trợ bạn.",
   },
 ];
-
-/** Số di động 10 chữ số hiển thị dạng 0903.891.839 như các ấn phẩm của SGEN; dạng khác giữ nguyên. */
-function dottedPhone(value: string) {
-  const digits = value.replace(/\D/g, "");
-  return digits.length === 10 ? `${digits.slice(0, 4)}.${digits.slice(4, 7)}.${digits.slice(7)}` : value.trim();
-}
 
 export function ConsultationSection() {
   const { settings } = useSiteSettings();
@@ -114,7 +109,7 @@ export function ConsultationSection() {
                 {phones.map((phone, index) => (
                   <span key={phone}>
                     {index > 0 && " — "}
-                    <a href={`tel:${phone.replace(/[^\d+]/g, "")}`}>{dottedPhone(phone)}</a>
+                    <a href={`tel:${phone.replace(/[^\d+]/g, "")}`}>{formatHotline(phone)}</a>
                   </span>
                 ))}
               </span>
