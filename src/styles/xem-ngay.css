@@ -349,6 +349,10 @@
   .xn-pillar__btn.xn-link { padding-inline: 2px; }
   .xn-pillar__btn b { font-size: 12px; }
 }
+@media (max-width: 380px) {
+  /* Màn hình rất hẹp (320–360px): tên Can Chi xuống dòng thay vì đẩy hàng trụ tràn khung. */
+  .xn-pillar__btn b { white-space: normal; line-height: 1.2; }
+}
 
 .xn-tool__nav { display: flex; gap: 6px; align-items: center; justify-content: center; }
 .xn-print {

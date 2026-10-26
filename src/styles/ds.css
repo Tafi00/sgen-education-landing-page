@@ -390,6 +390,8 @@
 
   .page-banner h1 {
     font-size: clamp(1.9rem, 8.5vw, 2.6rem);
+    /* Chữ in hoa có dấu (Ứ, Ụ, Ỹ…) xuống 3–4 dòng trên điện thoại: 1.06 làm dấu chạm dòng trên. */
+    line-height: 1.14;
   }
 
   .page-banner__lead {
