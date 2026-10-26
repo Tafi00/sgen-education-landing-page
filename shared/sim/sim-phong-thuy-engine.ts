@@ -246,14 +246,14 @@ export const HEX: Record<string, { n: string; t: number; h: number; yn: string; 
 
 export const BCLS = {
   stars: {
-    SK: { n: "Sinh Khí", t: "cat", p: 3, e: "Mộc", desc: "Quý nhân phù trợ, may mắn, quan hệ rộng mở." },
+    SK: { n: "Sinh Khí", t: "cat", p: 4, e: "Mộc", desc: "Quý nhân phù trợ, may mắn, quan hệ rộng mở." },
     TY: { n: "Thiên Y", t: "cat", p: 3, e: "Thổ", desc: "Tài vận dồi dào, sức khỏe, trí tuệ thông minh." },
     DN: { n: "Diên Niên", t: "cat", p: 2, e: "Kim", desc: "Sự nghiệp vững chắc, lãnh đạo, tài chính bền." },
     PV: { n: "Phục Vị", t: "cat", p: 1, e: "Mộc", desc: "Ổn định, kiên nhẫn, chờ đợi thời cơ." },
-    TM: { n: "Tuyệt Mệnh", t: "hung", p: -3, e: "Kim", desc: "Hao tài, sức khỏe suy giảm, tranh chấp tai tiếng." },
+    TM: { n: "Tuyệt Mệnh", t: "hung", p: -4, e: "Kim", desc: "Hao tài, sức khỏe suy giảm, tranh chấp tai tiếng." },
     NQ: { n: "Ngũ Quỷ", t: "hung", p: -2, e: "Hỏa", desc: "Biến cố bất ngờ, tiểu nhân quấy phá, bất an." },
-    LS: { n: "Lục Sát", t: "hung", p: -2, e: "Thủy", desc: "Tình cảm rắc rối, đào hoa xấu, tâm lý bất ổn." },
-    HH: { n: "Họa Hại", t: "hung", p: -1, e: "Thổ", desc: "Thị phi khẩu thiệt, cản trở công việc, hao tổn." },
+    LS: { n: "Lục Sát", t: "hung", p: -1, e: "Thủy", desc: "Tình cảm rắc rối, đào hoa xấu, tâm lý bất ổn." },
+    HH: { n: "Họa Hại", t: "hung", p: -3, e: "Thổ", desc: "Thị phi khẩu thiệt, cản trở công việc, hao tổn." },
   },
   pairs: {
     // SINH KHÍ (生氣) — Đại Cát
@@ -283,10 +283,17 @@ export const BCLS = {
   } as Record<string, "SK" | "TY" | "DN" | "PV" | "TM" | "NQ" | "LS" | "HH">,
 };
 
+/**
+ * Điểm từng sao theo bảng Bát Cực Linh Số của khách (trang 28–29 tài liệu SGEN, 26/10/2026):
+ * Sinh Khí +4, Thiên Y +3, Diên Niên +2, Phục Vị +1, Lục Sát −1, Ngũ Quỷ −2, Họa Hại −3, Tuyệt Mệnh −4.
+ */
 export const BCLS_SCORES: Record<string, number> = {
-  SK: 3, TY: 3, DN: 2, PV: 1,
-  HH: -1, LS: -2, NQ: -2, TM: -3,
+  SK: 4, TY: 3, DN: 2, PV: 1,
+  LS: -1, NQ: -2, HH: -3, TM: -4,
 };
+
+/** Điểm tuyệt đối lớn nhất của một cặp — mốc quy đổi điểm nền Bát Cực về thang 0–100. */
+const BCLS_MAX_POINTS = Math.max(...Object.values(BCLS_SCORES).map(Math.abs));
 
 export function pairsByCode(code: string): string[] {
   return Object.keys(BCLS.pairs).filter((k) => BCLS.pairs[k] === code);
@@ -311,7 +318,7 @@ export function analyzeBCLS(phone: string) {
   }
 
   const numPairs = Math.max(1, digits.length - 1);
-  const baseScore = Math.max(0, Math.min(100, Math.round(50 + (50 * rawScore) / (3 * numPairs))));
+  const baseScore = Math.max(0, Math.min(100, Math.round(50 + (50 * rawScore) / (BCLS_MAX_POINTS * numPairs))));
 
   // Bát Cực không chỉ xét số lượng cặp cát/hung. Một chuỗi trường khí liên tục
   // và vị trí lặp ở đuôi SIM có sức ảnh hưởng rõ hơn các cặp rời rạc. Giữ
