@@ -84,11 +84,11 @@ function ReadingCard({ item, onOpen }: { item: IChingReadingItem; onOpen: () => 
           </thead>
           <tbody>
             <tr>
-              <td><strong>{reading?.meaning ?? info?.keyword ?? "—"}</strong></td>
-              <td>{reading?.finance ?? "—"}</td>
-              <td>{reading?.career ?? "—"}</td>
-              <td>{reading?.health ?? "—"}</td>
-              <td>{reading?.relationship ?? "—"}</td>
+              <td data-label="Ý Nghĩa"><strong>{reading?.meaning ?? info?.keyword ?? "—"}</strong></td>
+              <td data-label="Tài Chính">{reading?.finance ?? "—"}</td>
+              <td data-label="Sự Nghiệp">{reading?.career ?? "—"}</td>
+              <td data-label="Sức Khỏe">{reading?.health ?? "—"}</td>
+              <td data-label="Mối quan hệ">{reading?.relationship ?? "—"}</td>
             </tr>
           </tbody>
         </table>

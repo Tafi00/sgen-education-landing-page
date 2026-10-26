@@ -24,6 +24,17 @@
 .iching-reading-table td { padding: 12px 14px; color: var(--icr-text); border-right: 1px solid #f0e8f6; font-size: .78rem; line-height: 1.6; vertical-align: top; }
 .iching-reading-table td:last-child { border-right: 0; }
 .iching-reading-table td strong { color: var(--icr-ink); }
+/* Điện thoại: bảng 5 cột phải cuộn ngang (cột Sức Khỏe bị cắt) — xếp dọc thành từng dòng "nhãn | nội dung". */
+@media (max-width: 640px) {
+  .iching-reading-table-wrap { overflow: visible; }
+  .iching-reading-table,
+  .iching-reading-table tbody,
+  .iching-reading-table tr { display: block; width: 100%; min-width: 0; }
+  .iching-reading-table thead { display: none; }
+  .iching-reading-table td { display: grid; grid-template-columns: 92px minmax(0, 1fr); gap: 10px; width: auto; padding: 10px 14px; border-right: 0; border-bottom: 1px solid #f0e8f6; }
+  .iching-reading-table td:last-child { border-bottom: 0; }
+  .iching-reading-table td::before { content: attr(data-label); color: #4d2878; font-size: 12px; font-weight: 800; }
+}
 
 /* Phần thông tin thêm dưới mỗi bảng. */
 .iching-reading-more { display: flex; flex-wrap: wrap; gap: 12px 18px; align-items: center; justify-content: space-between; padding: 12px 20px; background: var(--icr-tint); border-top: 1px solid var(--icr-line-soft); }
