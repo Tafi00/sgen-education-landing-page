@@ -12,7 +12,9 @@
   --xn-violet: var(--violet, #5a22e8);
   --xn-line: rgba(11, 10, 70, 0.09);
   --xn-line-strong: rgba(11, 10, 70, 0.14);
-  --xn-head: #17114f;
+  /* Đầu khung màu vàng đất (khách yêu cầu 26/10/2026), chữ nâu đậm để đọc rõ. */
+  --xn-head: #c8963e;
+  --xn-head-ink: #3b2603;
   --xn-tint: #f6f3fd;
   --xn-good: #0f7a43;
   --xn-bad: #b42318;
@@ -38,6 +40,8 @@
 .xn-row--top { grid-template-columns: minmax(0, 1fr) minmax(0, 1.08fr) minmax(0, 1fr); }
 .xn-row--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .xn-row--4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+/* Hàng giờ: khung Giờ Lục Nhâm (2 cột giờ) rộng hơn để chữ không dính nhau. */
+.xn-row--hours { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.3fr) minmax(0, 0.9fr); }
 
 /* Khung: rê chuột vào thì viền và đầu khung đổi màu (như trang mẫu). */
 .xn-panel {
@@ -51,13 +55,13 @@
 }
 .xn-panel:hover,
 .xn-panel:focus-within {
-  border-color: rgba(90, 34, 232, 0.45);
+  border-color: rgba(184, 132, 44, 0.55);
   box-shadow: 0 10px 28px rgba(44, 22, 116, 0.08);
 }
 .xn-panel__head {
   margin: 0;
   padding: 10px 14px;
-  color: #fff;
+  color: var(--xn-head-ink);
   background: var(--xn-head);
   border-radius: 13px 13px 0 0;
   font-family: var(--font-display, "Montserrat", Arial, sans-serif);
@@ -69,7 +73,7 @@
   transition: background-color 0.18s ease;
 }
 .xn-panel:hover .xn-panel__head,
-.xn-panel:focus-within .xn-panel__head { background: var(--xn-violet); }
+.xn-panel:focus-within .xn-panel__head { background: #b9852f; }
 .xn-panel__body {
   flex: 1;
   padding: 12px 16px 14px;
@@ -361,8 +365,11 @@
 .xn-table--grid .is-current { background: #fbf9ff; }
 .xn-table--grid span.is-hit { color: #fff; background: var(--xn-violet); border-radius: 5px; font-weight: 700; }
 
-.xn-lucnham { display: grid; grid-template-columns: 1fr 1fr; gap: 0 14px; margin: 0; padding: 0; list-style: none; font-size: 14px; }
-.xn-lucnham li { display: flex; justify-content: space-between; gap: 6px; padding: 4px 0; border-bottom: 1px solid var(--xn-line); }
+.xn-lucnham { display: grid; grid-template-columns: 1fr 1fr; gap: 0; margin: 0; padding: 0; list-style: none; font-size: 14px; }
+.xn-lucnham li { display: flex; justify-content: space-between; gap: 10px; padding: 5px 0; border-bottom: 1px solid var(--xn-line); }
+/* Hai cột giờ (hoàng đạo | hắc đạo) tách bằng vạch dọc để dễ nhìn. */
+.xn-lucnham li:nth-child(odd) { padding-right: 14px; border-right: 1px solid var(--xn-line-strong); }
+.xn-lucnham li:nth-child(even) { padding-left: 14px; }
 .xn-lucnham li:nth-last-child(-n + 2) { border-bottom: 0; }
 .xn-lucnham li > span { color: var(--xn-ink); font-weight: 600; }
 .xn-lucnham li.is-golden .xn-link { font-weight: 800; }

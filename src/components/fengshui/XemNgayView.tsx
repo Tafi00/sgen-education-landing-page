@@ -348,7 +348,7 @@ export function XemNgayView() {
         <Panel title="Tam sát thời"><p className="xn-center">{profile.tamSat.hour}</p></Panel>
       </div>
 
-      <div className="xn-row xn-row--4">
+      <div className="xn-row xn-row--4 xn-row--hours">
         <Panel title="Giờ hoàng đạo">
           <table className="xn-table">
             <tbody>
@@ -399,39 +399,12 @@ export function XemNgayView() {
             })}
           </ul>
         </Panel>
-        <Panel title="Giờ nước lớn, ròng">
-          <div className="xn-tide">
-            <b>Đối với vùng cao</b>
-            <p>Giờ nước lớn: <span className="is-bad">{profile.tide.highland.flood.join(", ")}</span></p>
-            <p>Giờ nước ròng: {profile.tide.highland.ebb.join(", ")}</p>
-            <b>Đối với vùng thấp</b>
-            <p>Giờ nước lớn: <span className="is-bad">{profile.tide.lowland.flood.join(", ")}</span></p>
-            <p>Giờ nước ròng: {profile.tide.lowland.ebb.join(", ")}</p>
-          </div>
-        </Panel>
-      </div>
-
-      <div className="xn-row xn-row--4">
-        <Panel title="Tuổi xung khắc với ngày">
-          <ul className="xn-ages">{profile.clashDay.map((age) => <li key={age}>{age}</li>)}</ul>
-        </Panel>
-        <Panel title="Tuổi xung khắc với tháng">
-          <ul className="xn-ages">{profile.clashMonth.map((age) => <li key={age}>{age}</li>)}</ul>
-        </Panel>
         <Panel title="Hướng kiết hung">
           <Rows
             rows={[
               ["Tài thần", <span className="is-good">{profile.directions.taiThan}</span>],
               ["Hỷ thần", <span className="is-good">{profile.directions.hyThan}</span>],
               ["Hạc thần", <span className="is-bad">{profile.directions.hacThan}</span>],
-            ]}
-          />
-        </Panel>
-        <Panel title="Giờ không vong">
-          <Rows
-            rows={[
-              ["Giờ Cô", <span className="is-bad">{profile.emptyHours.lonely.join(", ")}</span>],
-              ["Giờ Hư", profile.emptyHours.hollow.join(", ")],
             ]}
           />
         </Panel>
