@@ -11,10 +11,14 @@ import {
 } from "../ebook";
 
 describe("gói mã ebook", () => {
-  it("demo 100 lượt, combo đúng số ebook", () => {
-    expect(EBOOK_PLANS.demo).toMatchObject({ quota: 100, edition: "demo" });
-    expect(EBOOK_PLAN_KEYS.filter((key) => key !== "demo").map((key) => EBOOK_PLANS[key].quota)).toEqual([3, 5, 10, 30, 50, 100]);
-    for (const key of EBOOK_PLAN_KEYS.filter((item) => item !== "demo")) expect(EBOOK_PLANS[key].edition).toBe("full");
+  it("bản Demo và bản đầy đủ đều có gói 1 / 3 / 5 / 10 / 30 / 50 / 100 ebook", () => {
+    const quotas = (edition: "demo" | "full") => EBOOK_PLAN_KEYS.filter((key) => EBOOK_PLANS[key].edition === edition).map((key) => EBOOK_PLANS[key].quota);
+    expect(quotas("demo")).toEqual([1, 3, 5, 10, 30, 50, 100]);
+    expect(quotas("full")).toEqual([1, 3, 5, 10, 30, 50, 100]);
+    // Mã Demo 100 lượt đã cấp vẫn trỏ về khoá "demo".
+    expect(EBOOK_PLANS.demo).toMatchObject({ quota: 100, edition: "demo", prefix: "DEMO100" });
+    expect(EBOOK_PLANS.demo1).toMatchObject({ label: "Demo 1 ebook", prefix: "DEMO01" });
+    expect(EBOOK_PLANS.combo1).toMatchObject({ label: "Full 1 ebook", edition: "full", prefix: "FULL01" });
   });
 
   it("tiền tố mỗi gói là duy nhất", () => {

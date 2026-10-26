@@ -1,11 +1,11 @@
 /**
  * Mã xuất ebook Thần số học.
  *
- * - Bản "Demo 3 chỉ số" (Sứ mệnh, Đường đời, Đam mê): mỗi mã 100 lượt xuất, dành cho cộng tác viên.
- * - Bản ebook đầy đủ: các combo 3 / 5 / 10 / 30 / 50 / 100 ebook, mỗi lượt xuất = 1 ebook.
+ * - Bản "Demo 3 chỉ số" (Sứ mệnh, Đường đời, Đam mê) và bản ebook đầy đủ đều có các gói 1 / 3 / 5 / 10 / 30 / 50 / 100
+ *   ebook để quản trị giao cho từng đối tượng; mỗi lượt xuất = 1 ebook.
  *
- * Khi xuất, người dùng chọn loại ebook (`EbookEdition`). Mã demo chỉ xuất được bản Demo; mã combo xuất được cả hai
- * bản — mỗi lượt xuất (bản nào cũng vậy) trừ 1 lượt của mã.
+ * Khi xuất, người dùng chọn loại ebook (`EbookEdition`). Mã demo chỉ xuất được bản Demo; mã bản đầy đủ xuất được cả
+ * hai bản — mỗi lượt xuất (bản nào cũng vậy) trừ 1 lượt của mã.
  *
  * Quản trị viên tạo mã ở /admin/ma-ebook. Người dùng nhập mã (hoặc mở đường dẫn có mã) ở /ebook,
  * được tự động đăng nhập bằng mã và xuất file cho tới khi hết lượt.
@@ -13,7 +13,25 @@
 
 export type EbookEdition = "demo" | "full";
 
-export type EbookPlanKey = "demo" | "combo3" | "combo5" | "combo10" | "combo30" | "combo50" | "combo100";
+/**
+ * Khoá gói lưu trong CSDL. `demo` là gói Demo 100 ebook có từ đầu (các mã đã cấp vẫn trỏ về khoá này);
+ * `combo…` là các gói bản đầy đủ.
+ */
+export type EbookPlanKey =
+  | "demo1"
+  | "demo3"
+  | "demo5"
+  | "demo10"
+  | "demo30"
+  | "demo50"
+  | "demo"
+  | "combo1"
+  | "combo3"
+  | "combo5"
+  | "combo10"
+  | "combo30"
+  | "combo50"
+  | "combo100";
 
 export type EbookPlan = {
   key: EbookPlanKey;
@@ -21,19 +39,41 @@ export type EbookPlan = {
   edition: EbookEdition;
   /** Số lượt xuất file của mỗi mã. */
   quota: number;
-  /** Tiền tố đứng đầu mã để nhìn là biết loại: DEMO… = bản Demo, FULL… = bản đầy đủ (kèm số ebook của combo). */
+  /**
+   * Tiền tố đứng đầu mã để nhìn là biết loại và số ebook: DEMO01…DEMO100 = bản Demo, FULL01…FULL100 = bản đầy đủ.
+   * Mã cấp trước khi đổi tiền tố (DEMO-…, C03-…) vẫn dùng được.
+   */
   prefix: string;
   summary: string;
 };
 
+function plan(key: EbookPlanKey, edition: EbookEdition, quota: number): EbookPlan {
+  const demo = edition === "demo";
+  return {
+    key,
+    label: `${demo ? "Demo" : "Full"} ${quota} ebook`,
+    edition,
+    quota,
+    prefix: `${demo ? "DEMO" : "FULL"}${String(quota).padStart(2, "0")}`,
+    summary: `${quota} lượt xuất ebook ${demo ? "Demo 3 chỉ số" : "đầy đủ"}`,
+  };
+}
+
 export const EBOOK_PLANS: Record<EbookPlanKey, EbookPlan> = {
-  demo: { key: "demo", label: "Bản Demo 3 chỉ số", edition: "demo", quota: 100, prefix: "DEMO", summary: "100 lượt xuất ebook Demo 3 chỉ số" },
-  combo3: { key: "combo3", label: "Combo 3 ebook", edition: "full", quota: 3, prefix: "FULL03", summary: "3 lượt xuất ebook đầy đủ" },
-  combo5: { key: "combo5", label: "Combo 5 ebook", edition: "full", quota: 5, prefix: "FULL05", summary: "5 lượt xuất ebook đầy đủ" },
-  combo10: { key: "combo10", label: "Combo 10 ebook", edition: "full", quota: 10, prefix: "FULL10", summary: "10 lượt xuất ebook đầy đủ" },
-  combo30: { key: "combo30", label: "Combo 30 ebook", edition: "full", quota: 30, prefix: "FULL30", summary: "30 lượt xuất ebook đầy đủ" },
-  combo50: { key: "combo50", label: "Combo 50 ebook", edition: "full", quota: 50, prefix: "FULL50", summary: "50 lượt xuất ebook đầy đủ" },
-  combo100: { key: "combo100", label: "Combo 100 ebook", edition: "full", quota: 100, prefix: "FULL100", summary: "100 lượt xuất ebook đầy đủ" },
+  demo1: plan("demo1", "demo", 1),
+  demo3: plan("demo3", "demo", 3),
+  demo5: plan("demo5", "demo", 5),
+  demo10: plan("demo10", "demo", 10),
+  demo30: plan("demo30", "demo", 30),
+  demo50: plan("demo50", "demo", 50),
+  demo: plan("demo", "demo", 100),
+  combo1: plan("combo1", "full", 1),
+  combo3: plan("combo3", "full", 3),
+  combo5: plan("combo5", "full", 5),
+  combo10: plan("combo10", "full", 10),
+  combo30: plan("combo30", "full", 30),
+  combo50: plan("combo50", "full", 50),
+  combo100: plan("combo100", "full", 100),
 };
 
 export const EBOOK_PLAN_KEYS = Object.keys(EBOOK_PLANS) as EbookPlanKey[];

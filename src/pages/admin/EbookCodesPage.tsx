@@ -1,4 +1,4 @@
-import { useMemo, useState, type FormEvent } from "react";
+import { useState, type FormEvent } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AlertTriangle, BookOpen, Check, ClipboardCopy, Download, Info, Link2, Loader2, Lock, LockOpen, Plus, Search, Settings2, Trash2, X } from "lucide-react";
 import { api, errorMessage } from "../../api/client";
@@ -59,6 +59,12 @@ const COLUMNS: ColumnConfig[] = [
   { key: "state", label: "Trạng thái" },
   { key: "createdAt", label: "Tạo lúc", sortable: true },
 ];
+
+/** Gói chia hai nhóm Demo / Bản đầy đủ, mỗi nhóm 1–100 ebook (thứ tự theo `EBOOK_PLANS`). */
+const PLAN_GROUPS = (["demo", "full"] as const).map((edition) => ({
+  label: edition === "demo" ? "Bản Demo 3 chỉ số" : "Bản đầy đủ",
+  plans: EBOOK_PLAN_KEYS.map((key) => EBOOK_PLANS[key]).filter((item) => item.edition === edition),
+}));
 
 const SORT_KEYS: Record<string, string> = { display: "code", used: "used", createdAt: "createdAt", lastUsedAt: "lastUsedAt" };
 
@@ -284,14 +290,13 @@ export function EbookCodesPage() {
     }
   };
 
-  const planOptions = useMemo(() => EBOOK_PLAN_KEYS.map((key) => EBOOK_PLANS[key]), []);
 
   return (
     <section className="admin-page">
       <header className="admin-page__header">
         <div>
           <h1>Mã ebook</h1>
-          <p>Tạo mã xuất ebook cho cộng tác viên (bản Demo 3 chỉ số, 100 lượt) và học viên (combo 3–100 ebook). Người nhận vào trang /ebook, nhập mã là tải được file.</p>
+          <p>Tạo mã xuất ebook bản Demo 3 chỉ số hoặc bản đầy đủ, mỗi bản có gói 1, 3, 5, 10, 30, 50, 100 ebook. Người nhận vào trang /ebook, nhập mã là tải được file.</p>
         </div>
         <div className="admin-page__actions">
           <a className="btn btn--secondary" href="/ebook" target="_blank" rel="noreferrer">
@@ -312,14 +317,18 @@ export function EbookCodesPage() {
             <label className="field__label" htmlFor="ebook-plan">Gói</label>
             <span className="field__control">
               <select id="ebook-plan" value={plan} onChange={(event) => setPlan(event.target.value as EbookPlanKey)}>
-                {planOptions.map((item) => (
-                  <option key={item.key} value={item.key}>
-                    {item.label} — {item.quota} lượt
-                  </option>
+                {PLAN_GROUPS.map((group) => (
+                  <optgroup key={group.label} label={group.label}>
+                    {group.plans.map((item) => (
+                      <option key={item.key} value={item.key}>
+                        {item.label} — {item.quota} lượt
+                      </option>
+                    ))}
+                  </optgroup>
                 ))}
               </select>
             </span>
-            <p className="field__hint">{selectedPlan.edition === "demo" ? "Dành cho cộng tác viên. Hết 100 lượt thì cấp mã mới." : "Mỗi lượt xuất = 1 ebook đầy đủ."}</p>
+            <p className="field__hint">{selectedPlan.edition === "demo" ? "Mỗi lượt xuất = 1 ebook Demo 3 chỉ số." : "Mỗi lượt xuất = 1 ebook đầy đủ (mã này xuất được cả bản Demo)."}</p>
           </div>
           <div className="field">
             <label className="field__label" htmlFor="ebook-count">Số lượng mã cần tạo</label>
@@ -465,10 +474,14 @@ export function EbookCodesPage() {
             }}
           >
             <option value="all">Tất cả</option>
-            {planOptions.map((item) => (
-              <option key={item.key} value={item.key}>
-                {item.label}
-              </option>
+            {PLAN_GROUPS.map((group) => (
+              <optgroup key={group.label} label={group.label}>
+                {group.plans.map((item) => (
+                  <option key={item.key} value={item.key}>
+                    {item.label}
+                  </option>
+                ))}
+              </optgroup>
             ))}
           </select>
         </label>
