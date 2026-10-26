@@ -313,7 +313,21 @@
 .xn-icon-btn svg { width: 18px; height: 18px; }
 
 /* Bốn trụ: số quái trên, Can Chi giữa, quái vận dưới (như trang mẫu). */
-.xn-pillars { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+.xn-pillars { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1fr); gap: 4px; }
+/* Dấu gạch giữa các trụ (như trang mẫu): rê chuột hiện bảng Hành và Vận. */
+.xn-pillar__sep.xn-link {
+  align-self: center;
+  margin-top: 18px;
+  padding: 2px 4px;
+  color: var(--xn-violet);
+  border-radius: 6px;
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1;
+  text-decoration: none;
+}
+.xn-pillar__sep.xn-link:hover,
+.xn-pillar__sep.xn-link[aria-expanded="true"] { background: var(--xn-tint); }
 .xn-pillar { display: grid; gap: 2px; text-align: center; }
 .xn-pillar > span { color: var(--xn-text); font-size: 12px; }
 .xn-pillar__btn.xn-link {
@@ -329,6 +343,12 @@
 .xn-pillar__btn.xn-link[aria-expanded="true"] { background: var(--xn-tint); }
 .xn-pillar__btn i { color: var(--xn-violet); font-style: normal; font-weight: 700; font-variant-numeric: tabular-nums; }
 .xn-pillar__btn b { color: var(--xn-ink); font-size: 13.5px; white-space: nowrap; }
+@media (max-width: 480px) {
+  .xn-pillars { gap: 0; }
+  .xn-pillar__sep.xn-link { padding: 2px 1px; font-size: 15px; }
+  .xn-pillar__btn.xn-link { padding-inline: 2px; }
+  .xn-pillar__btn b { font-size: 12px; }
+}
 
 .xn-tool__nav { display: flex; gap: 6px; align-items: center; justify-content: center; }
 .xn-print {
@@ -680,3 +700,20 @@
 @media (max-width: 760px) {
   .xem-ngay-page .xn-hero.page-dark-section { padding-bottom: 28px; }
 }
+
+/* Bảng "Hành và Vận của giờ theo ngày" (màu theo bảng mẫu). */
+.xn-pop--rich:has(.xn-card .xn-hanhvan) { width: min(760px, calc(100vw - 16px)); }
+.xn-pop--rich .xn-card:has(.xn-hanhvan) { max-height: min(86vh, 720px); }
+.xn-hanhvan { display: grid; gap: 8px; padding: 10px; overflow-x: auto; }
+.xn-hanhvan__week { width: 100%; min-width: 620px; border-collapse: collapse; font-size: 12.5px; text-align: center; }
+.xn-hanhvan__week th,
+.xn-hanhvan__week td { padding: 2px 4px; border: 1px solid #b9a27a; color: #1f1a12; line-height: 1.35; }
+.xn-hanhvan__week th { width: 46px; background: #f2b71e; font-weight: 800; }
+.xn-hanhvan__week td { background: #fbe5d6; }
+.xn-hanhvan__week td.is-lead { background: #dcebf7; }
+.xn-hanhvan__num td { font-weight: 700; font-variant-numeric: tabular-nums; }
+.xn-hanhvan__num td span + span { margin-left: 6px; padding-left: 6px; border-left: 1px solid #b9a27a; }
+.xn-hanhvan__week td.is-double { color: #d61c8c; }
+.xn-hanhvan__void { color: #d4151b !important; }
+.xn-hanhvan__week td.is-current { background: #5a22e8; color: #fff; font-weight: 800; }
+.xn-sheet .xn-hanhvan { padding: 12px 0; }

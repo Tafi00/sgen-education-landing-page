@@ -320,4 +320,34 @@ export function getPhoiQue(value: CanChi) {
   return { upper, luck, name };
 }
 
+/**
+ * Bốn Can Chi nằm giữa hai quẻ, bảng "Hành và Vận" của trang mẫu ghi hai cặp số (in màu hồng): [hành, vận] của quẻ thứ hai.
+ * Chỉ số theo vòng Lục thập Giáp Tý: Giáp Tý 0, Canh Dần 26, Giáp Ngọ 30, Canh Thân 56.
+ */
+const PHOI_QUE_PHU: Record<number, [number, number]> = { 0: [1, 8], 26: [4, 2], 30: [9, 8], 56: [6, 2] };
+
+export type HanhVanCell = { name: string; can: string; chi: string; hanh: number[]; van: number[] };
+export type HanhVanWeek = { name: string; cells: HanhVanCell[]; voids: HanhVanCell[] };
+
+function hanhVanCell(index: number): HanhVanCell {
+  const value = canChiFromIndex(index);
+  const [upper, luck] = PHOI_QUE[index];
+  const extra = PHOI_QUE_PHU[index];
+  const [can, chi] = value.name.split(" ");
+  return { name: value.name, can, chi, hanh: extra ? [upper, extra[0]] : [upper], van: extra ? [luck, extra[1]] : [luck] };
+}
+
+/**
+ * Bảng "Hành và Vận của giờ theo ngày": 60 Can Chi chia 6 tuần (Giáp Tý, Giáp Tuất, Giáp Thân, Giáp Ngọ, Giáp Thìn,
+ * Giáp Dần), mỗi ô ghi số hành (quái thượng) và quái vận như các số trên / dưới mỗi trụ; hai ô Không Vong của tuần là
+ * hai Chi bị khuyết (lấy số của hai Can Chi mở đầu tuần kế tiếp, như bảng mẫu).
+ */
+export function getHanhVanTable(): HanhVanWeek[] {
+  return [0, 10, 20, 30, 40, 50].map((start) => ({
+    name: canChiFromIndex(start).name,
+    cells: Array.from({ length: 10 }, (_, offset) => hanhVanCell(start + offset)),
+    voids: [hanhVanCell((start + 10) % 60), hanhVanCell((start + 11) % 60)],
+  }));
+}
+
 export { canChi, canChiFromIndex, STEMS };

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { Fragment, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { useSearchParams } from "react-router-dom";
 import { ChevronLeft, ChevronRight, Printer, X } from "lucide-react";
@@ -13,6 +13,7 @@ import {
   type XemNgayProfile,
 } from "../../../shared/xem-ngay";
 import { canChi, jdFromDate, monthCanChi, yearCanChi } from "../../../shared/xem-ngay/calendar";
+import { getHanhVanTable } from "../../../shared/xem-ngay/rules";
 import {
   CUU_TINH_INFO,
   DAN_GIAN_INFO,
@@ -758,8 +759,12 @@ function ToolPanel({ profile, today, onGo, link }: { profile: XemNgayProfile; to
       </div>
 
       <div className="xn-pillars">
-        {profile.pillars.map((item) => (
-          <div key={item.label} className="xn-pillar">
+        {profile.pillars.map((item, index) => (
+          <Fragment key={item.label}>
+            {index > 0 &&
+              // Như trang mẫu: dấu gạch giữa các trụ, rê chuột hiện bảng Hành và Vận của 60 Can Chi.
+              link("–", "Hành và Vận của giờ theo ngày", <HanhVanCard pillars={profile.pillars} />, "xn-pillar__sep")}
+          <div className="xn-pillar">
             <span>{item.label}</span>
             {link(
               <>
@@ -772,6 +777,7 @@ function ToolPanel({ profile, today, onGo, link }: { profile: XemNgayProfile; to
               "xn-pillar__btn",
             )}
           </div>
+          </Fragment>
         ))}
       </div>
 
@@ -981,6 +987,79 @@ function HourCard({ profile }: { profile: XemNgayProfile }) {
           ))}
         </tbody>
       </table>
+    </Card>
+  );
+}
+
+const HANH_VAN_TABLE = getHanhVanTable();
+
+/**
+ * Bảng "Hành và Vận của giờ theo ngày" như trang mẫu: 6 tuần Giáp, mỗi ô ghi số hành (trên) và vận (dưới) của Can Chi;
+ * ô in hồng là Can Chi nằm giữa hai quẻ (hai cặp số). Tô nền các Can Chi đang là trụ năm / tháng / ngày / giờ.
+ */
+function HanhVanCard({ pillars }: { pillars: XemNgayProfile["pillars"] }) {
+  const current = new Map(pillars.map((item) => [item.name, item.label] as const));
+  const cellClass = (cell: { name: string; hanh: number[] }, index: number) =>
+    [index < 2 ? "is-lead" : "", cell.hanh.length > 1 ? "is-double" : "", current.has(cell.name) ? "is-current" : ""].filter(Boolean).join(" ");
+  const nums = (values: number[]) => values.map((value, index) => <span key={index}>{value}</span>);
+  return (
+    <Card title="Hành và Vận của giờ theo ngày" wide>
+      <div className="xn-hanhvan">
+        {HANH_VAN_TABLE.map((week) => {
+          const [can, chi] = week.name.split(" ");
+          const head = (
+            <th rowSpan={2} scope="rowgroup">
+              {can}
+              <br />
+              {chi}
+            </th>
+          );
+          return (
+            <table key={week.name} className="xn-hanhvan__week" aria-label={`Tuần ${week.name}`}>
+              <tbody>
+                <tr className="xn-hanhvan__num">
+                  <th scope="row">Hành</th>
+                  {week.cells.map((cell, index) => (
+                    <td key={cell.name} className={cellClass(cell, index)}>{nums(cell.hanh)}</td>
+                  ))}
+                  {week.voids.map((cell) => (
+                    <td key={cell.name} className={cell.hanh.length > 1 ? "is-void is-double" : "is-void"}>{nums(cell.hanh)}</td>
+                  ))}
+                  <th scope="row">Hành</th>
+                </tr>
+                <tr>
+                  {head}
+                  {week.cells.map((cell, index) => (
+                    <td key={cell.name} className={cellClass(cell, index)} title={current.has(cell.name) ? `Trụ ${current.get(cell.name)?.toLowerCase()}` : undefined}>
+                      {cell.can}
+                    </td>
+                  ))}
+                  <td colSpan={2} className="is-void xn-hanhvan__void">Không Vong</td>
+                  {head}
+                </tr>
+                <tr>
+                  {week.cells.map((cell, index) => (
+                    <td key={cell.name} className={cellClass(cell, index)}>{cell.chi}</td>
+                  ))}
+                  {week.voids.map((cell) => (
+                    <td key={cell.name} className="is-void">{cell.chi}</td>
+                  ))}
+                </tr>
+                <tr className="xn-hanhvan__num">
+                  <th scope="row">Vận</th>
+                  {week.cells.map((cell, index) => (
+                    <td key={cell.name} className={cellClass(cell, index)}>{nums(cell.van)}</td>
+                  ))}
+                  {week.voids.map((cell) => (
+                    <td key={cell.name} className={cell.van.length > 1 ? "is-void is-double" : "is-void"}>{nums(cell.van)}</td>
+                  ))}
+                  <th scope="row">Vận</th>
+                </tr>
+              </tbody>
+            </table>
+          );
+        })}
+      </div>
     </Card>
   );
 }
