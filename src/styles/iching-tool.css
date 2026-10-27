@@ -468,6 +468,8 @@
 .casting-trigger:hover { transform: translateY(-4px) scale(1.02); }
 .casting-trigger:active { transform: translateY(0) scale(0.97); }
 .casting-trigger:disabled { opacity: 0.6; }
+/* Chưa nhập mã học viên: nút gieo thành nút mở hộp nhập mã. */
+.casting-trigger.is-locked { color: #5721e8; background: radial-gradient(circle at 38% 30%, #fdf7ff, #e7d8ff); }
 .casting-trigger > * { position: relative; z-index: 1; }
 .casting-trigger span { font-size: 0.59rem; font-weight: 700; }
 .casting-trigger strong { margin: 2px 0 4px; font-family: var(--ich-font-display); font-size: 0.78rem; }
@@ -668,6 +670,11 @@
   font-size: 0.82rem;
   line-height: 1.7;
 }
+
+/* Mã học viên: khung mời nhập mã dưới chú thích hào, dải "Học viên · HV-…" dưới hướng dẫn gieo. */
+.iching-student-lock { margin-top: 20px; }
+.hex-empty .iching-student-lock p { color: #5b4a86; font-size: 0.85rem; line-height: 1.5; }
+.iching-student-status { margin-top: 12px; }
 
 .line-legend {
   display: flex;

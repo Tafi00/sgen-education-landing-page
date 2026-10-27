@@ -2,6 +2,7 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react
 import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 import { BAT_CUC_COLUMNS, BAT_CUC_DETAILS, type BatCucDetail } from "../../../shared/sim/bat-cuc-chi-tiet";
+import { useStudentUnlock } from "../ui/StudentAccess";
 
 export type BatCucPairItem = { pair: string; code: string; name: string; type: "cat" | "hung"; desc: string };
 
@@ -11,8 +12,12 @@ type Active = { index: number; anchor: HTMLElement; pinned: boolean };
  * Các cặp số Bát Cực của SIM: thẻ hiện tên sao (màu theo cát / bình / hung) và cột "Ý nghĩa" của bảng khách;
  * rê chuột (máy có chuột) hoặc bấm (cảm ứng, bàn phím) để xem đủ 5 cột Ý nghĩa · Tài chính · Sự nghiệp · Sức khỏe ·
  * Mối quan hệ. Bấm lần nữa, Esc hoặc bấm ra ngoài để đóng.
+ *
+ * `locked` (chưa nhập mã học viên): thẻ vẫn hiện tên sao và Ý nghĩa cơ bản; bảng chi tiết không mở, bấm thẻ thì mở hộp
+ * nhập mã học viên.
  */
-export function BatCucPairs({ items }: { items: BatCucPairItem[] }) {
+export function BatCucPairs({ items, locked = false }: { items: BatCucPairItem[]; locked?: boolean }) {
+  const requestUnlock = useStudentUnlock();
   const [active, setActive] = useState<Active | null>(null);
   const closeTimer = useRef<number | null>(null);
   const hoverCapable = useRef(false);
@@ -59,20 +64,25 @@ export function BatCucPairs({ items }: { items: BatCucPairItem[] }) {
             <button
               type="button"
               className={`skd-bcls-pair is-${tone}`}
-              aria-expanded={open}
+              aria-expanded={locked ? undefined : open}
               aria-controls={open ? "skd-bcls-pop" : undefined}
+              aria-haspopup={locked ? "dialog" : undefined}
               onMouseEnter={(event) => {
-                if (!hoverCapable.current || !detail) return;
+                if (locked || !hoverCapable.current || !detail) return;
                 cancelClose();
                 const anchor = event.currentTarget;
                 setActive((current) => (current?.pinned ? current : { index, anchor, pinned: false }));
               }}
               onMouseLeave={() => {
-                if (!hoverCapable.current) return;
+                if (locked || !hoverCapable.current) return;
                 cancelClose();
                 closeTimer.current = window.setTimeout(() => setActive((current) => (current?.pinned ? current : null)), 120);
               }}
               onClick={(event) => {
+                if (locked) {
+                  requestUnlock();
+                  return;
+                }
                 if (!detail) return;
                 const anchor = event.currentTarget;
                 setActive((current) => (current?.index === index && current.pinned ? null : { index, anchor, pinned: true }));
@@ -88,7 +98,7 @@ export function BatCucPairs({ items }: { items: BatCucPairItem[] }) {
           </div>
         );
       })}
-      {active && BAT_CUC_DETAILS[items[active.index]?.code] && (
+      {!locked && active && BAT_CUC_DETAILS[items[active.index]?.code] && (
         <BatCucPopover
           detail={BAT_CUC_DETAILS[items[active.index].code]}
           pair={items[active.index].pair}

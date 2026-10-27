@@ -11,6 +11,7 @@ import {
   ExternalLink,
   FileText,
   LibraryBig,
+  Lock,
   RotateCcw,
   ShieldCheck,
   type LucideIcon,
@@ -24,6 +25,7 @@ import { LucHaoSheet } from "./LucHaoSheet";
 import { buildLucHaoSheet } from "../../../shared/sim/sim-phong-thuy-engine";
 import "../../styles/iching-tool.css";
 import { Button } from "../ui/Button";
+import { StudentLock, StudentStatus, useStudentAccess, useStudentUnlock } from "../ui/StudentAccess";
 
 export type FengShuiToolViewProps = {
   /** Câu hỏi gợi ý cho lần gieo đầu tiên. Chỉ dùng làm giá trị khởi tạo. */
@@ -179,6 +181,9 @@ function MethodNote({
  * giữ nguyên thuật toán lập quẻ (getHexagram) và nguồn ngẫu nhiên bảo mật.
  */
 export function IChingToolView({ defaultQuestion = "", compact = false }: FengShuiToolViewProps) {
+  // Chỉ học viên được cấp mã mới gieo được quẻ (khách yêu cầu 27/10/2026).
+  const { unlocked: studentUnlocked } = useStudentAccess();
+  const requestUnlock = useStudentUnlock();
   const [question, setQuestion] = useState(defaultQuestion);
   const [castPurpose, setCastPurpose] = useState<(typeof CAST_PURPOSES)[number]["key"]>("timing");
   const activeCastPurpose = CAST_PURPOSES.find((purpose) => purpose.key === castPurpose) ?? CAST_PURPOSES[0];
@@ -252,6 +257,10 @@ export function IChingToolView({ defaultQuestion = "", compact = false }: FengSh
   };
 
   const tossCoins = () => {
+    if (!studentUnlocked) {
+      requestUnlock();
+      return;
+    }
     if (tossing || coinLines.length >= 6) return;
     const faces = Array.from({ length: 3 }, secureCoinFace);
     const value = faces.reduce((sum, heads) => sum + (heads ? 2 : 3), 0);
@@ -324,6 +333,7 @@ export function IChingToolView({ defaultQuestion = "", compact = false }: FengSh
           <div className="casting-instruction">
             <strong>Gieo lần lượt sáu hào</strong>
             <span>Sau khi đã đọc văn khấn, giữ tâm hướng về điều đang suy xét rồi bấm gieo từng hào, từ hào 1 ở dưới lên hào 6 ở trên.</span>
+            <StudentStatus className="iching-student-status" />
           </div>
 
           <div className="casting-ledger" aria-live="polite" aria-label="Sáu hào của quẻ">
@@ -456,6 +466,9 @@ export function IChingToolView({ defaultQuestion = "", compact = false }: FengSh
               <h3>Sáu hào đang chờ được lập</h3>
               <p>Mỗi lần gieo sẽ tạo một hào âm, hào dương hoặc hào động. Kết quả chỉ hiện khi đủ sáu lần để không ngắt nhịp tập trung.</p>
               <div className="line-legend"><span><i className="solid-line" /> Dương</span><span><i className="broken-line" /> Âm</span><span><i className="moving-dot" /> Hào động</span></div>
+              {studentUnlocked ? null : (
+                <StudentLock compact className="iching-student-lock">Gieo quẻ dành cho học viên được SGEN cấp mã.</StudentLock>
+              )}
             </div>
           )}
         </div>
@@ -486,7 +499,7 @@ export function IChingToolView({ defaultQuestion = "", compact = false }: FengSh
       )}
 
       <div className={`casting-dock ${coinLines.length >= 6 ? "is-complete" : ""}`}>
-        {coinLines.length < 6 ? <button className="casting-trigger" onClick={tossCoins} disabled={tossing} aria-label={`Gieo hào ${coinLines.length + 1}`}><span className="casting-trigger__coin"><Coins size={21} /></span><span className="casting-trigger__copy"><small>Lập hào {coinLines.length + 1} / 6</small><strong>{tossing ? "Đang gieo…" : "Gieo hào"}</strong></span><ArrowUp className="casting-trigger__arrow" size={17} /></button> : <button className="casting-reset" onClick={resetCoins}><RotateCcw size={17} /><span><strong>Quẻ mới</strong><small>Gieo lại</small></span></button>}
+        {!studentUnlocked ? <button className="casting-trigger is-locked" onClick={requestUnlock} aria-haspopup="dialog" aria-label="Nhập mã học viên để gieo quẻ"><span className="casting-trigger__coin"><Lock size={20} /></span><span className="casting-trigger__copy"><small>Dành cho học viên</small><strong>Nhập mã</strong></span></button> : coinLines.length < 6 ? <button className="casting-trigger" onClick={tossCoins} disabled={tossing} aria-label={`Gieo hào ${coinLines.length + 1}`}><span className="casting-trigger__coin"><Coins size={21} /></span><span className="casting-trigger__copy"><small>Lập hào {coinLines.length + 1} / 6</small><strong>{tossing ? "Đang gieo…" : "Gieo hào"}</strong></span><ArrowUp className="casting-trigger__arrow" size={17} /></button> : <button className="casting-reset" onClick={resetCoins}><RotateCcw size={17} /><span><strong>Quẻ mới</strong><small>Gieo lại</small></span></button>}
       </div>
 
       {tossing && <div className="coin-cast-overlay" role="status" aria-live="assertive">

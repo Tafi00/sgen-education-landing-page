@@ -350,6 +350,10 @@
   letter-spacing: 1px;
 }
 
+/* Mã học viên: dải "Học viên · HV-…" dưới tiêu đề kết quả, khung mời nhập mã dưới các cặp Bát Cực. */
+.skd-student-status { margin-top: 0.6rem; }
+.skd-bcls-lock { margin-top: 1rem; }
+
 .skd-result-jump-nav {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));

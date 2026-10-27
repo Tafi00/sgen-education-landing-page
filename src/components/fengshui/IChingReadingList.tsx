@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState, type KeyboardEvent as ReactKeyboardEvent } from "react";
 import { createPortal } from "react-dom";
-import { BriefcaseBusiness, Eye, HeartPulse, Users, Wallet, X } from "lucide-react";
+import { BriefcaseBusiness, Eye, HeartPulse, Lock, Users, Wallet, X } from "lucide-react";
 import { HEXAGRAM_RATING_LABEL, hexagramRating } from "../../../shared/menh-thu/hexagram-rating";
 import { getHexagramInfo, type MovingLineDetail } from "../../../shared/menh-thu/metaphysics";
 import { ICHING_DOCUMENT_READINGS } from "./iching-document-readings";
+import { StudentLock, useStudentUnlock } from "../ui/StudentAccess";
 import "../../styles/iching-reading.css";
 
 /** Ngũ hành của bát quái, dùng cho cách ghi “(Mộc/Thủy)” trong tài liệu SGEN. */
@@ -66,8 +67,13 @@ function HexagramFigure({ lines, highlight = [] }: { lines: boolean[]; highlight
   );
 }
 
-function ReadingCard({ item, onOpen }: { item: IChingReadingItem; onOpen: () => void }) {
+/**
+ * `locked`: khách chưa nhập mã học viên chỉ thấy dòng Ý nghĩa; bốn cột Tài chính · Sự nghiệp · Sức khỏe · Mối quan hệ và
+ * hộp thoại chi tiết dành cho học viên được cấp mã.
+ */
+function ReadingCard({ item, locked, onOpen }: { item: IChingReadingItem; locked: boolean; onOpen: () => void }) {
   const { info, reading, name, upperElement, lowerElement } = resolveItem(item);
+  const requestUnlock = useStudentUnlock();
   return (
     <section className="iching-reading-block" data-rating={hexagramRating(item.number) ?? undefined}>
       <header>
@@ -77,30 +83,46 @@ function ReadingCard({ item, onOpen }: { item: IChingReadingItem; onOpen: () => 
         </div>
         <RatingBadge number={item.number} />
       </header>
-      <div className="iching-reading-table-wrap">
-        <table className="iching-reading-table">
-          <thead>
-            <tr><th scope="col">Ý Nghĩa</th><th scope="col">Tài Chính</th><th scope="col">Sự Nghiệp</th><th scope="col">Sức Khỏe</th><th scope="col">Mối quan hệ</th></tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td data-label="Ý Nghĩa"><strong>{reading?.meaning ?? info?.keyword ?? "—"}</strong></td>
-              <td data-label="Tài Chính">{reading?.finance ?? "—"}</td>
-              <td data-label="Sự Nghiệp">{reading?.career ?? "—"}</td>
-              <td data-label="Sức Khỏe">{reading?.health ?? "—"}</td>
-              <td data-label="Mối quan hệ">{reading?.relationship ?? "—"}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      {locked ? (
+        <div className="iching-reading-table-wrap">
+          <table className="iching-reading-table iching-reading-table--basic">
+            <thead>
+              <tr><th scope="col">Ý Nghĩa</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td data-label="Ý Nghĩa"><strong>{reading?.meaning ?? info?.keyword ?? "—"}</strong></td>
+              </tr>
+            </tbody>
+          </table>
+          <StudentLock className="iching-reading-lock">Tài Chính, Sự Nghiệp, Sức Khỏe và Mối quan hệ của quẻ dành cho học viên được SGEN cấp mã.</StudentLock>
+        </div>
+      ) : (
+        <div className="iching-reading-table-wrap">
+          <table className="iching-reading-table">
+            <thead>
+              <tr><th scope="col">Ý Nghĩa</th><th scope="col">Tài Chính</th><th scope="col">Sự Nghiệp</th><th scope="col">Sức Khỏe</th><th scope="col">Mối quan hệ</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td data-label="Ý Nghĩa"><strong>{reading?.meaning ?? info?.keyword ?? "—"}</strong></td>
+                <td data-label="Tài Chính">{reading?.finance ?? "—"}</td>
+                <td data-label="Sự Nghiệp">{reading?.career ?? "—"}</td>
+                <td data-label="Sức Khỏe">{reading?.health ?? "—"}</td>
+                <td data-label="Mối quan hệ">{reading?.relationship ?? "—"}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      )}
       <footer className="iching-reading-more">
         <dl>
           {info && <div><dt>Thượng quái</dt><dd>{info.upper.symbol} {info.upper.name} · {upperElement}</dd></div>}
           {info && <div><dt>Hạ quái</dt><dd>{info.lower.symbol} {info.lower.name} · {lowerElement}</dd></div>}
           {item.note && <div><dt>Cách lập</dt><dd>{item.note}</dd></div>}
         </dl>
-        <button type="button" className="iching-reading-more__btn" onClick={onOpen} aria-haspopup="dialog">
-          <Eye size={16} aria-hidden="true" />
+        <button type="button" className="iching-reading-more__btn" onClick={locked ? requestUnlock : onOpen} aria-haspopup="dialog">
+          {locked ? <Lock size={16} aria-hidden="true" /> : <Eye size={16} aria-hidden="true" />}
           <span>Xem chi tiết</span>
         </button>
       </footer>
@@ -270,14 +292,17 @@ function HexagramDialog({
   );
 }
 
-/** Các bảng luận quẻ (Ý nghĩa · Tài chính · Sự nghiệp · Sức khỏe · Mối quan hệ) kèm nút xem chi tiết từng quẻ. */
-export function IChingReadingList({ items, className = "" }: { items: IChingReadingItem[]; className?: string }) {
+/**
+ * Các bảng luận quẻ (Ý nghĩa · Tài chính · Sự nghiệp · Sức khỏe · Mối quan hệ) kèm nút xem chi tiết từng quẻ.
+ * `locked` (chưa nhập mã học viên): chỉ hiện dòng Ý nghĩa, nút "Xem chi tiết" mở hộp nhập mã.
+ */
+export function IChingReadingList({ items, className = "", locked = false }: { items: IChingReadingItem[]; className?: string; locked?: boolean }) {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const closeDialog = useRef(() => setOpenIndex(null)).current;
   return (
     <div className={`iching-reading-list ${className}`}>
-      {items.map((item, index) => <ReadingCard key={item.key} item={item} onOpen={() => setOpenIndex(index)} />)}
-      {openIndex !== null && items[openIndex] && (
+      {items.map((item, index) => <ReadingCard key={item.key} item={item} locked={locked} onOpen={() => setOpenIndex(index)} />)}
+      {!locked && openIndex !== null && items[openIndex] && (
         <HexagramDialog items={items} index={openIndex} onIndexChange={setOpenIndex} onClose={closeDialog} />
       )}
     </div>

@@ -23,6 +23,7 @@ import "../../styles/sim-phong-thuy.css";
 import { LucHaoSheet } from "./LucHaoSheet";
 import { BatCucPairs } from "./BatCucPairs";
 import { ExpertContactBar } from "../ui/ExpertCallout";
+import { StudentLock, StudentStatus, useStudentAccess } from "../ui/StudentAccess";
 
 /** Lời kêu gọi trên thanh liên hệ dính đáy màn hình, hiện khi đã có kết quả luận sim. */
 const SIM_EXPERT_CALLOUT = "Liên hệ Chuyên Gia để được luận giải Chuyên Sâu Miễn Phí";
@@ -82,6 +83,8 @@ export default function SimPhongThuyView({
   const defaultHour = initialHour ?? (initialTime ? initialTime.split(":")[0] || "" : "");
   const defaultMinute = initialMinute ?? (initialTime ? initialTime.split(":")[1] || "" : "");
 
+  // Chi tiết quẻ (bốn phương diện) và bảng chi tiết Bát Cực chỉ dành cho học viên được cấp mã.
+  const { unlocked: studentUnlocked } = useStudentAccess();
   const [phone, setPhone] = useState<string>(initialPhone);
   const [day, setDay] = useState<string>(defaultDay);
   const [month, setMonth] = useState<string>(defaultMonth);
@@ -591,6 +594,7 @@ export default function SimPhongThuyView({
           )}
           <div className="skd-result-header">
             <h2 id="sim-result-title">XEM PHONG THỦY SIM {result.formattedPhone}</h2>
+            <StudentStatus className="skd-student-status" />
           </div>
 
           <nav className="skd-result-jump-nav" aria-label="Điều hướng nhanh kết quả phong thủy sim">
@@ -650,7 +654,7 @@ export default function SimPhongThuyView({
               <h3 id="skd-life-hex-title">{lifeHexagramItems.length} quẻ của SIM {result.formattedPhone}</h3>
               <p>Quẻ Chủ, Quẻ Biến và các quẻ Tiền Vận, Trung Vận, Hậu Vận theo bảng 64 quẻ Kinh Dịch. Bấm “Xem chi tiết” để đọc đầy đủ từng quẻ.</p>
             </header>
-            <IChingReadingList items={lifeHexagramItems} />
+            <IChingReadingList items={lifeHexagramItems} locked={!studentUnlocked} />
           </section>
         )}
 
@@ -903,11 +907,17 @@ export default function SimPhongThuyView({
             <div>
               <span>05 · 64 cặp sao Bát Trạch</span>
               <h3 id="skd-bcls-title">Bát Cực Linh Số</h3>
-              <p>Đọc lần lượt {result.meta.bc.total} cặp số liền kề và ý nghĩa sao Bát Trạch của từng cặp. Rê chuột hoặc bấm vào từng cặp để xem đủ Tài chính, Sự nghiệp, Sức khỏe, Mối quan hệ.</p>
+              <p>
+                Đọc lần lượt {result.meta.bc.total} cặp số liền kề và ý nghĩa sao Bát Trạch của từng cặp.
+                {studentUnlocked ? " Rê chuột hoặc bấm vào từng cặp để xem đủ Tài chính, Sự nghiệp, Sức khỏe, Mối quan hệ." : ""}
+              </p>
             </div>
           </header>
 
-          <BatCucPairs items={result.meta.bc.items} />
+          <BatCucPairs items={result.meta.bc.items} locked={!studentUnlocked} />
+          {studentUnlocked ? null : (
+            <StudentLock className="skd-bcls-lock">Ý nghĩa chi tiết từng cặp sao (Tài chính, Sự nghiệp, Sức khỏe, Mối quan hệ) dành cho học viên được SGEN cấp mã.</StudentLock>
+          )}
 
         </section>
 

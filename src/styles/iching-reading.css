@@ -24,6 +24,11 @@
 .iching-reading-table td { padding: 12px 14px; color: var(--icr-text); border-right: 1px solid #f0e8f6; font-size: .78rem; line-height: 1.6; vertical-align: top; }
 .iching-reading-table td:last-child { border-right: 0; }
 .iching-reading-table td strong { color: var(--icr-ink); }
+/* Chưa nhập mã học viên: chỉ còn cột Ý nghĩa, phía dưới là khung mời nhập mã. */
+.iching-reading-table--basic { min-width: 0; }
+.iching-reading-table--basic th,
+.iching-reading-table--basic td { width: auto; }
+.iching-reading-lock { margin: 4px 16px 16px; }
 /* Điện thoại: bảng 5 cột phải cuộn ngang (cột Sức Khỏe bị cắt) — xếp dọc thành từng dòng "nhãn | nội dung". */
 @media (max-width: 640px) {
   .iching-reading-table-wrap { overflow: visible; }
