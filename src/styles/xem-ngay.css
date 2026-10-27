@@ -579,9 +579,11 @@
 .xn-card__grid--days td:nth-child(2) { text-align: center; }
 .xn-card__grid--days .is-current { background: var(--xn-card-hit); }
 .xn-card__grid--days span.is-hit { color: #fff; background: var(--xn-violet); border-radius: 4px; font-weight: 700; }
-.xn-muc-table { padding: 10px 12px 0; }
-.xn-muc-table__caption { margin: 0 0 6px; color: var(--xn-ink); font-size: 13.5px; font-weight: 700; }
 .xn-muc-table__scroll { overflow-x: auto; border: 1px solid var(--xn-card-line); border-radius: 6px; }
+
+/* Mã học viên: dải "Học viên · HV-…" giữa trang; khung khoá trong ô Kiết tinh, Hung tinh, Đổng Công, Trạng Trình. */
+.xn-student-status { display: flex; width: fit-content; max-width: 100%; margin: 0 auto 14px; }
+.xn .student-lock--compact { margin: 2px 0; }
 
 /* Đổng Công: bảng 4 cột Ngày · Nghi – Kị · Ảnh hưởng · Kiết – Hung như giáo trình (cát chữ đỏ, hung chữ đen). */
 .xn-dongcong-scroll { margin: 10px 12px 12px; }
@@ -590,7 +592,6 @@
 .xn-dongcong-table td:nth-child(3) { text-align: left; white-space: pre-line; vertical-align: top; }
 .xn-dongcong-table td.is-good { color: var(--xn-luck-good); }
 .xn-dongcong-table td.is-bad { color: var(--xn-luck-bad); }
-.xn-card .xn-dongcong-scroll + .xn-muc-table { padding-top: 0; padding-bottom: 12px; }
 @media (max-width: 640px) {
   /* Điện thoại: bảng Đổng Công xếp thành từng dòng "nhãn: nội dung" thay vì cuộn ngang. */
   .xn-dongcong-table { min-width: 0; }

@@ -30,6 +30,7 @@ import {
 import { TRANG_TRINH_MUC } from "../../../shared/xem-ngay/trang-trinh";
 import { KIM_THAN_THAT_SAT } from "../../../shared/xem-ngay/truc-tu-data";
 import { tietKhiTho } from "../../../shared/xem-ngay/tiet-khi-tho";
+import { StudentLock, StudentStatus, useStudentAccess } from "../ui/StudentAccess";
 import "../../styles/xem-ngay.css";
 
 /**
@@ -291,6 +292,8 @@ export function XemNgayView() {
   const hour = Math.min(23, Math.max(0, Number(searchParams.get("gio") ?? now.getHours()) || 0));
   const minute = Math.min(59, Math.max(0, Number(searchParams.get("phut") ?? now.getMinutes()) || 0));
   const profile = useMemo(() => getXemNgayProfile(date, hour, minute), [date, hour, minute]);
+  // Kiết tinh, Hung tinh, Đổng Công và các mục Trạng Trình chỉ dành cho học viên được cấp mã (khách yêu cầu 27/10/2026).
+  const { unlocked: studentUnlocked } = useStudentAccess();
   const hints = useHints();
   const closeHints = hints.close;
 
@@ -337,12 +340,14 @@ export function XemNgayView() {
         <InfoPanel profile={profile} link={link} note={note} />
       </div>
 
+      <StudentStatus className="xn-student-status" />
+
       <div className="xn-row xn-row--2">
         <Panel title="Kiết tinh">
-          <StarList stars={profile.stars.good} tone="good" note={note} />
+          {studentUnlocked ? <StarList stars={profile.stars.good} tone="good" note={note} /> : <StudentLock compact />}
         </Panel>
         <Panel title="Hung tinh">
-          <StarList stars={profile.stars.bad} tone="bad" note={note} />
+          {studentUnlocked ? <StarList stars={profile.stars.bad} tone="bad" note={note} /> : <StudentLock compact />}
         </Panel>
       </div>
 
@@ -417,7 +422,9 @@ export function XemNgayView() {
 
       <div className="xn-row xn-row--2 xn-row--wide">
         <Panel title="Đổng Công — soạn trạch nhật">
-          {profile.dongCong ? (
+          {!studentUnlocked ? (
+            <StudentLock compact />
+          ) : profile.dongCong ? (
             link(
               <>
                 <b>Ngày {profile.ctx.day.name}:</b>
@@ -427,15 +434,15 @@ export function XemNgayView() {
               profile.dongCong.title,
               <DongCongCard entry={profile.dongCong} day={profile.ctx.day.name} />,
               "xn-dongcong",
-              "rich",
-              <DongCongCard entry={profile.dongCong} day={profile.ctx.day.name} withMonth />,
             )
           ) : (
             <p className="xn-muted">Chưa có lời luận Đổng Công cho ngày này.</p>
           )}
         </Panel>
         <Panel title="Trạng Trình — Nguyễn Bỉnh Khiêm">
-          {profile.trangTrinh.length ? (
+          {!studentUnlocked ? (
+            <StudentLock compact />
+          ) : profile.trangTrinh.length ? (
             <ol className="xn-muc">
               {profile.trangTrinh.map((no) => {
                 const muc = TRANG_TRINH_MUC[no];
@@ -1204,8 +1211,8 @@ function CuuTinhCard({ name }: { name: string }) {
   );
 }
 
-/** Bảng Đổng Công của ngày như giáo trình: Ngày · Nghi – Kị · Ảnh hưởng · Kiết – Hung (hộp thoại thêm hung sát của tháng). */
-function DongCongCard({ entry, day, withMonth = false }: { entry: NonNullable<XemNgayProfile["dongCong"]>; day: string; withMonth?: boolean }) {
+/** Bảng Đổng Công của ngày như giáo trình: Ngày · Nghi – Kị · Ảnh hưởng · Kiết – Hung (bảng hung sát của tháng đã bỏ theo yêu cầu khách). */
+function DongCongCard({ entry, day }: { entry: NonNullable<XemNgayProfile["dongCong"]>; day: string }) {
   return (
     <Card title={entry.title} sub={entry.label ? <p>{entry.label}</p> : undefined} wide>
       <div className="xn-muc-table__scroll xn-dongcong-scroll">
@@ -1223,23 +1230,6 @@ function DongCongCard({ entry, day, withMonth = false }: { entry: NonNullable<Xe
           </tbody>
         </table>
       </div>
-      {withMonth && entry.hungSat.length > 0 && (
-        <div className="xn-muc-table">
-          <p className="xn-muc-table__caption">Hung sát {entry.month.toLowerCase()} ({entry.terms})</p>
-          <div className="xn-muc-table__scroll">
-            <table className="xn-card__grid xn-muc-grid">
-              <thead>
-                <tr><th>Thời gian</th><th>Hung sát</th><th>Phương</th><th>Hướng</th><th>Kị</th></tr>
-              </thead>
-              <tbody>
-                {entry.hungSat.map((row, index) => (
-                  <tr key={index}>{row.map((cell, col) => <td key={col}>{cell}</td>)}</tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
     </Card>
   );
 }
