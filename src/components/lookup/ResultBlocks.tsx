@@ -442,7 +442,7 @@ function PdfTeaserBlock({ block, pdfAction }: { block: Extract<ResultBlock, { ki
             <ul>
               {group.items.map((item) => (
                 <li key={item.label}>
-                  <button type="button" onClick={() => guide(item.label)} aria-label={`${item.label}${item.value ? ` ${item.value}` : ""} — xem trong file ebook PDF`}>
+                  <button type="button" onClick={() => guide(item.label)} aria-label={`${item.label} — xem trong file ebook PDF`}>
                     <Lock aria-hidden="true" />
                     <span>{item.label}</span>
                     {item.value ? <b>{item.value}</b> : null}

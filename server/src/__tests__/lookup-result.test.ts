@@ -44,6 +44,14 @@ describe("kết quả Thần số học trên trang tra cứu (bản rút gọn)
     for (const core of ["Nội tâm", "Thái độ", "Tương tác", "Sứ mệnh", "Đường đời", "Trưởng thành"]) expect(items).not.toContain(core);
   });
 
+  it("không gửi con số của các chỉ số chỉ có trong ebook (chỉ dấu gạch)", () => {
+    const [teaser] = ofKind(web.blocks, "pdfTeaser");
+    const values = teaser.groups.flatMap((group) => group.items.map((item) => item.value));
+    expect(values.some((value) => /\d/.test(value))).toBe(false);
+    const indexValues = teaser.groups.filter((group) => group.title !== "Biểu đồ năng lượng" && group.title !== "Kết luận").flatMap((group) => group.items.map((item) => item.value));
+    expect(new Set(indexValues)).toEqual(new Set(["—"]));
+  });
+
   it("có tên thường dùng thì thêm nhóm chỉ số theo tên thường dùng", () => {
     const withCommon = numerologyWebPayload(calculateFullNumerologyReport("Nguyễn Thị Quý", "2019-10-11", 2026, "Quý"));
     const [teaser] = ofKind(withCommon.blocks, "pdfTeaser");

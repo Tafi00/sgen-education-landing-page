@@ -168,8 +168,11 @@ export const NUMEROLOGY_WEB_SECTIONS = {
 /**
  * Kết quả trang Tra cứu Thần số học (khách yêu cầu): chỉ 8 chỉ số chủ đạo và ý nghĩa chi tiết của 8 chỉ số này;
  * các chỉ số còn lại (từ Thế giới bên trong trở xuống), biểu đồ và kết luận chỉ hiện tên để dẫn khách về nút "Tải PDF".
- * Lời luận của phần còn lại không gửi xuống trình duyệt — chỉ có trong file ebook.
+ * Con số và lời luận của phần còn lại không gửi xuống trình duyệt — chỉ có trong file ebook.
  */
+/** Chỗ con số của chỉ số chỉ có trong ebook. */
+const HIDDEN_VALUE = "—";
+
 export function numerologyWebPayload(report: NumerologyFullReport): LookupResultPayload {
   const blocks: ResultBlock[] = [
     {
@@ -196,21 +199,22 @@ export function numerologyWebPayload(report: NumerologyFullReport): LookupResult
   }
 
   // Chỉ số đã luận ở trên (Nội tâm, Thái độ, Sứ mệnh…) không nhắc lại trong phần dẫn về ebook.
+  // Khách (27/10/2026): con số của các chỉ số này cũng chỉ có trong file PDF — trang chỉ hiện dấu gạch, không gửi số.
   const coreKeys = new Set<string>(report.metrics.map((metric) => metric.key));
   const groups = report.sections.map((section) => ({
     title: section.title,
-    items: section.metrics.filter((item) => !coreKeys.has(item.key)).map((item) => ({ label: item.label, value: item.value || "—" })),
+    items: section.metrics.filter((item) => !coreKeys.has(item.key)).map((item) => ({ label: item.label, value: HIDDEN_VALUE })),
   }));
   if (report.commonNameMetrics?.length) {
     groups.push({
       title: "Chỉ số theo tên thường dùng",
-      items: report.commonNameMetrics.map((item) => ({ label: item.label, value: item.value || "—" })),
+      items: report.commonNameMetrics.map((item) => ({ label: item.label, value: HIDDEN_VALUE })),
     });
   }
   groups.push({
     title: "Biểu đồ năng lượng",
     items: [
-      { label: "Biểu đồ chặng đường đời", value: report.lifePathChart.pinnacles.map((pinnacle) => pinnacle.value).join(" · ") },
+      { label: "Biểu đồ chặng đường đời", value: "" },
       { label: "Biểu đồ Ikigai", value: "" },
       { label: "Biểu đồ ngày sinh", value: "" },
       { label: "Biểu đồ họ tên", value: "" },
