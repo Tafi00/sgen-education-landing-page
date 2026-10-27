@@ -22,6 +22,8 @@ COPY --from=build /app/dist-server ./dist-server
 COPY --from=build /app/server/src/db/schema.sql ./dist-server/schema.sql
 # Template PDF thần số học (18 trang + font Faustina) cho endpoint /api/lookups/:id/pdf.
 COPY --from=build /app/assets/numerology-pdf ./assets/numerology-pdf
+# Ảnh từng trang Phụ lục 64 quẻ — chỉ trả qua /api/hoc-vien/phu-luc cho học viên đã nhập mã (không có file PDF gốc).
+COPY --from=build /app/assets/phu-luc-64-que/trang ./assets/phu-luc-64-que/trang
 RUN mkdir -p /app/uploads
 EXPOSE 3000
 CMD ["node", "dist-server/index.js"]

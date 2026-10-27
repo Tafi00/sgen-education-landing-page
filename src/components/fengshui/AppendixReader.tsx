@@ -4,7 +4,10 @@ import { ChevronDown, ChevronUp, X } from "lucide-react";
 
 export type AppendixDocument = {
   title: string;
-  /** Thư mục ảnh trang: `${pagesDir}/trang-001.webp` … (sinh bằng `scripts/render_phu_luc_64_que.py`). */
+  /**
+   * Gốc đường dẫn ảnh trang: `${pagesDir}/trang-001.webp` … (ảnh sinh bằng `scripts/render_phu_luc_64_que.py`; Phụ lục
+   * 64 quẻ do máy chủ trả qua /api/hoc-vien/phu-luc cho học viên đã nhập mã).
+   */
   pagesDir: string;
   pageCount: number;
   /** Số trang in trên trang đầu tiên — tài liệu là phần trích nên bắt đầu từ "Trang 49", khớp cột "Trang" trong bảng tra. */

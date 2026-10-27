@@ -1,8 +1,9 @@
 """Chuyển "Phụ lục chi tiết 64 quẻ Kinh Dịch" (PDF) thành ảnh WebP từng trang cho trình xem trên trang Gieo quẻ.
 
-Khách yêu cầu tài liệu chỉ được XEM, không cho tải về, nên web không phát hành file PDF nữa: tệp gốc nằm ở
-`assets/phu-luc-64-que/` (không nằm trong `public/`, không được phục vụ tĩnh), còn trang web chỉ dùng ảnh trong
-`public/assets/phu-luc-64-que/trang-001.webp` … Khi khách gửi bản PDF mới, thay tệp gốc rồi chạy lại:
+Khách yêu cầu tài liệu chỉ được XEM, không cho tải về, và chỉ học viên được cấp mã mới xem được: tệp gốc nằm ở
+`assets/phu-luc-64-que/`, ảnh từng trang ở `assets/phu-luc-64-que/trang/trang-001.webp` … — cả hai đều không nằm trong
+`public/`; máy chủ chỉ trả ảnh qua `/api/hoc-vien/phu-luc/…` cho phiên đã nhập mã học viên. Khi khách gửi bản PDF mới,
+thay tệp gốc rồi chạy lại:
 
     python3 scripts/render_phu_luc_64_que.py
 
@@ -19,7 +20,7 @@ from PIL import Image
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SOURCE = os.path.join(ROOT, "assets", "phu-luc-64-que", "phu-luc-64-que-kinh-dich.pdf")
-OUT_DIR = os.path.join(ROOT, "public", "assets", "phu-luc-64-que")
+OUT_DIR = os.path.join(ROOT, "assets", "phu-luc-64-que", "trang")
 WIDTH = 1000  # px — đủ nét để đọc bảng tra trên màn hình retina cỡ laptop, ~90 KB/trang
 QUALITY = 68
 

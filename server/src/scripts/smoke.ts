@@ -371,6 +371,16 @@ async function run() {
   const studentRedeem = await call(base, "/api/hoc-vien/redeem", { method: "POST", jar: studentJar, body: { code: studentCode?.display } });
   const studentMe = await call(base, "/api/hoc-vien/me", { jar: studentJar });
   record("nhập mã học viên (HV-…) mở khoá công cụ cho phiên", studentRedeem.status === 200 && studentMe.payload.student?.display === studentCode?.display, `status=${studentRedeem.status}`);
+  const appendixAnonymous = await call(base, "/api/hoc-vien/phu-luc/trang-001.webp", { jar: anonymousJar, raw: true });
+  const appendixStudent = await fetch(`${base}/api/hoc-vien/phu-luc/trang-001.webp`, {
+    headers: { Cookie: [...studentJar.cookies.entries()].map(([key, value]) => `${key}=${value}`).join("; ") },
+  });
+  const appendixBadName = await call(base, "/api/hoc-vien/phu-luc/..%2F..%2Fpackage.json", { jar: studentJar, raw: true });
+  record(
+    "Phụ lục 64 quẻ chỉ trả ảnh cho học viên đã nhập mã",
+    appendixAnonymous.status === 403 && appendixStudent.status === 200 && (appendixStudent.headers.get("content-type") ?? "").includes("webp") && appendixBadName.status === 404,
+    `${appendixAnonymous.status}/${appendixStudent.status}/${appendixBadName.status}`,
+  );
   await call(base, `/api/admin/ebook-codes/${studentCode?._id}`, { method: "PATCH", jar: adminJar, body: { status: "disabled" } });
   const afterDisable = await call(base, "/api/hoc-vien/me", { jar: studentJar });
   record("khoá mã học viên thì phiên mất quyền ngay", afterDisable.payload.student === null);

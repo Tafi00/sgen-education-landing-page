@@ -40,7 +40,8 @@ export type FengShuiToolViewProps = {
  */
 const APPENDIX: AppendixDocument = {
   title: "Phụ lục chi tiết 64 quẻ Kinh Dịch",
-  pagesDir: "/assets/phu-luc-64-que",
+  // Ảnh trang không nằm trong public/: máy chủ chỉ trả cho phiên đã nhập mã học viên.
+  pagesDir: "/api/hoc-vien/phu-luc",
   pageCount: 133,
   firstPrintedPage: 49,
   pageWidth: 1000,
@@ -181,7 +182,7 @@ function MethodNote({
  * giữ nguyên thuật toán lập quẻ (getHexagram) và nguồn ngẫu nhiên bảo mật.
  */
 export function IChingToolView({ defaultQuestion = "", compact = false }: FengShuiToolViewProps) {
-  // Chỉ học viên được cấp mã mới gieo được quẻ (khách yêu cầu 27/10/2026).
+  // Chỉ học viên được cấp mã mới gieo được quẻ và xem Phụ lục 64 quẻ (khách yêu cầu 27/10/2026).
   const { unlocked: studentUnlocked } = useStudentAccess();
   const requestUnlock = useStudentUnlock();
   const [question, setQuestion] = useState(defaultQuestion);
@@ -479,13 +480,17 @@ export function IChingToolView({ defaultQuestion = "", compact = false }: FengSh
         <div className="iching-appendix__copy">
           <small>Tài liệu đính kèm</small>
           <strong>{APPENDIX.title}</strong>
-          <p>Đối chiếu lời luận đầy đủ của từng quẻ sau khi gieo. {APPENDIX.pageCount} trang · chỉ xem trực tuyến.</p>
+          <p>
+            Đối chiếu lời luận đầy đủ của từng quẻ sau khi gieo. {APPENDIX.pageCount} trang · chỉ xem trực tuyến
+            {studentUnlocked ? "." : " · dành cho học viên được cấp mã."}
+          </p>
         </div>
-        <button type="button" className="iching-appendix__link" onClick={() => setAppendixOpen(true)} aria-haspopup="dialog">
-          <BookOpen size={17} aria-hidden="true" /><span>Xem tài liệu</span>
+        <button type="button" className="iching-appendix__link" onClick={studentUnlocked ? () => setAppendixOpen(true) : requestUnlock} aria-haspopup="dialog">
+          {studentUnlocked ? <BookOpen size={17} aria-hidden="true" /> : <Lock size={17} aria-hidden="true" />}
+          <span>Xem tài liệu</span>
         </button>
       </aside>
-      {appendixOpen && <AppendixReader doc={APPENDIX} onClose={closeAppendix} />}
+      {studentUnlocked && appendixOpen && <AppendixReader doc={APPENDIX} onClose={closeAppendix} />}
 
       {lucHao && (
         <section className="skd-luc-hao-sheet iching-luc-hao" aria-labelledby="iching-lh-title">
