@@ -14,6 +14,7 @@ import { api, ApiError, errorMessage } from "../../api/client";
 import { clearEbookDraft, loadEbookDraft } from "../../app/ebookDraft";
 import { TextField } from "../../components/form/Field";
 import { Button } from "../../components/ui/Button";
+import { ExpertContactBar } from "../../components/ui/ExpertCallout";
 import { Eyebrow } from "../../components/ui/Eyebrow";
 import { useToast } from "../../components/ui/Toast";
 import { EBOOK_EDITION_CHOICES, ebookAllowsEdition, type EbookEdition } from "../../../shared/ebook";
@@ -218,6 +219,8 @@ export function EbookPage() {
 
   return (
     <section className="login-stage ux-member" style={DARK_STYLE}>
+      {/* Khách: ở phần nhập mã cho chạy dòng liên hệ cấp mã ở đáy màn hình như trang Tra cứu Thần số học, Sim. */}
+      <ExpertContactBar title="Liên hệ để được cấp mã xuất file ebook Thần số học" altFirst />
       <div className="container login-grid">
         <div className="login-welcome">
           <Eyebrow variant="pill" icon={BookOpen}>Ebook Thần số học</Eyebrow>

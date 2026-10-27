@@ -35,12 +35,20 @@ function ZaloMark() {
  * thấy). Gồm số chính, số phụ (Quản trị → Cài đặt → Liên hệ) và nút Zalo; biểu tượng điện thoại rung, nút số có vệt sáng.
  * Người dùng bật "giảm chuyển động" thì thanh đứng yên.
  */
-export function ExpertContactBar({ title }: { title: string }) {
+export function ExpertContactBar({
+  title,
+  altFirst = false,
+}: {
+  title: string;
+  /** Hiện số phụ trước số chính (trang /ebook ghi theo lời khách: 0902… - 0903…). */
+  altFirst?: boolean;
+}) {
   const { settings } = useSiteSettings();
-  const phones = [settings.contact.phone || settings.brand.hotline, settings.contact.phoneAlt]
-    .map((value) => value.trim())
-    .filter(Boolean);
-  const zalo = zaloHref(settings.socials.zalo ?? "", phones[0] ?? "");
+  const primary = (settings.contact.phone || settings.brand.hotline).trim();
+  const alt = settings.contact.phoneAlt.trim();
+  const phones = (altFirst ? [alt, primary] : [primary, alt]).filter(Boolean);
+  // Nút Zalo luôn theo số chính dù thứ tự hiển thị đổi.
+  const zalo = zaloHref(settings.socials.zalo ?? "", primary);
   const visible = phones.length > 0 || Boolean(zalo);
   const barRef = useRef<HTMLElement>(null);
 
