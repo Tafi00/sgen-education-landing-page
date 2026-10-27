@@ -1,7 +1,9 @@
 .fengshui-tools {
   width: min(100%, 1280px);
   margin-inline: auto;
-  animation: panel-enter 360ms ease both;
+  /* `backwards` thay vì `both`: giữ transform sau hiệu ứng sẽ biến khung này thành gốc của position: fixed, làm nút gieo
+     quẻ (casting-dock) dính đáy khung công cụ, đè lên thẻ Phụ lục, thay vì dính đáy màn hình. */
+  animation: panel-enter 360ms ease backwards;
 }
 
 .fengshui-loading {
