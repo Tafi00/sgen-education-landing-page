@@ -6,9 +6,7 @@ import {
   Hash,
   Loader2,
   Orbit,
-  Printer,
   Search,
-  Share2,
   ShieldCheck,
   Phone,
   UserRound,
@@ -111,9 +109,16 @@ const NUMBER_PREVIEWS: Record<string, { title: string; subtitle: string; desc: s
   },
 };
 
-const STEPS = ["Nhập thông tin", "Phân tích", "Nhận kết quả", "Lưu & chia sẻ"];
+const STEPS = ["Nhập thông tin", "Phân tích", "Nhận kết quả", "Tải PDF"];
 
-type NumerologyReport = LookupResultPayload & { id: string; shareToken?: string };
+type NumerologyReport = LookupResultPayload & { id: string };
+
+/** Nút duy nhất của kết quả: sang trang ebook (hồ sơ vừa tra cứu đã lưu qua `saveEbookDraft`). */
+const PDF_BUTTON = (
+  <ButtonLink variant="primary" to="/ebook">
+    <Download aria-hidden="true" /> Tải PDF
+  </ButtonLink>
+);
 
 export function NumerologyPage() {
   const toast = useToast();
@@ -126,9 +131,6 @@ export function NumerologyPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [payload, setPayload] = useState<LookupResultPayload | null>(null);
-  const [shareUrl, setShareUrl] = useState("");
-  const [reportRef, setReportRef] = useState<{ id: string; token: string } | null>(null);
-  const [saved, setSaved] = useState(false);
   const resultRef = useRef<HTMLDivElement>(null);
 
   const activeStep = payload ? 2 : loading ? 1 : 0;
@@ -161,7 +163,8 @@ export function NumerologyPage() {
           phone: phoneResult?.ok ? phoneResult.value : undefined,
           referenceYear: new Date().getFullYear(),
         },
-        save: true,
+        // Không tạo link chia sẻ (khách bỏ nút "Lưu kết quả"); báo cáo vẫn được lưu để gắn vào hồ sơ khi tải PDF.
+        save: false,
         source: "/tra-cuu/than-so-hoc",
       });
       setPayload({
@@ -170,15 +173,9 @@ export function NumerologyPage() {
         blocks: data.report.blocks ?? [],
         disclaimer: data.report.disclaimer,
       });
-      const url = data.report.shareToken
-        ? `${window.location.origin}/tra-cuu/ket-qua/${data.report.id}?token=${data.report.shareToken}`
-        : `${window.location.origin}/tra-cuu/ket-qua/${data.report.id}`;
-      setReportRef({ id: data.report.id, token: data.report.shareToken ?? "" });
       // Giữ hồ sơ vừa tra cứu để nút "Tải PDF" chuyển sang trang ebook mà không phải nhập lại.
       saveEbookDraft({ name: name.trim(), birthDate, phone: phoneResult?.ok ? phoneResult.value : "", reportId: data.report.id });
-      setShareUrl(url);
-      setSaved(false);
-      toast.success("Đã phân tích xong", "Báo cáo đầy đủ hiển thị bên dưới.");
+      toast.success("Đã phân tích xong", "8 chỉ số chủ đạo hiển thị bên dưới. Bấm Tải PDF để nhận ebook đầy đủ.");
       requestAnimationFrame(() => resultRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }));
     } catch (caught) {
       const message = errorMessage(caught);
@@ -186,21 +183,6 @@ export function NumerologyPage() {
       toast.error("Không thể phân tích", message);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const saveResult = async () => {
-    if (!shareUrl) return;
-    setSaved(true);
-    try {
-      await navigator.clipboard.writeText(shareUrl);
-      toast.success("Đã tạo liên kết chia sẻ", "Liên kết đã được sao chép vào bộ nhớ tạm.");
-    } catch {
-      toast.push({
-        tone: "info",
-        title: "Liên kết chia sẻ",
-        description: "Trình duyệt không cho phép sao chép tự động, bạn hãy sao chép liên kết bên dưới.",
-      });
     }
   };
 
@@ -312,33 +294,8 @@ export function NumerologyPage() {
           {payload ? (
             <div className="lookup-workspace__grid lookup-workspace__grid--result" style={{ marginTop: 40 }}>
               <ExpertContactBar title="Liên hệ Chuyên Gia để được Tư Vấn Chuyên Sâu" />
-              <ResultBlocks
-                payload={payload}
-                actions={
-                  <>
-                    <Button
-                      type="button"
-                      variant="primary"
-                      onClick={() => void saveResult()}
-                    >
-                      <Share2 aria-hidden="true" /> Lưu kết quả
-                    </Button>
-                    {reportRef ? (
-                      <ButtonLink variant="secondary" to="/ebook">
-                        <Download aria-hidden="true" /> Tải PDF
-                      </ButtonLink>
-                    ) : null}
-                    <Button variant="secondary" onClick={() => window.print()}>
-                      <Printer aria-hidden="true" /> In báo cáo
-                    </Button>
-                  </>
-                }
-              />
-              {saved && shareUrl ? (
-                <p className="share-url-note">
-                  Liên kết chia sẻ: <a href={shareUrl}>{shareUrl}</a>
-                </p>
-              ) : null}
+              {/* Khách chỉ giữ nút "Tải PDF" (bỏ Lưu kết quả, In báo cáo) để học viên và khách hàng không bị rối. */}
+              <ResultBlocks payload={payload} actions={PDF_BUTTON} pdfAction={PDF_BUTTON} />
             </div>
           ) : (
             <div className="numeral-showcase-card">

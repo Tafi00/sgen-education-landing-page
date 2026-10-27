@@ -23,6 +23,13 @@ export type ResultBlock =
       heading?: string;
       intro?: string[];
       items: { label: string; value: string; paragraphs: string[] }[];
+    }
+  /** Các mục chỉ có trong file ebook PDF: hiện tên (và con số), bấm vào thì dẫn tới nút "Tải PDF". */
+  | {
+      kind: "pdfTeaser";
+      heading?: string;
+      intro?: string;
+      groups: { title: string; items: { label: string; value: string }[] }[];
     };
 
 export type LookupResultPayload = {

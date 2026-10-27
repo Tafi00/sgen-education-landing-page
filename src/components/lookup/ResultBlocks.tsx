@@ -1,5 +1,6 @@
-import { Fragment, type ReactNode, useEffect, useState } from "react";
-import { Check } from "lucide-react";
+import { Fragment, type ReactNode, useEffect, useRef, useState } from "react";
+import { Check, Download, Lock } from "lucide-react";
+import { ButtonLink } from "../ui/Button";
 import { Callout } from "../ui/Layout";
 import { RESULTS_DISCLAIMER, type LookupResultPayload, type ResultBlock, type VerdictTone } from "../../../shared/lookup-types";
 import { structureParagraphs } from "../../../shared/report-text";
@@ -402,8 +403,78 @@ function IkigaiBlock({ block }: { block: Extract<ResultBlock, { kind: "ikigai" }
 }
 
 
+/**
+ * Khối `pdfTeaser`: các chỉ số chỉ có trong file ebook (khách: "bấm vào thì chỉ dẫn về chữ Tải PDF"). Bấm một mục thì
+ * cuộn tới nút Tải PDF ngay dưới khối, nút nhấp nháy, nhận focus và dòng gợi ý ghi tên mục vừa chọn.
+ */
+function PdfTeaserBlock({ block, pdfAction }: { block: Extract<ResultBlock, { kind: "pdfTeaser" }>; pdfAction?: ReactNode }) {
+  const ctaRef = useRef<HTMLDivElement>(null);
+  const [picked, setPicked] = useState("");
+
+  const guide = (label: string) => {
+    setPicked(label);
+    const cta = ctaRef.current;
+    if (!cta) return;
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    cta.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "center" });
+    const button = cta.querySelector<HTMLElement>("a, button");
+    button?.focus({ preventScroll: true });
+    if (!reduceMotion) {
+      button?.animate(
+        [
+          { transform: "scale(1)", boxShadow: "0 0 0 0 rgba(232, 20, 145, 0.6)" },
+          { transform: "scale(1.06)", boxShadow: "0 0 0 16px rgba(232, 20, 145, 0)" },
+          { transform: "scale(1)", boxShadow: "0 0 0 0 rgba(232, 20, 145, 0)" },
+        ],
+        { duration: 900, iterations: 3, easing: "ease-out" },
+      );
+    }
+  };
+
+  return (
+    <section className="pdf-teaser">
+      {block.heading ? <h2>{block.heading}</h2> : null}
+      {block.intro ? <p className="pdf-teaser__intro">{block.intro}</p> : null}
+      <div className="pdf-teaser__groups">
+        {block.groups.map((group) => (
+          <div className="pdf-teaser__group" key={group.title}>
+            <h3>{group.title}</h3>
+            <ul>
+              {group.items.map((item) => (
+                <li key={item.label}>
+                  <button type="button" onClick={() => guide(item.label)} aria-label={`${item.label}${item.value ? ` ${item.value}` : ""} — xem trong file ebook PDF`}>
+                    <Lock aria-hidden="true" />
+                    <span>{item.label}</span>
+                    {item.value ? <b>{item.value}</b> : null}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+      <div ref={ctaRef} className={`pdf-teaser__cta ${picked ? "is-picked" : ""}`}>
+        <p aria-live="polite">
+          {picked ? (
+            <>
+              Ý nghĩa <strong>{picked}</strong> có trong file ebook PDF. Bấm <strong>Tải PDF</strong> để nhận file.
+            </>
+          ) : (
+            "Toàn bộ luận giải các chỉ số trên có trong file ebook Thần số học."
+          )}
+        </p>
+        {pdfAction ?? (
+          <ButtonLink variant="primary" to="/ebook">
+            <Download aria-hidden="true" /> Tải PDF
+          </ButtonLink>
+        )}
+      </div>
+    </section>
+  );
+}
+
 /** Render một `ResultBlock` theo đúng `kind`; tách riêng để trang công cụ chỉ có một block vẫn dùng lại được. */
-export function ResultBlockView({ block }: { block: ResultBlock }) {
+export function ResultBlockView({ block, pdfAction }: { block: ResultBlock; pdfAction?: ReactNode }) {
   switch (block.kind) {
     case "metrics":
       return <MetricsBlock block={block} />;
@@ -427,18 +498,25 @@ export function ResultBlockView({ block }: { block: ResultBlock }) {
       return <IkigaiBlock block={block} />;
     case "metricDetail":
       return <MetricDetailBlock block={block} />;
+    case "pdfTeaser":
+      return <PdfTeaserBlock block={block} pdfAction={pdfAction} />;
     default:
       return null;
   }
 }
 
-export type ResultBlocksProps = { payload: LookupResultPayload; actions?: ReactNode };
+export type ResultBlocksProps = {
+  payload: LookupResultPayload;
+  actions?: ReactNode;
+  /** Nút "Tải PDF" đặt dưới khối `pdfTeaser` (mặc định: liên kết tới /ebook). */
+  pdfAction?: ReactNode;
+};
 
 /**
  * Hiển thị đầy đủ một `LookupResultPayload`: tiêu đề, mô tả, toàn bộ block và disclaimer bắt buộc.
  * Không tự render header/footer của site.
  */
-export function ResultBlocks({ payload, actions }: ResultBlocksProps) {
+export function ResultBlocks({ payload, actions, pdfAction }: ResultBlocksProps) {
   const disclaimer = payload.disclaimer?.trim() || RESULTS_DISCLAIMER;
   const navSections = payload.blocks.filter((block): block is Extract<ResultBlock, { kind: "section" }> => block.kind === "section");
   const coreMetric = payload.blocks.find((block): block is Extract<ResultBlock, { kind: "metrics" }> => block.kind === "metrics")?.items[0];
@@ -508,7 +586,7 @@ export function ResultBlocks({ payload, actions }: ResultBlocksProps) {
 
         <div className="report-body article-content">
           {payload.blocks.map((block, index) => (
-            <ResultBlockView block={block} key={index} />
+            <ResultBlockView block={block} pdfAction={pdfAction} key={index} />
           ))}
         </div>
       </div>

@@ -44,6 +44,22 @@ function detailItem(label: string, value: string, values: string[] | undefined, 
   return { label, value: value || "—", paragraphs: merged };
 }
 
+/** Luận giải từng đỉnh của biểu đồ chặng đường đời (nhãn "Đỉnh 1 · 0 – 30 tuổi"). */
+function pinnacleDetailItems(report: NumerologyFullReport) {
+  return report.lifePathChart.pinnacles
+    .map((pinnacle, index) => {
+      const content = PINNACLE_CONTENT[`dinh${index + 1}` as "dinh1"];
+      const paragraphs = metricParagraphs(pinnacle.value, { byValue: content });
+      if (!paragraphs.length) return null;
+      return { label: `Đỉnh ${index + 1}${pinnacle.range ? ` · ${pinnacle.range} tuổi` : ""}`, value: pinnacle.value, paragraphs };
+    })
+    .filter((item): item is NonNullable<typeof item> => Boolean(item));
+}
+
+/**
+ * Báo cáo đầy đủ — lưu vào `LookupReport.result` để quản trị xem lại (Quản trị → Báo cáo tra cứu).
+ * Trang tra cứu công khai dùng {@link numerologyWebPayload}.
+ */
 export function numerologyPayload(report: NumerologyFullReport): LookupResultPayload {
   const blocks: ResultBlock[] = [];
   blocks.push({
@@ -99,14 +115,7 @@ export function numerologyPayload(report: NumerologyFullReport): LookupResultPay
     ],
     pinnacles: report.lifePathChart.pinnacles,
   });
-  const pinnacleDetails = report.lifePathChart.pinnacles
-    .map((pinnacle, index) => {
-      const content = PINNACLE_CONTENT[`dinh${index + 1}` as "dinh1"];
-      const paragraphs = metricParagraphs(pinnacle.value, { byValue: content });
-      if (!paragraphs.length) return null;
-      return { label: `Đỉnh ${index + 1}${pinnacle.range ? ` · ${pinnacle.range} tuổi` : ""}`, value: pinnacle.value, paragraphs };
-    })
-    .filter((item): item is NonNullable<typeof item> => Boolean(item));
+  const pinnacleDetails = pinnacleDetailItems(report);
   if (PINNACLE_CONTENT.intro.length || pinnacleDetails.length) {
     blocks.push({ kind: "metricDetail", intro: PINNACLE_CONTENT.intro, items: pinnacleDetails });
   }
@@ -141,6 +150,80 @@ export function numerologyPayload(report: NumerologyFullReport): LookupResultPay
     blocks.push({ kind: "section", id: "ket-luan", title: "Kết luận" });
     blocks.push({ kind: "text", paragraphs: CONCLUSION_CONTENT });
   }
+
+  return {
+    headline: report.displayName,
+    subhead: `Ngày sinh ${report.birthDateLabel}`,
+    blocks,
+    disclaimer: RESULTS_DISCLAIMER,
+  };
+}
+
+/** Mục neo của trang tra cứu công khai (mục lục bên trái). */
+export const NUMEROLOGY_WEB_SECTIONS = {
+  core: { id: "y-nghia-8-chi-so", title: "Ý nghĩa 8 chỉ số chủ đạo" },
+  ebook: { id: "chi-so-trong-ebook", title: "Các chỉ số khác trong ebook PDF" },
+} as const;
+
+/**
+ * Kết quả trang Tra cứu Thần số học (khách yêu cầu): chỉ 8 chỉ số chủ đạo và ý nghĩa chi tiết của 8 chỉ số này;
+ * các chỉ số còn lại (từ Thế giới bên trong trở xuống), biểu đồ và kết luận chỉ hiện tên để dẫn khách về nút "Tải PDF".
+ * Lời luận của phần còn lại không gửi xuống trình duyệt — chỉ có trong file ebook.
+ */
+export function numerologyWebPayload(report: NumerologyFullReport): LookupResultPayload {
+  const blocks: ResultBlock[] = [
+    {
+      kind: "metrics",
+      heading: "Tám chỉ số chủ đạo",
+      items: report.metrics.map((metric) => ({ label: metric.label, value: String(metric.value), note: metric.note })),
+    },
+  ];
+
+  // "4 đỉnh cao" luận theo từng đỉnh ("4 đỉnh cao — Đỉnh 1 (0 – 30 tuổi)"); bỏ dòng "ĐỈNH n" đứng riêng vì nhãn đã ghi.
+  const pinnacles = pinnacleDetailItems(report).map((item) => ({
+    ...item,
+    label: `4 đỉnh cao — ${item.label.replace(/ · (.+)$/, " ($1)")}`,
+    paragraphs: item.paragraphs.filter((paragraph) => !/^ĐỈNH\s+\d+$/.test(paragraph.trim())),
+  }));
+  const coreDetails = report.metrics.flatMap((metric) => {
+    if (metric.key === "peaks") return pinnacles;
+    const item = detailItem(metric.label, metric.value, undefined, NUMEROLOGY_CONTENT[metric.key]);
+    return item ? [item] : [];
+  });
+  if (coreDetails.length) {
+    blocks.push({ kind: "section", ...NUMEROLOGY_WEB_SECTIONS.core });
+    blocks.push({ kind: "metricDetail", items: coreDetails });
+  }
+
+  // Chỉ số đã luận ở trên (Nội tâm, Thái độ, Sứ mệnh…) không nhắc lại trong phần dẫn về ebook.
+  const coreKeys = new Set<string>(report.metrics.map((metric) => metric.key));
+  const groups = report.sections.map((section) => ({
+    title: section.title,
+    items: section.metrics.filter((item) => !coreKeys.has(item.key)).map((item) => ({ label: item.label, value: item.value || "—" })),
+  }));
+  if (report.commonNameMetrics?.length) {
+    groups.push({
+      title: "Chỉ số theo tên thường dùng",
+      items: report.commonNameMetrics.map((item) => ({ label: item.label, value: item.value || "—" })),
+    });
+  }
+  groups.push({
+    title: "Biểu đồ năng lượng",
+    items: [
+      { label: "Biểu đồ chặng đường đời", value: report.lifePathChart.pinnacles.map((pinnacle) => pinnacle.value).join(" · ") },
+      { label: "Biểu đồ Ikigai", value: "" },
+      { label: "Biểu đồ ngày sinh", value: "" },
+      { label: "Biểu đồ họ tên", value: "" },
+    ],
+  });
+  if (CONCLUSION_CONTENT.length) groups.push({ title: "Kết luận", items: [{ label: "Lời kết và định hướng phát triển", value: "" }] });
+
+  blocks.push({ kind: "section", ...NUMEROLOGY_WEB_SECTIONS.ebook });
+  blocks.push({
+    kind: "pdfTeaser",
+    intro: "Ý nghĩa chi tiết của các chỉ số và biểu đồ dưới đây nằm trong file ebook Thần số học. Bấm vào một mục để tải file PDF.",
+    groups: groups.filter((group) => group.items.length),
+  });
 
   return {
     headline: report.displayName,

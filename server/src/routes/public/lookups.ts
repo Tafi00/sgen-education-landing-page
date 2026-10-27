@@ -7,13 +7,32 @@ import { LookupReport } from "../../models/index.js";
 import { asyncHandler, AppError } from "../../middleware/errors.js";
 import { currentMember } from "../../middleware/auth.js";
 import { lookupLimiter } from "../../middleware/rateLimit.js";
-import { numerologyPayload, simPayload } from "../../services/lookupResult.js";
+import { numerologyPayload, numerologyWebPayload, simPayload } from "../../services/lookupResult.js";
 import { scoreQuiz, loadPublicQuizSet } from "../../services/quizService.js";
 import { randomToken } from "../../services/crypto.js";
 import { upsertCustomer } from "../../services/customers.js";
-import { numerologyLookupWithPhoneSchema, simLookupSchema } from "../schemas.js";
+import { numerologyLookupSchema, numerologyLookupWithPhoneSchema, simLookupSchema } from "../schemas.js";
 
 export const publicLookupRouter = Router();
+
+/**
+ * Kết quả trả qua link xem lại: báo cáo Thần số học dựng lại bản rút gọn từ thông tin đã nhập (bản lưu đầy đủ chỉ
+ * dành cho quản trị); thiếu thông tin để dựng lại thì không trả lời luận.
+ */
+function publicLookupResult(report: { type: string; inputs?: unknown; result?: unknown; title?: string }): LookupResultPayload {
+  const stored = (report.result ?? { headline: report.title ?? "", blocks: [] }) as LookupResultPayload;
+  if (report.type !== "numerology") return stored;
+  const inputs = (report.inputs ?? {}) as { name?: unknown; birthDate?: unknown; commonName?: unknown; referenceYear?: unknown };
+  const parsed = numerologyLookupSchema.safeParse({
+    name: inputs.name,
+    birthDate: inputs.birthDate,
+    commonName: typeof inputs.commonName === "string" && inputs.commonName ? inputs.commonName : undefined,
+    referenceYear: typeof inputs.referenceYear === "number" ? inputs.referenceYear : undefined,
+  });
+  if (!parsed.success) return { headline: stored.headline, subhead: stored.subhead, blocks: [], disclaimer: stored.disclaimer };
+  const { name, birthDate, referenceYear, commonName } = parsed.data;
+  return numerologyWebPayload(calculateFullNumerologyReport(name, birthDate, referenceYear, commonName));
+}
 
 const clientComputedSchema = z.object({
   inputs: z.record(z.unknown()),
@@ -73,13 +92,17 @@ publicLookupRouter.post(
     const body = bodySchema.parse(req.body);
     const member = currentMember(req);
     let payload: LookupResultPayload;
+    /** Bản trả về trình duyệt khi khác bản lưu (Thần số học: chỉ 8 chỉ số chủ đạo, phần còn lại dẫn về Tải PDF). */
+    let publicPayload: LookupResultPayload | null = null;
     let storedInputs: Record<string, unknown> = body.inputs;
     let customerId: string | null = null;
 
     if (type === "numerology") {
       const input = numerologyLookupWithPhoneSchema.parse(body.inputs);
       const report = calculateFullNumerologyReport(input.name, input.birthDate, input.referenceYear, input.commonName);
+      // Lưu báo cáo đầy đủ cho quản trị; trang công khai chỉ nhận bản rút gọn.
       payload = numerologyPayload(report);
+      publicPayload = numerologyWebPayload(report);
       // Số điện thoại lưu riêng ở hồ sơ khách hàng (không vào `inputs`, không dùng để tính chỉ số, không lộ qua link chia sẻ).
       if (input.phone) {
         const customer = await upsertCustomer({ name: report.displayName, birthDate: input.birthDate, phone: input.phone, source: "lookup" });
@@ -135,7 +158,7 @@ publicLookupRouter.post(
         id: String(report._id),
         type,
         shareToken: shareToken || undefined,
-        ...payload,
+        ...(publicPayload ?? payload),
       },
     });
   }),
@@ -154,6 +177,6 @@ publicLookupRouter.get(
     // Hồ sơ khách hàng (kèm số điện thoại) chỉ dành cho quản trị, không trả qua link công khai.
     const { customerId: _customerId, ...publicReport } = report;
     void _customerId;
-    res.json({ report: publicReport });
+    res.json({ report: { ...publicReport, result: publicLookupResult(report) } });
   }),
 );

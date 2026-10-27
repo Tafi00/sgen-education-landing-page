@@ -41,6 +41,13 @@ export function LookupResultPage() {
     saveEbookDraft({ name: report.inputs.name, birthDate: report.inputs.birthDate, phone: samePerson ? previous?.phone ?? "" : "", reportId: report._id });
   };
 
+  const isNumerology = query.data?.report.type === "numerology";
+  const pdfButton = isNumerology ? (
+    <ButtonLink variant="primary" to="/ebook" onClick={rememberProfile}>
+      <Download aria-hidden="true" /> Tải PDF
+    </ButtonLink>
+  ) : undefined;
+
   return (
     <section className="page-dark-section" style={{ "--page-dark-bg": "url(/assets/backgrounds/cosmic-dark-clean.webp)" } as React.CSSProperties}>
       <div className="container">
@@ -64,19 +71,9 @@ export function LookupResultPage() {
         ) : query.data ? (
           <>
             <div className="lookup-workspace">
-              {query.data.report.type === "numerology" ? (
-                <ExpertContactBar title="Liên hệ Chuyên Gia để được Tư Vấn Chuyên Sâu" />
-              ) : null}
-              <ResultBlocks
-                payload={query.data.report.result}
-                actions={
-                  query.data.report.type === "numerology" ? (
-                    <ButtonLink variant="primary" to="/ebook" onClick={rememberProfile}>
-                      <Download aria-hidden="true" /> Tải PDF
-                    </ButtonLink>
-                  ) : undefined
-                }
-              />
+              {isNumerology ? <ExpertContactBar title="Liên hệ Chuyên Gia để được Tư Vấn Chuyên Sâu" /> : null}
+              {/* Thần số học chỉ có nút "Tải PDF" (máy chủ trả bản rút gọn: 8 chỉ số chủ đạo, phần còn lại dẫn về ebook). */}
+              <ResultBlocks payload={query.data.report.result} actions={pdfButton} pdfAction={pdfButton} />
             </div>
             <Callout title="Link chia sẻ có thời hạn">
               Liên kết này chỉ mở được khi còn token hợp lệ. Bạn có thể tra cứu lại bất cứ lúc nào để tạo link mới.

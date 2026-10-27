@@ -1209,6 +1209,165 @@
 .metric-detail__item p:last-child {
   margin-bottom: 0;
 }
+
+/* Khối "Các chỉ số khác trong ebook PDF": thẻ khóa, bấm vào thì dẫn tới nút Tải PDF ngay dưới khối. */
+.pdf-teaser {
+  display: grid;
+  gap: 18px;
+}
+
+.article-content .pdf-teaser p.pdf-teaser__intro {
+  margin: 0;
+  color: #cbb9da;
+  font-size: max(14px, 0.92rem);
+  line-height: 1.7;
+}
+
+.pdf-teaser__groups {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  align-items: start;
+  gap: 14px;
+}
+
+.pdf-teaser__group {
+  min-width: 0;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(213, 173, 255, 0.14);
+  border-radius: 16px;
+}
+
+.pdf-teaser__group h3 {
+  margin: 0 0 10px;
+  color: #e9c6ff;
+  font-family: var(--font-display);
+  font-size: max(13px, 0.82rem);
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.article-content .pdf-teaser__group ul {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+}
+
+.article-content .pdf-teaser__group li {
+  display: block;
+}
+
+.pdf-teaser__group button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 44px;
+  padding: 9px 12px;
+  color: #ecdff7;
+  text-align: left;
+  background: rgba(142, 65, 221, 0.12);
+  border: 1px solid rgba(213, 173, 255, 0.16);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 160ms ease, border-color 160ms ease, transform 160ms ease;
+}
+
+.pdf-teaser__group button:hover,
+.pdf-teaser__group button:focus-visible {
+  background: rgba(154, 70, 233, 0.26);
+  border-color: rgba(217, 157, 255, 0.55);
+  transform: translateY(-1px);
+}
+
+.pdf-teaser__group button:focus-visible {
+  outline: 2px solid #d18cff;
+  outline-offset: 2px;
+}
+
+.article-content .pdf-teaser__group button svg {
+  width: 15px;
+  height: 15px;
+  margin: 0;
+  color: #cf8aff;
+}
+
+.pdf-teaser__group button span {
+  flex: 1;
+  min-width: 0;
+  font-size: max(14px, 0.88rem);
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.pdf-teaser__group button b {
+  flex: none;
+  max-width: 45%;
+  padding: 2px 9px;
+  overflow: hidden;
+  color: #f0ddff;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  font-family: var(--font-display);
+  font-size: max(13px, 0.82rem);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pdf-teaser__cta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 18px;
+  padding: 18px 20px;
+  background: linear-gradient(110deg, rgba(232, 20, 145, 0.16), rgba(87, 33, 232, 0.2));
+  border: 1px solid rgba(232, 120, 200, 0.4);
+  border-radius: 16px;
+  scroll-margin: calc(var(--header-h, 96px) + 20px) 0 120px;
+  transition: border-color 200ms ease, box-shadow 200ms ease;
+}
+
+.pdf-teaser__cta.is-picked {
+  border-color: rgba(255, 150, 215, 0.85);
+  box-shadow: 0 0 0 1px rgba(255, 150, 215, 0.35), 0 14px 34px rgba(120, 20, 120, 0.3);
+}
+
+.article-content .pdf-teaser__cta p {
+  flex: 1 1 260px;
+  margin: 0;
+  color: #f1e4fb;
+  font-size: max(14px, 0.92rem);
+  line-height: 1.6;
+}
+
+.pdf-teaser__cta p strong {
+  color: #ffd0ee;
+}
+
+.pdf-teaser__cta .btn {
+  flex: none;
+  min-width: 170px;
+}
+
+@media (max-width: 560px) {
+  .pdf-teaser__groups {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .pdf-teaser__group {
+    padding: 14px 12px;
+  }
+
+  .pdf-teaser__cta {
+    padding: 16px 14px;
+  }
+
+  .pdf-teaser__cta .btn {
+    width: 100%;
+  }
+}
 .chart3x3 {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
