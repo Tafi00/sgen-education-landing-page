@@ -471,6 +471,9 @@
 /* Chưa nhập mã học viên: nút gieo thành nút mở hộp nhập mã. */
 .casting-trigger.is-locked { color: #5721e8; background: radial-gradient(circle at 38% 30%, #fdf7ff, #e7d8ff); }
 .casting-trigger > * { position: relative; z-index: 1; }
+/* Hai dòng "Lập hào 1 / 6" và "Gieo hào" luôn xếp dọc (trước đây chạy liền nhau thành "Lập hào 1 / 6Gieo hào" nếu trang
+   chưa nạp CSS của Tứ trụ). */
+.casting-trigger__copy { display: flex; flex-direction: column; align-items: center; line-height: 1.2; }
 .casting-trigger span { font-size: 0.59rem; font-weight: 700; }
 .casting-trigger strong { margin: 2px 0 4px; font-family: var(--ich-font-display); font-size: 0.78rem; }
 
