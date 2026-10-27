@@ -361,6 +361,20 @@ async function run() {
   const demoDoc = await EbookCode.findOne({ plan: "demo" }).lean();
   const fullDoc = await EbookCode.findOne({ plan: "combo3" }).lean();
 
+  // Mã học viên (HV-…): chỉ mở khoá chi tiết công cụ Sim / Gieo quẻ / Xem ngày, không xuất ebook; mã ebook không mở khoá công cụ.
+  const studentCode = (await call(base, "/api/admin/ebook-codes/generate", { method: "POST", jar: adminJar, body: { plan: "hocvien", count: 1 } })).payload.items?.[0];
+  const studentJar: Jar = { cookies: new Map() };
+  await call(base, "/api/hoc-vien/me", { jar: studentJar });
+  const studentAtEbook = await call(base, "/api/ebook/redeem", { method: "POST", jar: studentJar, body: { code: studentCode?.code } });
+  const ebookAtStudent = await call(base, "/api/hoc-vien/redeem", { method: "POST", jar: studentJar, body: { code: demoCode.payload.items[0].code } });
+  record("mã học viên không xuất ebook; mã ebook không mở khoá công cụ", studentAtEbook.status === 422 && ebookAtStudent.status === 422, `${studentAtEbook.status}/${ebookAtStudent.status}`);
+  const studentRedeem = await call(base, "/api/hoc-vien/redeem", { method: "POST", jar: studentJar, body: { code: studentCode?.display } });
+  const studentMe = await call(base, "/api/hoc-vien/me", { jar: studentJar });
+  record("nhập mã học viên (HV-…) mở khoá công cụ cho phiên", studentRedeem.status === 200 && studentMe.payload.student?.display === studentCode?.display, `status=${studentRedeem.status}`);
+  await call(base, `/api/admin/ebook-codes/${studentCode?._id}`, { method: "PATCH", jar: adminJar, body: { status: "disabled" } });
+  const afterDisable = await call(base, "/api/hoc-vien/me", { jar: studentJar });
+  record("khoá mã học viên thì phiên mất quyền ngay", afterDisable.payload.student === null);
+
   const person = { name: "Phạm Thanh Tùng", birthDate: "2010-09-02", reportId: lookupId };
   const anonymous = await callBinary(base, "/api/ebook/export", { ...person, phone: "0912345678", edition: "demo" }, anonymousJar);
   record("chưa đăng nhập (chưa nhập mã) thì không xuất được ebook", anonymous.status === 401, `status=${anonymous.status}`);

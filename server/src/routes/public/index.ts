@@ -5,6 +5,7 @@ import { publicLeadRouter } from "./leads.js";
 import { publicLookupRouter, publicQuizRouter } from "./lookups.js";
 import { publicMemberRouter } from "./members.js";
 import { publicOrderRouter } from "./orders.js";
+import { publicStudentRouter } from "./student.js";
 import { analyzeSimPhongThuyWithReference } from "../../../../shared/sim/sim-phong-thuy-reference.js";
 import type { SimAnalysisInput } from "../../../../shared/sim/sim-phong-thuy-engine.js";
 export const publicApiRouter = Router();
@@ -16,6 +17,7 @@ publicApiRouter.use("/leads", publicLeadRouter);
 publicApiRouter.use("/members", publicMemberRouter);
 publicApiRouter.use("/orders", publicOrderRouter);
 publicApiRouter.use("/ebook", publicEbookRouter);
+publicApiRouter.use("/hoc-vien", publicStudentRouter);
 
 publicApiRouter.get("/sim-phong-thuy", async (req, res) => {
   try {

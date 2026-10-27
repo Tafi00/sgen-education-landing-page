@@ -12,5 +12,7 @@ declare module "express-session" {
     csrfToken?: string;
     /** Mã ebook đang đăng nhập ở trang /ebook. */
     ebookCodeId?: string;
+    /** Mã học viên đang mở khoá chi tiết các công cụ (Sim, Gieo quẻ, Xem ngày). */
+    studentCodeId?: string;
   }
 }

@@ -9,6 +9,9 @@
  *
  * Quản trị viên tạo mã ở /admin/ma-ebook. Người dùng nhập mã (hoặc mở đường dẫn có mã) ở /ebook,
  * được tự động đăng nhập bằng mã và xuất file cho tới khi hết lượt.
+ *
+ * Cùng bảng mã còn có "Mã học viên" (gói `hocvien`, tiền tố HV): không xuất ebook, chỉ mở khoá phần chi tiết của các
+ * công cụ (quẻ Sim, Bát Cực Linh Số, Gieo quẻ, các mục chọn ngày ở Xem ngày). Học viên nhập mã ở chính các công cụ đó.
  */
 
 export type EbookEdition = "demo" | "full";
@@ -31,10 +34,13 @@ export type EbookPlanKey =
   | "combo10"
   | "combo30"
   | "combo50"
-  | "combo100";
+  | "combo100"
+  | "hocvien";
 
 export type EbookPlan = {
   key: EbookPlanKey;
+  /** `ebook` = mã xuất ebook; `student` = mã học viên mở khoá công cụ (không có lượt xuất). */
+  kind: "ebook" | "student";
   label: string;
   edition: EbookEdition;
   /** Số lượt xuất file của mỗi mã. */
@@ -51,6 +57,7 @@ function plan(key: EbookPlanKey, edition: EbookEdition, quota: number): EbookPla
   const demo = edition === "demo";
   return {
     key,
+    kind: "ebook",
     label: `${demo ? "Demo" : "Full"} ${quota} ebook`,
     edition,
     quota,
@@ -74,7 +81,24 @@ export const EBOOK_PLANS: Record<EbookPlanKey, EbookPlan> = {
   combo30: plan("combo30", "full", 30),
   combo50: plan("combo50", "full", 50),
   combo100: plan("combo100", "full", 100),
+  hocvien: {
+    key: "hocvien",
+    kind: "student",
+    label: "Mã học viên",
+    // Không dùng để xuất ebook: `edition` chỉ để điền cột bắt buộc, `quota` = 0.
+    edition: "full",
+    quota: 0,
+    prefix: "HV",
+    summary: "Mở khoá chi tiết quẻ Sim, Bát Cực Linh Số, Gieo quẻ và các mục chọn ngày",
+  },
 };
+
+export const STUDENT_PLAN_KEY = "hocvien" satisfies EbookPlanKey;
+
+/** Mã học viên (mở khoá công cụ), không phải mã xuất ebook. */
+export function isStudentPlan(plan: string | null | undefined): boolean {
+  return plan === STUDENT_PLAN_KEY;
+}
 
 export const EBOOK_PLAN_KEYS = Object.keys(EBOOK_PLANS) as EbookPlanKey[];
 
@@ -149,10 +173,14 @@ export function validateEbookSuffix(raw: string): EbookSuffixResult {
 
 export type EbookCodeState = "active" | "exhausted" | "expired" | "disabled";
 
-export function ebookCodeState(code: { status: string; quota: number; used: number; expiresAt?: string | Date | null }, now = new Date()): EbookCodeState {
+/** Mã học viên không có lượt nên không bao giờ "hết lượt"; `used` của mã học viên là số lần nhập mã. */
+export function ebookCodeState(
+  code: { plan?: string; status: string; quota: number; used: number; expiresAt?: string | Date | null },
+  now = new Date(),
+): EbookCodeState {
   if (code.status !== "active") return "disabled";
   if (code.expiresAt && new Date(code.expiresAt).getTime() <= now.getTime()) return "expired";
-  if (code.used >= code.quota) return "exhausted";
+  if (!isStudentPlan(code.plan) && code.used >= code.quota) return "exhausted";
   return "active";
 }
 

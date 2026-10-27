@@ -1,6 +1,6 @@
 import { Router, type Request } from "express";
 import { z } from "zod";
-import { ebookAllowsEdition, ebookCodeState } from "../../../../shared/ebook.js";
+import { ebookAllowsEdition, ebookCodeState, isStudentPlan } from "../../../../shared/ebook.js";
 import { calculateFullNumerologyReport } from "../../../../shared/numerology.js";
 import { asyncHandler, AppError } from "../../middleware/errors.js";
 import { authLimiter, lookupLimiter } from "../../middleware/rateLimit.js";
@@ -31,7 +31,7 @@ async function currentCode(req: Request) {
   const id = req.session?.ebookCodeId;
   if (!id) return null;
   const doc = await loadEbookCode(id);
-  if (!doc) {
+  if (!doc || isStudentPlan(doc.plan)) {
     delete req.session.ebookCodeId;
     return null;
   }
@@ -45,6 +45,9 @@ publicEbookRouter.post(
     const { code } = redeemSchema.parse(req.body);
     const doc = await findEbookCode(code);
     if (!doc) throw new AppError(404, "Mã không đúng. Vui lòng kiểm tra lại từng ký tự.", "code_not_found");
+    if (isStudentPlan(doc.plan)) {
+      throw new AppError(422, "Đây là mã học viên, dùng để mở khoá chi tiết ở các công cụ Sim, Gieo quẻ, Xem ngày — không dùng để xuất ebook.", "student_code");
+    }
     const state = ebookCodeState(doc);
     if (state !== "active") throw new AppError(403, STATE_MESSAGE[state], `code_${state}`);
     req.session.ebookCodeId = doc._id as string;

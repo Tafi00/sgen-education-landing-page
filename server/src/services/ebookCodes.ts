@@ -82,8 +82,8 @@ export async function generateEbookCodes(input: GenerateInput): Promise<EbookCod
 /** Tìm mã theo chuỗi người dùng nhập (không phân biệt hoa thường, dấu gạch, khoảng trắng). */
 export async function findEbookCode(raw: string) {
   const code = normalizeEbookCode(raw);
-  // Ngắn nhất: tiền tố cũ 3 ký tự (C03) + đuôi tự đặt 4 ký tự.
-  if (code.length < 7) return null;
+  // Ngắn nhất: tiền tố mã học viên 2 ký tự (HV) + đuôi tự đặt 4 ký tự.
+  if (code.length < 6) return null;
   return EbookCode.findOne({ code }).lean<EbookCodeDoc>();
 }
 
@@ -123,6 +123,11 @@ export async function consumeEbookCredit(id: string): Promise<EbookCodeDoc | nul
     [id],
   );
   return result.rows[0] ?? null;
+}
+
+/** Mã học viên vừa được nhập: `used` đếm số lần nhập, `lastUsedAt` cho quản trị biết mã còn được dùng. */
+export async function recordStudentCodeUse(id: string) {
+  await query(`UPDATE "ebook_codes" SET "used" = "used" + 1, "lastUsedAt" = now(), "updatedAt" = now() WHERE "_id" = $1`, [id]);
 }
 
 /** Hoàn lại 1 lượt khi tạo file thất bại (người dùng không bị mất lượt oan). */

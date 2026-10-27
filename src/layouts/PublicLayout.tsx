@@ -3,6 +3,7 @@ import { Outlet, useLocation } from "react-router-dom";
 import { SiteFooter } from "../components/layout/SiteFooter";
 import { SiteHeader } from "../components/layout/SiteHeader";
 import { ScrollToTop } from "../components/ui/ScrollToTop";
+import { StudentAccessProvider } from "../components/ui/StudentAccess";
 import { safeQuerySelector } from "../app/dom";
 
 export function PublicLayout() {
@@ -20,16 +21,18 @@ export function PublicLayout() {
   }, [hash, pathname]);
 
   return (
-    <main className="app-shell">
-      <SiteHeader />
-      <Suspense fallback={<RouteFallback />}>
-        <div className="page-body">
-          <Outlet />
-        </div>
-      </Suspense>
-      <SiteFooter />
-      <ScrollToTop />
-    </main>
+    <StudentAccessProvider>
+      <main className="app-shell">
+        <SiteHeader />
+        <Suspense fallback={<RouteFallback />}>
+          <div className="page-body">
+            <Outlet />
+          </div>
+        </Suspense>
+        <SiteFooter />
+        <ScrollToTop />
+      </main>
+    </StudentAccessProvider>
   );
 }
 

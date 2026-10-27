@@ -5,20 +5,31 @@ import {
   ebookCodePrefix,
   ebookCodeState,
   formatEbookCode,
+  isStudentPlan,
   normalizeEbookCode,
   normalizeEbookSuffix,
+  STUDENT_PLAN_KEY,
   validateEbookSuffix,
 } from "../ebook";
 
 describe("gói mã ebook", () => {
   it("bản Demo và bản đầy đủ đều có gói 1 / 3 / 5 / 10 / 30 / 50 / 100 ebook", () => {
-    const quotas = (edition: "demo" | "full") => EBOOK_PLAN_KEYS.filter((key) => EBOOK_PLANS[key].edition === edition).map((key) => EBOOK_PLANS[key].quota);
+    const quotas = (edition: "demo" | "full") =>
+      EBOOK_PLAN_KEYS.filter((key) => EBOOK_PLANS[key].kind === "ebook" && EBOOK_PLANS[key].edition === edition).map((key) => EBOOK_PLANS[key].quota);
     expect(quotas("demo")).toEqual([1, 3, 5, 10, 30, 50, 100]);
     expect(quotas("full")).toEqual([1, 3, 5, 10, 30, 50, 100]);
     // Mã Demo 100 lượt đã cấp vẫn trỏ về khoá "demo".
     expect(EBOOK_PLANS.demo).toMatchObject({ quota: 100, edition: "demo", prefix: "DEMO100" });
     expect(EBOOK_PLANS.demo1).toMatchObject({ label: "Demo 1 ebook", prefix: "DEMO01" });
     expect(EBOOK_PLANS.combo1).toMatchObject({ label: "Full 1 ebook", edition: "full", prefix: "FULL01" });
+  });
+
+  it("mã học viên: tiền tố HV, không có lượt xuất ebook", () => {
+    expect(EBOOK_PLANS.hocvien).toMatchObject({ kind: "student", label: "Mã học viên", prefix: "HV", quota: 0 });
+    expect(isStudentPlan(STUDENT_PLAN_KEY)).toBe(true);
+    expect(EBOOK_PLAN_KEYS.filter((key) => isStudentPlan(key))).toEqual(["hocvien"]);
+    expect(formatEbookCode("HV7KQ2M9XP")).toBe("HV-7KQ2-M9XP");
+    expect(formatEbookCode("HVANHA", "ANHA")).toBe("HV-ANHA");
   });
 
   it("tiền tố mỗi gói là duy nhất", () => {
@@ -73,6 +84,12 @@ describe("trạng thái mã", () => {
     expect(ebookCodeState({ ...base, used: 3 })).toBe("exhausted");
     expect(ebookCodeState({ ...base, expiresAt: new Date(Date.now() - 1000) })).toBe("expired");
     expect(ebookCodeState({ ...base, status: "disabled" })).toBe("disabled");
+  });
+  it("mã học viên không bao giờ hết lượt; vẫn hết hạn / bị khoá như mã ebook", () => {
+    const student = { plan: "hocvien", status: "active", quota: 0, used: 12, expiresAt: null };
+    expect(ebookCodeState(student)).toBe("active");
+    expect(ebookCodeState({ ...student, expiresAt: new Date(Date.now() - 1000) })).toBe("expired");
+    expect(ebookCodeState({ ...student, status: "disabled" })).toBe("disabled");
   });
   it("hết hạn được ưu tiên hơn hết lượt; khoá ưu tiên cao nhất", () => {
     expect(ebookCodeState({ ...base, used: 3, expiresAt: new Date(Date.now() - 1000) })).toBe("expired");

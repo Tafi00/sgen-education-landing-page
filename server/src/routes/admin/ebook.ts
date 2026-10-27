@@ -6,6 +6,8 @@ import {
   ebookCodePrefix,
   ebookCodeState,
   formatEbookCode,
+  isStudentPlan,
+  STUDENT_PLAN_KEY,
   validateEbookSuffix,
   type EbookPlanKey,
 } from "../../../../shared/ebook.js";
@@ -15,7 +17,10 @@ import { query } from "../../db/pool.js";
 import { AuditLog, EbookCode, EbookExport, type EbookCodeDoc } from "../../models/index.js";
 import { generateEbookCodes, isUniqueViolation } from "../../services/ebookCodes.js";
 
-/** Quản trị mã xuất ebook: tạo hàng loạt hoặc tự đặt đuôi mã, tra cứu, khoá/mở, cộng thêm lượt, xem lịch sử xuất file. */
+/**
+ * Quản trị mã xuất ebook và mã học viên: tạo hàng loạt hoặc tự đặt đuôi mã, tra cứu, khoá/mở, cộng thêm lượt (mã ebook),
+ * xem lịch sử xuất file.
+ */
 export const adminEbookRouter = Router();
 
 const ID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -113,10 +118,11 @@ adminEbookRouter.get(
     const batch = String(req.query.batchId ?? "");
     if (batch) where.push(`"batchId" = ${add(batch)}`);
     const state = String(req.query.state ?? "");
+    // Mã học viên không có lượt (quota 0) nên không bao giờ "hết lượt" — giống ebookCodeState.
     if (state === "disabled") where.push(`"status" <> 'active'`);
     else if (state === "expired") where.push(`"status" = 'active' AND "expiresAt" IS NOT NULL AND "expiresAt" <= now()`);
-    else if (state === "exhausted") where.push(`"status" = 'active' AND ("expiresAt" IS NULL OR "expiresAt" > now()) AND "used" >= "quota"`);
-    else if (state === "active") where.push(`"status" = 'active' AND ("expiresAt" IS NULL OR "expiresAt" > now()) AND "used" < "quota"`);
+    else if (state === "exhausted") where.push(`"status" = 'active' AND ("expiresAt" IS NULL OR "expiresAt" > now()) AND "used" >= "quota" AND "plan" <> '${STUDENT_PLAN_KEY}'`);
+    else if (state === "active") where.push(`"status" = 'active' AND ("expiresAt" IS NULL OR "expiresAt" > now()) AND ("used" < "quota" OR "plan" = '${STUDENT_PLAN_KEY}')`);
 
     const clause = where.length ? `WHERE ${where.join(" AND ")}` : "";
     const sortKey = SORTS[String(req.query.sort ?? "")] ?? SORTS.createdAt;
@@ -169,6 +175,7 @@ adminEbookRouter.patch(
         diff[key] = input[key];
       }
     }
+    if (input.addQuota && isStudentPlan(doc.plan)) throw new AppError(422, "Mã học viên không có lượt xuất ebook nên không cộng lượt được.", "student_code_quota");
     if (input.addQuota) {
       doc.quota += input.addQuota;
       diff.addQuota = input.addQuota;

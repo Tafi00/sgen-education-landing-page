@@ -12,6 +12,7 @@ import {
   EBOOK_STATE_LABEL,
   EBOOK_SUFFIX_MAX,
   ebookCodePrefix,
+  isStudentPlan,
   normalizeEbookSuffix,
   validateEbookSuffix,
   type EbookCodeState,
@@ -60,16 +61,22 @@ const COLUMNS: ColumnConfig[] = [
   { key: "createdAt", label: "Tạo lúc", sortable: true },
 ];
 
-/** Gói chia hai nhóm Demo / Bản đầy đủ, mỗi nhóm 1–100 ebook (thứ tự theo `EBOOK_PLANS`). */
-const PLAN_GROUPS = (["demo", "full"] as const).map((edition) => ({
-  label: edition === "demo" ? "Bản Demo 3 chỉ số" : "Bản đầy đủ",
-  plans: EBOOK_PLAN_KEYS.map((key) => EBOOK_PLANS[key]).filter((item) => item.edition === edition),
-}));
+/** Gói chia nhóm Demo / Bản đầy đủ (mỗi nhóm 1–100 ebook, thứ tự theo `EBOOK_PLANS`) và Mã học viên. */
+const PLAN_GROUPS = [
+  ...(["demo", "full"] as const).map((edition) => ({
+    label: edition === "demo" ? "Bản Demo 3 chỉ số" : "Bản đầy đủ",
+    plans: EBOOK_PLAN_KEYS.map((key) => EBOOK_PLANS[key]).filter((item) => item.kind === "ebook" && item.edition === edition),
+  })),
+  { label: "Học viên", plans: EBOOK_PLAN_KEYS.map((key) => EBOOK_PLANS[key]).filter((item) => item.kind === "student") },
+];
 
 const SORT_KEYS: Record<string, string> = { display: "code", used: "used", createdAt: "createdAt", lastUsedAt: "lastUsedAt" };
 
-function linkFor(code: string) {
-  return `${window.location.origin}/ebook?ma=${encodeURIComponent(code)}`;
+/** Đường dẫn tự nhập mã: mã ebook mở trang /ebook, mã học viên mở trang Công cụ phong thủy. */
+function linkFor(code: string, plan: string) {
+  return isStudentPlan(plan)
+    ? `${window.location.origin}/cong-cu-phong-thuy?mahv=${encodeURIComponent(code)}`
+    : `${window.location.origin}/ebook?ma=${encodeURIComponent(code)}`;
 }
 
 function formatDateTime(value: string | null | undefined) {
@@ -99,7 +106,7 @@ async function copyText(text: string) {
 function downloadCsv(rows: CodeRow[], filename: string) {
   const header = ["Mã", "Gói", "Số lượt", "Người nhận", "Liên hệ", "Đường dẫn tự đăng nhập"];
   const lines = rows.map((row) =>
-    [row.display, row.planLabel, row.quota, row.holderName, row.holderContact, linkFor(row.code)].map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(","),
+    [row.display, row.planLabel, isStudentPlan(row.plan) ? "—" : row.quota, row.holderName, row.holderContact, linkFor(row.code, row.plan)].map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(","),
   );
   const blob = new Blob([`﻿${[header.join(","), ...lines].join("\n")}`], { type: "text/csv;charset=utf-8" });
   const url = URL.createObjectURL(blob);
@@ -117,6 +124,14 @@ function StateBadge({ state }: { state: EbookCodeState }) {
 }
 
 function Usage({ row }: { row: CodeRow }) {
+  if (isStudentPlan(row.plan)) {
+    return (
+      <span className="relation-cell">
+        <span className="relation-cell__label">{row.used} lần nhập</span>
+        <span className="relation-cell__sub">{row.lastUsedAt ? `Gần nhất ${formatDateTime(row.lastUsedAt)}` : "Chưa dùng"}</span>
+      </span>
+    );
+  }
   const percent = Math.min(100, Math.round((row.used / Math.max(1, row.quota)) * 100));
   return (
     <span className="ebook-usage">
@@ -296,7 +311,10 @@ export function EbookCodesPage() {
       <header className="admin-page__header">
         <div>
           <h1>Mã ebook</h1>
-          <p>Tạo mã xuất ebook bản Demo 3 chỉ số hoặc bản đầy đủ, mỗi bản có gói 1, 3, 5, 10, 30, 50, 100 ebook. Người nhận vào trang /ebook, nhập mã là tải được file.</p>
+          <p>
+            Tạo mã xuất ebook bản Demo 3 chỉ số hoặc bản đầy đủ, mỗi bản có gói 1, 3, 5, 10, 30, 50, 100 ebook. Người nhận vào trang
+            /ebook, nhập mã là tải được file. Mã học viên (HV-…) dùng để mở khoá chi tiết ở các công cụ Sim, Gieo quẻ, Xem ngày.
+          </p>
         </div>
         <div className="admin-page__actions">
           <a className="btn btn--secondary" href="/ebook" target="_blank" rel="noreferrer">
@@ -321,14 +339,20 @@ export function EbookCodesPage() {
                   <optgroup key={group.label} label={group.label}>
                     {group.plans.map((item) => (
                       <option key={item.key} value={item.key}>
-                        {item.label} — {item.quota} lượt
+                        {item.kind === "student" ? item.label : `${item.label} — ${item.quota} lượt`}
                       </option>
                     ))}
                   </optgroup>
                 ))}
               </select>
             </span>
-            <p className="field__hint">{selectedPlan.edition === "demo" ? "Mỗi lượt xuất = 1 ebook Demo 3 chỉ số." : "Mỗi lượt xuất = 1 ebook đầy đủ (mã này xuất được cả bản Demo)."}</p>
+            <p className="field__hint">
+              {selectedPlan.kind === "student"
+                ? "Mở khoá chi tiết quẻ Sim, Bát Cực Linh Số, Gieo quẻ và các mục chọn ngày ở Xem ngày; không dùng để xuất ebook."
+                : selectedPlan.edition === "demo"
+                  ? "Mỗi lượt xuất = 1 ebook Demo 3 chỉ số."
+                  : "Mỗi lượt xuất = 1 ebook đầy đủ (mã này xuất được cả bản Demo)."}
+            </p>
           </div>
           <div className="field">
             <label className="field__label" htmlFor="ebook-count">Số lượng mã cần tạo</label>
@@ -432,13 +456,13 @@ export function EbookCodesPage() {
                       <code className="ebook-code">{row.display}</code>
                     </td>
                     <td>{row.planLabel}</td>
-                    <td className="ebook-link">{linkFor(row.code)}</td>
+                    <td className="ebook-link">{linkFor(row.code, row.plan)}</td>
                     <td className="data-table__actions">
                       <div className="data-table__actions-inner">
                         <button type="button" className="table-action" title="Sao chép mã" aria-label="Sao chép mã" onClick={() => void flashCopied(`c-${row._id}`, row.display)}>
                           {copied === `c-${row._id}` ? <Check aria-hidden="true" /> : <ClipboardCopy aria-hidden="true" />}
                         </button>
-                        <button type="button" className="table-action" title="Sao chép đường dẫn" aria-label="Sao chép đường dẫn" onClick={() => void flashCopied(`l-${row._id}`, linkFor(row.code))}>
+                        <button type="button" className="table-action" title="Sao chép đường dẫn" aria-label="Sao chép đường dẫn" onClick={() => void flashCopied(`l-${row._id}`, linkFor(row.code, row.plan))}>
                           {copied === `l-${row._id}` ? <Check aria-hidden="true" /> : <Link2 aria-hidden="true" />}
                         </button>
                       </div>
@@ -526,7 +550,7 @@ export function EbookCodesPage() {
             <button type="button" className="table-action" title="Sao chép mã" aria-label="Sao chép mã" onClick={(event) => { event.stopPropagation(); void flashCopied(`t-${row._id}`, row.display); }}>
               {copied === `t-${row._id}` ? <Check aria-hidden="true" /> : <ClipboardCopy aria-hidden="true" />}
             </button>
-            <button type="button" className="table-action" title="Sao chép đường dẫn tự đăng nhập" aria-label="Sao chép đường dẫn" onClick={(event) => { event.stopPropagation(); void flashCopied(`k-${row._id}`, linkFor(row.code)); }}>
+            <button type="button" className="table-action" title="Sao chép đường dẫn tự đăng nhập" aria-label="Sao chép đường dẫn" onClick={(event) => { event.stopPropagation(); void flashCopied(`k-${row._id}`, linkFor(row.code, row.plan)); }}>
               {copied === `k-${row._id}` ? <Check aria-hidden="true" /> : <Link2 aria-hidden="true" />}
             </button>
             <button type="button" className="table-action" title="Chi tiết, thêm lượt, lịch sử" aria-label="Chi tiết" onClick={(event) => { event.stopPropagation(); setDetail(row); }}>
@@ -578,11 +602,13 @@ function CodeDetailDialog({ row, onClose, onChanged, onDelete }: { row: CodeRow;
   const nextSuffix = normalizeEbookSuffix(suffix);
   const suffixChanged = nextSuffix !== currentSuffix;
   const prefix = ebookCodePrefix(row.code, row.suffix);
+  const student = isStudentPlan(row.plan);
   const [error, setError] = useState("");
 
   const historyQuery = useQuery({
     queryKey: ["admin", "ebook-codes", row._id, "exports"],
     queryFn: () => api.get<{ items: ExportRow[] }>(`/api/admin/ebook-codes/${row._id}/exports`),
+    enabled: !student,
   });
 
   const save = useMutation({
@@ -629,7 +655,7 @@ function CodeDetailDialog({ row, onClose, onChanged, onDelete }: { row: CodeRow;
           <div>
             <h2>{row.display}</h2>
             <p>
-              {row.planLabel} · đã dùng {row.used}/{row.quota} lượt · <StateBadge state={row.state} />
+              {row.planLabel} · {student ? `đã nhập ${row.used} lần` : `đã dùng ${row.used}/${row.quota} lượt`} · <StateBadge state={row.state} />
             </p>
           </div>
           <button type="button" onClick={onClose} aria-label="Đóng">
@@ -662,12 +688,14 @@ function CodeDetailDialog({ row, onClose, onChanged, onDelete }: { row: CodeRow;
               <input id="d-contact" value={holderContact} maxLength={120} onChange={(event) => setHolderContact(event.target.value)} />
             </span>
           </div>
-          <div className="field">
-            <label className="field__label" htmlFor="d-add">Cộng thêm lượt</label>
-            <span className="field__control">
-              <input id="d-add" type="number" min={1} inputMode="numeric" value={addQuota} placeholder="Ví dụ: 10" onChange={(event) => setAddQuota(event.target.value)} />
-            </span>
-          </div>
+          {student ? null : (
+            <div className="field">
+              <label className="field__label" htmlFor="d-add">Cộng thêm lượt</label>
+              <span className="field__control">
+                <input id="d-add" type="number" min={1} inputMode="numeric" value={addQuota} placeholder="Ví dụ: 10" onChange={(event) => setAddQuota(event.target.value)} />
+              </span>
+            </div>
+          )}
           <div className="field">
             <label className="field__label" htmlFor="d-exp">Hết hạn vào ngày</label>
             <span className="field__control">
@@ -683,49 +711,56 @@ function CodeDetailDialog({ row, onClose, onChanged, onDelete }: { row: CodeRow;
           </div>
         </div>
 
-        <div>
-          <h3 className="ebook-history__title">Lịch sử xuất file</h3>
-          {historyQuery.isLoading ? (
-            <p className="muted">
-              <Loader2 className="spin" aria-hidden="true" /> Đang tải…
-            </p>
-          ) : historyQuery.isError ? (
-            <p className="admin-error">{errorMessage(historyQuery.error)}</p>
-          ) : (historyQuery.data?.items.length ?? 0) === 0 ? (
-            <p className="muted">Mã chưa được dùng lần nào.</p>
-          ) : (
-            <div className="admin-table-wrap ebook-history">
-              <table className="admin-table">
-                <thead>
-                  <tr>
-                    <th>Thời gian</th>
-                    <th>Họ tên</th>
-                    <th>Ngày sinh</th>
-                    <th>Số điện thoại</th>
-                    <th>Loại ebook</th>
-                    <th>Trạng thái</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {historyQuery.data?.items.map((item) => (
-                    <tr key={item._id}>
-                      <td>{formatDateTime(item.createdAt)}</td>
-                      <td>{item.customerName || "—"}</td>
-                      <td>{item.birthDate || "—"}</td>
-                      <td>{item.customerPhone || "—"}</td>
-                      <td>{EBOOK_EDITION_LABEL[item.edition as keyof typeof EBOOK_EDITION_LABEL] ?? item.edition}</td>
-                      <td>
-                        <span className={`status-badge status-badge--${item.status === "failed" ? "cancelled" : "active"}`} title={item.error || undefined}>
-                          {item.status === "failed" ? "Lỗi tạo file" : "Thành công"}
-                        </span>
-                      </td>
+        {student ? (
+          <p className="muted">
+            Mã học viên mở khoá chi tiết các công cụ Sim, Gieo quẻ, Xem ngày; lần nhập gần nhất: {formatDateTime(row.lastUsedAt)}. Khoá mã hoặc đặt
+            ngày hết hạn thì học viên mất quyền xem ngay ở lần tải trang kế tiếp.
+          </p>
+        ) : (
+          <div>
+            <h3 className="ebook-history__title">Lịch sử xuất file</h3>
+            {historyQuery.isLoading ? (
+              <p className="muted">
+                <Loader2 className="spin" aria-hidden="true" /> Đang tải…
+              </p>
+            ) : historyQuery.isError ? (
+              <p className="admin-error">{errorMessage(historyQuery.error)}</p>
+            ) : (historyQuery.data?.items.length ?? 0) === 0 ? (
+              <p className="muted">Mã chưa được dùng lần nào.</p>
+            ) : (
+              <div className="admin-table-wrap ebook-history">
+                <table className="admin-table">
+                  <thead>
+                    <tr>
+                      <th>Thời gian</th>
+                      <th>Họ tên</th>
+                      <th>Ngày sinh</th>
+                      <th>Số điện thoại</th>
+                      <th>Loại ebook</th>
+                      <th>Trạng thái</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div>
+                  </thead>
+                  <tbody>
+                    {historyQuery.data?.items.map((item) => (
+                      <tr key={item._id}>
+                        <td>{formatDateTime(item.createdAt)}</td>
+                        <td>{item.customerName || "—"}</td>
+                        <td>{item.birthDate || "—"}</td>
+                        <td>{item.customerPhone || "—"}</td>
+                        <td>{EBOOK_EDITION_LABEL[item.edition as keyof typeof EBOOK_EDITION_LABEL] ?? item.edition}</td>
+                        <td>
+                          <span className={`status-badge status-badge--${item.status === "failed" ? "cancelled" : "active"}`} title={item.error || undefined}>
+                            {item.status === "failed" ? "Lỗi tạo file" : "Thành công"}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        )}
 
         {error ? (
           <p className="admin-error" role="alert">
