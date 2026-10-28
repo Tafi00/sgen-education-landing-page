@@ -7,6 +7,7 @@ import { keepTogether as keep } from "../../app/text";
 import { normalizePhone } from "../../../shared/phone";
 import type { LookupResultPayload } from "../../../shared/lookup-types";
 import { TextField } from "../form/Field";
+import { SampleEbook } from "../lookup/SampleEbook";
 import { Button } from "../ui/Button";
 import { Eyebrow } from "../ui/Eyebrow";
 import { Reveal } from "../ui/Reveal";
@@ -167,6 +168,7 @@ export function HeroSection() {
               <span>Dữ liệu được bảo mật</span>
               <span>Phân tích theo hệ Pythagoras chuẩn hóa</span>
             </p>
+            <SampleEbook className="hero-lookup__sample" />
           </form>
         </Reveal>
       </div>

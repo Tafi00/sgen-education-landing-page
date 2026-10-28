@@ -14,6 +14,7 @@ import {
 import { api, errorMessage } from "../../api/client";
 import { LookupNavTabs } from "../../components/lookup/LookupNavTabs";
 import { ResultBlocks } from "../../components/lookup/ResultBlocks";
+import { SampleEbook } from "../../components/lookup/SampleEbook";
 import { ExpertContactBar } from "../../components/ui/ExpertCallout";
 import { useToast } from "../../components/ui/Toast";
 import type { LookupResultPayload } from "../../../shared/lookup-types";
@@ -280,6 +281,7 @@ export function NumerologyPage() {
                 <ShieldCheck aria-hidden="true" /> Miễn phí tra cứu · Dữ liệu được bảo mật · Kết quả theo hệ Pythagoras chuẩn hóa
               </p>
             </div>
+            <SampleEbook />
 
             {error ? (
               <Callout icon={AlertTriangle} tone="warning" role="alert" title="Không thể phân tích">
