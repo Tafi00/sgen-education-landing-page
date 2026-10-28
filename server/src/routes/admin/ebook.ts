@@ -7,7 +7,7 @@ import {
   ebookCodeState,
   formatEbookCode,
   isStudentPlan,
-  STUDENT_PLAN_KEY,
+  STUDENT_PLAN_KEYS,
   validateEbookSuffix,
   type EbookPlanKey,
 } from "../../../../shared/ebook.js";
@@ -121,8 +121,8 @@ adminEbookRouter.get(
     // Mã học viên không có lượt (quota 0) nên không bao giờ "hết lượt" — giống ebookCodeState.
     if (state === "disabled") where.push(`"status" <> 'active'`);
     else if (state === "expired") where.push(`"status" = 'active' AND "expiresAt" IS NOT NULL AND "expiresAt" <= now()`);
-    else if (state === "exhausted") where.push(`"status" = 'active' AND ("expiresAt" IS NULL OR "expiresAt" > now()) AND "used" >= "quota" AND "plan" <> '${STUDENT_PLAN_KEY}'`);
-    else if (state === "active") where.push(`"status" = 'active' AND ("expiresAt" IS NULL OR "expiresAt" > now()) AND ("used" < "quota" OR "plan" = '${STUDENT_PLAN_KEY}')`);
+    else if (state === "exhausted") where.push(`"status" = 'active' AND ("expiresAt" IS NULL OR "expiresAt" > now()) AND "used" >= "quota" AND "plan" <> ALL(${add(STUDENT_PLAN_KEYS)})`);
+    else if (state === "active") where.push(`"status" = 'active' AND ("expiresAt" IS NULL OR "expiresAt" > now()) AND ("used" < "quota" OR "plan" = ANY(${add(STUDENT_PLAN_KEYS)}))`);
 
     const clause = where.length ? `WHERE ${where.join(" AND ")}` : "";
     const sortKey = SORTS[String(req.query.sort ?? "")] ?? SORTS.createdAt;

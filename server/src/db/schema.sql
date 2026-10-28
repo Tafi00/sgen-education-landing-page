@@ -425,3 +425,7 @@ CREATE INDEX IF NOT EXISTS "ebook_exports_customer_created_idx" ON "ebook_export
 UPDATE "site_settings"
 SET "contact" = jsonb_set("contact", '{phoneAlt}', '"0902931839"'), "updatedAt" = now()
 WHERE "contact"->>'phoneAlt' = '0982935131';
+
+-- 28/10/2026: mã học viên chia 3 cấp (hocvien1 Sim + Bát Cực, hocvien2 thêm Gieo quẻ, hocvien3 thêm Xem ngày). Mã đã cấp
+-- trước đó (gói "hocvien", mở mọi công cụ) thành cấp 3 để học viên không mất quyền; chạy lại mỗi lần khởi động vẫn an toàn.
+UPDATE "ebook_codes" SET "plan" = 'hocvien3', "updatedAt" = now() WHERE "plan" = 'hocvien';

@@ -10,8 +10,10 @@
  * Quản trị viên tạo mã ở /admin/ma-ebook. Người dùng nhập mã (hoặc mở đường dẫn có mã) ở /ebook,
  * được tự động đăng nhập bằng mã và xuất file cho tới khi hết lượt.
  *
- * Cùng bảng mã còn có "Mã học viên" (gói `hocvien`, tiền tố HV): không xuất ebook, chỉ mở khoá phần chi tiết của các
- * công cụ (quẻ Sim, Bát Cực Linh Số, Gieo quẻ, các mục chọn ngày ở Xem ngày). Học viên nhập mã ở chính các công cụ đó.
+ * Cùng bảng mã còn có "Mã học viên" ba cấp (gói `hocvien1` / `hocvien2` / `hocvien3`, tiền tố HV1 / HV2 / HV3): không
+ * xuất ebook, chỉ mở khoá phần chi tiết của các công cụ — cấp 1: Sim số điện thoại, Bát Cực Linh Số; cấp 2: thêm Gieo
+ * quẻ (kèm Phụ lục 64 quẻ); cấp 3: thêm Xem ngày. Mã cấp cao dùng được mọi phần của cấp thấp hơn. Học viên nhập mã ở
+ * chính các công cụ đó.
  */
 
 export type EbookEdition = "demo" | "full";
@@ -35,12 +37,16 @@ export type EbookPlanKey =
   | "combo30"
   | "combo50"
   | "combo100"
-  | "hocvien";
+  | "hocvien1"
+  | "hocvien2"
+  | "hocvien3";
 
 export type EbookPlan = {
   key: EbookPlanKey;
   /** `ebook` = mã xuất ebook; `student` = mã học viên mở khoá công cụ (không có lượt xuất). */
   kind: "ebook" | "student";
+  /** Cấp của mã học viên (chỉ có ở `kind: "student"`). */
+  level?: StudentLevel;
   label: string;
   edition: EbookEdition;
   /** Số lượt xuất file của mỗi mã. */
@@ -52,6 +58,32 @@ export type EbookPlan = {
   prefix: string;
   summary: string;
 };
+
+export type StudentLevel = 1 | 2 | 3;
+
+/** Cấp tối thiểu để mở từng công cụ. */
+export const STUDENT_FEATURE_LEVEL = { sim: 1, gieoQue: 2, xemNgay: 3 } as const satisfies Record<string, StudentLevel>;
+
+/** Những gì mỗi cấp mở thêm so với cấp dưới. */
+export const STUDENT_LEVEL_SCOPE: Record<StudentLevel, string> = {
+  1: "Sim số điện thoại, Bát Cực Linh Số",
+  2: "Sim, Bát Cực Linh Số và Gieo quẻ (kèm Phụ lục 64 quẻ)",
+  3: "Sim, Bát Cực Linh Số, Gieo quẻ và Xem ngày",
+};
+
+function studentPlan(key: EbookPlanKey, level: StudentLevel): EbookPlan {
+  return {
+    key,
+    kind: "student",
+    level,
+    label: `Học viên cấp ${level}`,
+    // Không dùng để xuất ebook: `edition` chỉ để điền cột bắt buộc, `quota` = 0.
+    edition: "full",
+    quota: 0,
+    prefix: `HV${level}`,
+    summary: `Mở khoá chi tiết ${STUDENT_LEVEL_SCOPE[level]}`,
+  };
+}
 
 function plan(key: EbookPlanKey, edition: EbookEdition, quota: number): EbookPlan {
   const demo = edition === "demo";
@@ -81,23 +113,21 @@ export const EBOOK_PLANS: Record<EbookPlanKey, EbookPlan> = {
   combo30: plan("combo30", "full", 30),
   combo50: plan("combo50", "full", 50),
   combo100: plan("combo100", "full", 100),
-  hocvien: {
-    key: "hocvien",
-    kind: "student",
-    label: "Mã học viên",
-    // Không dùng để xuất ebook: `edition` chỉ để điền cột bắt buộc, `quota` = 0.
-    edition: "full",
-    quota: 0,
-    prefix: "HV",
-    summary: "Mở khoá chi tiết quẻ Sim, Bát Cực Linh Số, Gieo quẻ và các mục chọn ngày",
-  },
+  hocvien1: studentPlan("hocvien1", 1),
+  hocvien2: studentPlan("hocvien2", 2),
+  hocvien3: studentPlan("hocvien3", 3),
 };
 
-export const STUDENT_PLAN_KEY = "hocvien" satisfies EbookPlanKey;
+export const STUDENT_PLAN_KEYS = ["hocvien1", "hocvien2", "hocvien3"] as const satisfies readonly EbookPlanKey[];
+
+/** Cấp của mã học viên (0 = không phải mã học viên). */
+export function studentLevel(plan: string | null | undefined): StudentLevel | 0 {
+  return plan ? (EBOOK_PLANS[plan as EbookPlanKey]?.level ?? 0) : 0;
+}
 
 /** Mã học viên (mở khoá công cụ), không phải mã xuất ebook. */
 export function isStudentPlan(plan: string | null | undefined): boolean {
-  return plan === STUDENT_PLAN_KEY;
+  return studentLevel(plan) > 0;
 }
 
 export const EBOOK_PLAN_KEYS = Object.keys(EBOOK_PLANS) as EbookPlanKey[];

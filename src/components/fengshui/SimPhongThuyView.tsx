@@ -83,7 +83,7 @@ export default function SimPhongThuyView({
   const defaultHour = initialHour ?? (initialTime ? initialTime.split(":")[0] || "" : "");
   const defaultMinute = initialMinute ?? (initialTime ? initialTime.split(":")[1] || "" : "");
 
-  // Chi tiết quẻ (bốn phương diện) và bảng chi tiết Bát Cực chỉ dành cho học viên được cấp mã.
+  // Chi tiết quẻ (bốn phương diện) và bảng chi tiết Bát Cực dành cho học viên được cấp mã (cấp 1 trở lên).
   const { unlocked: studentUnlocked } = useStudentAccess();
   const [phone, setPhone] = useState<string>(initialPhone);
   const [day, setDay] = useState<string>(defaultDay);

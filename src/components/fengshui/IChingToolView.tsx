@@ -26,6 +26,7 @@ import { buildLucHaoSheet } from "../../../shared/sim/sim-phong-thuy-engine";
 import "../../styles/iching-tool.css";
 import { Button } from "../ui/Button";
 import { StudentLock, StudentStatus, useStudentAccess, useStudentUnlock } from "../ui/StudentAccess";
+import { STUDENT_FEATURE_LEVEL } from "../../../shared/ebook";
 
 export type FengShuiToolViewProps = {
   /** Câu hỏi gợi ý cho lần gieo đầu tiên. Chỉ dùng làm giá trị khởi tạo. */
@@ -182,9 +183,10 @@ function MethodNote({
  * giữ nguyên thuật toán lập quẻ (getHexagram) và nguồn ngẫu nhiên bảo mật.
  */
 export function IChingToolView({ defaultQuestion = "", compact = false }: FengShuiToolViewProps) {
-  // Chỉ học viên được cấp mã mới gieo được quẻ và xem Phụ lục 64 quẻ (khách yêu cầu 27/10/2026).
-  const { unlocked: studentUnlocked } = useStudentAccess();
-  const requestUnlock = useStudentUnlock();
+  // Chỉ học viên mã cấp 2 trở lên mới gieo được quẻ và xem Phụ lục 64 quẻ (khách yêu cầu 27–28/10/2026).
+  const { unlocked: studentUnlocked } = useStudentAccess(STUDENT_FEATURE_LEVEL.gieoQue);
+  const unlockRequest = useStudentUnlock();
+  const requestUnlock = () => unlockRequest(STUDENT_FEATURE_LEVEL.gieoQue);
   const [question, setQuestion] = useState(defaultQuestion);
   const [castPurpose, setCastPurpose] = useState<(typeof CAST_PURPOSES)[number]["key"]>("timing");
   const activeCastPurpose = CAST_PURPOSES.find((purpose) => purpose.key === castPurpose) ?? CAST_PURPOSES[0];
@@ -468,7 +470,7 @@ export function IChingToolView({ defaultQuestion = "", compact = false }: FengSh
               <p>Mỗi lần gieo sẽ tạo một hào âm, hào dương hoặc hào động. Kết quả chỉ hiện khi đủ sáu lần để không ngắt nhịp tập trung.</p>
               <div className="line-legend"><span><i className="solid-line" /> Dương</span><span><i className="broken-line" /> Âm</span><span><i className="moving-dot" /> Hào động</span></div>
               {studentUnlocked ? null : (
-                <StudentLock compact className="iching-student-lock">Gieo quẻ dành cho học viên được SGEN cấp mã.</StudentLock>
+                <StudentLock compact level={STUDENT_FEATURE_LEVEL.gieoQue} className="iching-student-lock">Gieo quẻ và Phụ lục 64 quẻ dành cho học viên có mã cấp 2 trở lên.</StudentLock>
               )}
             </div>
           )}
@@ -482,7 +484,7 @@ export function IChingToolView({ defaultQuestion = "", compact = false }: FengSh
           <strong>{APPENDIX.title}</strong>
           <p>
             Đối chiếu lời luận đầy đủ của từng quẻ sau khi gieo. {APPENDIX.pageCount} trang · chỉ xem trực tuyến
-            {studentUnlocked ? "." : " · dành cho học viên được cấp mã."}
+            {studentUnlocked ? "." : " · dành cho học viên mã cấp 2 trở lên."}
           </p>
         </div>
         <button type="button" className="iching-appendix__link" onClick={studentUnlocked ? () => setAppendixOpen(true) : requestUnlock} aria-haspopup="dialog">

@@ -201,6 +201,24 @@
   line-height: 1.55;
 }
 
+.student-dialog__levels {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding: 10px 12px;
+  color: #8a7cb0;
+  font-size: 0.84rem;
+  line-height: 1.45;
+  text-align: left;
+  list-style: none;
+  border-radius: 12px;
+  background: #f7f2ff;
+}
+
+.student-dialog__levels b { margin-right: 4px; color: inherit; }
+.student-dialog__levels li.is-enough { color: #2a1160; }
+.student-dialog__levels li.is-enough b { color: #7a2fe0; }
+
 .student-dialog__field {
   display: grid;
   gap: 6px;

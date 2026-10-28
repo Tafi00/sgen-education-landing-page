@@ -121,7 +121,7 @@ function ReadingCard({ item, locked, onOpen }: { item: IChingReadingItem; locked
           {info && <div><dt>Hạ quái</dt><dd>{info.lower.symbol} {info.lower.name} · {lowerElement}</dd></div>}
           {item.note && <div><dt>Cách lập</dt><dd>{item.note}</dd></div>}
         </dl>
-        <button type="button" className="iching-reading-more__btn" onClick={locked ? requestUnlock : onOpen} aria-haspopup="dialog">
+        <button type="button" className="iching-reading-more__btn" onClick={locked ? () => requestUnlock() : onOpen} aria-haspopup="dialog">
           {locked ? <Lock size={16} aria-hidden="true" /> : <Eye size={16} aria-hidden="true" />}
           <span>Xem chi tiết</span>
         </button>

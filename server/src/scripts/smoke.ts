@@ -362,7 +362,7 @@ async function run() {
   const fullDoc = await EbookCode.findOne({ plan: "combo3" }).lean();
 
   // Mã học viên (HV-…): chỉ mở khoá chi tiết công cụ Sim / Gieo quẻ / Xem ngày, không xuất ebook; mã ebook không mở khoá công cụ.
-  const studentCode = (await call(base, "/api/admin/ebook-codes/generate", { method: "POST", jar: adminJar, body: { plan: "hocvien", count: 1 } })).payload.items?.[0];
+  const studentCode = (await call(base, "/api/admin/ebook-codes/generate", { method: "POST", jar: adminJar, body: { plan: "hocvien2", count: 1 } })).payload.items?.[0];
   const studentJar: Jar = { cookies: new Map() };
   await call(base, "/api/hoc-vien/me", { jar: studentJar });
   const studentAtEbook = await call(base, "/api/ebook/redeem", { method: "POST", jar: studentJar, body: { code: studentCode?.code } });
@@ -370,7 +370,11 @@ async function run() {
   record("mã học viên không xuất ebook; mã ebook không mở khoá công cụ", studentAtEbook.status === 422 && ebookAtStudent.status === 422, `${studentAtEbook.status}/${ebookAtStudent.status}`);
   const studentRedeem = await call(base, "/api/hoc-vien/redeem", { method: "POST", jar: studentJar, body: { code: studentCode?.display } });
   const studentMe = await call(base, "/api/hoc-vien/me", { jar: studentJar });
-  record("nhập mã học viên (HV-…) mở khoá công cụ cho phiên", studentRedeem.status === 200 && studentMe.payload.student?.display === studentCode?.display, `status=${studentRedeem.status}`);
+  record(
+    "nhập mã học viên (HV2-…) mở khoá công cụ cho phiên, kèm cấp của mã",
+    studentRedeem.status === 200 && studentMe.payload.student?.display === studentCode?.display && studentMe.payload.student?.level === 2,
+    `status=${studentRedeem.status} level=${studentMe.payload.student?.level}`,
+  );
   const appendixAnonymous = await call(base, "/api/hoc-vien/phu-luc/trang-001.webp", { jar: anonymousJar, raw: true });
   const appendixStudent = await fetch(`${base}/api/hoc-vien/phu-luc/trang-001.webp`, {
     headers: { Cookie: [...studentJar.cookies.entries()].map(([key, value]) => `${key}=${value}`).join("; ") },
@@ -381,6 +385,13 @@ async function run() {
     appendixAnonymous.status === 403 && appendixStudent.status === 200 && (appendixStudent.headers.get("content-type") ?? "").includes("webp") && appendixBadName.status === 404,
     `${appendixAnonymous.status}/${appendixStudent.status}/${appendixBadName.status}`,
   );
+  // Cấp 1 (Sim, Bát Cực) chưa được xem Phụ lục 64 quẻ của Gieo quẻ (cấp 2).
+  const levelOneCode = (await call(base, "/api/admin/ebook-codes/generate", { method: "POST", jar: adminJar, body: { plan: "hocvien1", count: 1 } })).payload.items?.[0];
+  const levelOneJar: Jar = { cookies: new Map() };
+  await call(base, "/api/hoc-vien/me", { jar: levelOneJar });
+  await call(base, "/api/hoc-vien/redeem", { method: "POST", jar: levelOneJar, body: { code: levelOneCode?.code } });
+  const levelOneAppendix = await call(base, "/api/hoc-vien/phu-luc/trang-001.webp", { jar: levelOneJar, raw: true });
+  record("mã học viên cấp 1 không xem được Phụ lục 64 quẻ (cần cấp 2)", levelOneAppendix.status === 403, `status=${levelOneAppendix.status}`);
   await call(base, `/api/admin/ebook-codes/${studentCode?._id}`, { method: "PATCH", jar: adminJar, body: { status: "disabled" } });
   const afterDisable = await call(base, "/api/hoc-vien/me", { jar: studentJar });
   record("khoá mã học viên thì phiên mất quyền ngay", afterDisable.payload.student === null);

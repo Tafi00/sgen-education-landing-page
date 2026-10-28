@@ -14,6 +14,8 @@ import {
   ebookCodePrefix,
   isStudentPlan,
   normalizeEbookSuffix,
+  STUDENT_LEVEL_SCOPE,
+  studentLevel,
   validateEbookSuffix,
   type EbookCodeState,
   type EbookPlanKey,
@@ -72,10 +74,18 @@ const PLAN_GROUPS = [
 
 const SORT_KEYS: Record<string, string> = { display: "code", used: "used", createdAt: "createdAt", lastUsedAt: "lastUsedAt" };
 
-/** Đường dẫn tự nhập mã: mã ebook mở trang /ebook, mã học viên mở trang Công cụ phong thủy. */
+/** Công cụ cao nhất mỗi cấp mã học viên mở được — đường dẫn tự nhập mã đưa học viên tới thẳng đó. */
+const STUDENT_LANDING: Record<number, string> = {
+  1: "/sim-phong-thuy/boi-sim",
+  2: "/cong-cu-phong-thuy/gieo-que-kinh-dich",
+  3: "/cong-cu-phong-thuy/xem-ngay",
+};
+
+/** Đường dẫn tự nhập mã: mã ebook mở trang /ebook, mã học viên mở công cụ theo cấp. */
 function linkFor(code: string, plan: string) {
-  return isStudentPlan(plan)
-    ? `${window.location.origin}/cong-cu-phong-thuy?mahv=${encodeURIComponent(code)}`
+  const level = studentLevel(plan);
+  return level
+    ? `${window.location.origin}${STUDENT_LANDING[level]}?mahv=${encodeURIComponent(code)}`
     : `${window.location.origin}/ebook?ma=${encodeURIComponent(code)}`;
 }
 
@@ -313,7 +323,8 @@ export function EbookCodesPage() {
           <h1>Mã ebook</h1>
           <p>
             Tạo mã xuất ebook bản Demo 3 chỉ số hoặc bản đầy đủ, mỗi bản có gói 1, 3, 5, 10, 30, 50, 100 ebook. Người nhận vào trang
-            /ebook, nhập mã là tải được file. Mã học viên (HV-…) dùng để mở khoá chi tiết ở các công cụ Sim, Gieo quẻ, Xem ngày.
+            /ebook, nhập mã là tải được file. Mã học viên mở khoá chi tiết các công cụ theo cấp: cấp 1 (HV1-…) Sim, Bát Cực Linh Số; cấp 2
+            (HV2-…) thêm Gieo quẻ; cấp 3 (HV3-…) thêm Xem ngày.
           </p>
         </div>
         <div className="admin-page__actions">
@@ -339,7 +350,7 @@ export function EbookCodesPage() {
                   <optgroup key={group.label} label={group.label}>
                     {group.plans.map((item) => (
                       <option key={item.key} value={item.key}>
-                        {item.kind === "student" ? item.label : `${item.label} — ${item.quota} lượt`}
+                        {item.level ? `${item.label} — ${STUDENT_LEVEL_SCOPE[item.level]}` : `${item.label} — ${item.quota} lượt`}
                       </option>
                     ))}
                   </optgroup>
@@ -348,7 +359,7 @@ export function EbookCodesPage() {
             </span>
             <p className="field__hint">
               {selectedPlan.kind === "student"
-                ? "Mở khoá chi tiết quẻ Sim, Bát Cực Linh Số, Gieo quẻ và các mục chọn ngày ở Xem ngày; không dùng để xuất ebook."
+                ? `Mở khoá chi tiết ${STUDENT_LEVEL_SCOPE[selectedPlan.level ?? 1]}; không dùng để xuất ebook.`
                 : selectedPlan.edition === "demo"
                   ? "Mỗi lượt xuất = 1 ebook Demo 3 chỉ số."
                   : "Mỗi lượt xuất = 1 ebook đầy đủ (mã này xuất được cả bản Demo)."}
@@ -713,8 +724,8 @@ function CodeDetailDialog({ row, onClose, onChanged, onDelete }: { row: CodeRow;
 
         {student ? (
           <p className="muted">
-            Mã học viên mở khoá chi tiết các công cụ Sim, Gieo quẻ, Xem ngày; lần nhập gần nhất: {formatDateTime(row.lastUsedAt)}. Khoá mã hoặc đặt
-            ngày hết hạn thì học viên mất quyền xem ngay ở lần tải trang kế tiếp.
+            Mã học viên cấp {studentLevel(row.plan)} mở khoá chi tiết {STUDENT_LEVEL_SCOPE[studentLevel(row.plan) || 1]}; lần nhập gần nhất:{" "}
+            {formatDateTime(row.lastUsedAt)}. Khoá mã hoặc đặt ngày hết hạn thì học viên mất quyền xem ngay ở lần tải trang kế tiếp.
           </p>
         ) : (
           <div>

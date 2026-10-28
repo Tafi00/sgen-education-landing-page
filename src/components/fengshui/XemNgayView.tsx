@@ -31,6 +31,7 @@ import { TRANG_TRINH_MUC } from "../../../shared/xem-ngay/trang-trinh";
 import { KIM_THAN_THAT_SAT } from "../../../shared/xem-ngay/truc-tu-data";
 import { tietKhiTho } from "../../../shared/xem-ngay/tiet-khi-tho";
 import { StudentLock, StudentStatus, useStudentAccess } from "../ui/StudentAccess";
+import { STUDENT_FEATURE_LEVEL } from "../../../shared/ebook";
 import "../../styles/xem-ngay.css";
 
 /**
@@ -292,8 +293,8 @@ export function XemNgayView() {
   const hour = Math.min(23, Math.max(0, Number(searchParams.get("gio") ?? now.getHours()) || 0));
   const minute = Math.min(59, Math.max(0, Number(searchParams.get("phut") ?? now.getMinutes()) || 0));
   const profile = useMemo(() => getXemNgayProfile(date, hour, minute), [date, hour, minute]);
-  // Kiết tinh, Hung tinh, Đổng Công và các mục Trạng Trình chỉ dành cho học viên được cấp mã (khách yêu cầu 27/10/2026).
-  const { unlocked: studentUnlocked } = useStudentAccess();
+  // Kiết tinh, Hung tinh, Đổng Công và các mục Trạng Trình chỉ dành cho học viên mã cấp 3 (khách yêu cầu 27–28/10/2026).
+  const { unlocked: studentUnlocked } = useStudentAccess(STUDENT_FEATURE_LEVEL.xemNgay);
   const hints = useHints();
   const closeHints = hints.close;
 
@@ -344,10 +345,10 @@ export function XemNgayView() {
 
       <div className="xn-row xn-row--2">
         <Panel title="Kiết tinh">
-          {studentUnlocked ? <StarList stars={profile.stars.good} tone="good" note={note} /> : <StudentLock compact />}
+          {studentUnlocked ? <StarList stars={profile.stars.good} tone="good" note={note} /> : <StudentLock compact level={STUDENT_FEATURE_LEVEL.xemNgay} />}
         </Panel>
         <Panel title="Hung tinh">
-          {studentUnlocked ? <StarList stars={profile.stars.bad} tone="bad" note={note} /> : <StudentLock compact />}
+          {studentUnlocked ? <StarList stars={profile.stars.bad} tone="bad" note={note} /> : <StudentLock compact level={STUDENT_FEATURE_LEVEL.xemNgay} />}
         </Panel>
       </div>
 
@@ -423,7 +424,7 @@ export function XemNgayView() {
       <div className="xn-row xn-row--2 xn-row--wide">
         <Panel title="Đổng Công — soạn trạch nhật">
           {!studentUnlocked ? (
-            <StudentLock compact />
+            <StudentLock compact level={STUDENT_FEATURE_LEVEL.xemNgay} />
           ) : profile.dongCong ? (
             link(
               <>
@@ -441,7 +442,7 @@ export function XemNgayView() {
         </Panel>
         <Panel title="Trạng Trình — Nguyễn Bỉnh Khiêm">
           {!studentUnlocked ? (
-            <StudentLock compact />
+            <StudentLock compact level={STUDENT_FEATURE_LEVEL.xemNgay} />
           ) : profile.trangTrinh.length ? (
             <ol className="xn-muc">
               {profile.trangTrinh.map((no) => {

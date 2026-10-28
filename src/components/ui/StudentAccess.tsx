@@ -5,21 +5,23 @@ import { useSearchParams } from "react-router-dom";
 import { GraduationCap, KeyRound, Loader2, Lock, LogOut, X } from "lucide-react";
 import { api, errorMessage } from "../../api/client";
 import { useSiteSettings } from "../../api/hooks";
+import { STUDENT_LEVEL_SCOPE, type StudentLevel } from "../../../shared/ebook";
 import { formatHotline } from "./ExpertCallout";
 import { useToast } from "./Toast";
 import "../../styles/student-access.css";
 
 /**
- * Mã học viên (Quản trị → Mã ebook, gói "Mã học viên", tiền tố HV): chỉ học viên được SGEN cấp mã mới xem chi tiết quẻ
- * Sim, Bát Cực Linh Số, gieo quẻ và các mục chọn ngày (khách yêu cầu 27/10/2026). Nhập mã một lần, phiên trình duyệt
- * nhớ; đường dẫn `?mahv=MÃ` tự nhập mã.
+ * Mã học viên ba cấp (Quản trị → Mã ebook, gói "Học viên cấp 1–3", tiền tố HV1–HV3): chỉ học viên được SGEN cấp mã mới
+ * xem chi tiết — cấp 1 Sim + Bát Cực Linh Số, cấp 2 thêm Gieo quẻ, cấp 3 thêm Xem ngày (khách yêu cầu 27–28/10/2026).
+ * Nhập mã một lần, phiên trình duyệt nhớ; đường dẫn `?mahv=MÃ` tự nhập mã.
  */
 
-export type StudentInfo = { display: string; expiresAt: string | null };
+export type StudentInfo = { display: string; level: number; expiresAt: string | null };
 
 const STUDENT_QUERY_KEY = ["student-access"] as const;
 
-export function useStudentAccess() {
+/** `unlocked`: đã nhập mã có cấp ≥ `requiredLevel` (cấp cao dùng được phần của cấp thấp). */
+export function useStudentAccess(requiredLevel: StudentLevel = 1) {
   const query = useQuery({
     queryKey: STUDENT_QUERY_KEY,
     queryFn: () => api.get<{ student: StudentInfo | null }>("/api/hoc-vien/me"),
@@ -27,18 +29,18 @@ export function useStudentAccess() {
     retry: 1,
   });
   const student = query.data?.student ?? null;
-  return { student, unlocked: Boolean(student), checking: query.isLoading };
+  return { student, unlocked: (student?.level ?? 0) >= requiredLevel, checking: query.isLoading };
 }
 
-type StudentAccessContextValue = { requestUnlock: () => void };
+type StudentAccessContextValue = { requestUnlock: (level?: StudentLevel) => void };
 
 const StudentAccessContext = createContext<StudentAccessContextValue>({ requestUnlock: () => undefined });
 
-/** Hộp nhập mã dùng chung cho cả trang; mọi khung khoá gọi `requestUnlock` để mở. */
+/** Hộp nhập mã dùng chung cho cả trang; mọi khung khoá gọi `requestUnlock(cấp cần)` để mở. */
 export function StudentAccessProvider({ children }: { children: ReactNode }) {
-  const [open, setOpen] = useState(false);
-  const requestUnlock = useCallback(() => setOpen(true), []);
-  const close = useCallback(() => setOpen(false), []);
+  const [needLevel, setNeedLevel] = useState<StudentLevel | null>(null);
+  const requestUnlock = useCallback((level: StudentLevel = 1) => setNeedLevel(level), []);
+  const close = useCallback(() => setNeedLevel(null), []);
   const queryClient = useQueryClient();
   const toast = useToast();
   const [params, setParams] = useSearchParams();
@@ -56,7 +58,7 @@ export function StudentAccessProvider({ children }: { children: ReactNode }) {
       .post<{ student: StudentInfo }>("/api/hoc-vien/redeem", { code: linkCode })
       .then((result) => {
         queryClient.setQueryData(STUDENT_QUERY_KEY, result);
-        toast.success("Đã mở khoá học viên", `Mã ${result.student.display} đang được dùng trên trình duyệt này.`);
+        toast.success("Đã mở khoá học viên", `Mã ${result.student.display} (cấp ${result.student.level}) đang được dùng trên trình duyệt này.`);
       })
       .catch((error) => toast.error("Không mở khoá được", errorMessage(error)));
     // Chỉ chạy khi đường dẫn có mã (params/setParams đổi theo mỗi lần điều hướng nên không đưa vào danh sách phụ thuộc).
@@ -65,7 +67,7 @@ export function StudentAccessProvider({ children }: { children: ReactNode }) {
   return (
     <StudentAccessContext.Provider value={{ requestUnlock }}>
       {children}
-      {open ? <StudentCodeDialog onClose={close} /> : null}
+      {needLevel ? <StudentCodeDialog needLevel={needLevel} onClose={close} /> : null}
     </StudentAccessContext.Provider>
   );
 }
@@ -74,7 +76,7 @@ export function useStudentUnlock() {
   return useContext(StudentAccessContext).requestUnlock;
 }
 
-function StudentCodeDialog({ onClose }: { onClose: () => void }) {
+function StudentCodeDialog({ needLevel, onClose }: { needLevel: StudentLevel; onClose: () => void }) {
   const titleId = useId();
   const inputRef = useRef<HTMLInputElement>(null);
   const [code, setCode] = useState("");
@@ -107,7 +109,12 @@ function StudentCodeDialog({ onClose }: { onClose: () => void }) {
     try {
       const result = await api.post<{ student: StudentInfo }>("/api/hoc-vien/redeem", { code: code.trim() });
       queryClient.setQueryData(STUDENT_QUERY_KEY, result);
-      toast.success("Đã mở khoá học viên", `Mã ${result.student.display} đang được dùng trên trình duyệt này.`);
+      if (result.student.level < needLevel) {
+        // Mã hợp lệ (đã dùng cho các phần của cấp đó) nhưng chưa đủ cấp cho phần đang mở.
+        setError(`Mã ${result.student.display} là mã cấp ${result.student.level}, chưa mở được phần này — cần mã cấp ${needLevel} trở lên.`);
+        return;
+      }
+      toast.success("Đã mở khoá học viên", `Mã ${result.student.display} (cấp ${result.student.level}) đang được dùng trên trình duyệt này.`);
       onClose();
     } catch (caught) {
       setError(errorMessage(caught));
@@ -127,7 +134,14 @@ function StudentCodeDialog({ onClose }: { onClose: () => void }) {
           <GraduationCap />
         </span>
         <h2 id={titleId}>Nhập mã học viên</h2>
-        <p>Chi tiết quẻ, Bát Cực Linh Số, Gieo quẻ và các mục chọn ngày dành cho học viên được SGEN cấp mã.</p>
+        <p>{needLevel > 1 ? `Phần này cần mã học viên cấp ${needLevel} trở lên.` : "Phần chi tiết dành cho học viên được SGEN cấp mã."}</p>
+        <ul className="student-dialog__levels">
+          {([1, 2, 3] as const).map((level) => (
+            <li key={level} className={level >= needLevel ? "is-enough" : undefined}>
+              <b>Cấp {level}</b> {STUDENT_LEVEL_SCOPE[level]}
+            </li>
+          ))}
+        </ul>
         <label className="student-dialog__field">
           <span>Mã học viên</span>
           <input
@@ -137,7 +151,7 @@ function StudentCodeDialog({ onClose }: { onClose: () => void }) {
               setCode(event.target.value);
               if (error) setError("");
             }}
-            placeholder="Ví dụ: HV-7KQ2-M9XP"
+            placeholder="Ví dụ: HV2-7KQ2-M9XP"
             autoComplete="off"
             autoCapitalize="characters"
             spellCheck={false}
@@ -172,20 +186,24 @@ function StudentCodeDialog({ onClose }: { onClose: () => void }) {
   );
 }
 
-/** Khung thay cho nội dung khoá: lời nhắn + nút mở hộp nhập mã. `compact` cho ô nhỏ (Kiết tinh, Hung tinh…). */
+/**
+ * Khung thay cho nội dung khoá: lời nhắn + nút mở hộp nhập mã. `level`: cấp tối thiểu của phần này; đang dùng mã cấp
+ * thấp hơn thì ghi rõ. `compact` cho ô nhỏ (Kiết tinh, Hung tinh…).
+ */
 export function StudentLock({
-  title = "Dành cho học viên được cấp mã",
+  level = 1,
   children,
   compact = false,
   className = "",
 }: {
-  title?: string;
+  level?: StudentLevel;
   children?: ReactNode;
   compact?: boolean;
   className?: string;
 }) {
   const requestUnlock = useStudentUnlock();
-  const { checking } = useStudentAccess();
+  const { student, checking } = useStudentAccess(level);
+  const title = level > 1 ? `Dành cho học viên mã cấp ${level} trở lên` : "Dành cho học viên được cấp mã";
   return (
     <div className={`student-lock ${compact ? "student-lock--compact" : ""} ${className}`.trim()} aria-busy={checking || undefined}>
       <span className="student-lock__icon" aria-hidden="true">
@@ -193,20 +211,15 @@ export function StudentLock({
       </span>
       <div className="student-lock__copy">
         <strong>{title}</strong>
+        {student ? <p>Mã {student.display} của bạn là cấp {student.level}.</p> : null}
         {children ? <p>{children}</p> : null}
       </div>
-      <button type="button" className="student-lock__btn" onClick={requestUnlock} disabled={checking}>
+      <button type="button" className="student-lock__btn" onClick={() => requestUnlock(level)} disabled={checking}>
         <KeyRound aria-hidden="true" />
         {checking ? "Đang kiểm tra…" : "Nhập mã học viên"}
       </button>
     </div>
   );
-}
-
-/** Hiện nội dung khi đã nhập mã học viên, chưa thì hiện khung khoá. */
-export function StudentGate({ children, lock }: { children: ReactNode; lock: ReactNode }) {
-  const { unlocked } = useStudentAccess();
-  return <>{unlocked ? children : lock}</>;
 }
 
 /** Dải nhỏ cho biết đang dùng mã học viên nào, kèm nút thoát (máy dùng chung). */
@@ -232,7 +245,7 @@ export function StudentStatus({ className = "" }: { className?: string }) {
     <div className={`student-status ${className}`.trim()}>
       <GraduationCap aria-hidden="true" />
       <span>
-        Học viên · <b>{student.display}</b>
+        Học viên cấp {student.level} · <b>{student.display}</b>
       </span>
       <button type="button" onClick={() => void logout()} disabled={leaving}>
         <LogOut aria-hidden="true" /> Thoát

@@ -8,7 +8,9 @@ import {
   isStudentPlan,
   normalizeEbookCode,
   normalizeEbookSuffix,
-  STUDENT_PLAN_KEY,
+  STUDENT_FEATURE_LEVEL,
+  STUDENT_PLAN_KEYS,
+  studentLevel,
   validateEbookSuffix,
 } from "../ebook";
 
@@ -24,12 +26,25 @@ describe("gói mã ebook", () => {
     expect(EBOOK_PLANS.combo1).toMatchObject({ label: "Full 1 ebook", edition: "full", prefix: "FULL01" });
   });
 
-  it("mã học viên: tiền tố HV, không có lượt xuất ebook", () => {
-    expect(EBOOK_PLANS.hocvien).toMatchObject({ kind: "student", label: "Mã học viên", prefix: "HV", quota: 0 });
-    expect(isStudentPlan(STUDENT_PLAN_KEY)).toBe(true);
-    expect(EBOOK_PLAN_KEYS.filter((key) => isStudentPlan(key))).toEqual(["hocvien"]);
+  it("mã học viên ba cấp: tiền tố HV1–HV3, không có lượt xuất ebook", () => {
+    expect(EBOOK_PLANS.hocvien1).toMatchObject({ kind: "student", level: 1, label: "Học viên cấp 1", prefix: "HV1", quota: 0 });
+    expect(EBOOK_PLANS.hocvien3).toMatchObject({ kind: "student", level: 3, prefix: "HV3" });
+    expect(EBOOK_PLAN_KEYS.filter((key) => isStudentPlan(key))).toEqual([...STUDENT_PLAN_KEYS]);
+    expect(STUDENT_PLAN_KEYS.map(studentLevel)).toEqual([1, 2, 3]);
+    expect(studentLevel("combo3")).toBe(0);
+    // Mã HV-… cấp trước khi chia cấp (gói cũ "hocvien") được schema.sql đổi thành hocvien3; bản thân khoá cũ không còn.
+    expect(isStudentPlan("hocvien")).toBe(false);
+    expect(formatEbookCode("HV27KQ2M9XP")).toBe("HV2-7KQ2-M9XP");
+    expect(formatEbookCode("HV1ANHA", "ANHA")).toBe("HV1-ANHA");
     expect(formatEbookCode("HV7KQ2M9XP")).toBe("HV-7KQ2-M9XP");
-    expect(formatEbookCode("HVANHA", "ANHA")).toBe("HV-ANHA");
+  });
+
+  it("cấp cao dùng được phần của cấp thấp: Sim cấp 1, Gieo quẻ cấp 2, Xem ngày cấp 3", () => {
+    expect(STUDENT_FEATURE_LEVEL).toEqual({ sim: 1, gieoQue: 2, xemNgay: 3 });
+    const opens = (plan: string) => Object.entries(STUDENT_FEATURE_LEVEL).filter(([, need]) => studentLevel(plan) >= need).map(([feature]) => feature);
+    expect(opens("hocvien1")).toEqual(["sim"]);
+    expect(opens("hocvien2")).toEqual(["sim", "gieoQue"]);
+    expect(opens("hocvien3")).toEqual(["sim", "gieoQue", "xemNgay"]);
   });
 
   it("tiền tố mỗi gói là duy nhất", () => {
@@ -86,7 +101,7 @@ describe("trạng thái mã", () => {
     expect(ebookCodeState({ ...base, status: "disabled" })).toBe("disabled");
   });
   it("mã học viên không bao giờ hết lượt; vẫn hết hạn / bị khoá như mã ebook", () => {
-    const student = { plan: "hocvien", status: "active", quota: 0, used: 12, expiresAt: null };
+    const student = { plan: "hocvien2", status: "active", quota: 0, used: 12, expiresAt: null };
     expect(ebookCodeState(student)).toBe("active");
     expect(ebookCodeState({ ...student, expiresAt: new Date(Date.now() - 1000) })).toBe("expired");
     expect(ebookCodeState({ ...student, status: "disabled" })).toBe("disabled");

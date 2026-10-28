@@ -1,16 +1,16 @@
 import path from "node:path";
 import { Router, type Request } from "express";
 import { z } from "zod";
-import { ebookCodeState, formatEbookCode, isStudentPlan } from "../../../../shared/ebook.js";
+import { ebookCodeState, formatEbookCode, isStudentPlan, STUDENT_FEATURE_LEVEL, studentLevel } from "../../../../shared/ebook.js";
 import { asyncHandler, AppError } from "../../middleware/errors.js";
 import { authLimiter } from "../../middleware/rateLimit.js";
 import type { EbookCodeDoc } from "../../models/index.js";
 import { findEbookCode, loadEbookCode, recordStudentCodeUse } from "../../services/ebookCodes.js";
 
 /**
- * Mã học viên (gói `hocvien`, tiền tố HV, tạo ở Quản trị → Mã ebook): học viên nhập mã một lần ở các công cụ
- * Sim, Gieo quẻ, Xem ngày để xem phần chi tiết và Phụ lục 64 quẻ; phiên ghi `studentCodeId`. Mã bị khoá / hết hạn thì
- * phiên tự hết.
+ * Mã học viên ba cấp (gói hocvien1–3, tiền tố HV1–HV3, tạo ở Quản trị → Mã ebook): học viên nhập mã một lần ở các
+ * công cụ để xem phần chi tiết — cấp 1 Sim + Bát Cực, cấp 2 thêm Gieo quẻ và Phụ lục 64 quẻ, cấp 3 thêm Xem ngày; phiên
+ * ghi `studentCodeId`. Mã bị khoá / hết hạn thì phiên tự hết.
  */
 export const publicStudentRouter = Router();
 
@@ -23,7 +23,7 @@ const STATE_MESSAGE = {
 
 /** Thông tin an toàn trả cho học viên (không lộ người nhận, ghi chú nội bộ). */
 function publicStudentInfo(doc: EbookCodeDoc) {
-  return { display: formatEbookCode(doc.code, doc.suffix), expiresAt: doc.expiresAt };
+  return { display: formatEbookCode(doc.code, doc.suffix), level: studentLevel(doc.plan), expiresAt: doc.expiresAt };
 }
 
 async function currentStudentCode(req: Request) {
@@ -71,7 +71,10 @@ publicStudentRouter.get(
   "/phu-luc/:file",
   asyncHandler(async (req, res) => {
     if (!PHU_LUC_PAGE.test(req.params.file)) throw new AppError(404, "Không tìm thấy trang tài liệu.", "not_found");
-    if (!(await currentStudentCode(req))) throw new AppError(403, "Phụ lục 64 quẻ dành cho học viên được SGEN cấp mã.", "student_required");
+    const doc = await currentStudentCode(req);
+    if (!doc || studentLevel(doc.plan) < STUDENT_FEATURE_LEVEL.gieoQue) {
+      throw new AppError(403, "Phụ lục 64 quẻ dành cho học viên có mã cấp 2 trở lên.", "student_required");
+    }
     res.sendFile(path.join(PHU_LUC_DIR, req.params.file), { headers: { "Cache-Control": "private, max-age=86400" } }, (error) => {
       if (error && !res.headersSent) res.status(404).json({ error: { code: "not_found", message: "Không tìm thấy trang tài liệu." } });
     });
