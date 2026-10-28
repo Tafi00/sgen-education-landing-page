@@ -1,16 +1,22 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { createPortal } from "react-dom";
 import { ChevronDown, ChevronUp, X } from "lucide-react";
+import "../../styles/appendix-reader.css";
 
 export type AppendixDocument = {
   title: string;
+  /** Dòng nhỏ trên tiêu đề (mặc định "Tài liệu chỉ xem trực tuyến"). */
+  kicker?: string;
   /**
    * Gốc đường dẫn ảnh trang: `${pagesDir}/trang-001.webp` … (ảnh sinh bằng `scripts/render_phu_luc_64_que.py`; Phụ lục
    * 64 quẻ do máy chủ trả qua /api/hoc-vien/phu-luc cho học viên đã nhập mã).
    */
   pagesDir: string;
   pageCount: number;
-  /** Số trang in trên trang đầu tiên — tài liệu là phần trích nên bắt đầu từ "Trang 49", khớp cột "Trang" trong bảng tra. */
+  /**
+   * Số trang in trên trang đầu tiên — Phụ lục là phần trích nên bắt đầu từ "Trang 49" (khớp cột "Trang" trong bảng tra);
+   * ebook Thần số học đánh số từ bìa = "Trang 0".
+   */
   firstPrintedPage: number;
   pageWidth: number;
   pageHeight: number;
@@ -44,10 +50,10 @@ export function AppendixReader({ doc, onClose }: { doc: AppendixDocument; onClos
       }
     };
     document.addEventListener("keydown", onKey);
-    document.body.classList.add("iching-dialog-open");
+    document.body.classList.add("appendix-reader-open");
     return () => {
       document.removeEventListener("keydown", onKey);
-      document.body.classList.remove("iching-dialog-open");
+      document.body.classList.remove("appendix-reader-open");
       previous?.focus();
     };
   }, [onClose]);
@@ -77,7 +83,7 @@ export function AppendixReader({ doc, onClose }: { doc: AppendixDocument; onClos
   };
 
   return createPortal(
-    <div className="iching-dialog-backdrop appendix-reader-backdrop" onMouseDown={(event) => event.target === event.currentTarget && onClose()}>
+    <div className="appendix-reader-backdrop" onMouseDown={(event) => event.target === event.currentTarget && onClose()}>
       <div
         className="appendix-reader"
         role="dialog"
@@ -88,7 +94,7 @@ export function AppendixReader({ doc, onClose }: { doc: AppendixDocument; onClos
       >
         <header className="appendix-reader__head">
           <div>
-            <small>Tài liệu chỉ xem trực tuyến</small>
+            <small>{doc.kicker ?? "Tài liệu chỉ xem trực tuyến"}</small>
             <h3 id="appendix-reader-title">{doc.title}</h3>
           </div>
           <button type="button" ref={closeRef} onClick={onClose} aria-label="Đóng tài liệu">
