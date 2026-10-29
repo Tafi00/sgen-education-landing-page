@@ -4,7 +4,7 @@ Khách muốn khách hàng thấy trước file PDF đầy đủ trông thế n�
 chỉ hiển thị ảnh từng trang trong trình xem chỉ đọc, không phát hành file PDF. Ảnh ghi vào
 `public/assets/ebook-mau/trang-001.webp` … (công khai, vì đây là bản giới thiệu).
 
-File PDF lấy từ trang /ebook (xuất bản đầy đủ cho Elon Reeve Musk) hoặc bản khách gửi, rồi chạy:
+Đang dùng "bảng chuẩn" khách gửi 28/10/2026 (ELON MUSK 28061971.pdf, 76 trang). Muốn thay bản khác thì chạy:
 
     python3 scripts/render_ebook_mau.py <đường-dẫn-file.pdf>
 

@@ -5,18 +5,18 @@ import "../../styles/sample-ebook.css";
 
 /**
  * Ebook Thần số học mẫu (bản đầy đủ của Elon Reeve Musk, 28/06/1971) để khách hình dung file PDF sẽ nhận và muốn lấy
- * file của mình (khách yêu cầu 28/10/2026). Chỉ xem ảnh từng trang, không phát hành PDF; ảnh sinh bằng
- * `scripts/render_ebook_mau.py`.
+ * file của mình (khách yêu cầu 28/10/2026). Dùng đúng "bảng chuẩn" khách gửi (ELON MUSK 28061971.pdf, 76 trang). Chỉ xem
+ * ảnh từng trang, không phát hành PDF; ảnh sinh bằng `scripts/render_ebook_mau.py`.
  */
 const SAMPLE_EBOOK: AppendixDocument = {
   title: "Ebook Thần số học — Elon Reeve Musk",
   kicker: "Ebook mẫu · chỉ xem trực tuyến",
   pagesDir: "/assets/ebook-mau",
-  pageCount: 72,
+  pageCount: 76,
   // Chân trang ebook đánh số từ bìa = "Trang 0".
   firstPrintedPage: 0,
   pageWidth: 900,
-  pageHeight: 1274,
+  pageHeight: 1273,
 };
 
 /** Thẻ "Ebook Mẫu" đặt dưới nút Tra cứu ngay (trang chủ và trang Tra cứu Thần số học). */
