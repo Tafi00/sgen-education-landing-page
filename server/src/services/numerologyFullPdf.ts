@@ -32,23 +32,18 @@ import {
   type RGB,
 } from "pdf-lib";
 import type { NumerologyFullReport } from "../../../shared/numerology.js";
-import { BIRTH_NAME_CHART_PAGES, IKIGAI_INTRO, PINNACLE_CONTENT } from "./numerologyContent.js";
+import { NUMEROLOGY_CONTENT, PINNACLE_CONTENT, type MetricContent } from "./numerologyContent.js";
 import {
-  KARMIC_DEBTS,
   METRIC_TITLES,
-  karmicDebtBlock,
-  metricIntro,
-  metricNote,
   metricValueBlock,
   metricValues,
   pinnacleBlock,
-  sectionText,
+  valueParagraphs,
   type ContentBlock,
   type MetricKey,
 } from "./numerologyFullContent.js";
 import {
   ASSET_DIR,
-  MAGENTA,
   coverOverlays,
   firstPassion,
   infoOverlays,
@@ -60,15 +55,19 @@ import {
 } from "./numerologyPdf.js";
 
 /**
- * Ebook BẢN ĐẦY ĐỦ (hơn 70 trang) theo đúng Mục lục của bộ PDF gốc (`pages/Page_03.pdf`): 5 chương, mọi chỉ số đều có
- * trang giới thiệu + trang luận giải theo con số, biểu đồ chặng đường đời, Ikigai, biểu đồ ngày sinh/họ tên.
+ * Ebook BẢN ĐẦY ĐỦ (hơn 70 trang) theo đúng "bảng chuẩn" xuất từ phần mềm gốc (ebook mẫu Elon Reeve Musk khách gửi
+ * 28/10/2026): 5 chương, mọi chỉ số có trang giới thiệu + trang luận giải theo con số, chặng đường đời, Ikigai và ba tổ
+ * hợp, biểu đồ ngày sinh/họ tên, trang Cảm nhận khách hàng.
  *
- * - Trang có sẵn trong bộ mẫu (bìa, thư ngỏ, chương 3/5, Sứ mệnh, Đường đời, Đam mê, trang tổng hợp…) được chép nguyên.
- * - Các trang còn lại dựng bằng pdf-lib trên khung trang trí tách từ bộ mẫu (`assets/numerology-pdf/full/`): tiêu đề xanh
- *   "CHỈ SỐ / <TÊN>" kèm hoa văn, huy hiệu vàng mang con số, tiêu đề đỏ, thân chữ Faustina, xoáy góc và chân trang.
- * - Số trang ở chân trang luôn bằng vị trí thật (bìa = 0, giống bản gốc). Trang mẫu được bỏ chân trang cũ và cặp xoáy góc
- *   (danh sách khối lệnh ở `full/template-strip.json`, đã đối chiếu từng tệp) rồi dùng chung khung xoáy + vẽ lại chân trang;
- *   Mục lục được sửa số khi một mục bị đẩy trang (chỉ số có nhiều con số).
+ * - Trang cố định (chương, phần, giới thiệu chỉ số, nợ nghiệp, biểu đồ, Ikigai, kết luận…) chép nguyên trang thiết kế
+ *   của bản chuẩn (`assets/numerology-pdf/chuan/`, tách bằng `scripts/build_ebook_chuan.py`); bìa, thư ngỏ, Sứ mệnh,
+ *   Đường đời, Đam mê và trang tổng hợp dùng bộ mẫu cũ (giống hệt bản chuẩn).
+ * - Trang luận giải theo con số dùng trang thiết kế gốc khi có (`DESIGNED_VALUE_PAGES` — hiện chỉ các con số của hồ sơ
+ *   mẫu); con số chưa có trang gốc thì dựng bằng pdf-lib trên khung trang trí tách từ bộ mẫu (`full/`): tiêu đề xanh kèm
+ *   hoa văn, huy hiệu vàng mang con số, tiêu đề đỏ, thân chữ Faustina. Chỉ số nhiều con số: mỗi số một trang như bản chuẩn.
+ * - Số trang ở chân trang luôn bằng vị trí thật (bìa = 0). Trang mẫu được bỏ chân trang cũ và cặp xoáy góc (bộ mẫu cũ:
+ *   danh sách khối lệnh ở `full/template-strip.json`; trang chuẩn: đã bỏ sẵn khi tách) rồi dùng chung khung xoáy + vẽ lại
+ *   chân trang; Mục lục được sửa số khi một mục bị đẩy trang (chỉ số có nhiều con số).
  */
 
 const FULL_DIR = path.join(ASSET_DIR, "full");
@@ -78,14 +77,9 @@ const PAGE_H = 842.25;
 const GREEN = rgb(9 / 255, 103 / 255, 25 / 255);
 const RED = rgb(244 / 255, 5 / 255, 5 / 255);
 const BLACK = rgb(0, 0, 0);
-const BLUE = rgb(6 / 255, 145 / 255, 246 / 255);
 const NAVY = rgb(1 / 255, 6 / 255, 36 / 255);
 const GOLD = rgb(0.9765, 0.8392, 0.0235);
 const WHITE = rgb(1, 1, 1);
-const LAVENDER = rgb(0.8, 0.78, 0.92);
-const CHART_BLUE = rgb(0.13, 0.42, 0.85);
-const MUTED = rgb(0.33, 0.33, 0.4);
-const CARD = rgb(1, 0.985, 0.9);
 
 /** Vùng thân chữ của trang dựng (đơn vị pt, tọa độ tính từ mép trên trang như bản mẫu). */
 const BODY_LEFT = 62.9;
@@ -107,7 +101,8 @@ const LEADING = 1.447;
 const BODY_SCALES = [1, 0.96, 0.92, 0.88, 0.867];
 
 type Fonts = { semi: PDFFont; boldItalic: PDFFont };
-type Shape = "seal" | "star" | "heart";
+/** Dáng huy hiệu con số — mỗi chỉ số của bản chuẩn một dáng riêng (tròn, sao nhiều cánh, đa giác, khung bo góc, tim). */
+type Shape = "seal" | "star" | "heart" | "circle" | "star6" | "star8" | "star12" | "heptagon" | "octagon" | "diamond" | "pill" | "box";
 /** Khối lệnh cần bỏ của một trang mẫu: chỉ số khối BT…ET của chân trang và nhóm q…Q của cặp xoáy góc. */
 export type TemplateStrip = { blocks: number; footer: number[]; groups: number; swirls: number[] };
 
@@ -127,7 +122,8 @@ type Ctx = {
   fontKeys: WeakMap<PDFPage, Map<PDFFont, PDFName>>;
 };
 
-type TemplateSpec = { kind: "template"; anchor?: string; file: string; overlays?: (ctx: Ctx) => Overlay[]; patch?: (ctx: Ctx, page: PDFPage) => void };
+/** `framed`: trang chuẩn đã bỏ sẵn chân trang + xoáy góc khi tách — chỉ cần lót khung xoáy và in chân trang. */
+type TemplateSpec = { kind: "template"; anchor?: string; file: string; framed?: boolean; overlays?: (ctx: Ctx) => Overlay[]; patch?: (ctx: Ctx, page: PDFPage) => void };
 type DrawnSpec = { kind: "drawn"; anchor?: string; draw: (ctx: Ctx, page: PDFPage) => void };
 type PageSpec = TemplateSpec | DrawnSpec;
 
@@ -202,13 +198,13 @@ function wrapWords(style: TextStyle, text: string, width: number) {
   return lines;
 }
 
-type Align = "justify" | "left" | "center";
+type Align = "justify" | "center";
 
 /** Đặt từng từ của một dòng: dòng căn đều dàn khoảng trắng, dòng cuối đoạn căn trái như bản mẫu. */
 function placeLine(style: TextStyle, words: string[], left: number, width: number, top: number, align: Align, last: boolean): Run[] {
   const text = words.join(" ");
   if (align === "center") return [{ x: left + (width - widthOf(style, text)) / 2, top, text }];
-  if (align === "left" || last || words.length < 2) return [{ x: left, top, text }];
+  if (last || words.length < 2) return [{ x: left, top, text }];
   const widths = words.map((word) => widthOf(style, word));
   const gap = (width - widths.reduce((sum, w) => sum + w, 0)) / (words.length - 1);
   let x = left;
@@ -221,15 +217,9 @@ function placeLine(style: TextStyle, words: string[], left: number, width: numbe
 
 // ───────────────────────────── Dòng chảy nội dung ─────────────────────────────
 
-type Draw = (ctx: Ctx, page: PDFPage, top: number) => void;
+type FlowItem = { kind: "heading" | "para"; text: string };
 
-type FlowItem =
-  | { kind: "heading"; text: string; color?: RGB }
-  | { kind: "para"; text: string; color?: RGB; align?: Align }
-  | { kind: "space"; height: number }
-  | { kind: "graphic"; height: number; draw: Draw };
-
-type Op = { kind: "text"; runs: Run[]; style: TextStyle } | { kind: "graphic"; top: number; draw: Draw };
+type Op = { runs: Run[]; style: TextStyle };
 
 /** Dàn các mục nội dung vào các trang có vùng chữ [top, BODY_BOTTOM]; tiêu đề không đứng trơ ở cuối trang. */
 function layoutFlow(ctx: Ctx, items: FlowItem[], top: number, scale: number): Op[][] {
@@ -242,25 +232,15 @@ function layoutFlow(ctx: Ctx, items: FlowItem[], top: number, scale: number): Op
   };
 
   items.forEach((item, index) => {
-    if (item.kind === "space") {
-      if (!fresh()) y += item.height;
-      return;
-    }
-    if (item.kind === "graphic") {
-      if (y + item.height > BODY_BOTTOM && !fresh()) newPage();
-      pages.at(-1)!.push({ kind: "graphic", top: y, draw: item.draw });
-      y += item.height;
-      return;
-    }
     const heading = item.kind === "heading";
     const style: TextStyle = {
       font: ctx.fonts.semi,
       size: heading ? Math.max(18, 20 * scale) : BODY_SIZE * scale,
-      color: item.color ?? (heading ? RED : BLACK),
+      color: heading ? RED : BLACK,
       bold: heading,
     };
     const leading = style.size * (heading ? 1.3 : LEADING);
-    const align: Align = heading ? "center" : (item.align ?? "justify");
+    const align: Align = heading ? "center" : "justify";
     const lines = wrapWords(style, item.text, BODY_WIDTH);
     if (heading) {
       if (!fresh()) y += leading * 0.45;
@@ -271,7 +251,7 @@ function layoutFlow(ctx: Ctx, items: FlowItem[], top: number, scale: number): Op
     lines.forEach((words, lineIndex) => {
       if (y + leading > BODY_BOTTOM + style.size * 0.3 && !fresh()) newPage();
       const runs = placeLine(style, words, BODY_LEFT, BODY_WIDTH, y + style.size * 1.02, align, lineIndex === lines.length - 1);
-      pages.at(-1)!.push({ kind: "text", runs, style });
+      pages.at(-1)!.push({ runs, style });
       y += leading;
     });
     y += heading ? leading * 0.15 : leading * 0.45;
@@ -290,10 +270,7 @@ function fitFlow(ctx: Ctx, items: FlowItem[], top: number) {
 }
 
 function drawOps(ctx: Ctx, page: PDFPage, ops: Op[]) {
-  for (const op of ops) {
-    if (op.kind === "text") writeText(ctx, page, op.runs, op.style);
-    else op.draw(ctx, page, op.top);
-  }
+  for (const op of ops) writeText(ctx, page, op.runs, op.style);
 }
 
 // ───────────────────────────── Khung trang ─────────────────────────────
@@ -334,19 +311,11 @@ function drawChrome(ctx: Ctx, page: PDFPage, chrome: Chrome) {
   drawImage(page, ctx.divider, BOTTOM_DIVIDER.x, BOTTOM_DIVIDER.top, BOTTOM_DIVIDER.width, BOTTOM_DIVIDER.height);
 }
 
-/** Dải hoa văn giữa trang (dưới phần hình), cao ~39pt như bản mẫu. */
-const dividerItem = (): FlowItem => ({
-  kind: "graphic",
-  height: 46,
-  draw: (ctx, page, top) => drawImage(page, ctx.divider, BOTTOM_DIVIDER.x, top + 2, BOTTOM_DIVIDER.width, BOTTOM_DIVIDER.height),
-});
-
 /** Trang dựng: khung + nội dung chảy qua nhiều trang nếu dài; mọi trang lặp lại tiêu đề và huy hiệu. */
-function flowPages(ctx: Ctx, chrome: Chrome, items: FlowItem[], anchor?: string): DrawnSpec[] {
+function flowPages(ctx: Ctx, chrome: Chrome, items: FlowItem[]): DrawnSpec[] {
   const top = titleLayout(ctx, chrome).bottom + 14;
-  return fitFlow(ctx, items, top).map((ops, index) => ({
+  return fitFlow(ctx, items, top).map((ops) => ({
     kind: "drawn",
-    anchor: index === 0 ? anchor : undefined,
     draw: (c, page) => {
       drawChrome(c, page, chrome);
       drawOps(c, page, ops);
@@ -355,6 +324,16 @@ function flowPages(ctx: Ctx, chrome: Chrome, items: FlowItem[], anchor?: string)
 }
 
 // ───────────────────────────── Hình vẽ ─────────────────────────────
+
+/** Khung chữ nhật bo góc đặt tâm tại gốc tọa độ. */
+function roundedRect(width: number, height: number, radius: number) {
+  const r = Math.min(radius, width / 2, height / 2);
+  const [x0, y0, x1, y1] = [-width / 2, -height / 2, width / 2, height / 2];
+  return `M ${x0 + r} ${y0} H ${x1 - r} Q ${x1} ${y0} ${x1} ${y0 + r} V ${y1 - r} Q ${x1} ${y1} ${x1 - r} ${y1} H ${x0 + r} Q ${x0} ${y1} ${x0} ${y1 - r} V ${y0 + r} Q ${x0} ${y0} ${x0 + r} ${y0} Z`;
+}
+
+/** Bề ngang/cao của hai dáng khung (huy hiệu "Lặp", "Thái độ", "Năm cá nhân"… của bản chuẩn). */
+const BOX_SIZE = { pill: [2, 1.2], box: [2.2, 1.5] } as const;
 
 function shapePath(shape: Shape, r: number) {
   const points = (count: number, inner: number, rotate: number) => {
@@ -366,24 +345,58 @@ function shapePath(shape: Shape, r: number) {
     }
     return `M ${out.join(" L ")} Z`;
   };
-  if (shape === "star") return points(5, 0.43, -Math.PI / 2);
-  if (shape === "seal") return points(26, 0.88, 0);
-  return [
-    `M 0 ${0.82 * r}`,
-    `C ${-0.25 * r} ${0.6 * r} ${-1.05 * r} ${0.12 * r} ${-1.05 * r} ${-0.32 * r}`,
-    `C ${-1.05 * r} ${-0.78 * r} ${-0.62 * r} ${-0.98 * r} ${-0.32 * r} ${-0.92 * r}`,
-    `C ${-0.14 * r} ${-0.88 * r} ${-0.04 * r} ${-0.78 * r} 0 ${-0.66 * r}`,
-    `C ${0.04 * r} ${-0.78 * r} ${0.14 * r} ${-0.88 * r} ${0.32 * r} ${-0.92 * r}`,
-    `C ${0.62 * r} ${-0.98 * r} ${1.05 * r} ${-0.78 * r} ${1.05 * r} ${-0.32 * r}`,
-    `C ${1.05 * r} ${0.12 * r} ${0.25 * r} ${0.6 * r} 0 ${0.82 * r} Z`,
-  ].join(" ");
+  /** Đa giác đều n cạnh = "sao" có đỉnh trong nằm đúng trên cạnh. */
+  const polygon = (count: number, rotate: number) => points(count, Math.cos(Math.PI / count), rotate);
+  switch (shape) {
+    case "star":
+      return points(5, 0.43, -Math.PI / 2);
+    case "seal":
+      return points(26, 0.88, 0);
+    case "star6":
+      return points(6, 0.62, -Math.PI / 2);
+    case "star8":
+      return points(8, 0.74, -Math.PI / 2);
+    case "star12":
+      return points(12, 0.8, -Math.PI / 2);
+    case "heptagon":
+      return polygon(7, -Math.PI / 2);
+    case "octagon":
+      return polygon(8, Math.PI / 8);
+    case "diamond":
+      return polygon(4, -Math.PI / 2);
+    case "circle":
+      return `M ${r} 0 A ${r} ${r} 0 1 1 ${-r} 0 A ${r} ${r} 0 1 1 ${r} 0 Z`;
+    case "pill":
+    case "box": {
+      const [w, h] = BOX_SIZE[shape];
+      return roundedRect(r * w, r * h, shape === "pill" ? (r * h) / 2 : r * 0.38);
+    }
+    case "heart":
+      return [
+        `M 0 ${0.82 * r}`,
+        `C ${-0.25 * r} ${0.6 * r} ${-1.05 * r} ${0.12 * r} ${-1.05 * r} ${-0.32 * r}`,
+        `C ${-1.05 * r} ${-0.78 * r} ${-0.62 * r} ${-0.98 * r} ${-0.32 * r} ${-0.92 * r}`,
+        `C ${-0.14 * r} ${-0.88 * r} ${-0.04 * r} ${-0.78 * r} 0 ${-0.66 * r}`,
+        `C ${0.04 * r} ${-0.78 * r} ${0.14 * r} ${-0.88 * r} ${0.32 * r} ${-0.92 * r}`,
+        `C ${0.62 * r} ${-0.98 * r} ${1.05 * r} ${-0.78 * r} ${1.05 * r} ${-0.32 * r}`,
+        `C ${1.05 * r} ${0.12 * r} ${0.25 * r} ${0.6 * r} 0 ${0.82 * r} Z`,
+      ].join(" ");
+  }
 }
 
-/** Huy hiệu vàng mang con số đỏ (ngôi sao / ấn răng cưa / trái tim như các trang mẫu). */
+/** Bề ngang dành cho chữ trong từng dáng huy hiệu (bán kính r). */
+function badgeRoom(shape: Shape, r: number) {
+  if (shape === "pill" || shape === "box") return r * BOX_SIZE[shape][0] * 0.85;
+  if (shape === "star") return r * 0.85;
+  if (shape === "star6" || shape === "diamond") return r * 0.95;
+  return r * 1.3;
+}
+
+/** Huy hiệu vàng mang con số đỏ (dáng theo từng chỉ số của bản chuẩn). */
 function drawBadge(ctx: Ctx, page: PDFPage, shape: Shape, cx: number, cy: number, r: number, text: string) {
   page.drawSvgPath(shapePath(shape, r), { x: cx, y: pdfY(page, cy), color: GOLD });
   const semi = ctx.fonts.semi;
-  const room = shape === "star" ? r * 0.85 : r * 1.3;
+  const room = badgeRoom(shape, r);
   const centerY = shape === "star" ? cy + r * 0.12 : shape === "heart" ? cy - r * 0.08 : cy;
   let lines = [text];
   let size = Math.min(44, r * 0.95);
@@ -402,239 +415,7 @@ function drawBadge(ctx: Ctx, page: PDFPage, shape: Shape, cx: number, cy: number
   lines.forEach((line, index) => writeCentered(ctx, page, line, cx, firstBaseline + index * lineHeight, style));
 }
 
-function roundedRect(width: number, height: number, radius: number) {
-  const r = Math.min(radius, width / 2, height / 2);
-  return `M ${r} 0 H ${width - r} Q ${width} 0 ${width} ${r} V ${height - r} Q ${width} ${height} ${width - r} ${height} H ${r} Q 0 ${height} 0 ${height - r} V ${r} Q 0 0 ${r} 0 Z`;
-}
-
-function drawCard(page: PDFPage, x: number, top: number, width: number, height: number) {
-  page.drawSvgPath(roundedRect(width, height, 14), { x, y: pdfY(page, top), color: CARD, borderColor: GOLD, borderWidth: 1.6 });
-}
-
 const pad = (index: number) => String(index).padStart(2, "0");
-
-/**
- * Khối hình đầu trang giới thiệu (thay cho ảnh minh họa của bản mẫu): thẻ vàng nhạt với ấn vàng mang con số của khách,
- * tên chỉ số và trang có luận giải chi tiết.
- */
-function heroCard(label: string, values: string[], targetAnchor: string, emptyText?: string): FlowItem {
-  const height = 168;
-  return {
-    kind: "graphic",
-    height,
-    draw: (ctx, page, top) => {
-      const semi = ctx.fonts.semi;
-      const width = 440;
-      const x = (PAGE_W - width) / 2;
-      const y = top + 6;
-      drawCard(page, x, y, width, height - 18);
-      const cardMiddle = y + (height - 18) / 2;
-      drawBadge(ctx, page, "seal", x + 92, cardMiddle, 60, values.length ? values.join(", ") : "—");
-      const textLeft = x + 176;
-      const room = x + width - 18 - textLeft;
-      const fit = (text: string, size: number) => {
-        let s = size;
-        while (textWidth(semi, text, s) > room && s > 11) s -= 0.5;
-        return s;
-      };
-      const labelSize = fit(label, 23);
-      writeText(ctx, page, [{ text: "Chỉ số", x: textLeft, top: cardMiddle - 34 }], { font: semi, size: 17, color: GREEN, bold: true });
-      writeText(ctx, page, [{ text: label, x: textLeft, top: cardMiddle - 6 }], { font: semi, size: labelSize, color: GREEN, bold: true });
-      const own = values.length ? "của bạn" : (emptyText ?? "");
-      writeText(ctx, page, [{ text: own, x: textLeft, top: cardMiddle + 19 }], { font: semi, size: fit(own, 17), color: values.length ? GREEN : RED, bold: true });
-      const target = ctx.anchors.get(targetAnchor);
-      if (target !== undefined) {
-        writeText(ctx, page, [{ text: `Luận giải chi tiết ở trang ${pad(target)}`, x: textLeft, top: cardMiddle + 44 }], { font: semi, size: 12, color: MUTED });
-      }
-    },
-  };
-}
-
-/** Danh sách mục của trang chương/phần: tên, con số của bạn, ghi chú ngắn và số trang (đường chấm như Mục lục). */
-type Entry = { label: string; anchor?: string; value?: string; note?: string; group?: boolean };
-
-function entriesItem(entries: Entry[]): FlowItem {
-  const rowHeight = (entry: Entry) => (entry.group ? 30 : entry.note ? 44 : 28);
-  return {
-    kind: "graphic",
-    height: entries.reduce((sum, entry) => sum + rowHeight(entry), 0) + 10,
-    draw: (ctx, page, top) => {
-      const semi = ctx.fonts.semi;
-      let y = top + 6;
-      for (const entry of entries) {
-        const indent = entry.group ? 0 : 18;
-        const baseline = y + 18;
-        const labelStyle: TextStyle = { font: semi, size: entry.group ? 16 : 15, color: entry.group ? GREEN : NAVY, bold: entry.group };
-        const label = entry.value ? `${entry.label}: ` : entry.label;
-        writeText(ctx, page, [{ text: label, x: BODY_LEFT + indent, top: baseline }], labelStyle);
-        let end = BODY_LEFT + indent + widthOf(labelStyle, label);
-        if (entry.value) {
-          const valueStyle: TextStyle = { font: semi, size: 16, color: RED, bold: true };
-          writeText(ctx, page, [{ text: entry.value, x: end, top: baseline }], valueStyle);
-          end += widthOf(valueStyle, entry.value);
-        }
-        const target = entry.anchor ? ctx.anchors.get(entry.anchor) : undefined;
-        if (target !== undefined) {
-          const number = pad(target);
-          const numberX = BODY_RIGHT - widthOf(labelStyle, number);
-          writeText(ctx, page, [{ text: number, x: numberX, top: baseline }], labelStyle);
-          if (numberX - 8 > end + 8) {
-            const lineY = pdfY(page, baseline);
-            page.drawLine({ start: { x: end + 8, y: lineY }, end: { x: numberX - 8, y: lineY }, thickness: 0.8, color: MUTED, dashArray: [1, 3], opacity: 0.7 });
-          }
-        }
-        if (entry.note && !entry.group) {
-          let size = 11.5;
-          while (textWidth(semi, entry.note, size) > BODY_WIDTH - indent && size > 9) size -= 0.25;
-          writeText(ctx, page, [{ text: entry.note, x: BODY_LEFT + indent, top: baseline + 18 }], { font: semi, size, color: MUTED });
-        }
-        y += rowHeight(entry);
-      }
-    },
-  };
-}
-
-/** Biểu đồ chặng đường đời: 3 gốc (tháng / ngày sinh / năm) + 4 đỉnh kèm khoảng tuổi, kiểu hình tháp của trang tổng hợp. */
-function pinnacleDiagram(report: NumerologyFullReport): FlowItem {
-  return {
-    kind: "graphic",
-    height: 300,
-    draw: (ctx, page, top) => {
-      const chart = report.lifePathChart;
-      const p = chart.pinnacles;
-      const cx = PAGE_W / 2;
-      const node = (x: number, y: number) => ({ x, y: top + y });
-      const base = [node(cx - 170, 255), node(cx, 255), node(cx + 170, 255)];
-      const [d1, d2, d3, d4] = [node(cx - 85, 175), node(cx + 85, 175), node(cx, 105), node(cx, 30)];
-      const line = (a: { x: number; y: number }, b: { x: number; y: number }) =>
-        page.drawLine({ start: { x: a.x, y: pdfY(page, a.y) }, end: { x: b.x, y: pdfY(page, b.y) }, thickness: 1.6, color: CHART_BLUE });
-      [[base[0], d4], [base[2], d4], [base[0], d1], [base[1], d1], [base[1], d2], [base[2], d2], [d1, d3], [d2, d3], [d3, d4]].forEach(([a, b]) => line(a, b));
-      const semi = ctx.fonts.semi;
-      const circle = (at: { x: number; y: number }, value: string) => {
-        page.drawCircle({ x: at.x, y: pdfY(page, at.y), size: 21, color: LAVENDER, borderColor: CHART_BLUE, borderWidth: 1.4 });
-        let size = 17;
-        while (textWidth(semi, value, size) > 34 && size > 9) size -= 1;
-        writeCentered(ctx, page, value, at.x, at.y + size * 0.35, { font: semi, size, color: RED, bold: true });
-      };
-      const label = (text: string, x: number, y: number, align: "left" | "right" | "center", color: RGB = NAVY) => {
-        const style: TextStyle = { font: semi, size: 11.5, color, bold: true };
-        const w = widthOf(style, text);
-        writeText(ctx, page, [{ text, x: align === "left" ? x : align === "right" ? x - w : x - w / 2, top: y }], style);
-      };
-      const range = (index: number) => (p[index]?.range ? `${p[index].range} tuổi` : "");
-      circle(base[0], chart.month);
-      circle(base[1], chart.birthNumber);
-      circle(base[2], chart.year);
-      [d1, d2, d3, d4].forEach((at, index) => circle(at, p[index]?.value ?? ""));
-      label("Tháng sinh", base[0].x, base[0].y + 36, "center");
-      label("Ngày sinh", base[1].x, base[1].y + 36, "center");
-      label("Năm sinh", base[2].x, base[2].y + 36, "center");
-      // Nhãn đỉnh đặt ngoài hai cạnh tam giác lớn (Tháng sinh → Đỉnh 4 ← Năm sinh) để không bị đường kẻ cắt.
-      label("ĐỈNH 1", d1.x - 42, d1.y - 4, "right");
-      label(range(0), d1.x - 42, d1.y + 11, "right", MAGENTA);
-      [
-        { at: d2, gap: 42 },
-        { at: d3, gap: 74 },
-        { at: d4, gap: 30 },
-      ].forEach(({ at, gap }, index) => {
-        label(`ĐỈNH ${index + 2}`, at.x + gap, at.y - 4, "left");
-        label(range(index + 1), at.x + gap, at.y + 11, "left", MAGENTA);
-      });
-    },
-  };
-}
-
-/** Biểu đồ Ikigai 4 vòng tròn giống trang tổng hợp, điền các con số của khách. */
-function ikigaiDiagram(report: NumerologyFullReport): FlowItem {
-  return {
-    kind: "graphic",
-    height: 360,
-    draw: (ctx, page, top) => {
-      const ik = report.ikigai;
-      const cx = PAGE_W / 2;
-      const cy = top + 180;
-      const off = 66;
-      for (const [dx, dy] of [[0, -off], [-off, 0], [off, 0], [0, off]]) {
-        page.drawCircle({ x: cx + dx, y: pdfY(page, cy + dy), size: 96, borderColor: CHART_BLUE, borderWidth: 3, color: CHART_BLUE, opacity: 0.04, borderOpacity: 0.9 });
-      }
-      const semi = ctx.fonts.semi;
-      const centered = (text: string, x: number, y: number, size: number, color: RGB) => writeCentered(ctx, page, text, x, y, { font: semi, size, color, bold: true });
-      centered("Việc bạn", cx, cy - off - 52, 11, MAGENTA);
-      centered("THÍCH", cx, cy - off - 38, 12, MAGENTA);
-      centered("Việc bạn", cx - off - 52, cy - 6, 11, MAGENTA);
-      centered("LÀM TỐT", cx - off - 52, cy + 8, 12, MAGENTA);
-      centered("Việc xã hội", cx + off + 52, cy - 6, 11, MAGENTA);
-      centered("CẦN", cx + off + 52, cy + 8, 12, MAGENTA);
-      centered("Việc mang lại", cx, cy + off + 40, 11, MAGENTA);
-      centered("THU NHẬP CAO", cx, cy + off + 54, 12, MAGENTA);
-      const quad = (label: string, value: string, x: number, y: number) => {
-        centered(label, x, y, 12.5, GREEN);
-        let size = 18;
-        while (textWidth(semi, value, size) > 70 && size > 10) size -= 1;
-        centered(value, x, y + 20, size, RED);
-      };
-      quad("ĐAM MÊ", ik.passion.join(", "), cx - 45, cy - 48);
-      quad("SỨ MỆNH", ik.mission, cx + 45, cy - 48);
-      quad("CHUYÊN MÔN", ik.expertise.join(", "), cx - 45, cy + 34);
-      quad("SỰ NGHIỆP", ik.career.join(", "), cx + 45, cy + 34);
-      centered("Mục đích", cx, cy - 4, 10, RED);
-      centered("CUỘC ĐỜI", cx, cy + 8, 10, RED);
-    },
-  };
-}
-
-/** 8 đường mũi tên theo đúng định nghĩa trong nội dung "BIỂU ĐỒ ĐƯỜNG MŨI TÊN ĐẦY ĐỦ". */
-type Arrow = { name: string; digits: [number, number, number] };
-const ARROWS: Arrow[] = [
-  { name: "Đường Quyết Tâm 1-5-9", digits: [1, 5, 9] },
-  { name: "Đường Tâm Linh 3-5-7", digits: [3, 5, 7] },
-  { name: "Đường Kế Hoạch 1-2-3", digits: [1, 2, 3] },
-  { name: "Đường Ý Chí 4-5-6", digits: [4, 5, 6] },
-  { name: "Đường Hành Động 7-8-9", digits: [7, 8, 9] },
-  { name: "Đường Thực Tế 1-4-7", digits: [1, 4, 7] },
-  { name: "Đường Cân Bằng Cảm Xúc 2-5-8", digits: [2, 5, 8] },
-  { name: "Đường Trí Tuệ 3-6-9", digits: [3, 6, 9] },
-];
-
-/** Lưới 3×3 kiểu Pythagoras (3-6-9 trên cùng, 1-4-7 dưới cùng), mỗi ô lặp con số theo số lần xuất hiện. */
-const GRID_ROWS = [
-  [3, 6, 9],
-  [2, 5, 8],
-  [1, 4, 7],
-];
-
-function gridDiagram(counts: Record<number, number>, caption: string, arrows: Arrow[] = []): FlowItem {
-  const cell = 66;
-  return {
-    kind: "graphic",
-    height: cell * 3 + 52,
-    draw: (ctx, page, top) => {
-      const semi = ctx.fonts.semi;
-      const left = PAGE_W / 2 - (cell * 3) / 2;
-      const gridTop = top + 8;
-      const center = (digit: number) => {
-        const row = GRID_ROWS.findIndex((digits) => digits.includes(digit));
-        return { x: left + GRID_ROWS[row].indexOf(digit) * cell + cell / 2, y: gridTop + row * cell + cell / 2 };
-      };
-      for (const digit of GRID_ROWS.flat()) {
-        const { x, y } = center(digit);
-        page.drawSvgPath(roundedRect(cell - 8, cell - 8, 8), { x: x - cell / 2 + 4, y: pdfY(page, y - cell / 2 + 4), color: LAVENDER, opacity: 0.55, borderColor: CHART_BLUE, borderWidth: 1 });
-        const count = counts[digit] ?? 0;
-        if (!count) continue;
-        const text = String(digit).repeat(count);
-        let size = 22;
-        while (textWidth(semi, text, size) > cell - 16 && size > 9) size -= 1;
-        writeCentered(ctx, page, text, x, y + size * 0.35, { font: semi, size, color: RED, bold: true });
-      }
-      for (const arrow of arrows) {
-        const a = center(arrow.digits[0]);
-        const b = center(arrow.digits[2]);
-        page.drawLine({ start: { x: a.x, y: pdfY(page, a.y) }, end: { x: b.x, y: pdfY(page, b.y) }, thickness: 3, color: GREEN, opacity: 0.55 });
-      }
-      writeCentered(ctx, page, caption, PAGE_W / 2, gridTop + cell * 3 + 24, { font: semi, size: 12, color: MUTED });
-    },
-  };
-}
 
 // ───────────────────────────── Trang mẫu ─────────────────────────────
 
@@ -706,32 +487,36 @@ function strippedContents(rel: string, stream: PDFRawStream, strip: TemplateStri
 }
 
 /**
- * Thay lệnh vẽ của trang mẫu vừa chép bằng bản đã bỏ chân trang cũ; nếu cặp xoáy góc cũng được bỏ thì vẽ khung xoáy
- * dùng chung ở lớp dưới cùng (đúng thứ tự vẽ như bản mẫu). Trả về `true` khi chân trang cũ đã được bỏ.
+ * Thay lệnh vẽ của trang mẫu vừa chép bằng bản đã bỏ chân trang cũ (và cặp xoáy góc nếu có). Trả về `null` khi giữ
+ * nguyên trang, ngược lại cho biết trang có cần vẽ lại khung xoáy không.
  */
-function replaceTemplateContents(ctx: Ctx, page: PDFPage, rel: string) {
+function replaceTemplateContents(ctx: Ctx, page: PDFPage, rel: string): { swirls: boolean } | null {
   const strip = ctx.strip[rel];
   const ref = page.node.get(PDFName.of("Contents"));
   const stream = page.node.Contents();
-  if (!strip || !(ref instanceof PDFRef) || !(stream instanceof PDFRawStream)) return false;
+  if (!strip || !(ref instanceof PDFRef) || !(stream instanceof PDFRawStream)) return null;
   const stripped = strippedContents(rel, stream, strip);
-  if (!stripped) return false;
+  if (!stripped) return null;
   // pdf-lib bọc lệnh gốc trong q…Q (lệnh gốc đặt ma trận toàn trang không khôi phục); thay đúng phần tử đó trong mảng.
   page.node.normalize();
   const contents = page.node.Contents();
   const slot = contents instanceof PDFArray ? contents.indexOf(ref) : undefined;
-  if (!(contents instanceof PDFArray) || slot === undefined) return false;
+  if (!(contents instanceof PDFArray) || slot === undefined) return null;
   const context = ctx.out.context;
   contents.set(slot, context.register(context.stream(stripped, { Filter: "FlateDecode" })));
-  if (strip.swirls.length) {
-    const box = page.getMediaBox();
-    const name = page.node.newXObject("Frame", ctx.frame.ref);
-    const frameOps = [pushGraphicsState(), concatTransformationMatrix(box.width / PAGE_W, 0, 0, box.height / PAGE_H, box.x, box.y), drawObject(name), popGraphicsState()];
-    contents.insert(slot, context.register(context.contentStream(frameOps)));
-  }
   // Bản chép của luồng lệnh gốc (~1,4 MB) không còn ai dùng — bỏ để tệp xuất không mang theo.
   context.delete(ref);
-  return true;
+  return { swirls: strip.swirls.length > 0 };
+}
+
+/**
+ * Khung xoáy góc dùng chung, co giãn theo khổ trang. Vẽ SAU lệnh gốc: trang mẫu tô nền trắng kín trang trước tiên nên
+ * lót bên dưới sẽ bị che; hai góc dưới không có gì khác ngoài chân trang (vẽ sau khung).
+ */
+function drawFrame(ctx: Ctx, page: PDFPage) {
+  const box = page.getMediaBox();
+  const name = page.node.newXObject("Frame", ctx.frame.ref);
+  page.pushOperators(pushGraphicsState(), concatTransformationMatrix(box.width / PAGE_W, 0, 0, box.height / PAGE_H, box.x, box.y), drawObject(name), popGraphicsState());
 }
 
 function drawFooter(ctx: Ctx, page: PDFPage, index: number) {
@@ -766,18 +551,93 @@ function patchToc(ctx: Ctx, page: PDFPage) {
 
 // ───────────────────────────── Kế hoạch trang ─────────────────────────────
 
-const METRIC_SHAPES: Partial<Record<MetricKey, Shape>> = { balance: "star", missing: "star", debts: "star", passion: "heart" };
+/** Dáng huy hiệu của trang luận giải dựng, theo huy hiệu từng chỉ số trên bản chuẩn. */
+const METRIC_SHAPES: Partial<Record<MetricKey, Shape>> = {
+  soul: "circle",
+  subconscious: "circle",
+  emotion: "heptagon",
+  intuition: "star6",
+  experience: "star12",
+  repeated: "pill",
+  attitude: "box",
+  balance: "octagon",
+  missing: "box",
+  personalYear: "box",
+  birthNumber: "diamond",
+  maturity: "star8",
+  passion: "heart",
+  soulInteraction: "box",
+  destinyLifePath: "box",
+};
 
 /** Câu thay thế khi chỉ số nhiều con số không có số nào (diễn giải trực tiếp cách tính trong `shared/numerology.ts`). */
 const EMPTY_TEXT: Partial<Record<MetricKey, string>> = {
   repeated: "Bạn không có số lặp",
   missing: "Bạn không có bài học nghiệp",
-  debts: "Bạn không có nợ nghiệp",
 };
 const EMPTY_DETAIL: Partial<Record<MetricKey, string>> = {
   repeated: "Sáu chỉ số nền (Sứ mệnh, Đường đời, Ngày sinh, Nội tâm, Tương tác, Thái độ) của bạn không có căn số nào lặp lại nhiều hơn các số khác, nên bạn không có số lặp.",
   missing: "Họ tên của bạn có đủ các con số từ 1 đến 9, nên bạn không có bài học nghiệp cần bồi đắp.",
 };
+
+/** Trang giới thiệu chỉ số của bản chuẩn (ảnh minh hoạ + ý nghĩa chỉ số), trong `chuan/`. */
+const INTRO_PAGES: Partial<Record<MetricKey, string>> = {
+  soul: "noi-tam",
+  subconscious: "tiem-thuc",
+  logic: "logic",
+  emotion: "cam-xuc",
+  intuition: "truc-giac",
+  experience: "trai-nghiem",
+  repeated: "so-lap",
+  attitude: "thai-do",
+  interaction: "tuong-tac",
+  balance: "can-bang",
+  missing: "bai-hoc-nghiep",
+  debts: "no-nghiep",
+  personalYear: "nam-ca-nhan",
+  birthNumber: "ngay-sinh",
+  maturity: "truong-thanh",
+  soulInteraction: "ket-noi-noi-tam-tuong-tac",
+  destinyLifePath: "ket-noi-su-menh-duong-doi",
+};
+
+/**
+ * Trang luận giải theo con số có thiết kế gốc (ảnh minh hoạ riêng), trong `chuan/`: chỉ số → con số mẫu → tệp. Hiện chỉ có
+ * các con số của hồ sơ mẫu Elon Reeve Musk; con số khác dùng trang dựng cho tới khi có thêm trang gốc.
+ */
+export const DESIGNED_VALUE_PAGES: Partial<Record<MetricKey, Record<string, string>>> = {
+  soul: { "2": "noi-tam-2" },
+  subconscious: { "7": "tiem-thuc-7" },
+  logic: { "8": "logic-8" },
+  emotion: { "7": "cam-xuc-7" },
+  intuition: { "9": "truc-giac-9" },
+  experience: { "6": "trai-nghiem-6" },
+  repeated: { "1": "so-lap-1", "7": "so-lap-7" },
+  attitude: { "7": "thai-do-7" },
+  interaction: { "1": "tuong-tac-1" },
+  balance: { "9": "can-bang-9" },
+  missing: { "7": "bai-hoc-nghiep-7", "8": "bai-hoc-nghiep-8" },
+  personalYear: { "8": "nam-ca-nhan-8" },
+  birthNumber: { "1": "ngay-sinh-1" },
+  maturity: { "1": "truong-thanh-1" },
+  soulInteraction: { "1": "ket-noi-noi-tam-tuong-tac-1" },
+  destinyLifePath: { "4": "ket-noi-su-menh-duong-doi-4" },
+};
+/** Như trên cho bốn đỉnh của biểu đồ chặng đường đời (Đỉnh 1…4). */
+export const DESIGNED_PINNACLE_PAGES: Array<Record<string, string>> = [{ "7": "dinh-1-7" }, { "1": "dinh-2-1" }, { "8": "dinh-3-8" }, { "6": "dinh-4-6" }];
+
+/**
+ * Tệp trang gốc cho một con số: trang mẫu khớp khi cùng nội dung luận giải (vd. Tương tác 19/1 dùng chung lời luận
+ * với 1, đúng như bản chuẩn in trang số 1 cho hồ sơ 19/1).
+ */
+export function designedPage(pages: Record<string, string> | undefined, content: MetricContent | undefined, value: string) {
+  const own = valueParagraphs(value, content).join("\n");
+  if (!own) return undefined;
+  return Object.entries(pages ?? {}).find(([sample]) => valueParagraphs(sample, content).join("\n") === own)?.[1];
+}
+
+/** Trang của bản chuẩn (đã bỏ sẵn chân trang và xoáy góc). */
+const chuan = (slug: string, anchor?: string): TemplateSpec => ({ kind: "template", file: `chuan/${slug}.pdf`, framed: true, anchor });
 
 /**
  * Bộ nội dung gốc thiếu luận giải cho một vài con số hiếm (Tiềm thức 1–2: họ tên thiếu 7–8 con số). Khi đó in cách tính
@@ -791,7 +651,10 @@ function missingContentText(report: NumerologyFullReport, key: MetricKey, value:
   return `Bộ tài liệu luận giải hiện chưa có phần riêng cho ${METRIC_TITLES[key].toLowerCase()} số ${value}.`;
 }
 
+/** Tiêu đề trang như bản chuẩn: "CHỈ SỐ NỘI TÂM" một dòng, "CHỈ SỐ KẾT NỐI / NỘI TÂM VÀ TƯƠNG TÁC", còn lại "CHỈ SỐ / <TÊN>". */
 function titleOf(key: MetricKey) {
+  if (key === "soul" || key === "subconscious") return [`CHỈ SỐ ${METRIC_TITLES[key]}`];
+  if (key === "soulInteraction") return ["CHỈ SỐ KẾT NỐI", "NỘI TÂM VÀ TƯƠNG TÁC"];
   const name = METRIC_TITLES[key];
   return name.startsWith("KẾT NỐI ") ? ["CHỈ SỐ KẾT NỐI", name.slice("KẾT NỐI ".length)] : ["CHỈ SỐ", name];
 }
@@ -800,49 +663,36 @@ function contentItems(block: ContentBlock): FlowItem[] {
   return [...(block.heading ? [{ kind: "heading", text: block.heading } as FlowItem] : []), ...block.paragraphs.map((text): FlowItem => ({ kind: "para", text }))];
 }
 
-function labelOf(report: NumerologyFullReport, key: string) {
-  for (const section of report.sections) {
-    const found = section.metrics.find((metric) => metric.key === key);
-    if (found) return found.label;
-  }
-  return METRIC_TITLES[key as MetricKey] ?? key;
-}
-
-/** Trang giới thiệu chỉ số: thẻ con số của bạn (thay ảnh minh họa) + ý nghĩa chỉ số. */
-function introPages(ctx: Ctx, key: MetricKey, body: FlowItem[] = contentItems(metricIntro(key))): DrawnSpec[] {
-  const hero = heroCard(labelOf(ctx.report, key), metricValues(ctx.report, key), `${key}:value`, EMPTY_TEXT[key]);
-  return flowPages(ctx, { title: titleOf(key) }, [hero, dividerItem(), ...body], key);
-}
-
-/** Trang luận giải theo con số; chỉ số nhiều con số xếp lần lượt từng số. */
-function valuePages(ctx: Ctx, key: MetricKey, values = metricValues(ctx.report, key)): DrawnSpec[] {
+/** Trang luận giải theo con số: trang thiết kế gốc nếu có, không thì dựng; chỉ số nhiều con số mỗi số một trang như bản chuẩn. */
+function valuePages(ctx: Ctx, key: MetricKey, values = metricValues(ctx.report, key)): PageSpec[] {
   if (!values.length) {
-    return flowPages(ctx, { title: titleOf(key) }, [{ kind: "heading", text: (EMPTY_TEXT[key] ?? METRIC_TITLES[key]).toUpperCase() }, { kind: "para", text: EMPTY_DETAIL[key] ?? "" }], `${key}:value`);
+    return flowPages(ctx, { title: titleOf(key) }, [{ kind: "heading", text: (EMPTY_TEXT[key] ?? METRIC_TITLES[key]).toUpperCase() }, { kind: "para", text: EMPTY_DETAIL[key] ?? "" }]);
   }
-  const items = values.flatMap((value, index): FlowItem[] => {
+  return values.flatMap((value): PageSpec[] => {
+    const designed = designedPage(DESIGNED_VALUE_PAGES[key], NUMEROLOGY_CONTENT[key], value);
+    if (designed) return [chuan(designed)];
     const block = metricValueBlock(key, value);
     if (!block.paragraphs.length) block.paragraphs.push(missingContentText(ctx.report, key, value));
-    return [...(index ? [{ kind: "space", height: 10 } as FlowItem] : []), ...contentItems(block)];
+    return flowPages(ctx, { title: titleOf(key), badge: { text: value, shape: METRIC_SHAPES[key] ?? "seal" } }, contentItems(block));
   });
-  return flowPages(ctx, { title: titleOf(key), badge: { text: values.join(", "), shape: METRIC_SHAPES[key] ?? "seal" } }, items, `${key}:value`);
 }
 
-const metricPages = (ctx: Ctx, key: MetricKey) => [...introPages(ctx, key), ...valuePages(ctx, key)];
+/** Trang giới thiệu (bản chuẩn) + trang luận giải theo con số của một chỉ số. */
+const metricPages = (ctx: Ctx, key: MetricKey): PageSpec[] => [chuan(INTRO_PAGES[key]!, key), ...valuePages(ctx, key)];
 
-/** Trang chương/phần: tiêu đề, ấn lớn và danh sách mục kèm con số + số trang. */
-function coverPage(ctx: Ctx, anchor: string, title: string[], emblem: string, entries: Entry[]): DrawnSpec[] {
-  const emblemItem: FlowItem = { kind: "graphic", height: 150, draw: (c, page, top) => drawBadge(c, page, "seal", PAGE_W / 2, top + 72, 64, emblem) };
-  return flowPages(ctx, { title }, [dividerItem(), emblemItem, entriesItem(entries)], anchor);
+/** Trang luận giải một đỉnh (Đỉnh 1…4) của biểu đồ chặng đường đời. */
+function pinnaclePages(ctx: Ctx, index: 0 | 1 | 2 | 3, value: string): PageSpec[] {
+  const designed = designedPage(DESIGNED_PINNACLE_PAGES[index], { byValue: PINNACLE_CONTENT[`dinh${index + 1}` as "dinh1"] }, value);
+  if (designed) return [chuan(designed)];
+  return flowPages(ctx, { title: [`ĐỈNH ${index + 1}`], badge: { text: value, shape: "circle" } }, contentItems(pinnacleBlock(index, value)));
 }
 
-function metricEntry(ctx: Ctx, key: MetricKey, withNote = true): Entry {
-  const values = metricValues(ctx.report, key);
-  return {
-    label: `Chỉ số ${labelOf(ctx.report, key)}`,
-    anchor: key,
-    value: values.length ? values.join(", ") : "không có",
-    note: withNote ? metricNote(ctx.report, key) : undefined,
-  };
+/** Trang "Cảm nhận khách hàng": họ tên và ngày sinh in sau nhãn có sẵn (vị trí, cỡ chữ như bản chuẩn; tên dài thì thu nhỏ). */
+function patchFeedback(ctx: Ctx, page: PDFPage) {
+  const style: TextStyle = { font: ctx.fonts.boldItalic, size: 24, color: BLACK };
+  const nameSize = Math.min(24, (24 * 360) / textWidth(style.font, ctx.name, 24));
+  writeText(ctx, page, [{ text: ctx.name, x: 180, top: 98.1 }], { ...style, size: nameSize });
+  writeText(ctx, page, [{ text: ctx.birth, x: 200, top: 142.1 }], style);
 }
 
 function planPages(ctx: Ctx): PageSpec[] {
@@ -861,129 +711,46 @@ function planPages(ctx: Ctx): PageSpec[] {
     { kind: "template", anchor: "purpose", file: page("Page_07") },
   );
 
-  // CHƯƠNG 1 — Thấu hiểu bản thân
-  const inner: MetricKey[] = ["soul", "subconscious", "logic", "emotion", "intuition", "experience"];
-  const outer: MetricKey[] = ["repeated", "attitude", "interaction"];
-  push(
-    ...coverPage(ctx, "chapter1", ["CHƯƠNG 1", "THẤU HIỂU BẢN THÂN"], "1", [
-      { label: "A. Thế giới bên trong", anchor: "sectionA", group: true },
-      ...inner.map((key) => metricEntry(ctx, key, false)),
-      { label: "B. Thế giới bên ngoài", anchor: "sectionB", group: true },
-      ...outer.map((key) => metricEntry(ctx, key, false)),
-    ]),
-  );
-  push(...coverPage(ctx, "sectionA", ["PHẦN A", "THẾ GIỚI BÊN TRONG"], "A", inner.map((key) => metricEntry(ctx, key))));
-  for (const key of inner) push(...metricPages(ctx, key));
-  push(...coverPage(ctx, "sectionB", ["PHẦN B", "THẾ GIỚI BÊN NGOÀI"], "B", outer.map((key) => metricEntry(ctx, key))));
-  for (const key of outer) push(...metricPages(ctx, key));
+  // CHƯƠNG 1 — Thấu hiểu bản thân: A. Thế giới bên trong, B. Thế giới bên ngoài
+  push(chuan("chuong-1", "chapter1"), chuan("the-gioi-ben-trong", "sectionA"));
+  for (const key of ["soul", "subconscious", "logic", "emotion", "intuition", "experience"] as const) push(...metricPages(ctx, key));
+  push(chuan("the-gioi-ben-ngoai", "sectionB"));
+  for (const key of ["repeated", "attitude", "interaction"] as const) push(...metricPages(ctx, key));
 
-  // CHƯƠNG 2 — Phát triển bản thân
-  const growth: MetricKey[] = ["balance", "missing", "debts"];
-  push(...coverPage(ctx, "chapter2", ["CHƯƠNG 2", "PHÁT TRIỂN BẢN THÂN"], "2", growth.map((key) => metricEntry(ctx, key))));
-  push(...metricPages(ctx, "balance"), ...metricPages(ctx, "missing"));
-  // Nợ nghiệp: trang giới thiệu + 4 trang hóa giải (đủ 13/4, 14/5, 16/7, 19/1 như bản gốc), đánh dấu nợ nghiệp của khách.
-  push(...introPages(ctx, "debts"));
-  const debts = metricValues(report, "debts");
-  KARMIC_DEBTS.forEach((debt, index) => {
-    const own = debts.includes(debt.root);
-    const status: FlowItem = {
-      kind: "para",
-      align: "center",
-      color: own ? RED : BLUE,
-      text: own ? `Hồ sơ của bạn có nợ nghiệp ${debt.label}.` : `Hồ sơ của bạn không mang nợ nghiệp ${debt.label} — nội dung dưới đây để bạn tham khảo.`,
-    };
-    const chrome: Chrome = { title: titleOf("debts"), badge: { text: debt.label, shape: "star" } };
-    push(...flowPages(ctx, chrome, [status, ...contentItems(karmicDebtBlock(debt))], index === 0 ? "debts:value" : undefined));
-  });
+  // CHƯƠNG 2 — Phát triển bản thân. Nợ nghiệp: trang giới thiệu + đủ 4 trang hóa giải (13/4, 14/5, 16/7, 19/1) như bản chuẩn.
+  push(chuan("chuong-2", "chapter2"), ...metricPages(ctx, "balance"), ...metricPages(ctx, "missing"));
+  push(chuan(INTRO_PAGES.debts!, "debts"), ...["no-nghiep-13-4", "no-nghiep-14-5", "no-nghiep-16-7", "no-nghiep-19-1"].map((slug) => chuan(slug)));
 
-  // CHƯƠNG 3 — Định hướng sự nghiệp (trang chương, Sứ mệnh, Đường đời, Đam mê có sẵn trong bộ mẫu)
-  push({ kind: "template", anchor: "chapter3", file: page("Page_08") });
-  push(...metricPages(ctx, "personalYear"));
-  push({ kind: "template", anchor: "destiny", file: page("Page_09") });
+  // CHƯƠNG 3 — Định hướng sự nghiệp. Sứ mệnh, Đường đời, Đam mê (giới thiệu + theo con số) có sẵn trong bộ mẫu cũ, giống
+  // hệt bản chuẩn (trang giới thiệu là tệp `_000`; Page_09/11/13 của bản Demo là bản thiết kế cũ hơn).
+  push(chuan("chuong-3", "chapter3"), ...metricPages(ctx, "personalYear"));
+  push({ kind: "template", anchor: "destiny", file: "su-menh/SuMenh_000.pdf" });
   push({ kind: "template", file: `su-menh/SuMenh_00${numerator(metricValues(report, "destiny")[0] ?? "1")}.pdf` });
-  push({ kind: "template", anchor: "lifePath", file: page("Page_11") });
+  push({ kind: "template", anchor: "lifePath", file: "duong-doi/DuongDoi_000.pdf" });
   push({ kind: "template", file: `duong-doi/DuongDoi_00${numerator(metricValues(report, "lifePath")[0] ?? "1")}.pdf` });
   push(...metricPages(ctx, "birthNumber"), ...metricPages(ctx, "maturity"));
-  push({ kind: "template", anchor: "passion", file: page("Page_13") });
+  push({ kind: "template", anchor: "passion", file: "dam-me/DamMe_000.pdf" });
   const passion = firstPassion(report);
   push({ kind: "template", file: `dam-me/DamMe_00${numerator(passion)}.pdf` });
   // Trang Đam mê của bộ mẫu chỉ có một con số; các con số Đam mê còn lại có thêm trang luận giải.
   const morePassion = metricValues(report, "passion").filter((value) => value !== passion);
   if (morePassion.length) push(...valuePages(ctx, "passion", morePassion));
 
-  // Biểu đồ chặng đường đời: giới thiệu + hình tháp, rồi 4 trang luận giải từng đỉnh
-  const pinnacleIntro = sectionText(PINNACLE_CONTENT.intro, "BIỂU ĐỒ CHẶNG ĐƯỜNG ĐỜI");
-  push(...flowPages(ctx, { title: ["BIỂU ĐỒ", "CHẶNG ĐƯỜNG ĐỜI"] }, [pinnacleDiagram(report), ...contentItems(pinnacleIntro)], "pinnacles"));
-  report.lifePathChart.pinnacles.forEach((node, index) => {
-    const period: FlowItem[] = node.range ? [{ kind: "para", align: "center", color: BLUE, text: `Giai đoạn từ ${node.range} tuổi` }] : [];
-    const chrome: Chrome = { title: [`ĐỈNH ${index + 1}`, "CHẶNG ĐƯỜNG ĐỜI"], badge: { text: node.value, shape: "star" } };
-    push(...flowPages(ctx, chrome, [...period, ...contentItems(pinnacleBlock(index as 0 | 1 | 2 | 3, node.value))]));
-  });
+  // Biểu đồ chặng đường đời + 4 đỉnh, biểu đồ Ikigai + 3 tổ hợp (Tâm trí, Tư duy kinh doanh, Sáng tạo)
+  push(chuan("chang-duong-doi", "pinnacles"));
+  report.lifePathChart.pinnacles.forEach((node, index) => push(...pinnaclePages(ctx, index as 0 | 1 | 2 | 3, node.value)));
+  push(chuan("ikigai", "ikigai"), chuan("to-hop-tam-tri"), chuan("to-hop-kinh-doanh"), chuan("to-hop-sang-tao"));
 
-  // Biểu đồ Ikigai: ý nghĩa, rồi hình 4 vòng tròn với các con số của khách
-  const ik = report.ikigai;
-  const ikigaiIntro = sectionText(IKIGAI_INTRO, "BIỂU ĐỒ IKIGAI MỤC ĐÍCH CUỘC ĐỜI");
-  push(...flowPages(ctx, { title: ["BIỂU ĐỒ IKIGAI", "MỤC ĐÍCH CUỘC ĐỜI"] }, [dividerItem(), ...contentItems(ikigaiIntro)], "ikigai"));
+  // CHƯƠNG 4 — Nguồn lực hỗ trợ: hai chỉ số kết nối, biểu đồ ngày sinh, họ tên và hai trang đường mũi tên
+  push(chuan("chuong-4", "chapter4"), ...metricPages(ctx, "soulInteraction"), ...metricPages(ctx, "destinyLifePath"));
+  push(chuan("bieu-do-ngay-sinh", "birthChart"), chuan("bieu-do-ho-ten", "nameChart"), chuan("mui-ten-day-du"), chuan("mui-ten-trong"));
+
+  // CHƯƠNG 5 — Kết luận, trang tổng hợp, lời cảm ơn, cảm nhận khách hàng, bìa sau
   push(
-    ...flowPages(ctx, { title: ["BIỂU ĐỒ IKIGAI", "CỦA BẠN"] }, [
-      ikigaiDiagram(report),
-      entriesItem([
-        { label: "Đam mê", value: ik.passion.join(", "), note: "Các con số xuất hiện nhiều nhất trong họ tên (chỉ số Đam mê)." },
-        { label: "Sứ mệnh", value: ik.mission, note: "Căn số của chỉ số Sứ mệnh." },
-        { label: "Chuyên môn", value: ik.expertise.join(", "), note: "Căn số của chỉ số Nội tâm, Tương tác và Ngày sinh." },
-        { label: "Sự nghiệp", value: ik.career.join(", "), note: "Căn số của chỉ số Đường đời, Trưởng thành và Năm cá nhân." },
-      ]),
-    ]),
-  );
-
-  // CHƯƠNG 4 — Nguồn lực hỗ trợ
-  push(
-    ...coverPage(ctx, "chapter4", ["CHƯƠNG 4", "NGUỒN LỰC HỖ TRỢ"], "4", [
-      metricEntry(ctx, "soulInteraction"),
-      metricEntry(ctx, "destinyLifePath"),
-      { label: "Biểu đồ ngày sinh", anchor: "birthChart", note: "Mỗi con số trong ngày, tháng, năm sinh xuất hiện bao nhiêu lần — ô trống là năng lượng còn thiếu." },
-      { label: "Biểu đồ họ tên", anchor: "nameChart", note: "Tần suất các giá trị chữ cái trong họ tên khai sinh theo bảng Pythagoras." },
-    ]),
-  );
-  for (const [key, left, right] of [
-    ["soulInteraction", "soul", "interaction"],
-    ["destinyLifePath", "destiny", "lifePath"],
-  ] as const) {
-    // Bộ nội dung gốc không có đoạn giới thiệu cho hai chỉ số kết nối: dùng định nghĩa ngắn của chỉ số + cách tính.
-    const formula = `Cách tính: | ${labelOf(report, left)} ${metricValues(report, left)[0] ?? ""} − ${labelOf(report, right)} ${metricValues(report, right)[0] ?? ""} | (lấy căn số) = ${metricValues(report, key)[0] ?? ""}`;
-    push(
-      ...introPages(ctx, key, [
-        { kind: "heading", text: `Ý NGHĨA CHỈ SỐ ${METRIC_TITLES[key]}` },
-        { kind: "para", text: metricNote(report, key), align: "center" },
-        { kind: "para", text: formula, align: "center", color: BLUE },
-      ]),
-      ...valuePages(ctx, key),
-    );
-  }
-
-  // Biểu đồ ngày sinh, biểu đồ họ tên và hai trang đường mũi tên (thứ tự 65–68 của bản gốc)
-  const [birthText, nameText, fullArrowText, emptyArrowRaw] = BIRTH_NAME_CHART_PAGES;
-  const birthCounts = report.birthChart;
-  const yourBirthChart = "Biểu đồ ngày sinh của bạn";
-  push(...flowPages(ctx, { title: ["BIỂU ĐỒ", "NGÀY SINH"] }, [gridDiagram(birthCounts, yourBirthChart), ...contentItems(sectionText(birthText, "BIỂU ĐỒ NGÀY SINH"))], "birthChart"));
-  push(...flowPages(ctx, { title: ["BIỂU ĐỒ", "HỌ TÊN"] }, [gridDiagram(report.nameChart, "Biểu đồ họ tên của bạn"), ...contentItems(sectionText(nameText, "BIỂU ĐỒ HỌ TÊN"))], "nameChart"));
-  const fullArrows = ARROWS.filter((arrow) => arrow.digits.every((digit) => (birthCounts[digit] ?? 0) > 0));
-  const arrowNote: FlowItem = {
-    kind: "para",
-    align: "center",
-    color: BLUE,
-    text: fullArrows.length ? `Biểu đồ ngày sinh của bạn có: ${fullArrows.map((arrow) => arrow.name).join("; ")}.` : "Biểu đồ ngày sinh của bạn chưa có đường mũi tên đầy đủ nào.",
-  };
-  push(...flowPages(ctx, { title: ["ĐƯỜNG MŨI TÊN", "ĐẦY ĐỦ"] }, [gridDiagram(birthCounts, yourBirthChart, fullArrows), arrowNote, ...contentItems(sectionText(fullArrowText, "BIỂU ĐỒ ĐƯỜNG MŨI TÊN ĐẦY ĐỦ"))]));
-  // Đoạn đầu của trang "mũi tên trống" là nhãn hình vẽ bị trích dính ("Đường Thiếu Kế Hoạch Đường Trí Nhớ…") — bỏ đi.
-  const emptyArrowText = emptyArrowRaw.filter((paragraph) => !paragraph.endsWith("BIỂU ĐỒ ĐƯỜNG MŨI TÊN TRỐNG"));
-  push(...flowPages(ctx, { title: ["ĐƯỜNG MŨI TÊN", "TRỐNG"] }, [gridDiagram(birthCounts, yourBirthChart), ...contentItems(sectionText(emptyArrowText, "BIỂU ĐỒ ĐƯỜNG MŨI TÊN TRỐNG"))]));
-
-  // CHƯƠNG 5 — Kết luận, trang tổng hợp, lời cảm ơn, bìa sau
-  push(
-    { kind: "template", anchor: "chapter5", file: page("Page_15") },
+    chuan("chuong-5", "chapter5"),
     { kind: "template", anchor: "summary", file: page("summary"), overlays: (c) => summaryOverlays(c.report, c.name, c.birth, { bold: c.fonts.boldItalic, semi: c.fonts.semi }, "full") },
-    { kind: "template", file: page("Page_LoiCamOn") },
+    chuan("loi-cam-on"),
+    { ...chuan("cam-nhan-khach-hang"), patch: patchFeedback },
     { kind: "template", file: page("Page_BiaSau") },
   );
   return plan;
@@ -1031,13 +798,15 @@ export async function buildFullNumerologyPdf(report: NumerologyFullReport, optio
       continue;
     }
     const [page] = await out.copyPages(templates[index]!, [0]);
-    const ownFooter = replaceTemplateContents(ctx, page, spec.file);
+    // Trang chuẩn đã bỏ sẵn chân trang + xoáy góc khi tách; trang mẫu cũ bỏ theo `template-strip.json`.
+    const stripped = spec.framed ? { swirls: true } : replaceTemplateContents(ctx, page, spec.file);
     out.addPage(page);
+    if (stripped?.swirls) drawFrame(ctx, page);
     for (const item of spec.overlays?.(ctx) ?? []) {
       page.drawText(item.text, { x: item.x, y: item.y, size: item.size, font: item.font === "bold" ? ctx.fonts.boldItalic : ctx.fonts.semi, color: item.color });
     }
     spec.patch?.(ctx, page);
-    if (ownFooter) drawFooter(ctx, page, index);
+    if (stripped) drawFooter(ctx, page, index);
   }
   return out.save();
 }

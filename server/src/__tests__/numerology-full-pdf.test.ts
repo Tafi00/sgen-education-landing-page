@@ -1,4 +1,4 @@
-import { readFile } from "node:fs/promises";
+import { access, readFile } from "node:fs/promises";
 import path from "node:path";
 import { inflateSync } from "node:zlib";
 import * as fontkit from "fontkit";
@@ -6,9 +6,16 @@ import { PDFArray, PDFDocument, PDFName, PDFRawStream, type PDFFont, type PDFPag
 import { beforeAll, describe, expect, it } from "vitest";
 import { calculateFullNumerologyReport } from "../../../shared/numerology";
 import { buildEbookPdf } from "../services/ebookPdf";
-import { NUMEROLOGY_CONTENT } from "../services/numerologyContent";
-import { METRIC_TITLES, metricIntro, metricValueBlock, type MetricKey } from "../services/numerologyFullContent";
-import { decodeContents, stripTemplateSource, type TemplateStrip } from "../services/numerologyFullPdf";
+import { NUMEROLOGY_CONTENT, PINNACLE_CONTENT } from "../services/numerologyContent";
+import { METRIC_TITLES, metricValueBlock, metricValues, type MetricKey } from "../services/numerologyFullContent";
+import {
+  DESIGNED_PINNACLE_PAGES,
+  DESIGNED_VALUE_PAGES,
+  decodeContents,
+  designedPage,
+  stripTemplateSource,
+  type TemplateStrip,
+} from "../services/numerologyFullPdf";
 
 const ASSET_DIR = path.resolve(process.cwd(), "assets/numerology-pdf");
 const FOOTER_PREFIX = "https:/www.Thansohuongnghiep.com - Hotline : 0903.891.839 - Trang  ";
@@ -72,10 +79,33 @@ describe("ebook bản đầy đủ", () => {
 
   it("Mục lục in lại số trang khi mục bị đẩy (hồ sơ nhiều bài học nghiệp)", async () => {
     const { doc } = await buildFull("LÝ LY", "2001-02-22");
-    const summaryIndex = doc.getPageCount() - 3;
+    // Sau trang tổng hợp: Lời cảm ơn, Cảm nhận khách hàng, bìa sau.
+    const summaryIndex = doc.getPageCount() - 4;
     expect(summaryIndex).not.toBe(70);
     expect(pageOperators(doc.getPage(2)).includes(encoded(bodyFont, pad(summaryIndex)))).toBe(true);
   }, 60_000);
+
+  it("hồ sơ mẫu Elon Reeve Musk ra đúng 76 trang như bảng chuẩn, mọi trang luận giải đều là trang thiết kế gốc", async () => {
+    const { report, doc } = await buildFull("Elon Reeve Musk", "1971-06-28");
+    expect(doc.getPageCount()).toBe(76);
+    for (const [key, pages] of Object.entries(DESIGNED_VALUE_PAGES) as Array<[MetricKey, Record<string, string>]>) {
+      for (const value of metricValues(report, key)) expect(designedPage(pages, NUMEROLOGY_CONTENT[key], value), `${key} ${value}`).toBeTruthy();
+    }
+    report.lifePathChart.pinnacles.forEach((node, index) => {
+      expect(designedPage(DESIGNED_PINNACLE_PAGES[index], { byValue: PINNACLE_CONTENT[`dinh${index + 1}` as "dinh1"] }, node.value), `đỉnh ${index + 1}`).toBeTruthy();
+    });
+  }, 60_000);
+
+  it("trang thiết kế gốc khớp theo nội dung luận giải, có đủ tệp trong assets/numerology-pdf/chuan", async () => {
+    const interaction = DESIGNED_VALUE_PAGES.interaction;
+    // Tương tác 19/1 dùng chung lời luận với 1 nên dùng chung trang gốc (bản chuẩn in trang số 1 cho hồ sơ 19/1).
+    expect(designedPage(interaction, NUMEROLOGY_CONTENT.interaction, "19/1")).toBe("tuong-tac-1");
+    expect(designedPage(interaction, NUMEROLOGY_CONTENT.interaction, "1")).toBe("tuong-tac-1");
+    expect(designedPage(interaction, NUMEROLOGY_CONTENT.interaction, "2")).toBeUndefined();
+    expect(designedPage(DESIGNED_VALUE_PAGES.soul, NUMEROLOGY_CONTENT.soul, "11/2")).toBeUndefined();
+    const slugs = [...Object.values(DESIGNED_VALUE_PAGES), ...DESIGNED_PINNACLE_PAGES].flatMap((pages) => Object.values(pages!));
+    for (const slug of slugs) await expect(access(path.join(ASSET_DIR, "chuan", `${slug}.pdf`)), slug).resolves.toBeUndefined();
+  });
 
   it("mọi trang mẫu bỏ được chân trang cũ và cặp xoáy góc theo template-strip.json", async () => {
     const strip: Record<string, TemplateStrip> = JSON.parse(await readFile(path.join(ASSET_DIR, "full/template-strip.json"), "utf8"));
@@ -119,14 +149,5 @@ describe("nội dung bản đầy đủ", () => {
     expect(metricValueBlock("missing", "9").heading).toBe("BÀI HỌC NGHIỆP 9 = BAO DUNG & GIÚP ĐỠ");
     expect(metricValueBlock("personalYear", "1").heading).toBe("NĂM CÁ NHÂN SỐ 1 = KHỞI ĐẦU & CHINH PHỤC");
     expect(metricValueBlock("repeated", "2").heading).toBe("SỐ LẶP 2");
-    expect(metricIntro("destiny").heading).toBe("SỨ MỆNH = SỰ GIÚP ĐỠ");
-  });
-
-  it("trang giới thiệu có nội dung cho mọi chỉ số (trừ hai chỉ số kết nối — bản gốc không có đoạn giới thiệu)", () => {
-    for (const key of keys) {
-      const intro = metricIntro(key);
-      expect(intro.heading, key).toBeTruthy();
-      if (key !== "soulInteraction" && key !== "destinyLifePath") expect(intro.paragraphs.length, key).toBeGreaterThan(0);
-    }
   });
 });

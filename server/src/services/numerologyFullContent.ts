@@ -47,14 +47,6 @@ const VALUE_LABELS: Partial<Record<MetricKey, string>> = {
   destinyLifePath: "KẾT NỐI",
 };
 
-/** Bốn nợ nghiệp theo thứ tự tài liệu gốc ("13/4; 14/5; 16/7; 19/1"), khóa nội dung là căn số. */
-export const KARMIC_DEBTS = [
-  { root: "4", label: "13/4" },
-  { root: "5", label: "14/5" },
-  { root: "7", label: "16/7" },
-  { root: "1", label: "19/1" },
-] as const;
-
 export type ContentBlock = { heading?: string; paragraphs: string[] };
 
 /** Chữ bị tách đôi khi trích PDF gốc (khoảng trắng chen giữa một âm tiết). */
@@ -137,28 +129,15 @@ export function valueParagraphs(value: string, content: MetricContent | undefine
   return content.byValue[numerator] ?? content.byValue[root] ?? [];
 }
 
-/** Trang giới thiệu chỉ số: tiêu đề đỏ ("SỨ MỆNH = SỰ GIÚP ĐỠ") + đoạn văn. */
-export function metricIntro(key: MetricKey): ContentBlock {
-  const blocks = cleanBlocks(NUMEROLOGY_CONTENT[key]?.intro ?? []);
-  const own = blocks.map((block) => (block.heading ? stripGenericPrefix(block.heading, key) : "")).find(Boolean) ?? "";
-  const heading = own.startsWith("= ") ? `${METRIC_TITLES[key]} ${own}` : own;
-  return { heading: heading || `Ý NGHĨA CHỈ SỐ ${METRIC_TITLES[key]}`, paragraphs: paragraphsOf(blocks) };
-}
-
 /**
  * Luận giải một con số: tiêu đề lấy từ bản gốc khi có câu định nghĩa ("NỘI TÂM SỐ 1 = …", "LOGIC SỐ 1: …"); bản gốc chỉ
  * ghi nhãn chung thì dựng "<TÊN> SỐ <n>", có vế mô tả ("KHỞI ĐẦU & CHINH PHỤC") thì ghép thành "<TÊN> SỐ <n> = <vế>".
  */
-export function metricValueBlock(key: MetricKey, value: string, raw?: readonly string[]): ContentBlock {
-  const blocks = cleanBlocks(raw ?? valueParagraphs(value, NUMEROLOGY_CONTENT[key]));
+export function metricValueBlock(key: MetricKey, value: string): ContentBlock {
+  const blocks = cleanBlocks(valueParagraphs(value, NUMEROLOGY_CONTENT[key]));
   const base = key === "repeated" ? `SỐ LẶP ${value}` : `${VALUE_LABELS[key] ?? METRIC_TITLES[key]} SỐ ${value}`;
   const own = blocks.map((block) => (block.heading ? stripGenericPrefix(block.heading, key) : "")).find(Boolean) ?? "";
   return { heading: composeHeading(base, own), paragraphs: paragraphsOf(blocks) };
-}
-
-/** Trang hóa giải một nợ nghiệp ("HÓA GIẢI NỢ NGHIỆP 13/4 = SỰ TẬP TRUNG"); nội dung gốc đánh khóa theo căn số. */
-export function karmicDebtBlock(debt: (typeof KARMIC_DEBTS)[number]): ContentBlock {
-  return metricValueBlock("debts", debt.label, valueParagraphs(debt.root, NUMEROLOGY_CONTENT.debts));
 }
 
 /** Các con số của một chỉ số trong báo cáo: chỉ số nhiều số (lặp, bài học, nợ nghiệp, đam mê) trả đủ danh sách. */
@@ -170,14 +149,6 @@ export function metricValues(report: NumerologyFullReport, key: string): string[
   return [];
 }
 
-export function metricNote(report: NumerologyFullReport, key: string) {
-  for (const section of report.sections) {
-    const found = section.metrics.find((metric) => metric.key === key);
-    if (found) return found.note;
-  }
-  return "";
-}
-
 /** Luận giải một đỉnh của biểu đồ chặng đường đời ("ĐỈNH CAO SỐ 1 – CHINH PHỤC MỤC TIÊU"). */
 export function pinnacleBlock(index: 0 | 1 | 2 | 3, value: string): ContentBlock {
   const content = PINNACLE_CONTENT[`dinh${index + 1}` as "dinh1"];
@@ -185,12 +156,4 @@ export function pinnacleBlock(index: 0 | 1 | 2 | 3, value: string): ContentBlock
   const blocks = cleanBlocks(raw);
   const own = blocks.map((block) => block.heading ?? "").find(Boolean) ?? "";
   return { heading: own.replace(/^ĐỈNH \d\s+/, "") || `ĐỈNH CAO SỐ ${value}`, paragraphs: paragraphsOf(blocks) };
-}
-
-/** Nội dung có sẵn tiêu đề trong bản gốc (biểu đồ, Ikigai…): bỏ dòng tiêu đề trùng với tiêu đề trang. */
-export function sectionText(raw: readonly string[], pageTitle: string): ContentBlock {
-  const blocks = cleanBlocks(raw);
-  const title = pageTitle.replace(/\s+/g, " ");
-  const heading = blocks.map((block) => block.heading ?? "").find((item) => item && !title.includes(item) && !item.includes(title));
-  return { heading: heading || undefined, paragraphs: paragraphsOf(blocks) };
 }
