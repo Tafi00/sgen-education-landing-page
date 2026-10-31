@@ -2879,6 +2879,15 @@
   letter-spacing: 0.08em;
 }
 
+/* Đoạn số gốc khi cặp bỏ qua số 0, 5 (vd. "từ 306"). */
+.skd-bcls-pair__source {
+  margin-left: 0.45rem;
+  color: #8a7a9c;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+
 .skd-bcls-pair__head span {
   display: grid;
   width: 20px;

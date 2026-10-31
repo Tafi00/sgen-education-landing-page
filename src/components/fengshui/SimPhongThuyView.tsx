@@ -908,7 +908,7 @@ export default function SimPhongThuyView({
               <span>05 · 64 cặp sao Bát Trạch</span>
               <h3 id="skd-bcls-title">Bát Cực Linh Số</h3>
               <p>
-                Đọc lần lượt {result.meta.bc.total} cặp số liền kề và ý nghĩa sao Bát Trạch của từng cặp.
+                Đọc lần lượt {result.meta.bc.total} cặp số và ý nghĩa sao Bát Trạch của từng cặp; số 0 và 5 không có từ trường nên được bỏ qua, số trước nối với số kế tiếp.
                 {studentUnlocked ? " Rê chuột hoặc bấm vào từng cặp để xem đủ Tài chính, Sự nghiệp, Sức khỏe, Mối quan hệ." : ""}
               </p>
             </div>
@@ -958,7 +958,7 @@ export default function SimPhongThuyView({
               </li>
               <li>
                 <CheckCircle2 aria-hidden="true" />
-                <span><b>Bát Cực Linh Số:</b> {result.meta.bc.total} cặp số liền kề: {result.meta.bc.items.map((item) => item.name).join(", ")}.</span>
+                <span><b>Bát Cực Linh Số:</b> {result.meta.bc.total} cặp số (bỏ qua số 0, 5): {result.meta.bc.items.map((item) => item.name).join(", ")}.</span>
               </li>
               <li>
                 <CheckCircle2 aria-hidden="true" />

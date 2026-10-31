@@ -4,7 +4,8 @@ import { X } from "lucide-react";
 import { BAT_CUC_COLUMNS, BAT_CUC_DETAILS, type BatCucDetail } from "../../../shared/sim/bat-cuc-chi-tiet";
 import { useStudentUnlock } from "../ui/StudentAccess";
 
-export type BatCucPairItem = { pair: string; code: string; name: string; type: "cat" | "hung"; desc: string };
+/** `source`: đoạn số gốc tạo ra cặp (gồm cả số 0, 5 bị bỏ qua), vd. cặp 36 từ "306". */
+export type BatCucPairItem = { pair: string; source?: string; code: string; name: string; type: "cat" | "hung"; desc: string };
 
 type Active = { index: number; anchor: HTMLElement; pinned: boolean };
 
@@ -89,7 +90,10 @@ export function BatCucPairs({ items, locked = false }: { items: BatCucPairItem[]
               }}
             >
               <span className="skd-bcls-pair__head">
-                <strong>{item.pair}</strong>
+                <strong>
+                  {item.pair}
+                  {item.source && item.source !== item.pair ? <small className="skd-bcls-pair__source">từ {item.source}</small> : null}
+                </strong>
                 <span>{index + 1}</span>
               </span>
               <b>{item.name}</b>

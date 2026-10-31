@@ -258,28 +258,20 @@ export const BCLS = {
   pairs: {
     // SINH KHÍ (生氣) — Đại Cát
     "14": "SK", "41": "SK", "67": "SK", "76": "SK", "39": "SK", "93": "SK", "28": "SK", "82": "SK",
-    "08": "SK", "80": "SK", "58": "SK", "85": "SK",
     // THIÊN Y (天醫) — Cát
     "13": "TY", "31": "TY", "68": "TY", "86": "TY", "49": "TY", "94": "TY", "27": "TY", "72": "TY",
-    "07": "TY", "70": "TY", "57": "TY", "75": "TY",
     // DIÊN NIÊN (延年) — Cát
     "19": "DN", "91": "DN", "78": "DN", "87": "DN", "34": "DN", "43": "DN", "26": "DN", "62": "DN",
-    "06": "DN", "60": "DN", "56": "DN", "65": "DN",
     // PHỤC VỊ (伏位) — Bình
-    "11": "PV", "22": "PV", "33": "PV", "44": "PV", "55": "PV", "66": "PV", "77": "PV", "88": "PV", "99": "PV",
-    "00": "PV", "05": "PV", "50": "PV", "02": "PV", "20": "PV", "25": "PV", "52": "PV",
+    "11": "PV", "22": "PV", "33": "PV", "44": "PV", "66": "PV", "77": "PV", "88": "PV", "99": "PV",
     // HỌA HẠI (禍害) — Hung
     "17": "HH", "71": "HH", "89": "HH", "98": "HH", "46": "HH", "64": "HH", "23": "HH", "32": "HH",
-    "03": "HH", "30": "HH", "53": "HH", "35": "HH",
     // LỤC SÁT (六煞) — Hung
     "16": "LS", "61": "LS", "47": "LS", "74": "LS", "38": "LS", "83": "LS", "29": "LS", "92": "LS",
-    "09": "LS", "90": "LS", "59": "LS", "95": "LS",
     // NGŨ QUỶ (五鬼) — Hung
     "18": "NQ", "81": "NQ", "79": "NQ", "97": "NQ", "36": "NQ", "63": "NQ", "24": "NQ", "42": "NQ",
-    "04": "NQ", "40": "NQ", "54": "NQ", "45": "NQ",
     // TUYỆT MỆNH (絕命) — Đại Hung
     "12": "TM", "21": "TM", "69": "TM", "96": "TM", "48": "TM", "84": "TM", "37": "TM", "73": "TM",
-    "01": "TM", "10": "TM", "51": "TM", "15": "TM",
   } as Record<string, "SK" | "TY" | "DN" | "PV" | "TM" | "NQ" | "LS" | "HH">,
 };
 
@@ -299,25 +291,37 @@ export function pairsByCode(code: string): string[] {
   return Object.keys(BCLS.pairs).filter((k) => BCLS.pairs[k] === code);
 }
 
+/** Chữ số không có từ trường Bát Cực (khách, 31/10/2026): bỏ qua, chữ số trước nối với chữ số kế tiếp. */
+const BCLS_SKIPPED_DIGIT = /[05]/;
+
+/**
+ * Các cặp số Bát Cực của dãy, bỏ qua số 0 và 5; mỗi cặp kèm đoạn số gốc tạo ra nó (gồm cả số 0, 5 bị bỏ, cặp đầu tính
+ * từ đầu dãy). Vd. 0909306578 → 99 (0909), 93, 36 (306), 67 (657), 78 — đúng ví dụ của khách.
+ */
+export function batCucPairs(digits: string): Array<{ pair: string; source: string }> {
+  const kept = [...digits].flatMap((digit, index) => (BCLS_SKIPPED_DIGIT.test(digit) ? [] : [index]));
+  return kept.slice(1).map((end, k) => ({
+    pair: digits[kept[k]] + digits[end],
+    source: digits.slice(k === 0 ? 0 : kept[k], end + 1),
+  }));
+}
+
 export function analyzeBCLS(phone: string) {
   const digits = normalizeVietnamesePhone(phone);
-  const items: Array<{ pair: string; code: string; name: string; type: "cat" | "hung"; points: number; desc: string }> = [];
+  const items: Array<{ pair: string; source: string; code: string; name: string; type: "cat" | "hung"; points: number; desc: string }> = [];
   const counts: Record<string, number> = { SK: 0, TY: 0, DN: 0, PV: 0, TM: 0, NQ: 0, LS: 0, HH: 0 };
   let rawScore = 0;
 
-  for (let i = 0; i < digits.length - 1; i++) {
-    const pair = digits.slice(i, i + 2);
-    const code = BCLS.pairs[pair] || (pair[0] === pair[1] ? "PV" : null);
-    if (code) {
-      const star = BCLS.stars[code];
-      const pts = BCLS_SCORES[code] || 0;
-      counts[code] = (counts[code] || 0) + 1;
-      rawScore += pts;
-      items.push({ pair, code, name: star.n, type: star.t as "cat" | "hung", points: pts, desc: star.desc });
-    }
+  for (const { pair, source } of batCucPairs(digits)) {
+    const code = BCLS.pairs[pair];
+    const star = BCLS.stars[code];
+    const pts = BCLS_SCORES[code] || 0;
+    counts[code] = (counts[code] || 0) + 1;
+    rawScore += pts;
+    items.push({ pair, source, code, name: star.n, type: star.t as "cat" | "hung", points: pts, desc: star.desc });
   }
 
-  const numPairs = Math.max(1, digits.length - 1);
+  const numPairs = Math.max(1, items.length);
   const baseScore = Math.max(0, Math.min(100, Math.round(50 + (50 * rawScore) / (BCLS_MAX_POINTS * numPairs))));
 
   // Bát Cực không chỉ xét số lượng cặp cát/hung. Một chuỗi trường khí liên tục
@@ -356,8 +360,10 @@ export function analyzeBCLS(phone: string) {
   });
   let trailingCatRun = 0;
   for (let i = items.length - 1; i >= 0 && items[i].type === "cat"; i--) trailingCatRun += 1;
+  // Số lặp ở đuôi cũng chỉ xét các chữ số có từ trường.
+  const fieldDigits = digits.replace(new RegExp(BCLS_SKIPPED_DIGIT.source, "g"), "");
   let tailRepeat = 1;
-  for (let i = digits.length - 2; i >= 0 && digits[i] === digits[digits.length - 1]; i--) {
+  for (let i = fieldDigits.length - 2; i >= 0 && fieldDigits[i] === fieldDigits[fieldDigits.length - 1]; i--) {
     tailRepeat += 1;
   }
   const hasReciprocalCatFlow = items.some((item, index) => {
@@ -393,7 +399,7 @@ export function analyzeBCLS(phone: string) {
       : longestCatRun >= 3
         ? "Trường khí cát nối tiếp tạo lực nâng ổn định cho dãy số."
         : "Cát và hung đan xen; cần đọc cùng quẻ và mệnh cục.",
-    total: digits.length - 1,
+    total: items.length,
   };
 }
 
@@ -1927,6 +1933,7 @@ export function analyzeSimPhongThuy(input: SimAnalysisInput): SimAnalysisResult 
         : digits.replace(/(\d{4})(?=\d)/g, "$1 ");
   const trieu = TUONG_QUE_64[hexP.n] || "Hanh thông cát tường.";
   const last4 = digits.length >= 4 ? digits.slice(-4) : digits;
+  const last4Stars = batCucPairs(last4).map(({ pair }) => BCLS.stars[BCLS.pairs[pair]].n);
 
   return {
     phone: digits,
@@ -2025,7 +2032,9 @@ export function analyzeSimPhongThuy(input: SimAnalysisInput): SimAnalysisResult 
     },
     linhSo4Last: {
       last4,
-      meaning: `4 số cuối mang trường khí ${BCLS.pairs[last4.slice(0, 2)] ? BCLS.stars[BCLS.pairs[last4.slice(0, 2)]].n : "Bình Hòa"} kết hợp ${BCLS.pairs[last4.slice(2, 4)] ? BCLS.stars[BCLS.pairs[last4.slice(2, 4)]].n : "Bình Hòa"}.`,
+      meaning: last4Stars.length
+        ? `4 số cuối mang trường khí ${last4Stars.join(", ")}`
+        : "4 số cuối không tạo cặp sao Bát Cực vì số 0 và 5 không có từ trường",
       scoreType: meta.band.l,
     },
     scores5Aspects: {
