@@ -32,7 +32,7 @@ const KIND_LABEL: Record<Lesson["kind"], string> = { lecture: "Bài giảng", di
 export function CourseLessonsPage() {
   const queryClient = useQueryClient();
   const toast = useToast();
-  const [course, setCourse] = useState(DEFAULT_COURSE);
+  const [pickedCourse, setCourse] = useState(DEFAULT_COURSE);
   const [section, setSection] = useState("");
   const [uploads, setUploads] = useState<UploadItem[]>([]);
   const [uploading, setUploading] = useState(false);
@@ -47,6 +47,9 @@ export function CourseLessonsPage() {
     queryKey: ["admin", "courses", "options"],
     queryFn: () => api.get<{ items: { slug: string; title: string }[] }>("/api/admin/courses", { query: { pageSize: 100, sort: "order", dir: "asc" } }),
   });
+  // Quản trị có thể đổi đường dẫn khóa: khóa đang chọn không còn trong danh sách thì dùng khóa đầu tiên, khớp với ô chọn.
+  const courseOptions = coursesQuery.data?.items ?? [];
+  const course = courseOptions.length && !courseOptions.some((item) => item.slug === pickedCourse) ? courseOptions[0].slug : pickedCourse;
   const lessonsQuery = useQuery({
     queryKey: ["admin", "course-lessons", course],
     queryFn: () => api.get<{ items: Lesson[] }>("/api/admin/course-lessons", { query: { course } }),
@@ -140,7 +143,7 @@ export function CourseLessonsPage() {
           <Link className="btn btn--secondary" to="/admin/ma-ebook">
             <KeyRound aria-hidden="true" /> Cấp mã khóa học
           </Link>
-          <a className="btn btn--secondary" href={`/khoa-hoc/${course}/hoc`} target="_blank" rel="noreferrer">
+          <a className="btn btn--secondary" href={`/khoa-hoc/${encodeURIComponent(course)}/hoc`} target="_blank" rel="noreferrer">
             <ExternalLink aria-hidden="true" /> Xem trang học
           </a>
         </div>
@@ -157,7 +160,7 @@ export function CourseLessonsPage() {
             <label className="field__label" htmlFor="lesson-course">Khóa học</label>
             <span className="field__control">
               <select id="lesson-course" value={course} disabled={uploading} onChange={(event) => setCourse(event.target.value)}>
-                {(coursesQuery.data?.items ?? [{ slug: DEFAULT_COURSE, title: "Thần số học" }]).map((item) => (
+                {(courseOptions.length ? courseOptions : [{ slug: DEFAULT_COURSE, title: "Thần số học" }]).map((item) => (
                   <option key={item.slug} value={item.slug}>
                     {item.title}
                   </option>

@@ -457,3 +457,25 @@ CREATE TABLE IF NOT EXISTS "course_lessons" (
   "updatedAt" timestamptz NOT NULL DEFAULT now()
 );
 CREATE INDEX IF NOT EXISTS "course_lessons_course_order_idx" ON "course_lessons" ("courseSlug", "order");
+
+-- 02/11/2026: đường dẫn khóa Thần số học trên web thật bị sửa thành "than-so-hoc-can-ban va nang-cao" (có dấu cách) nên menu
+-- Khóa học → Thần số học báo không tìm thấy. Đưa về đường dẫn mà menu trỏ tới; chỉ đổi đúng giá trị này nên chạy lại vẫn an toàn.
+UPDATE "courses" SET "slug" = 'than-so-hoc-can-ban', "updatedAt" = now()
+WHERE "slug" = 'than-so-hoc-can-ban va nang-cao' AND NOT EXISTS (SELECT 1 FROM "courses" WHERE "slug" = 'than-so-hoc-can-ban');
+UPDATE "ebook_codes" SET "courseSlug" = 'than-so-hoc-can-ban' WHERE "courseSlug" = 'than-so-hoc-can-ban va nang-cao';
+UPDATE "course_lessons" SET "courseSlug" = 'than-so-hoc-can-ban' WHERE "courseSlug" = 'than-so-hoc-can-ban va nang-cao';
+
+-- 02/11/2026: 5 video phần cơ bản khóa Thần số học (YouTube không công khai của kênh Phạm Bá Nha). Chỉ thêm khi khóa chưa có bài
+-- và quản trị chưa từng thao tác bài giảng, nên bài đã sửa hay đã xoá ở trang quản trị không bị thêm lại khi khởi động.
+INSERT INTO "course_lessons" ("courseSlug", "section", "title", "videoUrl", "durationSeconds", "order")
+SELECT 'than-so-hoc-can-ban', 'Thần số học cơ bản', v."title", v."url", v."seconds", v."order"
+FROM (VALUES
+  ('Thần số học cơ bản: Ngày 1', 'https://www.youtube.com/watch?v=Dfhxrk_PpRM', 6756, 1),
+  ('Thần số học cơ bản: Ngày 2', 'https://www.youtube.com/watch?v=PQDsXIGVIOo', 6049, 2),
+  ('Thần số học cơ bản: Ngày 3', 'https://www.youtube.com/watch?v=pogtdcQH-sA', 4576, 3),
+  ('Thần số học cơ bản: Ngày 4', 'https://www.youtube.com/watch?v=9gMQ18w2JLE', 5892, 4),
+  ('Thần số học cơ bản: Ngày 5', 'https://www.youtube.com/watch?v=jQkyctGSEzc', 7161, 5)
+) AS v("title", "url", "seconds", "order")
+WHERE EXISTS (SELECT 1 FROM "courses" WHERE "slug" = 'than-so-hoc-can-ban')
+  AND NOT EXISTS (SELECT 1 FROM "course_lessons" WHERE "courseSlug" = 'than-so-hoc-can-ban')
+  AND NOT EXISTS (SELECT 1 FROM "audit_logs" WHERE "collectionName" = 'course_lessons');

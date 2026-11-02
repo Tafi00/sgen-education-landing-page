@@ -90,7 +90,7 @@ const STUDENT_LANDING: Record<number, string> = {
 /** Đường dẫn tự nhập mã: mã ebook mở trang /ebook, mã học viên mở công cụ theo cấp, mã khóa học mở trang học của khóa. */
 function linkFor({ code, plan, courseSlug }: Pick<CodeRow, "code" | "plan" | "courseSlug">) {
   const level = studentLevel(plan);
-  if (isCoursePlan(plan)) return `${window.location.origin}/khoa-hoc/${courseSlug}/hoc?ma=${encodeURIComponent(code)}`;
+  if (isCoursePlan(plan)) return `${window.location.origin}/khoa-hoc/${encodeURIComponent(courseSlug)}/hoc?ma=${encodeURIComponent(code)}`;
   return level
     ? `${window.location.origin}${STUDENT_LANDING[level]}?mahv=${encodeURIComponent(code)}`
     : `${window.location.origin}/ebook?ma=${encodeURIComponent(code)}`;
@@ -158,7 +158,7 @@ export function EbookCodesPage() {
   const [expiresInDays, setExpiresInDays] = useState("");
   const [suffix, setSuffix] = useState("");
   const customSuffix = normalizeEbookSuffix(suffix);
-  const [courseSlug, setCourseSlug] = useState("than-so-hoc-can-ban");
+  const [pickedCourse, setCourseSlug] = useState("than-so-hoc-can-ban");
   const [createError, setCreateError] = useState("");
   const [generated, setGenerated] = useState<CodeRow[]>([]);
   const [copied, setCopied] = useState("");
@@ -191,6 +191,8 @@ export function EbookCodesPage() {
     queryFn: () => api.get<{ items: { slug: string; title: string }[] }>("/api/admin/courses", { query: { pageSize: 100, sort: "order", dir: "asc" } }),
   });
   const courseOptions = coursesQuery.data?.items ?? [];
+  // Quản trị có thể đổi đường dẫn khóa: khóa đang chọn không còn trong danh sách thì dùng khóa đầu tiên, khớp với ô chọn.
+  const courseSlug = courseOptions.length && !courseOptions.some((item) => item.slug === pickedCourse) ? courseOptions[0].slug : pickedCourse;
   const courseTitle = (slug: string) => courseOptions.find((item) => item.slug === slug)?.title ?? slug;
 
   const generateMutation = useMutation({

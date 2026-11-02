@@ -54,7 +54,8 @@ function withSlug(data: Record<string, unknown>, sourceField: string, mode: "cre
   if (mode === "update" && !data.slug) return data;
   const explicit = typeof data.slug === "string" ? data.slug.trim() : "";
   const source = typeof data[sourceField] === "string" ? String(data[sourceField]) : "";
-  const slug = explicit || slugify(source);
+  // Chuẩn hoá cả slug nhập tay: dấu cách, chữ có dấu trong đường dẫn làm hỏng link trong menu và link gửi qua Zalo.
+  const slug = slugify(explicit || source);
   return slug ? { ...data, slug } : data;
 }
 

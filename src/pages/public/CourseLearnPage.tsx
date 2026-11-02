@@ -239,7 +239,7 @@ export function CourseLearnPage() {
         eyebrow="Học video tại nhà"
         eyebrowIcon={GraduationCap}
         title={data.course.title}
-        description={lessons.length ? `${lessons.length} bài học, mỗi bài là một đoạn ngắn theo từng nội dung. Xem lại bao nhiêu lần tùy thích.` : "Video của khóa học đang được SGEN cập nhật."}
+        description={lessons.length ? `${lessons.length} bài học. Xem lại bao nhiêu lần tùy thích.` : "Video của khóa học đang được SGEN cập nhật."}
         before={
           <Link className="article-back" to={`/khoa-hoc/${data.course.slug}`}>
             <ArrowLeft aria-hidden="true" /> Giới thiệu khóa học
