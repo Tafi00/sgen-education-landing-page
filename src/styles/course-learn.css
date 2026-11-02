@@ -119,19 +119,31 @@
 
 .learn-list {
   display: grid;
-  gap: 14px;
+  gap: 8px;
   padding: 12px;
   border: 1px solid var(--learn-line);
   border-radius: 14px;
   background: #fff;
 }
 
-.learn-list h3 {
-  margin: 4px 6px 8px;
+.learn-list summary {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 48px;
+  padding: 8px 10px;
   color: var(--learn-ink);
-  font-size: 0.98rem;
+  font-size: 1rem;
   font-weight: 800;
+  border-radius: 10px;
+  background: #f5f1fd;
+  cursor: pointer;
 }
+
+.learn-list summary:focus-visible { outline: 2px solid var(--learn-brand); outline-offset: 1px; }
+.learn-list summary small { color: var(--learn-sub); font-size: 0.85rem; font-weight: 600; white-space: nowrap; }
+.learn-list details[open] > summary { margin-bottom: 6px; }
 
 .learn-list ol {
   display: grid;

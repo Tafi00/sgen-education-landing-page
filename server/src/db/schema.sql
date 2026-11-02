@@ -465,17 +465,68 @@ WHERE "slug" = 'than-so-hoc-can-ban va nang-cao' AND NOT EXISTS (SELECT 1 FROM "
 UPDATE "ebook_codes" SET "courseSlug" = 'than-so-hoc-can-ban' WHERE "courseSlug" = 'than-so-hoc-can-ban va nang-cao';
 UPDATE "course_lessons" SET "courseSlug" = 'than-so-hoc-can-ban' WHERE "courseSlug" = 'than-so-hoc-can-ban va nang-cao';
 
--- 02/11/2026: 5 video phần cơ bản khóa Thần số học (YouTube không công khai của kênh Phạm Bá Nha). Chỉ thêm khi khóa chưa có bài
--- và quản trị chưa từng thao tác bài giảng, nên bài đã sửa hay đã xoá ở trang quản trị không bị thêm lại khi khởi động.
-INSERT INTO "course_lessons" ("courseSlug", "section", "title", "videoUrl", "durationSeconds", "order")
-SELECT 'than-so-hoc-can-ban', 'Thần số học cơ bản', v."title", v."url", v."seconds", v."order"
+-- 02/11/2026: 5 video phần cơ bản khóa Thần số học (YouTube không công khai của kênh Phạm Bá Nha) chia thành các đoạn ngắn theo nội
+-- dung, phần thảo luận tách riêng; mỗi bài phát một khoảng start/end của video. Chỉ áp dụng khi khóa chưa có bài (hoặc còn nguyên 5 bài
+-- cả buổi đã thêm trước đó) và quản trị chưa từng sửa bài giảng, nên bài đã sửa hay đã xoá ở trang quản trị không bị đụng tới.
+DELETE FROM "course_lessons"
+WHERE "courseSlug" = 'than-so-hoc-can-ban'
+  AND "videoUrl" IN ('https://www.youtube.com/watch?v=Dfhxrk_PpRM', 'https://www.youtube.com/watch?v=PQDsXIGVIOo', 'https://www.youtube.com/watch?v=pogtdcQH-sA', 'https://www.youtube.com/watch?v=9gMQ18w2JLE', 'https://www.youtube.com/watch?v=jQkyctGSEzc')
+  AND NOT EXISTS (SELECT 1 FROM "audit_logs" WHERE "collectionName" = 'course_lessons');
+
+INSERT INTO "course_lessons" ("courseSlug", "section", "title", "kind", "videoUrl", "durationSeconds", "order")
+SELECT 'than-so-hoc-can-ban', v."section", v."title", v."kind", v."url", v."seconds", v."order"
 FROM (VALUES
-  ('Thần số học cơ bản: Ngày 1', 'https://www.youtube.com/watch?v=Dfhxrk_PpRM', 6756, 1),
-  ('Thần số học cơ bản: Ngày 2', 'https://www.youtube.com/watch?v=PQDsXIGVIOo', 6049, 2),
-  ('Thần số học cơ bản: Ngày 3', 'https://www.youtube.com/watch?v=pogtdcQH-sA', 4576, 3),
-  ('Thần số học cơ bản: Ngày 4', 'https://www.youtube.com/watch?v=9gMQ18w2JLE', 5892, 4),
-  ('Thần số học cơ bản: Ngày 5', 'https://www.youtube.com/watch?v=jQkyctGSEzc', 7161, 5)
-) AS v("title", "url", "seconds", "order")
+  ('Ngày 1', 'Làm quen lớp, vì sao nên học thần số học, nội quy, giới thiệu thầy', 'lecture', 'https://www.youtube.com/watch?v=Dfhxrk_PpRM&end=622', 622, 1),
+  ('Ngày 1', 'Cách học qua từ khóa, lịch 6 buổi, thần số học là gì và Pythagoras', 'lecture', 'https://www.youtube.com/watch?v=Dfhxrk_PpRM&start=622&end=1127', 505, 2),
+  ('Ngày 1', '11 mục đích của thần số học và bình chọn mục đích được quan tâm', 'lecture', 'https://www.youtube.com/watch?v=Dfhxrk_PpRM&start=1127&end=1687', 560, 3),
+  ('Ngày 1', 'Thảo luận: Cảm nhận của học viên sau coaching về nội tâm và hạnh phúc', 'discussion', 'https://www.youtube.com/watch?v=Dfhxrk_PpRM&start=1687&end=2180', 493, 4),
+  ('Ngày 1', 'Thảo luận: Học viên chia sẻ về nợ nghiệp, thấu hiểu và giúp cộng đồng', 'discussion', 'https://www.youtube.com/watch?v=Dfhxrk_PpRM&start=2180&end=2772', 592, 5),
+  ('Ngày 1', 'Cách tính chỉ số đường đời, ví dụ lá số Elon Musk và thực hành tính', 'lecture', 'https://www.youtube.com/watch?v=Dfhxrk_PpRM&start=2772&end=3474', 702, 6),
+  ('Ngày 1', 'Thái dương hệ, liên hệ với các con số và năng lượng số 1, 2, 3', 'lecture', 'https://www.youtube.com/watch?v=Dfhxrk_PpRM&start=3474&end=4455', 981, 7),
+  ('Ngày 1', 'Thảo luận: Trải nghiệm của người số 3, may mắn, quý nhân, tặng lá số', 'discussion', 'https://www.youtube.com/watch?v=Dfhxrk_PpRM&start=4455&end=5014', 559, 8),
+  ('Ngày 1', 'Ý nghĩa nét viết các con số, năng lượng số 4 và số 5', 'lecture', 'https://www.youtube.com/watch?v=Dfhxrk_PpRM&start=5014&end=5544', 530, 9),
+  ('Ngày 1', 'Thảo luận: Năng lượng số 6, ôm đồm, giúp người và cách giữ cân bằng', 'discussion', 'https://www.youtube.com/watch?v=Dfhxrk_PpRM&start=5544&end=5986', 442, 10),
+  ('Ngày 1', 'Năng lượng số 7, phối hợp các con số trong nhóm, cảm nhận và tổng kết', 'lecture', 'https://www.youtube.com/watch?v=Dfhxrk_PpRM&start=5986', 770, 11),
+  ('Ngày 2', 'Ý nghĩa cơ bản số 8, 9, 11/2, 22/4 và tổng quan trang số liệu báo cáo', 'lecture', 'https://www.youtube.com/watch?v=PQDsXIGVIOo&end=548', 548, 12),
+  ('Ngày 2', 'Thế giới bên trong và bên ngoài: 9 chỉ số, ví dụ lá số Elon Musk', 'lecture', 'https://www.youtube.com/watch?v=PQDsXIGVIOo&start=548&end=1332', 784, 13),
+  ('Ngày 2', 'Chỉ số phát triển bản thân, định hướng sự nghiệp và biểu đồ Ikigai', 'lecture', 'https://www.youtube.com/watch?v=PQDsXIGVIOo&start=1332&end=2044', 712, 14),
+  ('Ngày 2', 'Thảo luận: số 1, số 2 đối chiếu lá số của học viên, trực giác là gì', 'discussion', 'https://www.youtube.com/watch?v=PQDsXIGVIOo&start=2044&end=2787', 743, 15),
+  ('Ngày 2', 'Thảo luận: số 3, số 4 đối chiếu từ khóa với lá số của học viên', 'discussion', 'https://www.youtube.com/watch?v=PQDsXIGVIOo&start=2787&end=3353', 566, 16),
+  ('Ngày 2', 'Thảo luận: số 5 – thích tự do, quyết định vội, làm nhiều việc cùng lúc', 'discussion', 'https://www.youtube.com/watch?v=PQDsXIGVIOo&start=3353&end=3975', 622, 17),
+  ('Ngày 2', 'Thảo luận: số 6 – bao dung, ôm đồm, học từ chối và tự chữa lành', 'discussion', 'https://www.youtube.com/watch?v=PQDsXIGVIOo&start=3975&end=4573', 598, 18),
+  ('Ngày 2', 'Thảo luận: số 7 – chiêm nghiệm, bậc thầy trí tuệ, năm cá nhân đổi khi nào', 'discussion', 'https://www.youtube.com/watch?v=PQDsXIGVIOo&start=4573&end=5165', 592, 19),
+  ('Ngày 2', 'Thảo luận: số 8 – tham vọng, tiền bạc, cân bằng vật chất và tinh thần', 'discussion', 'https://www.youtube.com/watch?v=PQDsXIGVIOo&start=5165&end=5667', 502, 20),
+  ('Ngày 2', 'Giải đáp về tiền bạc: cái túi càn khôn, ước mơ lớn và hiểu chính mình', 'lecture', 'https://www.youtube.com/watch?v=PQDsXIGVIOo&start=5667', 382, 21),
+  ('Ngày 3', 'Số 9 và kết nối: nguyên tắc 3B (bàn, bạn, bán), khơi gợi để khách nói', 'lecture', 'https://www.youtube.com/watch?v=pogtdcQH-sA&end=758', 758, 22),
+  ('Ngày 3', 'Thảo luận: học viên đối chiếu số 9 và chia sẻ kinh nghiệm áp dụng 3B', 'discussion', 'https://www.youtube.com/watch?v=pogtdcQH-sA&start=758&end=1279', 521, 23),
+  ('Ngày 3', 'Thảo luận: ý nghĩa số vua 11/2, 22/4 và đối chiếu lá số của học viên', 'discussion', 'https://www.youtube.com/watch?v=pogtdcQH-sA&start=1279&end=1871', 592, 24),
+  ('Ngày 3', 'Cách tính chỉ số sứ mệnh: ví dụ Elon Musk, đặt tên và bài tập thực hành', 'lecture', 'https://www.youtube.com/watch?v=pogtdcQH-sA&start=1871&end=2775', 904, 25),
+  ('Ngày 3', 'Ý nghĩa sứ mệnh 1 đến 4: ưu nhược điểm, ví dụ từ lá số của học viên', 'lecture', 'https://www.youtube.com/watch?v=pogtdcQH-sA&start=2775&end=3502', 727, 26),
+  ('Ngày 3', 'Thảo luận: ý nghĩa sứ mệnh 5, nói thẳng và rèn chậm lại trước khi nói', 'discussion', 'https://www.youtube.com/watch?v=pogtdcQH-sA&start=3502&end=3965', 463, 27),
+  ('Ngày 3', 'Ý nghĩa sứ mệnh 6, 7, 8 và vì sao phải luận cả lá số, không luận rời', 'lecture', 'https://www.youtube.com/watch?v=pogtdcQH-sA&start=3965', 611, 28),
+  ('Ngày 4', 'Thảo luận: luận lá số và số điện thoại của học viên', 'discussion', 'https://www.youtube.com/watch?v=9gMQ18w2JLE&end=583', 583, 29),
+  ('Ngày 4', 'Tín hiệu chu kỳ suy, đồng hồ sinh học và vì sao nghiệp cứ lặp lại', 'lecture', 'https://www.youtube.com/watch?v=9gMQ18w2JLE&start=583&end=986', 403, 30),
+  ('Ngày 4', 'Năng lượng số xấu: hai chuyện chủ doanh nghiệp, gieo quẻ và đổi số', 'lecture', 'https://www.youtube.com/watch?v=9gMQ18w2JLE&start=986&end=1579', 593, 31),
+  ('Ngày 4', 'Sứ mệnh số 9: ý nghĩa, trải nghiệm học viên và hướng tạo thu nhập', 'lecture', 'https://www.youtube.com/watch?v=9gMQ18w2JLE&start=1579&end=2226', 647, 32),
+  ('Ngày 4', 'Thảo luận: sứ mệnh 11/2, 22/4 và chia sẻ của học viên', 'discussion', 'https://www.youtube.com/watch?v=9gMQ18w2JLE&start=2226&end=2610', 384, 33),
+  ('Ngày 4', 'Nợ nghiệp là gì, ba chiếc hộp của đời người và tần số năng lượng', 'lecture', 'https://www.youtube.com/watch?v=9gMQ18w2JLE&start=2610&end=3150', 540, 34),
+  ('Ngày 4', 'Mở cam tương tác, đúng sai do góc nhìn và thoát chuỗi chồng nghiệp', 'lecture', 'https://www.youtube.com/watch?v=9gMQ18w2JLE&start=3150&end=3572', 422, 35),
+  ('Ngày 4', 'Cách gieo hạt: luận từng chỉ số, không nói hết một lần để giữ khách', 'lecture', 'https://www.youtube.com/watch?v=9gMQ18w2JLE&start=3572&end=4050', 478, 36),
+  ('Ngày 4', 'Cách tính nợ nghiệp, đọc trên lá số; ý nghĩa 13/4, 14/5, 16/7, 19/1', 'lecture', 'https://www.youtube.com/watch?v=9gMQ18w2JLE&start=4050&end=4908', 858, 37),
+  ('Ngày 4', 'Vì sao nam Văn nữ Thị: năng lượng số 1 và sự cân bằng của phụ nữ', 'lecture', 'https://www.youtube.com/watch?v=9gMQ18w2JLE&start=4908&end=5549', 641, 38),
+  ('Ngày 4', 'Thảo luận: câu hỏi về nợ nghiệp trên lá số, cảm nhận và dặn dò', 'discussion', 'https://www.youtube.com/watch?v=9gMQ18w2JLE&start=5549', 343, 39),
+  ('Ngày 5', 'Thảo luận: cách xem nợ nghiệp trên lá số của học viên và cách hóa giải', 'discussion', 'https://www.youtube.com/watch?v=jQkyctGSEzc&end=632', 632, 40),
+  ('Ngày 5', 'Thảo luận: lá số đỉnh 8, nhiều số 5, số 9 mạnh; dùng số học để giao tiếp', 'discussion', 'https://www.youtube.com/watch?v=jQkyctGSEzc&start=632&end=1301', 669, 41),
+  ('Ngày 5', 'Thảo luận: cảm nhận sau coaching, quà lớp nâng cao, luận thêm một lá số', 'discussion', 'https://www.youtube.com/watch?v=jQkyctGSEzc&start=1301&end=2018', 717, 42),
+  ('Ngày 5', 'Công thức tính nợ nghiệp ở đường đời, sứ mệnh và nợ nghiệp là gì', 'lecture', 'https://www.youtube.com/watch?v=jQkyctGSEzc&start=2018&end=2537', 519, 43),
+  ('Ngày 5', 'Sáu chìa khóa thành công: tam giác 1-3-5 và vai trò của mối quan hệ', 'lecture', 'https://www.youtube.com/watch?v=jQkyctGSEzc&start=2537&end=3112', 575, 44),
+  ('Ngày 5', 'Tam giác 2-4-6, chìa khóa tâm linh và vì sao cần mối quan hệ chất lượng', 'lecture', 'https://www.youtube.com/watch?v=jQkyctGSEzc&start=3112&end=3695', 583, 45),
+  ('Ngày 5', 'Công thức thành công của Napoleon Hill: tài năng, đam mê, thầy, niềm tin', 'lecture', 'https://www.youtube.com/watch?v=jQkyctGSEzc&start=3695&end=4164', 469, 46),
+  ('Ngày 5', 'Sáu quy luật vận mệnh hóa giải nợ nghiệp, bốn bước gieo hạt, thiền cà phê', 'lecture', 'https://www.youtube.com/watch?v=jQkyctGSEzc&start=4164&end=4931', 767, 47),
+  ('Ngày 5', 'Quy luật trong ngoài: hình ảnh tâm trí tạo kết quả; ba bước luật hấp dẫn', 'lecture', 'https://www.youtube.com/watch?v=jQkyctGSEzc&start=4931&end=5802', 871, 48),
+  ('Ngày 5', 'Thảo luận: cảm nhận sau 5 buổi, vì sao số 7 không xấu, phân biệt với 16/7', 'discussion', 'https://www.youtube.com/watch?v=jQkyctGSEzc&start=5802&end=6313', 511, 49),
+  ('Ngày 5', 'Thảo luận: sách nên đọc, ngôn từ theo đối tượng, học viên cũ chia sẻ', 'discussion', 'https://www.youtube.com/watch?v=jQkyctGSEzc&start=6313', 848, 50)
+) AS v("section", "title", "kind", "url", "seconds", "order")
 WHERE EXISTS (SELECT 1 FROM "courses" WHERE "slug" = 'than-so-hoc-can-ban')
   AND NOT EXISTS (SELECT 1 FROM "course_lessons" WHERE "courseSlug" = 'than-so-hoc-can-ban')
   AND NOT EXISTS (SELECT 1 FROM "audit_logs" WHERE "collectionName" = 'course_lessons');

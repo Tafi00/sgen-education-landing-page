@@ -36,9 +36,18 @@ describe("openInBrowserHref", () => {
 describe("lessonVideoFromUrl", () => {
   it("đổi mọi dạng link YouTube sang khung nhúng", () => {
     const embed = "https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ?rel=0&modestbranding=1";
-    for (const link of ["https://www.youtube.com/watch?v=dQw4w9WgXcQ&t=3", "https://youtu.be/dQw4w9WgXcQ", "https://m.youtube.com/watch?v=dQw4w9WgXcQ", "https://www.youtube.com/embed/dQw4w9WgXcQ"]) {
+    for (const link of ["https://www.youtube.com/watch?v=dQw4w9WgXcQ&si=8-3dYSSDlU77CcpD", "https://youtu.be/dQw4w9WgXcQ", "https://m.youtube.com/watch?v=dQw4w9WgXcQ", "https://www.youtube.com/embed/dQw4w9WgXcQ"]) {
       expect(lessonVideoFromUrl(link)).toEqual({ type: "embed", url: embed });
     }
+  });
+
+  it("giữ đoạn cần phát của link YouTube, bỏ mốc kết thúc vô lý", () => {
+    const base = "https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ?rel=0&modestbranding=1";
+    expect(lessonVideoFromUrl("https://www.youtube.com/watch?v=dQw4w9WgXcQ&start=600&end=1380")?.url).toBe(`${base}&start=600&end=1380`);
+    expect(lessonVideoFromUrl("https://www.youtube.com/watch?v=dQw4w9WgXcQ&end=900")?.url).toBe(`${base}&end=900`);
+    expect(lessonVideoFromUrl("https://youtu.be/dQw4w9WgXcQ?t=300s")?.url).toBe(`${base}&start=300`);
+    expect(lessonVideoFromUrl("https://www.youtube.com/watch?v=dQw4w9WgXcQ&start=900&end=600")?.url).toBe(`${base}&start=900`);
+    expect(lessonVideoFromUrl("https://www.youtube.com/watch?v=dQw4w9WgXcQ&start=abc")?.url).toBe(base);
   });
 
   it("nhận Vimeo (kể cả link riêng tư), Bunny và file mp4", () => {

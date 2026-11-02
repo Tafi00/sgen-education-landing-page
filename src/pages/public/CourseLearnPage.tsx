@@ -132,6 +132,7 @@ export function CourseLearnPage() {
   const [redeeming, setRedeeming] = useState(false);
   const codeInputWrap = useRef<HTMLFormElement>(null);
   const playerTop = useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLElement>(null);
 
   const redeem = async (raw: string) => {
     setRedeeming(true);
@@ -171,6 +172,16 @@ export function CourseLearnPage() {
   const groups = useMemo(() => groupBySection(lessons), [lessons]);
   const watched = useMemo(() => new Set(progress.watched), [progress.watched]);
   const watchedCount = lessons.filter((lesson) => watched.has(lesson._id)).length;
+
+  // Danh sách có thanh cuộn riêng trên máy tính: giữ bài đang học trong tầm nhìn mà không làm cuộn cả trang.
+  const currentLessonId = current?._id;
+  useEffect(() => {
+    const list = listRef.current;
+    const item = list?.querySelector<HTMLElement>(".is-current");
+    if (!list || !item || list.scrollHeight <= list.clientHeight) return;
+    const top = item.getBoundingClientRect().top - list.getBoundingClientRect().top;
+    if (top < 0 || top + item.offsetHeight > list.clientHeight) list.scrollTop += top - 12;
+  }, [currentLessonId]);
 
   const updateProgress = (next: { watched: string[]; last: string }) => {
     setProgress(next);
@@ -308,10 +319,9 @@ export function CourseLearnPage() {
                 </div>
               </div>
 
-              <aside className="learn-list" aria-label="Danh sách bài học">
-                {groups.map((group, groupIndex) => (
-                  <div key={`${group.section}-${groupIndex}`}>
-                    {group.section ? <h3>{group.section}</h3> : null}
+              <aside ref={listRef} className="learn-list" aria-label="Danh sách bài học">
+                {groups.map((group, groupIndex) => {
+                  const items = (
                     <ol>
                       {group.items.map(({ lesson, index }) => {
                         const duration = formatLessonDuration(lesson.durationSeconds);
@@ -330,8 +340,20 @@ export function CourseLearnPage() {
                         );
                       })}
                     </ol>
-                  </div>
-                ))}
+                  );
+                  if (!group.section) return <div key={`nhom-${groupIndex}`}>{items}</div>;
+                  // Khóa nhiều bài: chỉ mở phần đang học để danh sách không dài cả chục màn hình trên điện thoại.
+                  const doneInGroup = group.items.filter(({ lesson }) => watched.has(lesson._id)).length;
+                  return (
+                    <details key={`${group.section}-${groupIndex}`} open={group.items.some(({ lesson }) => lesson._id === current._id)}>
+                      <summary>
+                        <span>{group.section}</span>
+                        <small>{hasAccess ? `${doneInGroup}/${group.items.length} bài` : `${group.items.length} bài`}</small>
+                      </summary>
+                      {items}
+                    </details>
+                  );
+                })}
               </aside>
             </div>
           ) : (

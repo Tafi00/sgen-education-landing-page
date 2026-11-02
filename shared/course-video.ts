@@ -1,8 +1,16 @@
 /**
  * Nguồn phát của bài giảng dán link: YouTube / Vimeo / Bunny Stream chạy trong khung nhúng, file .mp4 / .webm phát trực
  * tiếp. Trả null nếu link không thuộc các loại này, để quản trị biết ngay lúc lưu thay vì học viên gặp khung trắng.
+ *
+ * Link YouTube có `start` / `end` (giây) chỉ phát một đoạn của video: buổi học dài 2 tiếng được chia thành nhiều bài ngắn
+ * mà không phải tải video lên lại. Video vẫn là một file trên YouTube nên học viên kéo thanh tua được ra ngoài đoạn.
  */
 export type LessonVideoSource = { type: "embed" | "video"; url: string };
+
+/** Số giây trong tham số link; `t` của YouTube có thể viết "300" hoặc "300s". */
+function secondsParam(value: string | null) {
+  return value && /^\d+s?$/.test(value) ? Number.parseInt(value, 10) : 0;
+}
 
 export function lessonVideoFromUrl(raw: string): LessonVideoSource | null {
   let url: URL;
@@ -20,7 +28,12 @@ export function lessonVideoFromUrl(raw: string): LessonVideoSource | null {
       : host === "youtube.com" || host === "youtube-nocookie.com"
         ? (url.searchParams.get("v") ?? /^\/(?:embed|live|shorts)\/([^/]+)/.exec(url.pathname)?.[1] ?? "")
         : "";
-  if (youtubeId && /^[\w-]{6,20}$/.test(youtubeId)) return { type: "embed", url: `https://www.youtube-nocookie.com/embed/${youtubeId}?rel=0&modestbranding=1` };
+  if (youtubeId && /^[\w-]{6,20}$/.test(youtubeId)) {
+    const start = secondsParam(url.searchParams.get("start") ?? url.searchParams.get("t"));
+    const end = secondsParam(url.searchParams.get("end"));
+    const range = `${start ? `&start=${start}` : ""}${end > start ? `&end=${end}` : ""}`;
+    return { type: "embed", url: `https://www.youtube-nocookie.com/embed/${youtubeId}?rel=0&modestbranding=1${range}` };
+  }
 
   if (host === "vimeo.com" || host === "player.vimeo.com") {
     const match = /(\d{6,})(?:\/([0-9a-f]{6,}))?/.exec(url.pathname);

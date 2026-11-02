@@ -217,6 +217,7 @@ export function CourseLessonsPage() {
               <span className="field__control">
                 <input id="lesson-link-url" value={linkUrl} maxLength={500} placeholder="https://…" onChange={(event) => setLinkUrl(event.target.value)} />
               </span>
+              <p className="field__hint">Chỉ phát một đoạn của video YouTube: thêm số giây vào cuối link, VD <code>&amp;start=600&amp;end=1380</code>.</p>
             </div>
             {linkError ? (
               <p className="admin-error" role="alert">
