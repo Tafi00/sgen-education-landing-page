@@ -2,7 +2,7 @@ import "../../styles/sim-phong-thuy.css";
 import type { SimLucHaoData } from "../../../shared/sim/sim-phong-thuy-engine";
 
 /**
- * Lá quẻ Lục Hào dùng chung cho Bói sim và Gieo quẻ: quẻ chủ → quẻ biến, Lục Thân, Can Chi, Lục Thú,
+ * Lá quẻ Lục Hào dùng chung cho Luận sim và Gieo quẻ: quẻ chủ → quẻ biến, Lục Thân, Can Chi, Lục Thú,
  * Thế/Ứng, Vượng Suy, Quý Thần, Trường Sinh. Hào 1 ở dưới cùng, hào 6 trên cùng (đọc từ dưới lên).
  */
 export function LucHaoSheet({ data, movingLine, subject = "dãy sim" }: { data: SimLucHaoData; movingLine: number | number[]; subject?: string }) {

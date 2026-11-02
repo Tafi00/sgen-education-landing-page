@@ -40,7 +40,7 @@ export const PRIMARY_NAV: NavItem[] = [
     label: "Phong thủy sim số điện thoại",
     href: "/sim-phong-thuy/boi-sim",
     children: [
-      { label: "Phần mềm bói sim phong thủy", href: "/sim-phong-thuy/boi-sim", description: "Bói sim Kinh Dịch, Bát Cực Linh Số & Bát Tự" },
+      { label: "Phần mềm luận sim phong thủy", href: "/sim-phong-thuy/boi-sim", description: "Luận sim Kinh Dịch, Bát Cực Linh Số & Bát Tự" },
     ],
   },
   {

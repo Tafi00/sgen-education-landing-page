@@ -1666,7 +1666,7 @@ export interface LucHaoSheetInput {
   time: string;
 }
 
-/** An lá quẻ Lục Hào cho quẻ chủ và quẻ biến. Dùng cho bói sim và Gieo quẻ. */
+/** An lá quẻ Lục Hào cho quẻ chủ và quẻ biến. Dùng cho luận sim và Gieo quẻ. */
 export function buildLucHaoSheet({ lines, movingLines, solarDate, time }: LucHaoSheetInput): SimLucHaoData {
   const solarDateStr = solarDate;
   const birthTimeStr = time;

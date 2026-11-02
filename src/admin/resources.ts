@@ -488,7 +488,7 @@ export const RESOURCES = {
           { value: "numerology", label: "Thần số học" },
           { value: "disc", label: "DISC" },
           { value: "mbti", label: "MBTI" },
-          { value: "sim", label: "Bói sim" },
+          { value: "sim", label: "Luận sim" },
           { value: "batu", label: "Tứ Trụ" },
           { value: "iching", label: "Gieo quẻ" },
           { value: "xem-ngay", label: "Xem ngày" },

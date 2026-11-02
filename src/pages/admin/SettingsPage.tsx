@@ -447,7 +447,7 @@ export function SettingsPage() {
         <SettingsSection title="Tính năng">
           <CheckboxField label="Đăng nhập thành viên" checked={form.featureFlags.memberLogin} onChange={(checked) => patchGroup("featureFlags", { memberLogin: checked })} />
           <CheckboxField label="Mua gói VIP" checked={form.featureFlags.vipPurchase} onChange={(checked) => patchGroup("featureFlags", { vipPurchase: checked })} />
-          <CheckboxField label="Công cụ bói sim" checked={form.featureFlags.simTool} onChange={(checked) => patchGroup("featureFlags", { simTool: checked })} />
+          <CheckboxField label="Công cụ luận sim" checked={form.featureFlags.simTool} onChange={(checked) => patchGroup("featureFlags", { simTool: checked })} />
           <CheckboxField label="Công cụ trắc nghiệm" checked={form.featureFlags.quizTools} onChange={(checked) => patchGroup("featureFlags", { quizTools: checked })} />
         </SettingsSection>
       ) : null}

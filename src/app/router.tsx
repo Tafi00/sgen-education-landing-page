@@ -115,7 +115,7 @@ export const router = createBrowserRouter([
           { path: "dich-vu/don-hang/:code", element: <PublicOrderStatusPage />, handle: handle("Đơn hàng") },
           { path: "dich-vu/:slug", element: <PublicServiceDetailPage />, handle: handle("Chi tiết dịch vụ") },
           { path: "sim-phong-thuy", element: <PublicSimIntroPage />, handle: handle("Phong thủy sim số điện thoại") },
-          { path: "sim-phong-thuy/boi-sim", element: <PublicSimToolPage />, handle: handle("Bói sim phong thủy") },
+          { path: "sim-phong-thuy/boi-sim", element: <PublicSimToolPage />, handle: handle("Luận sim phong thủy") },
           { path: "cong-cu-phong-thuy", element: <PublicFengShuiHubPage />, handle: handle("Công cụ phong thủy") },
           { path: "cong-cu-phong-thuy/gieo-que-kinh-dich", element: <PublicGieoQuePage />, handle: handle("Gieo quẻ Kinh Dịch") },
           { path: "cong-cu-phong-thuy/tu-tru-bat-tu", element: <PublicTuTruPage />, handle: handle("Phân tích Tứ Trụ Bát Tự") },

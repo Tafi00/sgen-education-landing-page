@@ -1,7 +1,7 @@
 /* ux-tools — ghi đè/tinh chỉnh UX sau rà soát mobile.
    File này được nạp SAU responsive.css nên có thể ghi đè rule cũ khi cùng độ ưu tiên.
 
-   Phạm vi: các trang công cụ/tra cứu (thần số học, DISC/MBTI, free tools, bói sim,
+   Phạm vi: các trang công cụ/tra cứu (thần số học, DISC/MBTI, free tools, luận sim,
    gieo quẻ, tứ trụ, xem ngày). Mọi selector đều neo vào class của các trang đó
    (.quiz-runner, .tools-hub, .result-preview__empty--compact…). */
 
@@ -29,7 +29,7 @@
 }
 
 /* ---------------------------------------------------------------------------
-   2. Khối empty state gọn trên mobile (thần số học, free tool, bói sim).
+   2. Khối empty state gọn trên mobile (thần số học, free tool, luận sim).
    Desktop vẫn giữ panel lớn như cũ; link "Xem ví dụ" chỉ có ở thần số học.
    --------------------------------------------------------------------------- */
 @media (max-width: 800px) {
@@ -456,7 +456,7 @@
   }}
 
 /* ---------------------------------------------------------------------------
-   6. Bói sim: dải điểm tổng + phần chi tiết thu gọn.
+   6. Luận sim: dải điểm tổng + phần chi tiết thu gọn.
    --------------------------------------------------------------------------- */
 /* ---------------------------------------------------------------------------
    7. Công cụ phong thủy: bù header khi cuộn tới kết quả + nút về đầu công cụ.
@@ -929,7 +929,7 @@
 }
 
 /* ---------------------------------------------------------------------------
-   11. Bói sim bổ sung: hình quẻ, ngũ hành, âm dương, bảng phương pháp, bản mệnh.
+   11. Luận sim bổ sung: hình quẻ, ngũ hành, âm dương, bảng phương pháp, bản mệnh.
        Khối này nằm trong chi tiết báo cáo (nền tối) nên dùng chữ sáng.
    --------------------------------------------------------------------------- */
 

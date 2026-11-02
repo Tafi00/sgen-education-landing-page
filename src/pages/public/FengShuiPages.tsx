@@ -197,7 +197,7 @@ export function FengShuiHubPage() {
           <SectionHeading eyebrow="Kết hợp thêm" title="Bổ sung góc nhìn từ sim số và thần số học" description="Ba công cụ phong thủy chỉ là một phần trong hệ thống tra cứu của SGEN. Bạn có thể kết hợp thêm các lớp phân tích khác." />
           <CardGrid>
             <FeatureCard
-              title="Bói sim phong thủy"
+              title="Luận sim phong thủy"
               footer={<Link className="card-link" to="/sim-phong-thuy">Xem cách luận sim <ArrowRight aria-hidden="true" /></Link>}
             >
               <p>Luận số điện thoại theo năm lớp: quẻ Kinh Dịch, ngũ hành dãy số, âm dương, quan niệm dân gian và đối chiếu bản mệnh.</p>

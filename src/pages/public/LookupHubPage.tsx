@@ -66,7 +66,7 @@ const CTAS = [
   {
     icon: Compass,
     title: "Bộ công cụ phong thủy",
-    text: "Bói sim, gieo quẻ Kinh Dịch, Tứ Trụ Bát Tự và xem ngày cho bạn muốn tra cứu thêm.",
+    text: "Luận sim, gieo quẻ Kinh Dịch, Tứ Trụ Bát Tự và xem ngày cho bạn muốn tra cứu thêm.",
     href: "/cong-cu-phong-thuy",
     action: "Khám phá công cụ",
   },

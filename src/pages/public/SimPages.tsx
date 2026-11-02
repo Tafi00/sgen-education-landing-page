@@ -68,7 +68,7 @@ const APPROACHES = [
     text: "Công cụ chạy song song quẻ Kinh Dịch, ngũ hành, âm dương, quan niệm dân gian và đối chiếu bản mệnh, sau đó báo cáo từng lớp để bạn tự cân nhắc.",
   },
 ];
-/** Trang giới thiệu bói sim: giải thích năm lớp phân tích, so sánh cách luận và cảnh báo khác biệt giữa các trường phái. */
+/** Trang giới thiệu luận sim: giải thích năm lớp phân tích, so sánh cách luận và cảnh báo khác biệt giữa các trường phái. */
 export function SimIntroPage() {
   return (
     <>
@@ -79,7 +79,7 @@ export function SimIntroPage() {
         accent="năm lớp phân tích"
         description="Thay vì chỉ tra cặp số đẹp, công cụ của SGEN chạy đồng thời năm lớp: quẻ Kinh Dịch, ngũ hành dãy số, âm dương, quan niệm dân gian và đối chiếu bản mệnh. Mỗi lớp được báo cáo riêng để bạn thấy dãy số mạnh yếu ở đâu."
         actions={<ButtonRow><ButtonLink variant="primary" to="/sim-phong-thuy/boi-sim">
-                <Phone aria-hidden="true" /> Bói sim ngay
+                <Phone aria-hidden="true" /> Luận sim ngay
               </ButtonLink>
               <ButtonLink variant="secondary" to="/khoa-hoc">
                 <GraduationCap aria-hidden="true" /> Học cách luận sim
@@ -129,7 +129,7 @@ export function SimIntroPage() {
           <SectionHeading eyebrow="Nên làm gì tiếp" title="Từ điểm số tới hành động cụ thể" />
           <CardGrid>
             <FeatureCard
-              title="Bói sim miễn phí"
+              title="Luận sim miễn phí"
               footer={<Link className="card-link" to="/sim-phong-thuy/boi-sim">Mở công cụ <ArrowRight aria-hidden="true" /></Link>}
             >
               <p>Nhập số điện thoại để nhận báo cáo đầy đủ năm lớp, kèm gợi ý cách đọc từng chỉ báo.</p>
@@ -153,7 +153,7 @@ export function SimIntroPage() {
   );
 }
 
-/** Trang bói sim phong thủy: render đầy đủ engine Kinh Dịch + Bát Cực Linh Số + Bát Tự (port từ Mệnh thư). */
+/** Trang luận sim phong thủy: render đầy đủ engine Kinh Dịch + Bát Cực Linh Số + Bát Tự (port từ Mệnh thư). */
 export function SimToolPage() {
   const [searchParams] = useSearchParams();
   return (

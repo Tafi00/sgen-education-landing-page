@@ -16,7 +16,7 @@ const STATIC_TITLES: Record<string, { title: string; description: string; noinde
   "/tra-cuu/mbti": { title: "Trắc nghiệm MBTI", description: "Bài trắc nghiệm MBTI theo khung 4 cặp xu hướng, gợi ý môi trường và ngành nghề phù hợp." },
   "/dich-vu": { title: "Dịch vụ và gói nội dung", description: "Gói VIP Thần số học, bản đồ số học trọn đời và tư vấn định hướng nghề nghiệp cùng SGEN." },
   "/sim-phong-thuy": { title: "Phong thủy sim số điện thoại", description: "Luận sim theo Kinh Dịch, ngũ hành dãy số, âm dương và đối chiếu bản mệnh." },
-  "/sim-phong-thuy/boi-sim": { title: "Phần mềm bói sim phong thủy", description: "Nhập số điện thoại và ngày giờ sinh để xem phân tích sim theo năm lớp phương pháp." },
+  "/sim-phong-thuy/boi-sim": { title: "Phần mềm luận sim phong thủy", description: "Nhập số điện thoại và ngày giờ sinh để xem phân tích sim theo năm lớp phương pháp." },
   "/cong-cu-phong-thuy": { title: "Công cụ phong thủy", description: "Gieo quẻ Kinh Dịch, phân tích Tứ Trụ Bát Tự và xem ngày tốt xấu theo lịch pháp Việt Nam." },
   "/cong-cu-phong-thuy/gieo-que-kinh-dich": { title: "Gieo quẻ Kinh Dịch", description: "Lập quẻ theo ba đồng xu, luận quẻ chủ - quẻ biến và hào động cho việc đang suy xét." },
   "/cong-cu-phong-thuy/tu-tru-bat-tu": { title: "Phân tích Tứ Trụ Bát Tự", description: "Lập lá số bốn trụ, xét vượng suy Nhật chủ, ngũ hành và đại vận." },

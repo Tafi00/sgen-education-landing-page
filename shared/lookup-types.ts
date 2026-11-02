@@ -45,7 +45,7 @@ export const LOOKUP_LABELS: Record<LookupType, string> = {
   numerology: "Tra cứu Thần số học",
   disc: "Trắc nghiệm DISC",
   mbti: "Trắc nghiệm MBTI",
-  sim: "Bói sim phong thủy",
+  sim: "Luận sim phong thủy",
   batu: "Phân tích Tứ Trụ Bát Tự",
   iching: "Gieo quẻ Kinh Dịch",
   "xem-ngay": "Xem ngày tốt xấu",

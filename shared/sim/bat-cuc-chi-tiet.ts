@@ -2,7 +2,7 @@
  * Bảng Bát Cực Linh Số của khách (trang 28–29 tài liệu SGEN, gửi qua Zalo 26/10/2026): 8 sao, mỗi sao 5 cột
  * Ý nghĩa · Tài chính · Sự nghiệp · Sức khỏe · Mối quan hệ, kèm điểm và các cặp số.
  *
- * - Thẻ cặp số ở trang Bói sim hiện cột "Ý nghĩa"; rê chuột / bấm vào thẻ hiện đủ 5 cột.
+ * - Thẻ cặp số ở trang Luận sim hiện cột "Ý nghĩa"; rê chuột / bấm vào thẻ hiện đủ 5 cột.
  * - Màu chữ tên sao theo khách: Sinh Khí, Thiên Y, Diên Niên đỏ; Phục Vị xanh; Tuyệt Mệnh, Ngũ Quỷ, Họa Hại, Lục Sát đen.
  * - Chép nguyên văn từ ảnh, chỉ sửa lỗi gõ hiển nhiên: "Qúy" → "Quý", "tỉ mĩ" → "tỉ mỉ", "tiêu sài" → "tiêu xài",
  *   "Qua bảo thủ" → "Quá bảo thủ", "cảm tình cầu người khác" → "cảm tình của người khác", "thẳng thắng" → "thẳng thắn",
