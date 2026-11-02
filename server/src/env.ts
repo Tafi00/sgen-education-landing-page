@@ -48,6 +48,11 @@ export const env = {
   sessionSecret: persistentSecret("session.key"),
   settingsKey: persistentSecret("settings.key"),
   uploadDir: path.resolve(ROOT, process.env.UPLOAD_DIR ?? "uploads"),
+  /**
+   * Video khóa học chỉ trả qua API sau khi kiểm tra mã. Mặc định nằm trong volume uploads để không mất khi deploy lại;
+   * thư mục bắt đầu bằng dấu chấm nên route tĩnh /uploads từ chối (`dotfiles: "deny"`).
+   */
+  courseVideoDir: path.resolve(ROOT, process.env.COURSE_VIDEO_DIR ?? path.join(process.env.UPLOAD_DIR ?? "uploads", ".course-videos")),
   dataDir,
   publicOrigin: process.env.PUBLIC_ORIGIN ?? "http://127.0.0.1:5173",
   webDistDir: path.resolve(ROOT, "dist"),

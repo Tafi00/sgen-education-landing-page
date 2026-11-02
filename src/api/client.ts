@@ -24,6 +24,8 @@ type RequestOptions = {
   query?: Record<string, string | number | boolean | undefined | null>;
   signal?: AbortSignal;
   formData?: FormData;
+  /** Dữ liệu nhị phân (một phần của video đang tải lên). */
+  binary?: Blob;
 };
 
 function buildUrl(path: string, query?: RequestOptions["query"]) {
@@ -37,7 +39,8 @@ function buildUrl(path: string, query?: RequestOptions["query"]) {
 
 async function request<T>(method: "GET" | "POST" | "PATCH" | "DELETE", path: string, body?: unknown, options: RequestOptions = {}): Promise<T> {
   const headers: Record<string, string> = { Accept: "application/json" };
-  if (!options.formData && body !== undefined) headers["Content-Type"] = "application/json";
+  if (options.binary) headers["Content-Type"] = "application/octet-stream";
+  else if (!options.formData && body !== undefined) headers["Content-Type"] = "application/json";
   if (method !== "GET") {
     const csrf = readCookie("sgen_csrf");
     if (csrf) headers["x-csrf-token"] = csrf;
@@ -47,7 +50,7 @@ async function request<T>(method: "GET" | "POST" | "PATCH" | "DELETE", path: str
     headers,
     credentials: "same-origin",
     signal: options.signal,
-    body: options.formData ?? (body === undefined ? undefined : JSON.stringify(body)),
+    body: options.binary ?? options.formData ?? (body === undefined ? undefined : JSON.stringify(body)),
   });
   const contentType = response.headers.get("content-type") ?? "";
   const payload: unknown = contentType.includes("application/json") ? await response.json() : await response.text();
@@ -70,6 +73,7 @@ export const api = {
   patch: <T>(path: string, body?: unknown, options?: RequestOptions) => request<T>("PATCH", path, body, options),
   del: <T>(path: string, body?: unknown, options?: RequestOptions) => request<T>("DELETE", path, body, options),
   upload: <T>(path: string, formData: FormData) => request<T>("POST", path, undefined, { formData }),
+  postBinary: <T>(path: string, binary: Blob, query?: RequestOptions["query"]) => request<T>("POST", path, undefined, { binary, query }),
 };
 
 export function errorMessage(error: unknown) {

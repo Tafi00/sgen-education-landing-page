@@ -14,5 +14,7 @@ declare module "express-session" {
     ebookCodeId?: string;
     /** Mã học viên đang mở khoá chi tiết các công cụ (Sim, Gieo quẻ, Xem ngày). */
     studentCodeId?: string;
+    /** Các mã khóa học đã nhập (mỗi mã mở một khóa video). */
+    courseCodeIds?: string[];
   }
 }

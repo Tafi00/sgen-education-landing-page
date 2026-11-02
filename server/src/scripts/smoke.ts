@@ -59,7 +59,7 @@ async function samplePng() {
   return sharp({ create: { width: 600, height: 400, channels: 3, background: "#5a22e8" } }).png().toBuffer();
 }
 
-/** Gọi API trả file nhị phân (PDF xuất ebook): giữ cookie phiên như trình duyệt. */
+/** Gọi API xuất ebook: giữ cookie phiên như trình duyệt; trả PDF hoặc JSON tùy phản hồi. */
 async function callBinary(base: string, pathname: string, body: unknown, jar: Jar) {
   const cookieHeader = [...jar.cookies.entries()].map(([key, value]) => `${key}=${value}`).join("; ");
   const response = await fetch(`${base}${pathname}`, {
@@ -71,6 +71,23 @@ async function callBinary(base: string, pathname: string, body: unknown, jar: Ja
   if (contentType.includes("application/pdf")) return { status: response.status, bytes: new Uint8Array(await response.arrayBuffer()), payload: null as unknown, headers: response.headers };
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return { status: response.status, bytes: null, payload: (await response.json()) as any, headers: response.headers };
+}
+
+/** Tải file ebook bằng đường dẫn, không gửi cookie: như khi mở link ở Chrome sau khi xuất trong Zalo. */
+async function fetchExportFile(base: string, token: string | undefined, query = "") {
+  const response = await fetch(`${base}/api/ebook/file/${token}${query}`);
+  const isPdf = (response.headers.get("content-type") ?? "").includes("application/pdf");
+  return { status: response.status, disposition: response.headers.get("content-disposition") ?? "", bytes: isPdf ? new Uint8Array(await response.arrayBuffer()) : null };
+}
+
+/** Gửi một phần video (nhị phân) lên API quản trị, kèm cookie phiên và CSRF. */
+async function postChunk(base: string, pathname: string, chunk: Buffer, jar: Jar) {
+  const response = await fetch(`${base}${pathname}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/octet-stream", Cookie: [...jar.cookies.entries()].map(([key, value]) => `${key}=${value}`).join("; "), "x-csrf-token": jar.cookies.get("sgen_csrf") ?? "" },
+    body: new Uint8Array(chunk),
+  });
+  return { status: response.status, payload: (await response.json()) as { received?: number } };
 }
 
 /**
@@ -412,12 +429,16 @@ async function run() {
   record("mã demo không xuất được bản đầy đủ", demoForbidden.status === 403 && demoForbidden.payload?.error?.code === "edition_not_allowed", `status=${demoForbidden.status}`);
 
   const demoExport = await callBinary(base, "/api/ebook/export", { ...person, phone: "0912 345 678", edition: "demo" }, demoJar);
-  const demoPages = demoExport.bytes ? (await PDFDocument.load(demoExport.bytes)).getPageCount() : 0;
-  record("xuất bản Demo 3 chỉ số trả file PDF 18 trang", demoExport.status === 200 && demoPages === 18, `status=${demoExport.status} pages=${demoPages}`);
+  const demoToken = (demoExport.payload as { file?: { token?: string } } | null)?.file?.token;
+  const demoFile = await fetchExportFile(base, demoToken);
+  const demoPages = demoFile.bytes ? (await PDFDocument.load(demoFile.bytes)).getPageCount() : 0;
+  record("xuất bản Demo trả đường dẫn tải; tải không cần phiên được file PDF 18 trang", demoExport.status === 200 && demoFile.status === 200 && demoPages === 18 && demoFile.disposition.startsWith("attachment"), `status=${demoExport.status}/${demoFile.status} pages=${demoPages}`);
 
   const fullExport = await callBinary(base, "/api/ebook/export", { ...person, phone: "+84 912 345 678", edition: "full" }, fullJar);
-  const fullPages = fullExport.bytes ? (await PDFDocument.load(fullExport.bytes)).getPageCount() : 0;
-  record("xuất bản đầy đủ trả file PDF hơn 70 trang", fullExport.status === 200 && fullPages > 70, `status=${fullExport.status} pages=${fullPages}`);
+  const fullToken = (fullExport.payload as { file?: { token?: string } } | null)?.file?.token;
+  const fullFile = await fetchExportFile(base, fullToken);
+  const fullPages = fullFile.bytes ? (await PDFDocument.load(fullFile.bytes)).getPageCount() : 0;
+  record("xuất bản đầy đủ: tải theo đường dẫn được file PDF hơn 70 trang", fullExport.status === 200 && fullFile.status === 200 && fullPages > 70, `status=${fullExport.status}/${fullFile.status} pages=${fullPages}`);
 
   const profiles = await Customer.find({ nameSearch: "pham thanh tung" }).lean();
   record(
@@ -474,6 +495,123 @@ async function run() {
       customerDetail.payload.reports.length >= 1,
     `exports=${customerDetail.payload.exports?.length}`,
   );
+
+  /* ------------------- tải lại file, lấy lại file ở quản trị ------------------ */
+  const usedBeforeRefetch = (await EbookCode.findById(fullDoc?._id).lean())?.used;
+  const secondDownload = await fetchExportFile(base, fullToken);
+  const viewInline = await fetchExportFile(base, fullToken, "?xem=1");
+  const fileInfo = await call(base, `/api/ebook/file/${fullToken}/info`);
+  const fullExportRow = await EbookExport.findOne({ downloadToken: fullToken }).lean();
+  const adminFile = await fetch(`${base}/api/admin/ebook-codes/exports/${fullExportRow?._id}/file`, { headers: { Cookie: [...adminJar.cookies.entries()].map(([key, value]) => `${key}=${value}`).join("; ") } });
+  const adminBytes = (adminFile.headers.get("content-type") ?? "").includes("pdf") ? new Uint8Array(await adminFile.arrayBuffer()) : null;
+  const adminPages = adminBytes ? (await PDFDocument.load(adminBytes)).getPageCount() : 0;
+  const anonymousAdminFile = await fetch(`${base}/api/admin/ebook-codes/exports/${fullExportRow?._id}/file`);
+  const adminLink = await call(base, `/api/admin/ebook-codes/exports/${fullExportRow?._id}/link`, { method: "POST", jar: adminJar });
+  const usedAfterRefetch = (await EbookCode.findById(fullDoc?._id).lean())?.used;
+  record(
+    "tải lại, xem file, quản trị lấy lại file đều không trừ lượt; người ngoài không lấy được qua API quản trị",
+    secondDownload.status === 200 && viewInline.disposition.startsWith("inline") && fileInfo.payload.file?.customerName === "Phạm Thanh Tùng" && fileInfo.payload.file?.customerPhone === undefined && adminPages > 70 && anonymousAdminFile.status === 401 && adminLink.payload.path === `/ebook/tai/${fullToken}` && usedAfterRefetch === usedBeforeRefetch,
+    `${secondDownload.status}/${fileInfo.status}/${adminPages}/${anonymousAdminFile.status} used=${usedBeforeRefetch}→${usedAfterRefetch}`,
+  );
+  const recentFiles = await call(base, "/api/ebook/exports", { jar: fullJar });
+  record("danh sách file đã xuất của mã gồm file vừa xuất, không gồm lượt lỗi", recentFiles.payload.items?.length === 1 && recentFiles.payload.items[0].token === fullToken, `items=${recentFiles.payload.items?.length}`);
+
+  await EbookExport.updateOne({ downloadToken: fullToken }, { downloadExpiresAt: new Date(Date.now() - 1000) });
+  const expiredFile = await fetchExportFile(base, fullToken);
+  const badToken = await fetchExportFile(base, "khong-co-duong-dan-nay-trong-he-thong");
+  const renewedLink = await call(base, `/api/admin/ebook-codes/exports/${fullExportRow?._id}/link`, { method: "POST", jar: adminJar });
+  const renewedFile = await fetchExportFile(base, String(renewedLink.payload.path ?? "").split("/").pop());
+  record("đường dẫn hết hạn báo 410, đường dẫn sai báo 404, quản trị cấp được link mới", expiredFile.status === 410 && badToken.status === 404 && renewedFile.status === 200, `${expiredFile.status}/${badToken.status}/${renewedFile.status}`);
+
+  const oneCode = (await call(base, "/api/admin/ebook-codes/generate", { method: "POST", jar: adminJar, body: { plan: "demo1", count: 1 } })).payload.items?.[0];
+  const oneJar: Jar = { cookies: new Map() };
+  await call(base, "/api/ebook/me", { jar: oneJar });
+  await call(base, "/api/ebook/redeem", { method: "POST", jar: oneJar, body: { code: oneCode?.code } });
+  await callBinary(base, "/api/ebook/export", { ...person, phone: "0912345678", edition: "demo" }, oneJar);
+  const otherBrowserJar: Jar = { cookies: new Map() };
+  await call(base, "/api/ebook/me", { jar: otherBrowserJar });
+  const exhaustedRedeem = await call(base, "/api/ebook/redeem", { method: "POST", jar: otherBrowserJar, body: { code: oneCode?.code } });
+  const exhaustedList = await call(base, "/api/ebook/exports", { jar: otherBrowserJar });
+  const exhaustedExport = await callBinary(base, "/api/ebook/export", { ...person, phone: "0912345678", edition: "demo" }, otherBrowserJar);
+  record(
+    "mã hết lượt vẫn đăng nhập ở trình duyệt khác để tải lại file đã xuất, nhưng không xuất mới được",
+    exhaustedRedeem.status === 200 && exhaustedRedeem.payload.code?.state === "exhausted" && exhaustedList.payload.items?.length === 1 && exhaustedExport.status === 403,
+    `${exhaustedRedeem.status}/${exhaustedList.payload.items?.length}/${exhaustedExport.status}`,
+  );
+
+  /* ------------------------------ khóa học video ----------------------------- */
+  const courseSlug = "than-so-hoc-can-ban";
+  const noCourseCode = await call(base, "/api/admin/ebook-codes/generate", { method: "POST", jar: adminJar, body: { plan: "khoahoc", count: 1 } });
+  const courseCode = (await call(base, "/api/admin/ebook-codes/generate", { method: "POST", jar: adminJar, body: { plan: "khoahoc", count: 1, courseSlug } })).payload.items?.[0];
+  const otherCourseCode = (await call(base, "/api/admin/ebook-codes/generate", { method: "POST", jar: adminJar, body: { plan: "khoahoc", count: 1, courseSlug: "gieo-que-kinh-dich" } })).payload.items?.[0];
+  record("mã khóa học bắt buộc chọn khóa, tiền tố KH, không bao giờ hết lượt", noCourseCode.status === 422 && courseCode?.display?.startsWith("KH-") && courseCode?.state === "active", `${noCourseCode.status} ${courseCode?.display}`);
+
+  // File thử: đầu file MP4 hợp lệ, chia 2 phần để đi qua đường tải từng phần.
+  const videoBytes = Buffer.concat([Buffer.from([0, 0, 0, 24]), Buffer.from("ftypisom"), Buffer.alloc(9_000_000, 7)]);
+  const started = await call(base, "/api/admin/course-lessons/uploads", { method: "POST", jar: adminJar });
+  const uploadPath = `/api/admin/course-lessons/uploads/${started.payload.uploadId}`;
+  const firstChunk = await postChunk(base, `${uploadPath}/chunk?offset=0`, videoBytes.subarray(0, 8_000_000), adminJar);
+  const resentChunk = await postChunk(base, `${uploadPath}/chunk?offset=0`, videoBytes.subarray(0, 8_000_000), adminJar);
+  const secondChunk = await postChunk(base, `${uploadPath}/chunk?offset=8000000`, videoBytes.subarray(8_000_000), adminJar);
+  const finished = await call(base, `${uploadPath}/finish`, { method: "POST", jar: adminJar, body: { filename: "01 - Bài mở đầu.mp4" } });
+  record("video tải lên từng phần, gửi lại phần đã nhận không ghi trùng", firstChunk.status === 200 && resentChunk.status === 200 && secondChunk.payload.received === videoBytes.length && finished.payload.size === videoBytes.length, `size=${finished.payload.size}`);
+
+  const fakeStart = await call(base, "/api/admin/course-lessons/uploads", { method: "POST", jar: adminJar });
+  const fakePath = `/api/admin/course-lessons/uploads/${fakeStart.payload.uploadId}`;
+  await postChunk(base, `${fakePath}/chunk?offset=0`, Buffer.from("day khong phai video, chi la chu"), adminJar);
+  const fakeFinish = await call(base, `${fakePath}/finish`, { method: "POST", jar: adminJar, body: { filename: "gia.mp4" } });
+  record("file không phải video bị từ chối", fakeFinish.status === 422, `status=${fakeFinish.status}`);
+
+  const lesson = await call(base, "/api/admin/course-lessons", { method: "POST", jar: adminJar, body: { courseSlug, title: "Bài mở đầu", section: "Video 1", videoFile: finished.payload.videoFile, durationSeconds: 754 } });
+  const previewLesson = await call(base, "/api/admin/course-lessons", { method: "POST", jar: adminJar, body: { courseSlug, title: "Học thử trên YouTube", videoUrl: "https://youtu.be/dQw4w9WgXcQ", isPreview: true } });
+  const draftLesson = await call(base, "/api/admin/course-lessons", { method: "POST", jar: adminJar, body: { courseSlug, title: "Bài nháp", videoUrl: "https://vimeo.com/123456789", status: "draft" } });
+  const badLink = await call(base, "/api/admin/course-lessons", { method: "POST", jar: adminJar, body: { courseSlug, title: "Link sai", videoUrl: "https://example.com/khong-phai-video" } });
+  const noVideo = await call(base, "/api/admin/course-lessons", { method: "POST", jar: adminJar, body: { courseSlug, title: "Không có video" } });
+  record("thêm bài giảng từ file và link; link không phát được hoặc thiếu video bị từ chối", lesson.status === 201 && previewLesson.status === 201 && draftLesson.status === 201 && badLink.status === 422 && noVideo.status === 422, `${lesson.status}/${previewLesson.status}/${badLink.status}/${noVideo.status}`);
+
+  const learnerJar: Jar = { cookies: new Map() };
+  const learnBefore = await call(base, `/api/khoa-hoc/${courseSlug}/hoc`, { jar: learnerJar });
+  const lockedVideoUrl = `/api/khoa-hoc/video/${lesson.payload.item._id}`;
+  const cookieOf = (jar: Jar) => [...jar.cookies.entries()].map(([key, value]) => `${key}=${value}`).join("; ");
+  const videoLocked = await fetch(`${base}${lockedVideoUrl}`, { headers: { Cookie: cookieOf(learnerJar) } });
+  const lockedRow = learnBefore.payload.lessons?.find((item: { title: string }) => item.title === "Bài mở đầu");
+  const previewRow = learnBefore.payload.lessons?.find((item: { title: string }) => item.title === "Học thử trên YouTube");
+  record(
+    "chưa nhập mã: bài khoá không lộ nguồn video, bài học thử xem được, bài nháp bị ẩn, video trả 403",
+    learnBefore.payload.access === null && lockedRow?.locked === true && lockedRow?.source === null && previewRow?.locked === false && previewRow?.source?.type === "embed" && learnBefore.payload.lessons?.length === 2 && videoLocked.status === 403,
+    `lessons=${learnBefore.payload.lessons?.length} video=${videoLocked.status}`,
+  );
+  const directUpload = await fetch(`${base}/uploads/.course-videos/${finished.payload.videoFile}`);
+  record("không tải được video qua đường /uploads công khai", directUpload.status >= 400, `status=${directUpload.status}`);
+
+  const wrongCourse = await call(base, `/api/khoa-hoc/${courseSlug}/redeem`, { method: "POST", jar: learnerJar, body: { code: otherCourseCode?.code } });
+  const ebookAtCourse = await call(base, `/api/khoa-hoc/${courseSlug}/redeem`, { method: "POST", jar: learnerJar, body: { code: oneCode?.code } });
+  const courseAtEbook = await call(base, "/api/ebook/redeem", { method: "POST", jar: learnerJar, body: { code: courseCode?.code } });
+  const courseAtStudent = await call(base, "/api/hoc-vien/redeem", { method: "POST", jar: learnerJar, body: { code: courseCode?.code } });
+  record("mã khóa khác, mã ebook không mở được khóa; mã khóa học không xuất ebook, không mở công cụ", wrongCourse.status === 422 && ebookAtCourse.status === 422 && courseAtEbook.status === 422 && courseAtStudent.status === 422, `${wrongCourse.status}/${ebookAtCourse.status}/${courseAtEbook.status}/${courseAtStudent.status}`);
+
+  const redeemCourse = await call(base, `/api/khoa-hoc/${courseSlug}/redeem`, { method: "POST", jar: learnerJar, body: { code: courseCode?.display } });
+  const learnAfter = await call(base, `/api/khoa-hoc/${courseSlug}/hoc`, { jar: learnerJar });
+  const videoWhole = await fetch(`${base}${lockedVideoUrl}`, { headers: { Cookie: cookieOf(learnerJar), Range: "bytes=0-99" } });
+  const videoChunkLength = (await videoWhole.arrayBuffer()).byteLength;
+  record(
+    "nhập đúng mã: mở mọi bài của khóa, video phát được và tua được (Range 206)",
+    redeemCourse.status === 200 && learnAfter.payload.access?.display === courseCode?.display && learnAfter.payload.lessons?.every((item: { locked: boolean; source: unknown }) => !item.locked && item.source) && videoWhole.status === 206 && videoChunkLength === 100,
+    `${redeemCourse.status}/${videoWhole.status}/${videoChunkLength}`,
+  );
+  const otherCourseLearn = await call(base, "/api/khoa-hoc/gieo-que-kinh-dich/hoc", { jar: learnerJar });
+  record("mã của khóa này không mở khóa khác", otherCourseLearn.payload.access === null, `access=${JSON.stringify(otherCourseLearn.payload.access)}`);
+
+  await call(base, `/api/admin/ebook-codes/${courseCode?._id}`, { method: "PATCH", jar: adminJar, body: { status: "disabled" } });
+  const videoDisabled = await fetch(`${base}${lockedVideoUrl}`, { headers: { Cookie: cookieOf(learnerJar) } });
+  record("khoá mã khóa học thì học viên mất quyền xem ngay", videoDisabled.status === 403, `status=${videoDisabled.status}`);
+
+  const reordered = await call(base, "/api/admin/course-lessons/reorder", { method: "POST", jar: adminJar, body: { ids: [previewLesson.payload.item._id, lesson.payload.item._id, draftLesson.payload.item._id] } });
+  const afterReorder = await call(base, `/api/admin/course-lessons?course=${courseSlug}`, { jar: adminJar });
+  record("đổi được thứ tự bài", reordered.status === 200 && afterReorder.payload.items?.[0]?._id === previewLesson.payload.item._id, afterReorder.payload.items?.map((item: { title: string }) => item.title).join(" > "));
+  const removed = await call(base, `/api/admin/course-lessons/${lesson.payload.item._id}`, { method: "DELETE", jar: adminJar });
+  const videoGone = await fetch(`${base}${lockedVideoUrl}`, { headers: { Cookie: cookieOf(adminJar) } });
+  record("xoá bài giảng xoá luôn file video", removed.status === 200 && videoGone.status === 404, `${removed.status}/${videoGone.status}`);
 
   /* -------------------------------- tổng kết ------------------------------- */
   server.close();

@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { AlertTriangle, BookOpen, Cake, Loader2, Phone, Search, X } from "lucide-react";
 import { api, errorMessage } from "../../api/client";
 import { DataTable } from "../../components/admin/DataTable";
+import { EbookExportActions } from "../../components/admin/EbookExportActions";
 import { formatPhone } from "../../../shared/phone";
 import type { ColumnConfig } from "../../admin/types";
 
@@ -139,7 +140,7 @@ export function CustomersPage() {
       <header className="admin-page__header">
         <div>
           <h1>Khách hàng</h1>
-          <p>Hồ sơ khách hàng đã để lại số điện thoại ở bước tra cứu hoặc được xuất ebook. Tìm theo họ tên hoặc số điện thoại, lọc theo ngày/tháng sinh để chăm sóc sinh nhật.</p>
+          <p>Hồ sơ khách hàng đã để lại số điện thoại ở bước tra cứu hoặc được xuất ebook. Tìm theo họ tên hoặc số điện thoại, lọc theo ngày/tháng sinh để chăm sóc sinh nhật. Khách báo không thấy file: mở hồ sơ, tải lại PDF hoặc sao chép đường dẫn gửi khách, không trừ lượt.</p>
         </div>
       </header>
 
@@ -298,6 +299,7 @@ function CustomerDetailDialog({ row, onClose }: { row: CustomerRow; onClose: () 
                     <th>Loại ebook</th>
                     <th>Trạng thái</th>
                     <th>Mã thực hiện</th>
+                    <th>File</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -314,6 +316,7 @@ function CustomerDetailDialog({ row, onClose }: { row: CustomerRow; onClose: () 
                         {item.codeDisplay || "—"}
                         {item.holderName ? <small className="muted"> · {item.holderName}</small> : null}
                       </td>
+                      <td className="data-table__actions">{item.status === "success" ? <EbookExportActions exportId={item._id} /> : "—"}</td>
                     </tr>
                   ))}
                 </tbody>

@@ -4,14 +4,16 @@
  * Luồng: người dùng nhập mã SGEN cấp (hoặc mở đường dẫn `/ebook?ma=MÃ` để tự đăng nhập), chọn loại ebook
  * ("Demo 3 chỉ số" hoặc "đầy đủ"), kiểm tra hồ sơ khách hàng (họ tên, ngày sinh, số điện thoại — bắt buộc) rồi tải PDF.
  * Hồ sơ vừa tra cứu được giữ lại qua bước chuyển trang và đăng nhập (xem `app/ebookDraft.ts`).
- * Mỗi lần tải file trừ một lượt của mã.
+ * Mỗi ebook mới xuất trừ một lượt của mã; tải lại file đã xuất không trừ lượt (xem `EbookFilePanel`).
+ * `EbookFilePage` (`/ebook/tai/<token>`) là trang tải file không cần mã, dùng cho đường dẫn gửi khách qua Zalo.
  */
 import { useEffect, useState, type CSSProperties, type FormEvent } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { AlertTriangle, BookOpen, CalendarDays, CheckCircle2, Download, KeyRound, Loader2, LogOut, Phone, ShieldCheck, UserRound } from "lucide-react";
+import { AlertTriangle, BookOpen, CalendarDays, CheckCircle2, Download, FileText, KeyRound, Loader2, LogOut, Phone, ShieldCheck, UserRound } from "lucide-react";
 import { api, ApiError, errorMessage } from "../../api/client";
 import { clearEbookDraft, loadEbookDraft } from "../../app/ebookDraft";
+import { EbookFilePanel, type EbookFile } from "../../components/ebook/EbookFilePanel";
 import { TextField } from "../../components/form/Field";
 import { Button } from "../../components/ui/Button";
 import { ExpertContactBar } from "../../components/ui/ExpertCallout";
@@ -40,32 +42,11 @@ type ExportBody = { name: string; birthDate: string; phone: string; edition: Ebo
 type FieldKey = "name" | "birthDate" | "phone" | "edition";
 type FieldErrors = Partial<Record<FieldKey, string>>;
 
-async function downloadEbook(body: ExportBody) {
-  const response = await fetch("/api/ebook/export", {
-    method: "POST",
-    headers: { "Content-Type": "application/json", Accept: "application/pdf,application/json" },
-    credentials: "same-origin",
-    body: JSON.stringify(body),
-  });
-  if (!response.ok) {
-    const payload = await response.json().catch(() => null);
-    const error = payload?.error;
-    const fields = Array.isArray(error?.fields) ? error.fields : [];
-    throw new ApiError(response.status, String(error?.code ?? "request_failed"), error?.message || `Không xuất được file (${response.status}).`, fields);
-  }
-  const blob = await response.blob();
-  const remaining = Number(response.headers.get("X-Ebook-Remaining"));
-  const disposition = response.headers.get("Content-Disposition") ?? "";
-  const filename = /filename="?([^";]+)"?/.exec(disposition)?.[1] ?? "ebook-than-so-hoc.pdf";
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = filename;
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
-  window.setTimeout(() => URL.revokeObjectURL(url), 10_000);
-  return { remaining: Number.isFinite(remaining) ? remaining : null, filename };
+type ExportResponse = { file: EbookFile; remaining: number };
+
+function formatDate(value: string) {
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? "" : date.toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit", year: "numeric" });
 }
 
 /** Lỗi theo trường từ máy chủ (zod): `phone`, `name`, `birthDate`, `edition`. */
@@ -97,7 +78,8 @@ export function EbookPage() {
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [exporting, setExporting] = useState(false);
   const [exportError, setExportError] = useState("");
-  const [lastFile, setLastFile] = useState("");
+  /** File đang hiện khối tải: vừa xuất xong (`autoStart`) hoặc khách chọn lại trong danh sách đã xuất. */
+  const [activeFile, setActiveFile] = useState<{ file: EbookFile; autoStart: boolean } | null>(null);
   const [usedDraft, setUsedDraft] = useState(Boolean(draft));
 
   const meQuery = useQuery({
@@ -107,6 +89,13 @@ export function EbookPage() {
     staleTime: 0,
   });
   const info = meQuery.data?.code ?? null;
+  const exportsQuery = useQuery({
+    queryKey: ["ebook-exports", info?.display],
+    queryFn: () => api.get<{ items: EbookFile[] }>("/api/ebook/exports"),
+    enabled: Boolean(info),
+    retry: 0,
+  });
+  const recentFiles = exportsQuery.data?.items ?? [];
 
   const redeem = async (raw: string) => {
     setRedeeming(true);
@@ -172,18 +161,19 @@ export function EbookPage() {
     setExportError("");
     try {
       const sameProfile = draft?.reportId && draft.name === name.trim() && draft.birthDate === birthDate;
-      const result = await downloadEbook({
+      const result = await api.post<ExportResponse>("/api/ebook/export", {
         name: name.trim(),
         birthDate,
         phone: phoneResult.value,
         edition: chosen,
         reportId: sameProfile ? draft?.reportId : undefined,
-      });
-      setLastFile(name.trim());
-      toast.success("Đã xuất ebook", "File PDF đang được tải về máy của bạn.");
+      } satisfies ExportBody);
+      setActiveFile({ file: result.file, autoStart: true });
+      toast.success("Đã tạo ebook", `File của ${result.file.customerName} đã sẵn sàng để tải về.`);
+      void queryClient.invalidateQueries({ queryKey: ["ebook-exports"] });
       queryClient.setQueryData<MeResponse>(["ebook-me"], (current) => {
         if (!current?.code) return current;
-        const remaining = result.remaining ?? Math.max(0, current.code.remaining - 1);
+        const { remaining } = result;
         return { code: { ...current.code, remaining, used: current.code.quota - remaining, state: remaining <= 0 ? "exhausted" : current.code.state } };
       });
       clearEbookDraft();
@@ -206,7 +196,7 @@ export function EbookPage() {
     try {
       await api.post("/api/ebook/logout");
     } finally {
-      setLastFile("");
+      setActiveFile(null);
       setExportError("");
       queryClient.setQueryData<MeResponse>(["ebook-me"], { code: null });
     }
@@ -226,7 +216,7 @@ export function EbookPage() {
           <Eyebrow variant="pill" icon={BookOpen}>Ebook Thần số học</Eyebrow>
           <h1>Xuất ebook bằng mã</h1>
           <p>
-            Nhập mã SGEN cấp cho bạn, chọn bản ebook, kiểm tra thông tin khách hàng (bắt buộc có số điện thoại) để nhận file PDF Thần số học. Mỗi lần tải file sẽ trừ một lượt của mã.
+            Nhập mã SGEN cấp cho bạn, chọn bản ebook, kiểm tra thông tin khách hàng (bắt buộc có số điện thoại) để nhận file PDF Thần số học. Mỗi ebook mới xuất trừ một lượt của mã; tải lại file đã xuất không trừ lượt.
           </p>
           <div>
             <span>
@@ -312,6 +302,8 @@ export function EbookPage() {
             <div className="ebook-meter" role="img" aria-label={`Đã dùng ${info?.used} trên ${info?.quota} lượt`}>
               <span style={{ width: `${percent}%` }} />
             </div>
+
+            {activeFile ? <EbookFilePanel key={activeFile.file.token} file={activeFile.file} autoStart={activeFile.autoStart} /> : null}
 
             {usable ? (
               <div className="form-stack">
@@ -405,11 +397,6 @@ export function EbookPage() {
                   {exporting ? <Loader2 className="spin" aria-hidden="true" /> : <Download aria-hidden="true" />}
                   {exporting ? "Đang tạo file…" : "Xuất ebook PDF"}
                 </Button>
-                {lastFile ? (
-                  <p className="muted">
-                    <CheckCircle2 aria-hidden="true" /> Đã xuất file cho {lastFile}. Bạn có thể nhập khách hàng tiếp theo.
-                  </p>
-                ) : null}
               </div>
             ) : (
               <p className="form-error" role="alert">
@@ -418,9 +405,30 @@ export function EbookPage() {
                   ? "Mã đã hết hạn. Vui lòng liên hệ SGEN để được cấp mã mới."
                   : info?.state === "disabled"
                     ? "Mã đã bị khoá. Vui lòng liên hệ SGEN để được hỗ trợ."
-                    : "Mã đã dùng hết lượt. Vui lòng liên hệ SGEN để được cấp mã mới."}
+                    : `Mã đã dùng hết lượt. ${recentFiles.length ? "Bạn vẫn tải lại được các file đã xuất bên dưới. " : ""}Cần xuất thêm, vui lòng liên hệ SGEN để được cấp mã mới.`}
               </p>
             )}
+
+            {recentFiles.length ? (
+              <div className="ebook-recent">
+                <h3>File đã xuất (tải lại không trừ lượt)</h3>
+                <ul>
+                  {recentFiles.map((file) => (
+                    <li key={file.token}>
+                      <button type="button" onClick={() => setActiveFile({ file, autoStart: false })}>
+                        <FileText aria-hidden="true" />
+                        <span>
+                          <strong>{file.customerName}</strong>
+                          <small>
+                            {file.editionLabel} · xuất ngày {formatDate(file.createdAt)}
+                          </small>
+                        </span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
 
             <footer>
               <button type="button" className="ebook-leave" onClick={() => void leave()}>
@@ -429,6 +437,42 @@ export function EbookPage() {
             </footer>
           </form>
         )}
+      </div>
+    </section>
+  );
+}
+
+/** Trang tải file bằng đường dẫn (quản trị gửi khách qua Zalo, hoặc mở từ nút "Mở bằng Chrome"): không cần mã, không trừ lượt. */
+export function EbookFilePage() {
+  const { token = "" } = useParams<{ token: string }>();
+  const query = useQuery({
+    queryKey: ["ebook-file", token],
+    queryFn: () => api.get<{ file: EbookFile }>(`/api/ebook/file/${encodeURIComponent(token)}/info`),
+    retry: 0,
+  });
+
+  return (
+    <section className="login-stage ux-member" style={DARK_STYLE}>
+      <ExpertContactBar title="Cần hỗ trợ tải file ebook? Liên hệ SGEN" altFirst />
+      <div className="container login-grid">
+        <div className="login-welcome">
+          <Eyebrow variant="pill" icon={BookOpen}>Ebook Thần số học</Eyebrow>
+          <h1>Tải file ebook</h1>
+          <p>Bấm nút để lưu file PDF về điện thoại hoặc máy tính. Tải lại nhiều lần không trừ thêm lượt của mã.</p>
+        </div>
+        <div className="login-card">
+          {query.isLoading ? (
+            <p className="muted" aria-busy="true">
+              <Loader2 className="spin" aria-hidden="true" /> Đang kiểm tra đường dẫn…
+            </p>
+          ) : query.data ? (
+            <EbookFilePanel file={query.data.file} autoStart />
+          ) : (
+            <p className="form-error" role="alert">
+              <AlertTriangle aria-hidden="true" /> {errorMessage(query.error)}
+            </p>
+          )}
+        </div>
       </div>
     </section>
   );

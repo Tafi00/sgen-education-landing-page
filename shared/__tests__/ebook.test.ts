@@ -5,7 +5,9 @@ import {
   ebookCodePrefix,
   ebookCodeState,
   formatEbookCode,
+  isCoursePlan,
   isStudentPlan,
+  isUnmeteredPlan,
   normalizeEbookCode,
   normalizeEbookSuffix,
   STUDENT_FEATURE_LEVEL,
@@ -13,6 +15,19 @@ import {
   studentLevel,
   validateEbookSuffix,
 } from "../ebook";
+
+describe("mã khóa học", () => {
+  it("tiền tố KH, không có lượt, không phải mã học viên và không bao giờ hết lượt", () => {
+    expect(EBOOK_PLANS.khoahoc).toMatchObject({ kind: "course", prefix: "KH", quota: 0 });
+    expect(isCoursePlan("khoahoc")).toBe(true);
+    expect(isStudentPlan("khoahoc")).toBe(false);
+    expect(isUnmeteredPlan("khoahoc")).toBe(true);
+    expect(isUnmeteredPlan("hocvien2")).toBe(true);
+    expect(isUnmeteredPlan("combo3")).toBe(false);
+    expect(ebookCodeState({ plan: "khoahoc", status: "active", quota: 0, used: 9 })).toBe("active");
+    expect(formatEbookCode("KH7KQ2M9XP")).toBe("KH-7KQ2-M9XP");
+  });
+});
 
 describe("gói mã ebook", () => {
   it("bản Demo và bản đầy đủ đều có gói 1 / 3 / 5 / 10 / 30 / 50 / 100 ebook", () => {

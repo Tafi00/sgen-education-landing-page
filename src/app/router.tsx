@@ -36,6 +36,8 @@ const PublicBlogListPage = lazy(() => import("../pages/public/BlogPages").then((
 const PublicBlogCategoryPage = lazy(() => import("../pages/public/BlogPages").then((module) => ({ default: module.BlogCategoryPage })));
 const PublicBlogDetailPage = lazy(() => import("../pages/public/BlogPages").then((module) => ({ default: module.BlogDetailPage })));
 const PublicEbookPage = lazy(() => import("../pages/public/EbookPage").then((module) => ({ default: module.EbookPage })));
+const PublicEbookFilePage = lazy(() => import("../pages/public/EbookPage").then((module) => ({ default: module.EbookFilePage })));
+const PublicCourseLearnPage = lazy(() => import("../pages/public/CourseLearnPage").then((module) => ({ default: module.CourseLearnPage })));
 const PublicMemberLoginPage = lazy(() => import("../pages/public/MemberPages").then((module) => ({ default: module.MemberLoginPage })));
 const PublicMemberRegisterPage = lazy(() => import("../pages/public/MemberPages").then((module) => ({ default: module.MemberRegisterPage })));
 const PublicMemberAccountPage = lazy(() => import("../pages/public/MemberPages").then((module) => ({ default: module.MemberAccountPage })));
@@ -71,6 +73,7 @@ const A_DashboardPage_DashboardPage = lazy(() => import("../pages/admin/Dashboar
 const A_MediaLibraryPage_MediaLibraryPage = lazy(() => import("../pages/admin/MediaLibraryPage").then((module) => ({ default: module.MediaLibraryPage })));
 const A_SettingsPage_SettingsPage = lazy(() => import("../pages/admin/SettingsPage").then((module) => ({ default: module.SettingsPage })));
 const A_CustomersPage = lazy(() => import("../pages/admin/CustomersPage").then((module) => ({ default: module.CustomersPage })));
+const A_CourseLessonsPage = lazy(() => import("../pages/admin/CourseLessonsPage").then((module) => ({ default: module.CourseLessonsPage })));
 const A_EbookCodesPage = lazy(() => import("../pages/admin/EbookCodesPage").then((module) => ({ default: module.EbookCodesPage })));
 const A_UsersPage_AdminUsersPage = lazy(() => import("../pages/admin/UsersPage").then((module) => ({ default: module.AdminUsersPage })));
 const A_LeadsPages_LeadsListPage = lazy(() => import("../pages/admin/LeadsPages").then((module) => ({ default: module.LeadsListPage })));
@@ -122,6 +125,7 @@ export const router = createBrowserRouter([
           { path: "cong-cu-phong-thuy/xem-ngay", element: <PublicXemNgayPage />, handle: handle("Xem ngày tốt xấu") },
           { path: "khoa-hoc", element: <PublicCoursesListPage />, handle: handle("Khóa học") },
           { path: "khoa-hoc/:slug", element: <PublicCourseDetailPage />, handle: handle("Chi tiết khóa học") },
+          { path: "khoa-hoc/:slug/hoc", element: <PublicCourseLearnPage />, handle: handle("Học video") },
           { path: "free-tools", element: <PublicFreeToolsPage />, handle: handle("Free tools") },
           { path: "free-tools/:slug", element: <PublicFreeToolDetailPage />, handle: handle("Công cụ miễn phí") },
           { path: "blog", element: <PublicBlogListPage />, handle: handle("Blog") },
@@ -129,6 +133,7 @@ export const router = createBrowserRouter([
           { path: "blog/:slug", element: <PublicBlogDetailPage />, handle: handle("Bài viết") },
           { path: "dang-nhap", element: <PublicMemberLoginPage />, handle: handle("Đăng nhập") },
           { path: "ebook", element: <PublicEbookPage />, handle: handle("Xuất ebook bằng mã") },
+          { path: "ebook/tai/:token", element: <PublicEbookFilePage />, handle: handle("Tải file ebook") },
           { path: "dang-ky", element: <PublicMemberRegisterPage />, handle: handle("Đăng ký tài khoản") },
           { path: "tai-khoan", element: <PublicMemberAccountPage />, handle: handle("Tài khoản của tôi") },
           { path: "tra-cuu/ket-qua/:id", element: <LookupResultPage />, handle: handle("Kết quả tra cứu") },
@@ -206,6 +211,7 @@ export const router = createBrowserRouter([
       { path: "tai-khoan", element: <A_UsersPage_AdminUsersPage />, handle: handle("Tài khoản quản trị") },
       { path: "ma-ebook", element: <A_EbookCodesPage />, handle: handle("Mã ebook") },
       { path: "khach-hang", element: <A_CustomersPage />, handle: handle("Khách hàng") },
+      { path: "bai-giang", element: <A_CourseLessonsPage />, handle: handle("Bài giảng video") },
       { path: "*", element: <NotFoundPage />, handle: handle("Không tìm thấy trang quản trị") },
     ],
   },

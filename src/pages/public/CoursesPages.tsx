@@ -5,10 +5,11 @@
  *   lọc nhóm, sắp xếp và phân trang. Toàn bộ trạng thái nằm trên URL
  *   (`?q=&level=&category=&sort=&page=`) để chia sẻ và quay lại đều giữ nguyên.
  * - `CourseDetailPage` (`/khoa-hoc/:slug`): chi tiết khóa và form đăng ký tư vấn
- *   gửi lead với `source: "khoa-hoc/<slug>"`.
+ *   gửi lead với `source: "khoa-hoc/<slug>"`; khóa đã có video thì có nút vào trang học (`CourseLearnPage`).
  */
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type FormEvent } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import {
   AlertTriangle,
   ArrowLeft,
@@ -26,6 +27,7 @@ import {
   MonitorSmartphone,
   Orbit,
   Phone,
+  PlayCircle,
   Search,
   Send,
   ShieldCheck,
@@ -42,6 +44,7 @@ import { Button, ButtonAnchor, ButtonLink, ButtonRow } from "../../components/ui
 import { Pagination } from "../../components/ui/Pagination";
 import { Faq, PageHero } from "../../components/ui/Layout";
 import { SectionHeading } from "../../components/ui/SectionHeading";
+import type { LearnResponse } from "./CourseLearnPage";
 
 const LEVELS = ["Nền tảng", "Chuyên đề", "Ứng dụng", "Chuyên sâu"];
 const PAGE_SIZE = 12;
@@ -363,6 +366,13 @@ export function CourseDetailPage() {
   const { course, isLoading, notFound } = useCourse(slug);
   const { settings } = useSiteSettings();
   const relatedQuery = useCourses({ category: course?.categorySlug ?? "__none__" });
+  const learnQuery = useQuery({
+    queryKey: ["course-learn", slug],
+    queryFn: () => api.get<LearnResponse>(`/api/khoa-hoc/${slug}/hoc`),
+    enabled: Boolean(slug),
+    retry: 0,
+  });
+  const lessonCount = learnQuery.data?.lessons.length ?? 0;
   const toast = useToast();
   const heroRef = useRef<HTMLElement | null>(null);
   const actionsRef = useRef<HTMLDivElement | null>(null);
@@ -538,9 +548,16 @@ export function CourseDetailPage() {
           </Link>
         }
         actions={
-          <ButtonAnchor variant="primary" href="#dang-ky">
-            Đăng ký tư vấn <ArrowRight aria-hidden="true" />
-          </ButtonAnchor>
+          <ButtonRow>
+            {lessonCount ? (
+              <ButtonLink variant="primary" to={`/khoa-hoc/${course.slug}/hoc`}>
+                <PlayCircle aria-hidden="true" /> Vào học online ({lessonCount} bài)
+              </ButtonLink>
+            ) : null}
+            <ButtonAnchor variant={lessonCount ? "secondary" : "primary"} href="#dang-ky">
+              Đăng ký tư vấn <ArrowRight aria-hidden="true" />
+            </ButtonAnchor>
+          </ButtonRow>
         }
       >
         {quickFacts.length ? (

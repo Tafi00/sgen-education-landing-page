@@ -134,7 +134,8 @@ node dist-server/seed.js
 ADMIN_EMAIL=admin@domain ADMIN_PASSWORD='<mật khẩu mạnh>' node dist-server/create-admin.js
 ```
 
-- Volume `/app/uploads` là **bắt buộc** nếu muốn giữ ảnh đã tải lên qua các lần deploy.
+- Volume `/app/uploads` là **bắt buộc** nếu muốn giữ ảnh đã tải lên qua các lần deploy. Video khóa học cũng nằm trong volume này (`uploads/.course-videos`, không public; đổi bằng `COURSE_VIDEO_DIR`), nhớ dành đủ dung lượng ổ đĩa.
+- Cắt video dài thành các đoạn theo nội dung trước khi tải lên: `python3 scripts/cut_course_video.py <video> <file mốc> -o <thư mục>` (cần ffmpeg ở máy chạy script, máy chủ không cần).
 - Biến môi trường bắt buộc khi chạy thật: `DATABASE_URL`, `PUBLIC_ORIGIN`, `SESSION_SECRET`, `SETTINGS_ENC_KEY`.
 
 ## Ghi chú vận hành

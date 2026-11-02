@@ -4,6 +4,8 @@ import { AlertTriangle, BookOpen, Check, ClipboardCopy, Download, Info, Link2, L
 import { api, errorMessage } from "../../api/client";
 import { ConfirmDialog } from "../../components/admin/ConfirmDialog";
 import { DataTable } from "../../components/admin/DataTable";
+import { EbookExportActions } from "../../components/admin/EbookExportActions";
+import { copyText } from "../../app/copyText";
 import { useToast } from "../../components/ui/Toast";
 import {
   EBOOK_EDITION_LABEL,
@@ -12,7 +14,8 @@ import {
   EBOOK_STATE_LABEL,
   EBOOK_SUFFIX_MAX,
   ebookCodePrefix,
-  isStudentPlan,
+  isCoursePlan,
+  isUnmeteredPlan,
   normalizeEbookSuffix,
   STUDENT_LEVEL_SCOPE,
   studentLevel,
@@ -31,6 +34,8 @@ type CodeRow = {
   plan: EbookPlanKey;
   planLabel: string;
   edition: "demo" | "full";
+  /** Khóa học mà mã khóa học mở; rỗng với các loại mã khác. */
+  courseSlug: string;
   quota: number;
   used: number;
   remaining: number;
@@ -70,6 +75,7 @@ const PLAN_GROUPS = [
     plans: EBOOK_PLAN_KEYS.map((key) => EBOOK_PLANS[key]).filter((item) => item.kind === "ebook" && item.edition === edition),
   })),
   { label: "Học viên", plans: EBOOK_PLAN_KEYS.map((key) => EBOOK_PLANS[key]).filter((item) => item.kind === "student") },
+  { label: "Khóa học video", plans: EBOOK_PLAN_KEYS.map((key) => EBOOK_PLANS[key]).filter((item) => item.kind === "course") },
 ];
 
 const SORT_KEYS: Record<string, string> = { display: "code", used: "used", createdAt: "createdAt", lastUsedAt: "lastUsedAt" };
@@ -81,9 +87,10 @@ const STUDENT_LANDING: Record<number, string> = {
   3: "/cong-cu-phong-thuy/xem-ngay",
 };
 
-/** Đường dẫn tự nhập mã: mã ebook mở trang /ebook, mã học viên mở công cụ theo cấp. */
-function linkFor(code: string, plan: string) {
+/** Đường dẫn tự nhập mã: mã ebook mở trang /ebook, mã học viên mở công cụ theo cấp, mã khóa học mở trang học của khóa. */
+function linkFor({ code, plan, courseSlug }: Pick<CodeRow, "code" | "plan" | "courseSlug">) {
   const level = studentLevel(plan);
+  if (isCoursePlan(plan)) return `${window.location.origin}/khoa-hoc/${courseSlug}/hoc?ma=${encodeURIComponent(code)}`;
   return level
     ? `${window.location.origin}${STUDENT_LANDING[level]}?mahv=${encodeURIComponent(code)}`
     : `${window.location.origin}/ebook?ma=${encodeURIComponent(code)}`;
@@ -96,27 +103,10 @@ function formatDateTime(value: string | null | undefined) {
   return date.toLocaleString("vi-VN", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" });
 }
 
-async function copyText(text: string) {
-  try {
-    await navigator.clipboard.writeText(text);
-    return true;
-  } catch {
-    const area = document.createElement("textarea");
-    area.value = text;
-    area.style.position = "fixed";
-    area.style.opacity = "0";
-    document.body.appendChild(area);
-    area.select();
-    const ok = document.execCommand("copy");
-    area.remove();
-    return ok;
-  }
-}
-
 function downloadCsv(rows: CodeRow[], filename: string) {
   const header = ["Mã", "Gói", "Số lượt", "Người nhận", "Liên hệ", "Đường dẫn tự đăng nhập"];
   const lines = rows.map((row) =>
-    [row.display, row.planLabel, isStudentPlan(row.plan) ? "—" : row.quota, row.holderName, row.holderContact, linkFor(row.code, row.plan)].map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(","),
+    [row.display, row.planLabel, isUnmeteredPlan(row.plan) ? "—" : row.quota, row.holderName, row.holderContact, linkFor(row)].map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(","),
   );
   const blob = new Blob([`﻿${[header.join(","), ...lines].join("\n")}`], { type: "text/csv;charset=utf-8" });
   const url = URL.createObjectURL(blob);
@@ -134,7 +124,7 @@ function StateBadge({ state }: { state: EbookCodeState }) {
 }
 
 function Usage({ row }: { row: CodeRow }) {
-  if (isStudentPlan(row.plan)) {
+  if (isUnmeteredPlan(row.plan)) {
     return (
       <span className="relation-cell">
         <span className="relation-cell__label">{row.used} lần nhập</span>
@@ -168,6 +158,7 @@ export function EbookCodesPage() {
   const [expiresInDays, setExpiresInDays] = useState("");
   const [suffix, setSuffix] = useState("");
   const customSuffix = normalizeEbookSuffix(suffix);
+  const [courseSlug, setCourseSlug] = useState("than-so-hoc-can-ban");
   const [createError, setCreateError] = useState("");
   const [generated, setGenerated] = useState<CodeRow[]>([]);
   const [copied, setCopied] = useState("");
@@ -195,6 +186,13 @@ export function EbookCodesPage() {
 
   const refresh = () => queryClient.invalidateQueries({ queryKey: ["admin", "ebook-codes"] });
 
+  const coursesQuery = useQuery({
+    queryKey: ["admin", "courses", "options"],
+    queryFn: () => api.get<{ items: { slug: string; title: string }[] }>("/api/admin/courses", { query: { pageSize: 100, sort: "order", dir: "asc" } }),
+  });
+  const courseOptions = coursesQuery.data?.items ?? [];
+  const courseTitle = (slug: string) => courseOptions.find((item) => item.slug === slug)?.title ?? slug;
+
   const generateMutation = useMutation({
     mutationFn: () =>
       api.post<{ items: CodeRow[] }>("/api/admin/ebook-codes/generate", {
@@ -205,6 +203,7 @@ export function EbookCodesPage() {
         note: note.trim() || undefined,
         expiresInDays: expiresInDays ? Number(expiresInDays) : undefined,
         suffix: customSuffix || undefined,
+        courseSlug: isCoursePlan(plan) ? courseSlug : undefined,
       }),
     onSuccess: async (result) => {
       setGenerated(result.items);
@@ -294,7 +293,7 @@ export function EbookCodesPage() {
         return (
           <span className="relation-cell">
             <code className="ebook-code">{row.display}</code>
-            <span className="relation-cell__sub">{row.planLabel}</span>
+            <span className="relation-cell__sub">{isCoursePlan(row.plan) ? `${row.planLabel}: ${courseTitle(row.courseSlug)}` : row.planLabel}</span>
           </span>
         );
       case "holderName":
@@ -324,7 +323,7 @@ export function EbookCodesPage() {
           <p>
             Tạo mã xuất ebook bản Demo 3 chỉ số hoặc bản đầy đủ, mỗi bản có gói 1, 3, 5, 10, 30, 50, 100 ebook. Người nhận vào trang
             /ebook, nhập mã là tải được file. Mã học viên mở khoá chi tiết các công cụ theo cấp: cấp 1 (HV1-…) Sim, Bát Cực Linh Số; cấp 2
-            (HV2-…) thêm Gieo quẻ; cấp 3 (HV3-…) thêm Xem ngày.
+            (HV2-…) thêm Gieo quẻ; cấp 3 (HV3-…) thêm Xem ngày. Mã khóa học (KH-…) mở các bài giảng video của một khóa học.
           </p>
         </div>
         <div className="admin-page__actions">
@@ -350,7 +349,7 @@ export function EbookCodesPage() {
                   <optgroup key={group.label} label={group.label}>
                     {group.plans.map((item) => (
                       <option key={item.key} value={item.key}>
-                        {item.level ? `${item.label} — ${STUDENT_LEVEL_SCOPE[item.level]}` : `${item.label} — ${item.quota} lượt`}
+                        {item.kind === "course" ? item.label : item.level ? `${item.label} — ${STUDENT_LEVEL_SCOPE[item.level]}` : `${item.label} — ${item.quota} lượt`}
                       </option>
                     ))}
                   </optgroup>
@@ -358,13 +357,29 @@ export function EbookCodesPage() {
               </select>
             </span>
             <p className="field__hint">
-              {selectedPlan.kind === "student"
+              {selectedPlan.kind === "course"
+                ? "Mở các bài giảng video của khóa đã chọn; không xuất ebook, không mở công cụ."
+                : selectedPlan.kind === "student"
                 ? `Mở khoá chi tiết ${STUDENT_LEVEL_SCOPE[selectedPlan.level ?? 1]}; không dùng để xuất ebook.`
                 : selectedPlan.edition === "demo"
                   ? "Mỗi lượt xuất = 1 ebook Demo 3 chỉ số."
                   : "Mỗi lượt xuất = 1 ebook đầy đủ (mã này xuất được cả bản Demo)."}
             </p>
           </div>
+          {selectedPlan.kind === "course" ? (
+            <div className="field">
+              <label className="field__label" htmlFor="ebook-course">Khóa học</label>
+              <span className="field__control">
+                <select id="ebook-course" value={courseSlug} onChange={(event) => setCourseSlug(event.target.value)}>
+                  {courseOptions.map((item) => (
+                    <option key={item.slug} value={item.slug}>
+                      {item.title}
+                    </option>
+                  ))}
+                </select>
+              </span>
+            </div>
+          ) : null}
           <div className="field">
             <label className="field__label" htmlFor="ebook-count">Số lượng mã cần tạo</label>
             <span className="field__control">
@@ -467,13 +482,13 @@ export function EbookCodesPage() {
                       <code className="ebook-code">{row.display}</code>
                     </td>
                     <td>{row.planLabel}</td>
-                    <td className="ebook-link">{linkFor(row.code, row.plan)}</td>
+                    <td className="ebook-link">{linkFor(row)}</td>
                     <td className="data-table__actions">
                       <div className="data-table__actions-inner">
                         <button type="button" className="table-action" title="Sao chép mã" aria-label="Sao chép mã" onClick={() => void flashCopied(`c-${row._id}`, row.display)}>
                           {copied === `c-${row._id}` ? <Check aria-hidden="true" /> : <ClipboardCopy aria-hidden="true" />}
                         </button>
-                        <button type="button" className="table-action" title="Sao chép đường dẫn" aria-label="Sao chép đường dẫn" onClick={() => void flashCopied(`l-${row._id}`, linkFor(row.code, row.plan))}>
+                        <button type="button" className="table-action" title="Sao chép đường dẫn" aria-label="Sao chép đường dẫn" onClick={() => void flashCopied(`l-${row._id}`, linkFor(row))}>
                           {copied === `l-${row._id}` ? <Check aria-hidden="true" /> : <Link2 aria-hidden="true" />}
                         </button>
                       </div>
@@ -561,7 +576,7 @@ export function EbookCodesPage() {
             <button type="button" className="table-action" title="Sao chép mã" aria-label="Sao chép mã" onClick={(event) => { event.stopPropagation(); void flashCopied(`t-${row._id}`, row.display); }}>
               {copied === `t-${row._id}` ? <Check aria-hidden="true" /> : <ClipboardCopy aria-hidden="true" />}
             </button>
-            <button type="button" className="table-action" title="Sao chép đường dẫn tự đăng nhập" aria-label="Sao chép đường dẫn" onClick={(event) => { event.stopPropagation(); void flashCopied(`k-${row._id}`, linkFor(row.code, row.plan)); }}>
+            <button type="button" className="table-action" title="Sao chép đường dẫn tự đăng nhập" aria-label="Sao chép đường dẫn" onClick={(event) => { event.stopPropagation(); void flashCopied(`k-${row._id}`, linkFor(row)); }}>
               {copied === `k-${row._id}` ? <Check aria-hidden="true" /> : <Link2 aria-hidden="true" />}
             </button>
             <button type="button" className="table-action" title="Chi tiết, thêm lượt, lịch sử" aria-label="Chi tiết" onClick={(event) => { event.stopPropagation(); setDetail(row); }}>
@@ -613,13 +628,14 @@ function CodeDetailDialog({ row, onClose, onChanged, onDelete }: { row: CodeRow;
   const nextSuffix = normalizeEbookSuffix(suffix);
   const suffixChanged = nextSuffix !== currentSuffix;
   const prefix = ebookCodePrefix(row.code, row.suffix);
-  const student = isStudentPlan(row.plan);
+  const student = studentLevel(row.plan) > 0;
+  const course = isCoursePlan(row.plan);
   const [error, setError] = useState("");
 
   const historyQuery = useQuery({
     queryKey: ["admin", "ebook-codes", row._id, "exports"],
     queryFn: () => api.get<{ items: ExportRow[] }>(`/api/admin/ebook-codes/${row._id}/exports`),
-    enabled: !student,
+    enabled: !student && !course,
   });
 
   const save = useMutation({
@@ -666,7 +682,7 @@ function CodeDetailDialog({ row, onClose, onChanged, onDelete }: { row: CodeRow;
           <div>
             <h2>{row.display}</h2>
             <p>
-              {row.planLabel} · {student ? `đã nhập ${row.used} lần` : `đã dùng ${row.used}/${row.quota} lượt`} · <StateBadge state={row.state} />
+              {row.planLabel} · {student || course ? `đã nhập ${row.used} lần` : `đã dùng ${row.used}/${row.quota} lượt`} · <StateBadge state={row.state} />
             </p>
           </div>
           <button type="button" onClick={onClose} aria-label="Đóng">
@@ -699,7 +715,7 @@ function CodeDetailDialog({ row, onClose, onChanged, onDelete }: { row: CodeRow;
               <input id="d-contact" value={holderContact} maxLength={120} onChange={(event) => setHolderContact(event.target.value)} />
             </span>
           </div>
-          {student ? null : (
+          {student || course ? null : (
             <div className="field">
               <label className="field__label" htmlFor="d-add">Cộng thêm lượt</label>
               <span className="field__control">
@@ -722,7 +738,11 @@ function CodeDetailDialog({ row, onClose, onChanged, onDelete }: { row: CodeRow;
           </div>
         </div>
 
-        {student ? (
+        {course ? (
+          <p className="muted">
+            Mã khóa học mở các bài giảng video của khóa <code>{row.courseSlug}</code>; lần nhập gần nhất: {formatDateTime(row.lastUsedAt)}. Khoá mã hoặc đặt ngày hết hạn thì học viên mất quyền xem ngay.
+          </p>
+        ) : student ? (
           <p className="muted">
             Mã học viên cấp {studentLevel(row.plan)} mở khoá chi tiết {STUDENT_LEVEL_SCOPE[studentLevel(row.plan) || 1]}; lần nhập gần nhất:{" "}
             {formatDateTime(row.lastUsedAt)}. Khoá mã hoặc đặt ngày hết hạn thì học viên mất quyền xem ngay ở lần tải trang kế tiếp.
@@ -749,6 +769,7 @@ function CodeDetailDialog({ row, onClose, onChanged, onDelete }: { row: CodeRow;
                       <th>Số điện thoại</th>
                       <th>Loại ebook</th>
                       <th>Trạng thái</th>
+                      <th>File</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -764,6 +785,7 @@ function CodeDetailDialog({ row, onClose, onChanged, onDelete }: { row: CodeRow;
                             {item.status === "failed" ? "Lỗi tạo file" : "Thành công"}
                           </span>
                         </td>
+                        <td className="data-table__actions">{item.status === "failed" ? "—" : <EbookExportActions exportId={item._id} />}</td>
                       </tr>
                     ))}
                   </tbody>

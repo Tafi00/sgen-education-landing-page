@@ -6,20 +6,22 @@ import {
   ebookCodePrefix,
   ebookCodeState,
   formatEbookCode,
-  isStudentPlan,
-  STUDENT_PLAN_KEYS,
+  isCoursePlan,
+  isUnmeteredPlan,
+  UNMETERED_PLAN_KEYS,
   validateEbookSuffix,
   type EbookPlanKey,
 } from "../../../../shared/ebook.js";
 import { asyncHandler, AppError, parseBody } from "../../middleware/errors.js";
 import { requireAdmin } from "../../middleware/auth.js";
 import { query } from "../../db/pool.js";
-import { AuditLog, EbookCode, EbookExport, type EbookCodeDoc } from "../../models/index.js";
+import { AuditLog, Course, EbookCode, EbookExport, type EbookCodeDoc, type EbookExportDoc } from "../../models/index.js";
 import { generateEbookCodes, isUniqueViolation } from "../../services/ebookCodes.js";
+import { ebookFilename, ensureDownloadLink, rebuildExportPdf } from "../../services/ebookExports.js";
 
 /**
  * Quản trị mã xuất ebook và mã học viên: tạo hàng loạt hoặc tự đặt đuôi mã, tra cứu, khoá/mở, cộng thêm lượt (mã ebook),
- * xem lịch sử xuất file.
+ * xem lịch sử xuất file, lấy lại file đã xuất để gửi cho khách (dựng lại từ thông tin đã lưu, không trừ lượt).
  */
 export const adminEbookRouter = Router();
 
@@ -34,6 +36,8 @@ const generateSchema = z.object({
   expiresInDays: z.number().int().min(1).max(3650).optional(),
   /** Đuôi mã tự đặt (VD: "AnhVinh" → DEMO-ANHVINH); bỏ trống = sinh ngẫu nhiên. */
   suffix: z.string().max(60).optional(),
+  /** Khóa học mà mã mở; bắt buộc với gói mã khóa học. */
+  courseSlug: z.string().max(160).optional(),
 });
 
 /** Chuẩn hoá đuôi mã tự đặt; chuỗi rỗng = không đặt. */
@@ -87,7 +91,11 @@ adminEbookRouter.post(
   "/generate",
   asyncHandler(async (req, res) => {
     const input = parseBody(generateSchema, req.body);
-    const items = await generateEbookCodes({ ...input, suffix: parseSuffix(input.suffix), createdBy: req.session.adminId ?? null });
+    if (isCoursePlan(input.plan) && !(input.courseSlug && (await Course.findOne({ slug: input.courseSlug })))) {
+      throw new AppError(422, "Vui lòng chọn khóa học mà mã này mở.", "course_required");
+    }
+    const courseSlug = isCoursePlan(input.plan) ? input.courseSlug : "";
+    const items = await generateEbookCodes({ ...input, courseSlug, suffix: parseSuffix(input.suffix), createdBy: req.session.adminId ?? null });
     await audit(req, "ebook.generate", items[0]?.batchId ?? "", { plan: input.plan, count: items.length, holder: input.holderName ?? "" });
     res.status(201).json({ items: items.map(present), batchId: items[0]?.batchId ?? "" });
   }),
@@ -118,11 +126,11 @@ adminEbookRouter.get(
     const batch = String(req.query.batchId ?? "");
     if (batch) where.push(`"batchId" = ${add(batch)}`);
     const state = String(req.query.state ?? "");
-    // Mã học viên không có lượt (quota 0) nên không bao giờ "hết lượt" — giống ebookCodeState.
+    // Mã học viên, mã khóa học không có lượt (quota 0) nên không bao giờ "hết lượt" — giống ebookCodeState.
     if (state === "disabled") where.push(`"status" <> 'active'`);
     else if (state === "expired") where.push(`"status" = 'active' AND "expiresAt" IS NOT NULL AND "expiresAt" <= now()`);
-    else if (state === "exhausted") where.push(`"status" = 'active' AND ("expiresAt" IS NULL OR "expiresAt" > now()) AND "used" >= "quota" AND "plan" <> ALL(${add(STUDENT_PLAN_KEYS)})`);
-    else if (state === "active") where.push(`"status" = 'active' AND ("expiresAt" IS NULL OR "expiresAt" > now()) AND ("used" < "quota" OR "plan" = ANY(${add(STUDENT_PLAN_KEYS)}))`);
+    else if (state === "exhausted") where.push(`"status" = 'active' AND ("expiresAt" IS NULL OR "expiresAt" > now()) AND "used" >= "quota" AND "plan" <> ALL(${add(UNMETERED_PLAN_KEYS)})`);
+    else if (state === "active") where.push(`"status" = 'active' AND ("expiresAt" IS NULL OR "expiresAt" > now()) AND ("used" < "quota" OR "plan" = ANY(${add(UNMETERED_PLAN_KEYS)}))`);
 
     const clause = where.length ? `WHERE ${where.join(" AND ")}` : "";
     const sortKey = SORTS[String(req.query.sort ?? "")] ?? SORTS.createdAt;
@@ -145,6 +153,37 @@ adminEbookRouter.get(
       `SELECT "plan", count(*)::int AS codes, coalesce(sum("quota"),0)::int AS quota, coalesce(sum("used"),0)::int AS used FROM "ebook_codes" GROUP BY "plan"`,
     );
     res.json({ plans: result.rows });
+  }),
+);
+
+async function successfulExport(id: string) {
+  if (!ID_PATTERN.test(id)) throw new AppError(400, "ID không hợp lệ.", "invalid_id");
+  const doc = await EbookExport.findById(id).lean<EbookExportDoc>();
+  if (!doc) throw new AppError(404, "Không tìm thấy lượt xuất.", "not_found");
+  if (doc.status !== "success") throw new AppError(422, "Lượt xuất này bị lỗi tạo file nên không có file để lấy lại; lượt đã được hoàn cho mã.", "export_failed");
+  return doc;
+}
+
+/** Quản trị lấy lại đúng file khách đã xuất để gửi trực tiếp; không trừ lượt của mã. */
+adminEbookRouter.get(
+  "/exports/:exportId/file",
+  asyncHandler(async (req, res) => {
+    const doc = await successfulExport(req.params.exportId);
+    const pdf = await rebuildExportPdf(doc);
+    await audit(req, "ebook.refetch", String(doc._id), { customerName: doc.customerName, edition: doc.edition });
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", `attachment; filename="${ebookFilename(doc.edition, doc.customerName)}"`);
+    res.send(Buffer.from(pdf));
+  }),
+);
+
+/** Đường dẫn để dán vào Zalo gửi khách: khách mở là tải được, không cần mã, không trừ lượt. */
+adminEbookRouter.post(
+  "/exports/:exportId/link",
+  asyncHandler(async (req, res) => {
+    const doc = await successfulExport(req.params.exportId);
+    const linked = await ensureDownloadLink(String(doc._id));
+    res.json({ path: `/ebook/tai/${linked?.downloadToken}`, expiresAt: linked?.downloadExpiresAt });
   }),
 );
 
@@ -175,7 +214,7 @@ adminEbookRouter.patch(
         diff[key] = input[key];
       }
     }
-    if (input.addQuota && isStudentPlan(doc.plan)) throw new AppError(422, "Mã học viên không có lượt xuất ebook nên không cộng lượt được.", "student_code_quota");
+    if (input.addQuota && isUnmeteredPlan(doc.plan)) throw new AppError(422, "Mã học viên, mã khóa học không có lượt xuất ebook nên không cộng lượt được.", "student_code_quota");
     if (input.addQuota) {
       doc.quota += input.addQuota;
       diff.addQuota = input.addQuota;

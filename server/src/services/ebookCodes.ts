@@ -29,6 +29,8 @@ export type GenerateInput = {
   expiresInDays?: number;
   /** Đuôi mã tự đặt, đã chuẩn hoá (`validateEbookSuffix`); chỉ dùng khi tạo đúng 1 mã. */
   suffix?: string;
+  /** Khóa học mà mã mở (bắt buộc với gói `khoahoc`). */
+  courseSlug?: string;
   createdBy?: string | null;
 };
 
@@ -65,6 +67,7 @@ export async function generateEbookCodes(input: GenerateInput): Promise<EbookCod
           batchId,
           expiresAt,
           createdBy: input.createdBy ?? null,
+          courseSlug: input.courseSlug ?? "",
         });
         created.push(doc.toObject() as EbookCodeDoc);
         break;
@@ -125,7 +128,7 @@ export async function consumeEbookCredit(id: string): Promise<EbookCodeDoc | nul
   return result.rows[0] ?? null;
 }
 
-/** Mã học viên vừa được nhập: `used` đếm số lần nhập, `lastUsedAt` cho quản trị biết mã còn được dùng. */
+/** Mã học viên / mã khóa học vừa được nhập: `used` đếm số lần nhập, `lastUsedAt` cho quản trị biết mã còn được dùng. */
 export async function recordStudentCodeUse(id: string) {
   await query(`UPDATE "ebook_codes" SET "used" = "used" + 1, "lastUsedAt" = now(), "updatedAt" = now() WHERE "_id" = $1`, [id]);
 }

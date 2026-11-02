@@ -1,4 +1,4 @@
-import type { AnchorHTMLAttributes, ButtonHTMLAttributes, ReactNode } from "react";
+import { forwardRef, type AnchorHTMLAttributes, type ButtonHTMLAttributes, type ReactNode } from "react";
 import { Link, type LinkProps } from "react-router-dom";
 
 export type ButtonVariant = "primary" | "secondary" | "soft" | "danger";
@@ -35,9 +35,9 @@ export function ButtonLink({ variant, size, block, className, ...props }: Button
 type ButtonAnchorProps = AnchorHTMLAttributes<HTMLAnchorElement> & ButtonStyleProps;
 
 /** Nút dạng thẻ <a> cho neo (#id), tel:, mailto: hoặc liên kết ngoài. */
-export function ButtonAnchor({ variant, size, block, className, ...props }: ButtonAnchorProps) {
-  return <a className={buttonClass({ variant, size, block, className })} {...props} />;
-}
+export const ButtonAnchor = forwardRef<HTMLAnchorElement, ButtonAnchorProps>(function ButtonAnchor({ variant, size, block, className, ...props }, ref) {
+  return <a ref={ref} className={buttonClass({ variant, size, block, className })} {...props} />;
+});
 
 /** Hàng nút: khoảng cách, xuống dòng và căn chỉnh thống nhất. */
 export function ButtonRow({ children, align = "start", className = "" }: { children: ReactNode; align?: "start" | "center"; className?: string }) {

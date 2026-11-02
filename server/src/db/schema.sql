@@ -429,3 +429,31 @@ WHERE "contact"->>'phoneAlt' = '0982935131';
 -- 28/10/2026: mã học viên chia 3 cấp (hocvien1 Sim + Bát Cực, hocvien2 thêm Gieo quẻ, hocvien3 thêm Xem ngày). Mã đã cấp
 -- trước đó (gói "hocvien", mở mọi công cụ) thành cấp 3 để học viên không mất quyền; chạy lại mỗi lần khởi động vẫn an toàn.
 UPDATE "ebook_codes" SET "plan" = 'hocvien3', "updatedAt" = now() WHERE "plan" = 'hocvien';
+
+-- 02/11/2026: khách mở trang từ Zalo báo đã tải nhưng không thấy file. Không lưu file PDF (tạo lại được từ họ tên, ngày
+-- sinh, số điện thoại đã lưu); mỗi lượt xuất có đường dẫn tải riêng, tải lại không trừ lượt.
+ALTER TABLE "ebook_exports" ADD COLUMN IF NOT EXISTS "downloadToken" text NOT NULL DEFAULT '';
+ALTER TABLE "ebook_exports" ADD COLUMN IF NOT EXISTS "downloadExpiresAt" timestamptz;
+CREATE UNIQUE INDEX IF NOT EXISTS "ebook_exports_download_token_idx" ON "ebook_exports" ("downloadToken") WHERE "downloadToken" <> '';
+
+-- 02/11/2026: khóa học video. Mã khóa học (gói "khoahoc", tiền tố KH) nằm cùng bảng mã, gắn với một khóa qua "courseSlug".
+ALTER TABLE "ebook_codes" ADD COLUMN IF NOT EXISTS "courseSlug" text NOT NULL DEFAULT '';
+
+-- Bài giảng video của khóa học: file tải lên ("videoFile", không public) hoặc link YouTube/Vimeo/Bunny ("videoUrl").
+CREATE TABLE IF NOT EXISTS "course_lessons" (
+  "_id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  "courseSlug" text NOT NULL,
+  "section" text NOT NULL DEFAULT '',
+  "title" text NOT NULL,
+  "description" text NOT NULL DEFAULT '',
+  "kind" text NOT NULL DEFAULT 'lecture',
+  "videoFile" text NOT NULL DEFAULT '',
+  "videoUrl" text NOT NULL DEFAULT '',
+  "durationSeconds" integer NOT NULL DEFAULT 0,
+  "isPreview" boolean NOT NULL DEFAULT false,
+  "order" integer NOT NULL DEFAULT 0,
+  "status" text NOT NULL DEFAULT 'published',
+  "createdAt" timestamptz NOT NULL DEFAULT now(),
+  "updatedAt" timestamptz NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS "course_lessons_course_order_idx" ON "course_lessons" ("courseSlug", "order");

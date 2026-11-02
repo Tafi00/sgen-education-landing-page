@@ -14,6 +14,9 @@
  * xuất ebook, chỉ mở khoá phần chi tiết của các công cụ — cấp 1: Sim số điện thoại, Bát Cực Linh Số; cấp 2: thêm Gieo
  * quẻ (kèm Phụ lục 64 quẻ); cấp 3: thêm Xem ngày. Mã cấp cao dùng được mọi phần của cấp thấp hơn. Học viên nhập mã ở
  * chính các công cụ đó.
+ *
+ * "Mã khóa học" (gói `khoahoc`, tiền tố KH) cũng nằm cùng bảng: gắn với một khóa (`courseSlug`), mở các bài giảng video của
+ * khóa đó ở trang /khoa-hoc/<slug>/hoc; không xuất ebook và không mở công cụ.
  */
 
 export type EbookEdition = "demo" | "full";
@@ -39,12 +42,13 @@ export type EbookPlanKey =
   | "combo100"
   | "hocvien1"
   | "hocvien2"
-  | "hocvien3";
+  | "hocvien3"
+  | "khoahoc";
 
 export type EbookPlan = {
   key: EbookPlanKey;
-  /** `ebook` = mã xuất ebook; `student` = mã học viên mở khoá công cụ (không có lượt xuất). */
-  kind: "ebook" | "student";
+  /** `ebook` = mã xuất ebook; `student` = mã học viên mở khoá công cụ; `course` = mã mở video một khóa học (hai loại sau không có lượt xuất). */
+  kind: "ebook" | "student" | "course";
   /** Cấp của mã học viên (chỉ có ở `kind: "student"`). */
   level?: StudentLevel;
   label: string;
@@ -116,6 +120,7 @@ export const EBOOK_PLANS: Record<EbookPlanKey, EbookPlan> = {
   hocvien1: studentPlan("hocvien1", 1),
   hocvien2: studentPlan("hocvien2", 2),
   hocvien3: studentPlan("hocvien3", 3),
+  khoahoc: { key: "khoahoc", kind: "course", label: "Mã khóa học", edition: "full", quota: 0, prefix: "KH", summary: "Mở các bài giảng video của một khóa học" },
 };
 
 export const STUDENT_PLAN_KEYS = ["hocvien1", "hocvien2", "hocvien3"] as const satisfies readonly EbookPlanKey[];
@@ -129,6 +134,18 @@ export function studentLevel(plan: string | null | undefined): StudentLevel | 0 
 export function isStudentPlan(plan: string | null | undefined): boolean {
   return studentLevel(plan) > 0;
 }
+
+/** Mã khóa học video (gắn với một khóa qua `courseSlug`). */
+export function isCoursePlan(plan: string | null | undefined): boolean {
+  return plan ? EBOOK_PLANS[plan as EbookPlanKey]?.kind === "course" : false;
+}
+
+/** Mã không có lượt xuất file: mã học viên và mã khóa học. `used` của các mã này là số lần nhập mã. */
+export function isUnmeteredPlan(plan: string | null | undefined): boolean {
+  return isStudentPlan(plan) || isCoursePlan(plan);
+}
+
+export const UNMETERED_PLAN_KEYS = [...STUDENT_PLAN_KEYS, "khoahoc"] as const satisfies readonly EbookPlanKey[];
 
 export const EBOOK_PLAN_KEYS = Object.keys(EBOOK_PLANS) as EbookPlanKey[];
 
@@ -203,14 +220,14 @@ export function validateEbookSuffix(raw: string): EbookSuffixResult {
 
 export type EbookCodeState = "active" | "exhausted" | "expired" | "disabled";
 
-/** Mã học viên không có lượt nên không bao giờ "hết lượt"; `used` của mã học viên là số lần nhập mã. */
+/** Mã học viên, mã khóa học không có lượt nên không bao giờ "hết lượt"; `used` của các mã này là số lần nhập mã. */
 export function ebookCodeState(
   code: { plan?: string; status: string; quota: number; used: number; expiresAt?: string | Date | null },
   now = new Date(),
 ): EbookCodeState {
   if (code.status !== "active") return "disabled";
   if (code.expiresAt && new Date(code.expiresAt).getTime() <= now.getTime()) return "expired";
-  if (!isStudentPlan(code.plan) && code.used >= code.quota) return "exhausted";
+  if (!isUnmeteredPlan(code.plan) && code.used >= code.quota) return "exhausted";
   return "active";
 }
 
@@ -220,3 +237,6 @@ export const EBOOK_STATE_LABEL: Record<EbookCodeState, string> = {
   expired: "Hết hạn",
   disabled: "Đã khoá",
 };
+
+/** Đường dẫn tải ebook (cấp cho khách qua Zalo, mở bằng trình duyệt khác) còn dùng được trong chừng này ngày. */
+export const EBOOK_LINK_DAYS = 30;

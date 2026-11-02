@@ -101,6 +101,7 @@ export const EbookCode = new Model<EbookCodeDoc>({
     expiresAt: { kind: "date" },
     lastUsedAt: { kind: "date" },
     createdBy: { kind: "uuid" },
+    courseSlug: { kind: "text" },
   },
 });
 
@@ -117,6 +118,25 @@ export const EbookExport = new Model<EbookExportDoc>({
     reportId: { kind: "uuid" },
     status: { kind: "text" },
     error: { kind: "text" },
+    downloadToken: { kind: "text" },
+    downloadExpiresAt: { kind: "date" },
+  },
+});
+
+export const CourseLesson = new Model<CourseLessonDoc>({
+  table: "course_lessons",
+  fields: {
+    courseSlug: { kind: "text" },
+    section: { kind: "text" },
+    title: { kind: "text" },
+    description: { kind: "text" },
+    kind: { kind: "text" },
+    videoFile: { kind: "text" },
+    videoUrl: { kind: "text" },
+    durationSeconds: { kind: "int" },
+    isPreview: { kind: "bool" },
+    order: { kind: "int" },
+    status: { kind: "text" },
   },
 });
 
@@ -248,6 +268,8 @@ export type EbookCodeDoc = Doc & {
   expiresAt: Date | null;
   lastUsedAt: Date | null;
   createdBy: string | null;
+  /** Khóa học mà mã khóa học (gói `khoahoc`) mở; rỗng với các loại mã khác. */
+  courseSlug: string;
   createdAt: Date;
   updatedAt: Date;
 };
@@ -264,7 +286,31 @@ export type EbookExportDoc = Doc & {
   /** `success` chỉ khi file PDF đã được tạo xong; `failed` khi lỗi tạo file (lượt đã hoàn lại). */
   status: "success" | "failed";
   error: string;
+  /** Đường dẫn tải không cần đăng nhập (`/ebook/tai/<token>`); PDF được tạo lại khi tải, không lưu file. */
+  downloadToken: string;
+  downloadExpiresAt: Date | null;
   createdAt: Date;
+};
+
+export type CourseLessonDoc = Doc & {
+  courseSlug: string;
+  /** Phần của khóa (VD: "Video 1"), các bài cùng phần hiển thị thành một nhóm. */
+  section: string;
+  title: string;
+  description: string;
+  /** `lecture` = bài giảng; `discussion` = phần thảo luận tương tác. */
+  kind: "lecture" | "discussion";
+  /** Tên file trong thư mục video riêng (không public), trả qua `/api/khoa-hoc/video/:id` sau khi kiểm tra mã. */
+  videoFile: string;
+  /** Link YouTube / Vimeo / Bunny hoặc file .mp4 ngoài, dùng khi không tải file lên máy chủ. */
+  videoUrl: string;
+  durationSeconds: number;
+  /** Bài học thử: xem được không cần mã. */
+  isPreview: boolean;
+  order: number;
+  status: "published" | "draft";
+  createdAt: Date;
+  updatedAt: Date;
 };
 
 export type CustomerDoc = Doc & {

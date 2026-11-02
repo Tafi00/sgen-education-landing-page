@@ -26,6 +26,7 @@ import {
   Users,
   UsersRound,
   X,
+  Video,
 } from "lucide-react";
 import { api, errorMessage } from "../api/client";
 import { useAdminSession } from "../admin/useAdminSession";
@@ -45,6 +46,7 @@ const NAV_GROUPS: NavGroup[] = [
     title: "Nội dung",
     items: [
       { to: "/admin/khoa-hoc", label: "Khóa học", icon: BookOpen },
+      { to: "/admin/bai-giang", label: "Bài giảng video", icon: Video, roles: ["admin"] },
       { to: "/admin/nhom-khoa-hoc", label: "Nhóm khóa học", icon: BookOpen },
       { to: "/admin/blog", label: "Blog", icon: FileText },
       { to: "/admin/chuyen-muc", label: "Chuyên mục", icon: FileText },

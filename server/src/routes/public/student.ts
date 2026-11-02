@@ -1,7 +1,7 @@
 import path from "node:path";
 import { Router, type Request } from "express";
 import { z } from "zod";
-import { ebookCodeState, formatEbookCode, isStudentPlan, STUDENT_FEATURE_LEVEL, studentLevel } from "../../../../shared/ebook.js";
+import { ebookCodeState, formatEbookCode, isCoursePlan, isStudentPlan, STUDENT_FEATURE_LEVEL, studentLevel } from "../../../../shared/ebook.js";
 import { asyncHandler, AppError } from "../../middleware/errors.js";
 import { authLimiter } from "../../middleware/rateLimit.js";
 import type { EbookCodeDoc } from "../../models/index.js";
@@ -44,6 +44,7 @@ publicStudentRouter.post(
     const { code } = redeemSchema.parse(req.body);
     const doc = await findEbookCode(code);
     if (!doc) throw new AppError(404, "Mã không đúng. Vui lòng kiểm tra lại từng ký tự.", "code_not_found");
+    if (isCoursePlan(doc.plan)) throw new AppError(422, "Đây là mã khóa học, dùng để vào học video ở trang của khóa học đó.", "course_code");
     if (!isStudentPlan(doc.plan)) {
       throw new AppError(422, "Đây là mã xuất ebook, không phải mã học viên. Mã ebook dùng ở trang Xuất ebook.", "not_student_code");
     }

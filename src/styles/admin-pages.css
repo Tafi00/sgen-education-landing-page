@@ -1170,3 +1170,56 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Bài giảng video: hai cách thêm bài và tiến độ tải lên. */
+.lesson-add {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--a-border);
+}
+
+.lesson-add h2 { margin: 0 0 12px; font-size: 1rem; }
+.lesson-add form { display: grid; gap: 12px; justify-items: start; }
+.lesson-add form .field { width: 100%; }
+
+.lesson-uploads {
+  display: grid;
+  gap: 8px;
+  margin: 14px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.lesson-uploads li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 4px 12px;
+  font-size: 0.875rem;
+}
+
+.lesson-uploads span { overflow-wrap: anywhere; }
+.lesson-uploads small { color: var(--a-text-2); }
+.lesson-uploads .is-error small { grid-column: 1 / -1; color: var(--a-critical-text); }
+.lesson-uploads .is-done small { color: var(--a-success-text); }
+
+.lesson-uploads i {
+  grid-column: 1 / -1;
+  display: block;
+  height: 6px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--a-surface-3);
+}
+
+.lesson-uploads b {
+  display: block;
+  height: 100%;
+  background: var(--a-brand);
+  transition: width 0.2s ease;
+}
+
+.lesson-uploads .is-done b { background: var(--a-success-icon); }
+.lesson-uploads .is-error i { display: none; }

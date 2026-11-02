@@ -1,0 +1,177 @@
+/* Khối tải file ebook (trang /ebook và /ebook/tai/<token>): chữ to, nút rộng cho khách lớn tuổi dùng điện thoại. */
+.ebook-file {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+  color: #2a1160;
+  border: 1.5px solid #cfe9d9;
+  border-radius: 16px;
+  background: #f4fbf7;
+  scroll-margin-top: 100px;
+}
+
+.ebook-file__head {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.ebook-file__head > svg {
+  flex: none;
+  width: 24px;
+  height: 24px;
+  color: #1f8a5a;
+}
+
+.ebook-file__head strong {
+  display: block;
+  font-size: 1.02rem;
+  font-weight: 800;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.ebook-file__head small {
+  display: block;
+  margin-top: 3px;
+  color: #4c5a55;
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+
+.ebook-file__warn {
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+  border: 1.5px solid #f3d9a4;
+  border-radius: 12px;
+  background: #fff8ea;
+}
+
+.ebook-file__warn p {
+  display: flex;
+  gap: 8px;
+  margin: 0;
+  color: #5c3b00;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.ebook-file__warn p > svg {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+}
+
+.ebook-file__warn .ebook-file__hint {
+  display: block;
+  font-size: 0.88rem;
+}
+
+.ebook-file__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* Khối này nền sáng, nằm trong thẻ tối của trang /ebook: nút phụ không dùng được kiểu chữ trắng của nền tối. */
+.ebook-file .btn.btn--secondary {
+  color: #3b1a8f;
+  border-color: #b9a6ea;
+  background: #fff;
+}
+
+.ebook-file .btn.btn--secondary:hover { background: #f5f1fd; }
+
+.ebook-file__actions > :first-child { flex: 1 1 100%; }
+.ebook-file__actions > :not(:first-child) { flex: 1 1 150px; }
+
+.ebook-file__help {
+  color: #3f3a57;
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+.ebook-file__help summary {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  min-height: 32px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.ebook-file__help summary svg { width: 16px; height: 16px; }
+
+.ebook-file__help ul {
+  display: grid;
+  gap: 6px;
+  margin: 6px 0 0;
+  padding-left: 18px;
+}
+
+.ebook-file__help code {
+  font-size: 0.82rem;
+  overflow-wrap: anywhere;
+}
+
+.ebook-recent {
+  display: grid;
+  gap: 8px;
+}
+
+.ebook-recent h3 {
+  margin: 0;
+  color: #fff;
+  font-size: 0.98rem;
+  font-weight: 800;
+}
+
+.ebook-recent ul {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ebook-recent li button {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  width: 100%;
+  min-height: 48px;
+  padding: 8px 12px;
+  color: #2a1160;
+  font: inherit;
+  text-align: left;
+  border: 1px solid #e3dcf5;
+  border-radius: 10px;
+  background: #fff;
+  cursor: pointer;
+}
+
+.ebook-recent li button:hover { border-color: #b9a6ea; }
+.ebook-recent li button:focus-visible { outline: 2px solid #5a22e8; outline-offset: 2px; }
+
+.ebook-recent li svg {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  color: #5a22e8;
+}
+
+.ebook-recent li span { min-width: 0; }
+
+.ebook-recent li strong {
+  display: block;
+  font-size: 0.94rem;
+  overflow-wrap: anywhere;
+}
+
+.ebook-recent li small {
+  display: block;
+  color: #5b5575;
+  font-size: 0.84rem;
+}
