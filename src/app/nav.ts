@@ -119,3 +119,17 @@ export function withServiceLinks(nav: NavItem[], services: NavService[]): NavIte
     .map((service) => ({ label: service.name.trim(), href: `/dich-vu/${service.slug}`, description: firstSentence(service.tagline) }));
   return nav.map((item) => (item.href === "/dich-vu" ? { ...item, children } : item));
 }
+
+export type NavCourse = { slug: string; title: string; summary: string; order: number };
+
+/**
+ * Menu "Khóa học" theo danh sách khóa trong CMS (Quản trị → Khóa học): khóa mới thêm tự hiện, đúng thứ tự quản trị đã sắp, dòng
+ * mô tả là câu đầu phần tóm tắt. Mục đầu "Tổng quan Khóa học" do header tự thêm. Chưa có dữ liệu thì giữ danh sách mặc định.
+ */
+export function withCourseLinks(nav: NavItem[], courses: NavCourse[]): NavItem[] {
+  if (courses.length === 0) return nav;
+  const children = [...courses]
+    .sort((a, b) => a.order - b.order)
+    .map((course) => ({ label: course.title.trim(), href: `/khoa-hoc/${course.slug}`, description: firstSentence(course.summary ?? "") || undefined }));
+  return nav.map((item) => (item.href === "/khoa-hoc" ? { ...item, children } : item));
+}

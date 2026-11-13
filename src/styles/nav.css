@@ -433,3 +433,40 @@
 :where(input, select, textarea):focus-visible {
   outline-offset: 0;
 }
+
+/* Menu nhiều mục (Khóa học lấy từ CMS, ~20 khóa): chia cột đọc từ trên xuống theo đúng thứ tự quản trị đã sắp, cao tối đa vừa
+   màn hình, căn phải theo mục cha. Trên 16 mục thì 3 cột. */
+@media (min-width: 1241px) {
+  .site-nav__dropdown--columns {
+    display: block;
+    width: min(580px, calc(100vw - 48px));
+    columns: 2;
+    column-gap: 4px;
+    left: auto;
+    right: -14px;
+    max-height: calc(100vh - var(--header-h, 80px) - 32px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .site-nav__dropdown--three {
+    width: min(840px, calc(100vw - 48px));
+    columns: 3;
+  }
+
+  .site-nav__dropdown--columns .site-nav__dropdown-all {
+    column-span: all;
+    margin-bottom: 4px;
+  }
+
+  .site-nav__dropdown--columns a {
+    break-inside: avoid;
+    padding: 8px 12px;
+  }
+
+  /* Tên khóa dài (VD "Phong thủy âm trạch Dương công cổ phái_Level 2") xuống dòng thay vì tràn sang cột bên. */
+  .site-nav__dropdown--columns a strong {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+}

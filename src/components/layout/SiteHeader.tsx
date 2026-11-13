@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { ChevronDown, LogIn, Menu, Phone, X } from "lucide-react";
-import { AUTH_NAV, PRIMARY_NAV, withServiceLinks } from "../../app/nav";
-import { useServices, useSiteSettings } from "../../api/hooks";
+import { AUTH_NAV, PRIMARY_NAV, withCourseLinks, withServiceLinks } from "../../app/nav";
+import { useNavCourses, useServices, useSiteSettings } from "../../api/hooks";
 
 const AUTO_HIDE_BREAKPOINT = 1240;
 const AUTO_HIDE_AFTER = 200;
@@ -22,7 +22,8 @@ export function SiteHeader() {
   const location = useLocation();
   const { settings } = useSiteSettings();
   const { services } = useServices();
-  const navItems = useMemo(() => withServiceLinks(PRIMARY_NAV, services), [services]);
+  const { courses } = useNavCourses();
+  const navItems = useMemo(() => withCourseLinks(withServiceLinks(PRIMARY_NAV, services), courses), [services, courses]);
 
   /** Chỉ mở menu bằng hover trên thiết bị có chuột thật; cảm ứng vẫn dùng nút như cũ. */
   useEffect(() => {
@@ -181,7 +182,10 @@ export function SiteHeader() {
                         <ChevronDown aria-hidden="true" />
                       </button>
                     </div>
-                    <div className="site-nav__dropdown">
+                    {/* Danh sách dài (Khóa học ~20 mục) chia 2–3 cột trên máy tính để không tràn khỏi màn hình. */}
+                    <div
+                      className={`site-nav__dropdown${item.children.length > 10 ? " site-nav__dropdown--columns" : ""}${item.children.length > 16 ? " site-nav__dropdown--three" : ""}`}
+                    >
                       <Link to={item.href} className="site-nav__dropdown-all" onClick={closeMenu}>
                         Tổng quan {item.label}
                       </Link>

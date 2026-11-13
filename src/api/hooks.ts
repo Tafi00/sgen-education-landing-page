@@ -182,6 +182,19 @@ export function useSections() {
   return { sections: query.data?.sections ?? defaultSections, isFallback: !query.data };
 }
 
+export type NavCourseItem = { slug: string; title: string; summary: string; order: number };
+
+/** Danh sách khóa cho menu đầu trang; chưa có dữ liệu thì menu giữ danh sách mặc định trong `nav.ts`. */
+export function useNavCourses() {
+  const query = useQuery({
+    queryKey: ["courses", "menu"],
+    staleTime: STALE_MS,
+    retry: 1,
+    queryFn: () => api.get<{ items: NavCourseItem[] }>("/api/courses/menu"),
+  });
+  return { courses: query.data?.items ?? [] };
+}
+
 export function useServices() {
   const query = useQuery({
     queryKey: ["services"],

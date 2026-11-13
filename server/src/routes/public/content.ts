@@ -78,6 +78,15 @@ publicContentRouter.get(
   }),
 );
 
+/** Menu "Khóa học" ở đầu trang: chỉ tên, mô tả ngắn và thứ tự quản trị đã sắp (không kèm nội dung khóa, cho nhẹ). */
+publicContentRouter.get(
+  "/courses/menu",
+  asyncHandler(async (_req, res) => {
+    const items = await Course.find({ status: "published" }).select("slug title summary order").sort({ order: 1, createdAt: 1 }).limit(100).lean();
+    res.json({ items });
+  }),
+);
+
 publicContentRouter.get(
   "/courses/:slug",
   asyncHandler(async (req, res) => {
