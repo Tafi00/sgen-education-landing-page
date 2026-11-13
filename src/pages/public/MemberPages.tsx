@@ -72,7 +72,8 @@ type MemberOrder = {
   viewToken?: string;
 };
 
-type MeResponse = { member: Member | null; entitlements: Entitlement[] };
+/** `locked`: phiên vừa bị đóng vì quản trị đã khoá tài khoản. */
+type MeResponse = { member: Member | null; entitlements: Entitlement[]; locked?: boolean; message?: string };
 
 function formatDate(value?: string | null) {
   if (!value) return "";
@@ -430,10 +431,17 @@ export function MemberAccountPage() {
             <div className="alert-list">
               <article className="is-info">
                 <Info aria-hidden="true" />
-                <div>
-                  <strong>Bạn chưa đăng nhập</strong>
-                  <p>Đăng nhập để xem hồ sơ, lịch sử tra cứu, đơn hàng và quyền VIP của mình. Nếu chưa có tài khoản, bạn đăng ký ngay bên dưới.</p>
-                </div>
+                {me.data?.locked ? (
+                  <div>
+                    <strong>Tài khoản đã bị khoá</strong>
+                    <p>{me.data.message || "Tài khoản đã bị khoá. Vui lòng liên hệ SGEN."}</p>
+                  </div>
+                ) : (
+                  <div>
+                    <strong>Bạn chưa đăng nhập</strong>
+                    <p>Đăng nhập để xem hồ sơ, lịch sử tra cứu, đơn hàng và quyền VIP của mình. Nếu chưa có tài khoản, bạn đăng ký ngay bên dưới.</p>
+                  </div>
+                )}
               </article>
             </div>
           </div>

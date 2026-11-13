@@ -49,9 +49,16 @@ export function requireAdmin(...roles: ("admin" | "editor")[]): RequestHandler {
   };
 }
 
-export function requireMember(req: Request, _res: Response, next: NextFunction) {
+/** Thông báo khi quản trị đã khoá tài khoản thành viên (khác khoá tạm do nhập sai mật khẩu). */
+export const MEMBER_LOCKED_MESSAGE = "Tài khoản đã bị khoá. Vui lòng liên hệ SGEN.";
+
+export function requireMember(req: Request, res: Response, next: NextFunction) {
   if (!currentMember(req)) {
-    next(new AppError(401, "Bạn cần đăng nhập tài khoản thành viên.", "unauthenticated"));
+    next(
+      res.locals.memberLocked
+        ? new AppError(403, MEMBER_LOCKED_MESSAGE, "account_locked")
+        : new AppError(401, "Bạn cần đăng nhập tài khoản thành viên.", "unauthenticated"),
+    );
     return;
   }
   next();

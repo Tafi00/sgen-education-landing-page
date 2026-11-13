@@ -12,6 +12,7 @@ import { ResilientSessionStore } from "./db/sessionStore.js";
 import { errorHandler, notFoundHandler } from "./middleware/errors.js";
 import { issueCsrfToken, requireCsrf } from "./middleware/csrf.js";
 import { requireAdmin } from "./middleware/auth.js";
+import { dropInactiveMemberSession } from "./middleware/memberSession.js";
 import { publicApiRouter } from "./routes/public/index.js";
 import { adminApiRouter } from "./routes/admin/index.js";
 import { adminAuthPublicRouter } from "./routes/admin/auth.js";
@@ -62,6 +63,8 @@ export function createApp() {
     res.json({ ok: true, db: dbState.status, dbError: dbState.lastError, env: env.isProduction ? "production" : "development" });
   });
 
+  /** Thành viên bị quản trị khoá (hoặc đã bị xoá) mất phiên ngay ở request kế tiếp. */
+  app.use("/api", dropInactiveMemberSession);
   app.use("/api", publicApiRouter);
   /** Đăng nhập/đăng xuất/phiên hiện tại: truy cập được khi chưa có phiên admin. */
   app.use("/api/admin/auth", requireCsrf, adminAuthPublicRouter);

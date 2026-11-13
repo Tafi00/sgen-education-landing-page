@@ -2,7 +2,7 @@ import { Router } from "express";
 import { z } from "zod";
 import { Entitlement, LookupReport, Member, Order } from "../../models/index.js";
 import { asyncHandler, AppError } from "../../middleware/errors.js";
-import { currentMember, hashPassword, requireMember, verifyPassword } from "../../middleware/auth.js";
+import { currentMember, hashPassword, MEMBER_LOCKED_MESSAGE, requireMember, verifyPassword } from "../../middleware/auth.js";
 import { authLimiter } from "../../middleware/rateLimit.js";
 import { memberLoginSchema, memberRegisterSchema } from "../schemas.js";
 import { randomToken } from "../../services/crypto.js";
@@ -67,6 +67,8 @@ publicMemberRouter.post(
       await member.save();
       throw new AppError(401, "Email hoặc mật khẩu chưa đúng.", "invalid_credentials");
     }
+    // Chỉ báo "đã khoá" khi mật khẩu đúng, để không lộ email nào đang có tài khoản.
+    if (member.status === "locked") throw new AppError(403, MEMBER_LOCKED_MESSAGE, "account_locked");
     member.failedLogins = 0;
     member.lockedUntil = null;
     member.lastLoginAt = new Date();
@@ -91,7 +93,8 @@ publicMemberRouter.get(
   asyncHandler(async (req, res) => {
     const member = currentMember(req);
     if (!member) {
-      res.json({ member: null, entitlements: [] });
+      // Phiên vừa bị đóng vì quản trị khoá tài khoản: báo cho khách biết lý do.
+      res.json(res.locals.memberLocked ? { member: null, entitlements: [], locked: true, message: MEMBER_LOCKED_MESSAGE } : { member: null, entitlements: [] });
       return;
     }
     const entitlements = await Entitlement.find({
