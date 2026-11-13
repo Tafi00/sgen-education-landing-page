@@ -376,6 +376,7 @@ function FieldControl({
       error={error}
       wide={field.wide}
       type={field.kind === "number" ? "number" : field.kind === "date" || field.kind === "datetime" ? (field.kind === "date" ? "date" : "datetime-local") : field.kind === "email" ? "email" : "text"}
+      autoComplete={field.autoComplete}
       value={String(value ?? "")}
       onChange={(event) => onChange(event.target.value)}
     />
@@ -447,7 +448,7 @@ export function ResourceForm({ config, children }: { config: ResourceConfig; chi
     mutationFn: async (statusOverride?: string) => {
       const payload: Row = {};
       for (const field of config.fields) {
-        if (isCreate && field.onlyWhenEditing) continue;
+        if (isCreate ? field.onlyWhenEditing : field.onlyWhenCreating) continue;
         const value = toPayloadValue(field, form[field.name]);
         /** Khi tạo mới, bỏ qua trường để trống để API dùng giá trị mặc định của schema. */
         if (isCreate && value === "") continue;
@@ -499,7 +500,10 @@ export function ResourceForm({ config, children }: { config: ResourceConfig; chi
     navigate(config.basePath);
   };
 
-  const visibleFields = useMemo(() => config.fields.filter((field) => !(field.onlyWhenEditing && isCreate)), [config.fields, isCreate]);
+  const visibleFields = useMemo(
+    () => config.fields.filter((field) => !(isCreate ? field.onlyWhenEditing : field.onlyWhenCreating)),
+    [config.fields, isCreate],
+  );
   const sections = useMemo(() => [...new Set(visibleFields.map(sectionOf))], [visibleFields]);
   const currentSection = sections.includes(activeSection) ? activeSection : (sections[0] ?? GENERAL_SECTION);
   const sectionFields = visibleFields.filter((field) => sectionOf(field) === currentSection);

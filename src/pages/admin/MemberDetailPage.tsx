@@ -213,10 +213,11 @@ export function MemberDetailPage() {
     queryFn: () => api.get<{ items: EntitlementItem[] }>("/api/admin/entitlements", { query: { memberId: id, pageSize: 100 } }),
   });
 
+  /** Đơn gắn với tài khoản qua `memberId` (đặt khi khách đang đăng nhập), không đoán theo chuỗi email. */
   const ordersQuery = useQuery({
-    queryKey: ["admin", "members", id, "orders", member?.email ?? ""],
-    enabled: Boolean(id) && tab === "orders" && Boolean(member?.email),
-    queryFn: () => api.get<{ items: OrderItem[] }>("/api/admin/orders", { query: { q: member?.email ?? "", pageSize: 100 } }),
+    queryKey: ["admin", "members", id, "orders"],
+    enabled: Boolean(id) && tab === "orders",
+    queryFn: () => api.get<{ items: OrderItem[] }>("/api/admin/orders", { query: { memberId: id, pageSize: 100 } }),
   });
 
   const lookupsQuery = useQuery({
@@ -540,9 +541,8 @@ export function MemberDetailPage() {
       {tab === "orders" ? (
         <div className="admin-card">
           <h2>Đơn hàng của thành viên</h2>
-          {!member.email ? (
-            <p className="muted">Thành viên chưa có email để đối chiếu đơn hàng.</p>
-          ) : ordersQuery.isLoading ? (
+          <p className="muted">Chỉ gồm các đơn khách đặt khi đang đăng nhập tài khoản này.</p>
+          {ordersQuery.isLoading ? (
             <p className="admin-loading">
               <Loader2 className="spin" aria-hidden="true" /> Đang tải đơn hàng…
             </p>
@@ -551,7 +551,7 @@ export function MemberDetailPage() {
               <AlertTriangle aria-hidden="true" /> {errorMessage(ordersQuery.error)}
             </p>
           ) : (ordersQuery.data?.items.length ?? 0) === 0 ? (
-            <p className="muted">Chưa có đơn hàng nào khớp email {member.email}.</p>
+            <p className="muted">Thành viên chưa có đơn hàng nào gắn với tài khoản.</p>
           ) : (
             <div className="data-table__scroll">
               <div className="admin-table-wrap">

@@ -48,6 +48,10 @@ export type FieldConfig = {
   step?: number;
   /** Ẩn khỏi form tạo mới nhưng hiện khi sửa (ví dụ slug tự sinh). */
   onlyWhenEditing?: boolean;
+  /** Chỉ hiện và gửi khi tạo mới (ví dụ mật khẩu tạm của tài khoản). */
+  onlyWhenCreating?: boolean;
+  /** Giá trị autocomplete của ô nhập, vd. "off" để trình duyệt không tự điền mật khẩu của quản trị. */
+  autoComplete?: string;
   /** Nguồn dữ liệu cho kind "relation": chọn bản ghi liên quan từ API. */
   relation?: { endpoint: string; labelKey: string; secondaryKey?: string; valueKey?: string; query?: Record<string, string> };
   section?: string;

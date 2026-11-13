@@ -21,7 +21,7 @@ import {
 } from "../../models/index.js";
 import { createCrudRouter } from "../../services/crud.js";
 import { asyncHandler } from "../../middleware/errors.js";
-import { hashPassword, requireAdmin } from "../../middleware/auth.js";
+import { requireAdmin } from "../../middleware/auth.js";
 import { adminAuthAdminRouter } from "./auth.js";
 import { adminCourseLessonRouter } from "./courseLessons.js";
 import { adminCustomerRouter } from "./customers.js";
@@ -102,7 +102,7 @@ adminApiRouter.use(
     model: Order,
     label: "đơn hàng",
     searchFields: ["code", "customerName", "customerPhone", "customerEmail", "serviceName"],
-    filterFields: { status: "string", method: "string", serviceSlug: "string", createdAt: "date" },
+    filterFields: { status: "string", method: "string", serviceSlug: "string", memberId: "objectId", createdAt: "date" },
     sortFields: ["createdAt", "amount", "status", "code"],
     updateSchema: orderUpdateSchema,
   }),
@@ -134,6 +134,8 @@ adminApiRouter.use(
   }),
 );
 
+/** Tạo thành viên (mật khẩu tạm), khoá/mở khoá, đặt lại mật khẩu: có ghi nhật ký; đặt trước CRUD chung. */
+adminApiRouter.use("/members", adminMemberActionRouter);
 adminApiRouter.use(
   "/members",
   createCrudRouter({
@@ -142,18 +144,6 @@ adminApiRouter.use(
     searchFields: ["name", "email", "phone"],
     filterFields: { status: "string" },
     sortFields: ["createdAt", "lastLoginAt", "name"],
-    createSchema: z.object({
-      name: z.string().min(2).max(160),
-      email: z.string().email().max(200),
-      phone: z.string().max(40).optional(),
-      birthDate: z.string().max(20).optional(),
-      password: z.string().min(8).max(200),
-    }),
-    transform: async (data, mode) => {
-      if (mode === "update") return data;
-      const { password, ...rest } = data as { password: string; email: string };
-      return { ...rest, email: String(rest.email).toLowerCase(), passwordHash: await hashPassword(password), consentAt: new Date() };
-    },
     updateSchema: memberSchemaInput.partial(),
   }),
 );

@@ -275,6 +275,16 @@ export const RESOURCES = {
     fields: [
       { name: "name", label: "Họ tên", kind: "text", required: true },
       { name: "email", label: "Email", kind: "email", required: true },
+      {
+        name: "password",
+        label: "Mật khẩu tạm",
+        kind: "text",
+        required: true,
+        onlyWhenCreating: true,
+        autoComplete: "off",
+        placeholder: "Tối thiểu 8 ký tự",
+        hint: "Bắt buộc, ít nhất 8 ký tự. Gửi mật khẩu này cho khách để đăng nhập; có thể đặt lại ở trang chi tiết thành viên.",
+      },
       { name: "phone", label: "Điện thoại", kind: "text" },
       { name: "birthDate", label: "Ngày sinh", kind: "date" },
       { name: "status", label: "Trạng thái", kind: "select", options: [{ value: "active", label: "Đang hoạt động" }, { value: "locked", label: "Đang khoá" }] },

@@ -46,6 +46,10 @@ const ACTION_LABELS: Record<string, string> = {
   "ebook.generate": "Tạo mã ebook",
   "ebook.update": "Cập nhật mã ebook",
   "ebook.delete": "Xoá mã ebook",
+  "member.create": "Tạo tài khoản thành viên",
+  "member.lock": "Khoá tài khoản thành viên",
+  "member.unlock": "Mở khoá tài khoản thành viên",
+  "member.password_reset": "Đặt lại mật khẩu thành viên",
 };
 
 const ACTION_VERBS: Record<string, string> = {
@@ -91,7 +95,7 @@ export function actionLabel(action?: string) {
 /** Tông màu cho nhãn hành động theo mức độ ảnh hưởng. */
 export function actionTone(action?: string) {
   if (!action) return "neutral";
-  if (action.includes("delete") || action.includes("cancel") || action.includes("reject")) return "danger";
+  if (action.includes("delete") || action.includes("cancel") || action.includes("reject") || action === "member.lock") return "danger";
   if (action.includes("create") || action.includes("approve") || action === "login") return "positive";
   return "neutral";
 }
@@ -104,6 +108,7 @@ const DIFF_LABELS: Record<string, string> = {
   id: "Mã bản ghi",
   title: "Tiêu đề",
   slug: "Slug",
+  email: "Email",
 };
 
 function formatDiffValue(value: unknown): string {
