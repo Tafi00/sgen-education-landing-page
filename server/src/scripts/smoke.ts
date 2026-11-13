@@ -9,7 +9,7 @@ import { setConnectionString } from "../db/pool.js";
 import { env } from "../env.js";
 import { hashPassword } from "../middleware/auth.js";
 import { PDFDocument } from "pdf-lib";
-import { Customer, EbookCode, EbookExport, Entitlement, Lead, LookupReport, MediaAsset, Order, SiteSetting, User } from "../models/index.js";
+import { AuditLog, Customer, EbookCode, EbookExport, Entitlement, Lead, LookupReport, MediaAsset, Member, Order, SiteSetting, User } from "../models/index.js";
 import { seedAll } from "./seed.js";
 
 type Jar = { cookies: Map<string, string> };
@@ -29,9 +29,9 @@ function record(name: string, ok: boolean, detail = "") {
 async function call(
   base: string,
   pathname: string,
-  options: { method?: string; body?: unknown; jar?: Jar; formData?: FormData; raw?: boolean } = {},
+  options: { method?: string; body?: unknown; jar?: Jar; formData?: FormData; raw?: boolean; headers?: Record<string, string> } = {},
 ): Promise<{ status: number; payload: any }> {
-  const headers: Record<string, string> = { Accept: "application/json" };
+  const headers: Record<string, string> = { Accept: "application/json", ...options.headers };
   if (options.body !== undefined) headers["Content-Type"] = "application/json";
   if (options.jar) {
     const cookieHeader = [...options.jar.cookies.entries()].map(([key, value]) => `${key}=${value}`).join("; ");
@@ -335,6 +335,127 @@ async function run() {
     "API tài khoản quản trị không trả passwordHash",
     adminForHash.status === 200 && !JSON.stringify(adminForHash.payload).includes("passwordHash"),
     `status=${adminForHash.status}`,
+  );
+
+  /* ---------------- quản trị thành viên: tạo, khoá, đặt lại mật khẩu ---------------- */
+  // Giới hạn đăng nhập dùng chung theo IP cho mọi route đăng nhập/nhập mã; app tin 1 proxy nên
+  // phần này giả lập IP khác để không ăn vào hạn mức của các ca smoke còn lại.
+  const memberIp = { "X-Forwarded-For": "10.20.30.40" };
+  const memberLogin = (jar: Jar, email: string, password: string) =>
+    call(base, "/api/members/login", { method: "POST", jar, headers: memberIp, body: { email, password } });
+  const LOCKED_MESSAGE = "Tài khoản đã bị khoá. Vui lòng liên hệ SGEN.";
+
+  const vipMember = await Member.findOne({ email: "vip@example.com" }).lean();
+  const vipId = String(vipMember?._id ?? "");
+  const guestOrder = await call(base, "/api/orders", {
+    method: "POST",
+    headers: memberIp,
+    body: { serviceSlug: "vip-than-so-hoc", customerName: "Khách lạ", customerPhone: "0900000003", customerEmail: "vip@example.com" },
+  });
+  const memberOrders = await call(base, `/api/admin/orders?memberId=${vipId}&pageSize=100`, { jar: adminJar });
+  const memberOrderCodes: string[] = memberOrders.payload.items?.map((item: { code: string }) => item.code) ?? [];
+  record(
+    "tab Đơn hàng của thành viên lọc theo memberId, không lẫn đơn khách vãng lai trùng email",
+    memberOrders.status === 200 &&
+      memberOrderCodes.includes(order.payload.order?.code) &&
+      guestOrder.status === 201 &&
+      !memberOrderCodes.includes(guestOrder.payload.order?.code) &&
+      memberOrders.payload.items.every((item: { memberId: string }) => item.memberId === vipId),
+    `codes=${memberOrderCodes.join(",")} guest=${guestOrder.payload.order?.code}`,
+  );
+
+  const createNoPassword = await call(base, "/api/admin/members", {
+    method: "POST",
+    jar: adminJar,
+    body: { name: "Khách tạo tay", email: "taotay@example.com", status: "draft" },
+  });
+  const createdMember = await call(base, "/api/admin/members", {
+    method: "POST",
+    jar: adminJar,
+    body: { name: "Khách tạo tay", email: "TaoTay@Example.com", password: "TamThoi123", status: "draft" },
+  });
+  const createDuplicate = await call(base, "/api/admin/members", {
+    method: "POST",
+    jar: adminJar,
+    body: { name: "Khách tạo tay", email: "taotay@example.com", password: "TamThoi123" },
+  });
+  const tempJar: Jar = { cookies: new Map() };
+  await call(base, "/api/members/me", { jar: tempJar });
+  const tempLogin = await memberLogin(tempJar, "taotay@example.com", "TamThoi123");
+  record(
+    "admin tạo thành viên bằng mật khẩu tạm; thiếu mật khẩu hoặc trùng email bị từ chối",
+    createNoPassword.status === 422 &&
+      createNoPassword.payload.error?.fields?.some((field: { path: string }) => field.path === "password") &&
+      createdMember.status === 201 &&
+      createdMember.payload.item?.email === "taotay@example.com" &&
+      createdMember.payload.item?.status === "active" &&
+      !JSON.stringify(createdMember.payload).includes("passwordHash") &&
+      createDuplicate.status === 409 &&
+      tempLogin.status === 200,
+    `noPass=${createNoPassword.status} create=${createdMember.status} dup=${createDuplicate.status} login=${tempLogin.status}`,
+  );
+
+  const editorLock = await call(base, `/api/admin/members/${vipId}/status`, { method: "POST", jar: editorJar, body: { status: "locked" } });
+  const editorReset = await call(base, `/api/admin/members/${vipId}/password`, { method: "POST", jar: editorJar, body: { password: "EditorDoi123" } });
+  record("editor không khoá hay đặt lại mật khẩu thành viên được", editorLock.status === 403 && editorReset.status === 403, `${editorLock.status}/${editorReset.status}`);
+
+  // Phiên thứ hai của cùng thành viên (vd. máy khác) để kiểm tra thông báo khoá ở /me.
+  const secondJar: Jar = { cookies: new Map() };
+  await call(base, "/api/members/me", { jar: secondJar });
+  const secondLogin = await memberLogin(secondJar, "vip@example.com", "MatKhau123");
+  const locked = await call(base, `/api/admin/members/${vipId}/status`, { method: "POST", jar: adminJar, body: { status: "locked" } });
+  const reportsWhileLocked = await call(base, "/api/members/reports", { jar: memberJar });
+  const meAfterLock = await call(base, "/api/members/me", { jar: memberJar });
+  const meSecondAfterLock = await call(base, "/api/members/me", { jar: secondJar });
+  record(
+    "khoá thành viên: các phiên đang mở bị đăng xuất, kèm thông báo đã khoá",
+    secondLogin.status === 200 &&
+      locked.status === 200 &&
+      locked.payload.item?.status === "locked" &&
+      reportsWhileLocked.status === 403 &&
+      reportsWhileLocked.payload.error?.message === LOCKED_MESSAGE &&
+      meAfterLock.payload.member === null &&
+      meSecondAfterLock.payload.member === null &&
+      meSecondAfterLock.payload.locked === true &&
+      meSecondAfterLock.payload.message === LOCKED_MESSAGE,
+    `lock=${locked.status} reports=${reportsWhileLocked.status} me=${JSON.stringify(meAfterLock.payload.member)} me2=${meSecondAfterLock.payload.locked}`,
+  );
+
+  const lockedLogin = await memberLogin(memberJar, "vip@example.com", "MatKhau123");
+  const lockedWrongPassword = await memberLogin(memberJar, "vip@example.com", "SaiMatKhau1");
+  record(
+    "thành viên bị khoá không đăng nhập được; sai mật khẩu vẫn báo chung chung",
+    lockedLogin.status === 403 &&
+      lockedLogin.payload.error?.message === LOCKED_MESSAGE &&
+      lockedWrongPassword.status === 401 &&
+      !String(lockedWrongPassword.payload.error?.message).includes("khoá"),
+    `${lockedLogin.status} "${lockedLogin.payload.error?.message}" / ${lockedWrongPassword.status}`,
+  );
+
+  const unlocked = await call(base, `/api/admin/members/${vipId}/status`, { method: "POST", jar: adminJar, body: { status: "active" } });
+  const unlockedLogin = await memberLogin(memberJar, "vip@example.com", "MatKhau123");
+  record("mở khoá thì thành viên đăng nhập lại được", unlocked.status === 200 && unlocked.payload.item?.status === "active" && unlockedLogin.status === 200, `${unlocked.status}/${unlockedLogin.status}`);
+
+  const shortReset = await call(base, `/api/admin/members/${vipId}/password`, { method: "POST", jar: adminJar, body: { password: "ngan" } });
+  const reset = await call(base, `/api/admin/members/${vipId}/password`, { method: "POST", jar: adminJar, body: { password: "MatKhauMoi456" } });
+  const oldPasswordLogin = await memberLogin(secondJar, "vip@example.com", "MatKhau123");
+  const newPasswordLogin = await memberLogin(secondJar, "vip@example.com", "MatKhauMoi456");
+  record(
+    "đặt lại mật khẩu thành viên: mật khẩu cũ hết hiệu lực, mật khẩu mới đăng nhập được",
+    shortReset.status === 422 && reset.status === 200 && oldPasswordLogin.status === 401 && newPasswordLogin.status === 200,
+    `short=${shortReset.status} reset=${reset.status} old=${oldPasswordLogin.status} new=${newPasswordLogin.status}`,
+  );
+
+  const memberAudit = await AuditLog.find({ collectionName: "members" }).lean();
+  const memberActions = new Set(memberAudit.map((entry) => entry.action));
+  const memberAuditText = JSON.stringify(memberAudit);
+  record(
+    "nhật ký ghi tạo/khoá/mở khoá/đặt lại mật khẩu thành viên, không ghi mật khẩu",
+    ["member.create", "member.lock", "member.unlock", "member.password_reset"].every((action) => memberActions.has(action)) &&
+      memberAudit.every((entry) => entry.actorEmail === "admin@sgen.test") &&
+      !memberAuditText.includes("MatKhauMoi456") &&
+      !memberAuditText.includes("TamThoi123"),
+    [...memberActions].join(","),
   );
 
   /* ------------------- số điện thoại, khách hàng và xuất ebook ------------------- */
