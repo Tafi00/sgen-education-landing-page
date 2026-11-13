@@ -12,6 +12,7 @@ export const SiteSetting = new Model<SiteSettingDoc>({
     payment: { kind: "json" },
     featureFlags: { kind: "json" },
     legal: { kind: "json" },
+    integrations: { kind: "json" },
   },
 });
 
@@ -43,6 +44,8 @@ export type SiteSettingShape = {
   payment: { bankName: string; bankBin: string; accountNumber: string; accountName: string; transferNote: string };
   featureFlags: { memberLogin: boolean; vipPurchase: boolean; simTool: boolean; quizTools: boolean };
   legal: { disclaimer: string; refundPolicy: string };
+  /** Khoá API dịch vụ ngoài (mã hoá): OpenAI chép lời video, Anthropic chia đoạn và đặt tên bài. */
+  integrations: { openaiApiKeyEnc: string; anthropicApiKeyEnc: string };
 };
 
 /**
@@ -92,6 +95,7 @@ export const SETTINGS_DEFAULTS: SiteSettingShape = {
       "Nội dung trên SGEN Education mang tính tham khảo theo hệ phương pháp giáo dục và huyền học ứng dụng, không thay thế tư vấn y tế, pháp lý hoặc tài chính.",
     refundPolicy: "",
   },
+  integrations: { openaiApiKeyEnc: "", anthropicApiKeyEnc: "" },
 };
 
 export type SiteSettingDoc = Doc & SiteSettingShape & { singleton: string; createdAt: Date; updatedAt: Date };

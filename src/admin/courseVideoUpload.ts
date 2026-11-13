@@ -48,6 +48,4 @@ export function lessonTitleFromFilename(filename: string) {
   return filename.normalize("NFC").replace(/\.[^.]+$/, "").replace(/^\s*\d+\s*[-._)]+\s*/, "").trim() || filename;
 }
 
-export function isDiscussionTitle(title: string) {
-  return /thảo luận|hỏi đáp|tương tác/i.test(title);
-}
+export { isDiscussionTitle } from "../../shared/course-video";

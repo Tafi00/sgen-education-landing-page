@@ -1223,3 +1223,50 @@
 
 .lesson-uploads .is-done b { background: var(--a-success-icon); }
 .lesson-uploads .is-error i { display: none; }
+
+/* Tách một buổi học thành nhiều đoạn: khối AI gợi ý, ô mốc và bảng xem trước. */
+.admin-shell .lesson-split {
+  display: grid;
+  gap: 16px;
+}
+
+.lesson-split__auto {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px 16px;
+  align-items: center;
+  padding: 14px 16px;
+  border-radius: 10px;
+  background: var(--a-surface-2);
+  box-shadow: inset 0 0 0 1px var(--a-border);
+}
+
+.lesson-split__auto p { margin: 4px 0 0; color: var(--a-text-2); font-size: 0.875rem; }
+
+.lesson-split__auto .lesson-split__status {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  color: var(--a-text-1, inherit);
+}
+
+.lesson-split__status svg { width: 16px; height: 16px; flex: none; }
+.lesson-split__status--done svg { color: var(--a-success-icon); }
+
+.lesson-split textarea {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.8125rem;
+  line-height: 1.6;
+}
+
+.lesson-split__preview {
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+@media (max-width: 560px) {
+  .lesson-split__auto { grid-template-columns: 1fr; }
+}

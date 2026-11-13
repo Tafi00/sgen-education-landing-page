@@ -65,6 +65,9 @@ function groupBySection(lessons: LearnLesson[]) {
 
 function LessonPlayer({ lesson, onEnded, onUnlock }: { lesson: LearnLesson; onEnded: () => void; onUnlock: () => void }) {
   const [failed, setFailed] = useState(false);
+  const reachedEnd = useRef(false);
+  const clipStart = lesson.source?.start ?? 0;
+  const clipEnd = lesson.source?.end ?? 0;
 
   if (lesson.locked || !lesson.source) {
     return (
@@ -103,6 +106,18 @@ function LessonPlayer({ lesson, onEnded, onUnlock }: { lesson: LearnLesson; onEn
         preload="metadata"
         controlsList="nodownload"
         onContextMenu={(event) => event.preventDefault()}
+        onLoadedMetadata={(event) => {
+          // Bài là một đoạn của buổi học: Safari cũ bỏ qua #t= nên tự tua tới đầu đoạn.
+          if (clipStart && event.currentTarget.currentTime < clipStart - 1) event.currentTarget.currentTime = clipStart;
+        }}
+        onTimeUpdate={(event) => {
+          if (!clipEnd || event.currentTarget.currentTime < clipEnd) return;
+          event.currentTarget.pause();
+          if (!reachedEnd.current) {
+            reachedEnd.current = true;
+            onEnded();
+          }
+        }}
         onEnded={onEnded}
         onError={() => setFailed(true)}
       />

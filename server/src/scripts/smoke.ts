@@ -609,9 +609,37 @@ async function run() {
   const reordered = await call(base, "/api/admin/course-lessons/reorder", { method: "POST", jar: adminJar, body: { ids: [previewLesson.payload.item._id, lesson.payload.item._id, draftLesson.payload.item._id] } });
   const afterReorder = await call(base, `/api/admin/course-lessons?course=${courseSlug}`, { jar: adminJar });
   record("đổi được thứ tự bài", reordered.status === 200 && afterReorder.payload.items?.[0]?._id === previewLesson.payload.item._id, afterReorder.payload.items?.map((item: { title: string }) => item.title).join(" > "));
-  const removed = await call(base, `/api/admin/course-lessons/${lesson.payload.item._id}`, { method: "DELETE", jar: adminJar });
-  const videoGone = await fetch(`${base}${lockedVideoUrl}`, { headers: { Cookie: cookieOf(adminJar) } });
-  record("xoá bài giảng xoá luôn file video", removed.status === 200 && videoGone.status === 404, `${removed.status}/${videoGone.status}`);
+  type LessonRow = { _id: string; videoFile: string; startSeconds: number; endSeconds: number; durationSeconds: number; kind: string };
+  const split = await call(base, `/api/admin/course-lessons/${lesson.payload.item._id}/split`, {
+    method: "POST",
+    jar: adminJar,
+    body: { section: "Video 1", chapters: [{ start: 0, title: "Mở đầu", kind: "lecture" }, { start: 300, title: "Thảo luận: hỏi đáp", kind: "discussion" }] },
+  });
+  const afterSplit = await call(base, `/api/admin/course-lessons?course=${courseSlug}`, { jar: adminJar });
+  const parts = ((afterSplit.payload.items ?? []) as LessonRow[]).filter((item) => item.videoFile === finished.payload.videoFile);
+  record(
+    "chia một bài thành nhiều đoạn dùng chung file, nằm đúng chỗ bài gốc",
+    split.status === 200 &&
+      parts.length === 2 &&
+      parts[0].startSeconds === 0 &&
+      parts[0].endSeconds === 300 &&
+      parts[1].startSeconds === 300 &&
+      parts[1].endSeconds === 0 &&
+      parts[1].durationSeconds === 454 &&
+      parts[1].kind === "discussion" &&
+      afterSplit.payload.items?.[1]?._id === parts[0]._id,
+    `${split.status} ${parts.map((item) => `${item.startSeconds}-${item.endSeconds}`).join(", ")}`,
+  );
+  const sharedFile = path.join(env.courseVideoDir, String(finished.payload.videoFile));
+  const removedFirst = await call(base, `/api/admin/course-lessons/${parts[0]?._id}`, { method: "DELETE", jar: adminJar });
+  const videoKept = await fetch(`${base}/api/khoa-hoc/video/${parts[1]?._id}`, { headers: { Cookie: cookieOf(adminJar), Range: "bytes=0-9" } });
+  const keptOnDisk = fs.existsSync(sharedFile);
+  const removedLast = await call(base, `/api/admin/course-lessons/${parts[1]?._id}`, { method: "DELETE", jar: adminJar });
+  record(
+    "xoá bài giảng: file dùng chung còn tới khi xoá đoạn cuối thì xoá luôn file video",
+    removedFirst.status === 200 && videoKept.status === 206 && keptOnDisk && removedLast.status === 200 && !fs.existsSync(sharedFile),
+    `${removedFirst.status}/${videoKept.status}/${keptOnDisk}/${removedLast.status}`,
+  );
 
   /* -------------------------------- tổng kết ------------------------------- */
   server.close();

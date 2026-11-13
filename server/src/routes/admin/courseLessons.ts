@@ -3,11 +3,12 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import express, { Router } from "express";
 import { z } from "zod";
-import { lessonVideoFromUrl } from "../../../../shared/course-video.js";
+import { formatClock, lessonVideoFromUrl, youtubeClip, youtubeClipUrl } from "../../../../shared/course-video.js";
 import { env } from "../../env.js";
 import { requireAdmin } from "../../middleware/auth.js";
 import { asyncHandler, AppError, parseBody } from "../../middleware/errors.js";
-import { AuditLog, Course, CourseLesson, type CourseLessonDoc } from "../../models/index.js";
+import { AuditLog, Course, CourseLesson, CourseTranscript, type CourseLessonDoc } from "../../models/index.js";
+import { cachedTranscript, getSplitJob, lessonRange, startSplitJob, transcriptKey } from "../../services/courseAutoSplit.js";
 
 /**
  * Quản trị bài giảng video của khóa học. File video tải lên theo từng phần nhỏ (8 MB) rồi ghép lại, để bài 10–15 phút
@@ -36,6 +37,8 @@ const lessonFields = {
   videoFile: z.string().regex(/^[0-9a-f]{32}\.(mp4|m4v|webm|mov)$/).or(z.literal("")).optional(),
   videoUrl: videoUrl.optional(),
   durationSeconds: z.number().int().min(0).max(86400).optional(),
+  startSeconds: z.number().int().min(0).max(86400).optional(),
+  endSeconds: z.number().int().min(0).max(86400).optional(),
   isPreview: z.boolean().optional(),
   status: z.enum(["published", "draft"]).optional(),
 };
@@ -44,13 +47,27 @@ const createSchema = z.object({ courseSlug: z.string().min(1).max(160), title: z
 const updateSchema = z.object({ title: z.string().trim().min(2, "Vui lòng nhập tên bài.").max(200).optional(), ...lessonFields });
 const reorderSchema = z.object({ ids: z.array(z.string().regex(ID_PATTERN)).min(1).max(500) });
 const finishSchema = z.object({ filename: z.string().min(1).max(300) });
+const splitSchema = z.object({
+  section: z.string().trim().max(160),
+  chapters: z
+    .array(z.object({ start: z.number().int().min(0).max(86400), title: z.string().trim().min(2, "Tên đoạn quá ngắn.").max(200), kind: z.enum(["lecture", "discussion"]) }))
+    .min(2, "Cần ít nhất 2 đoạn để chia.")
+    .max(200),
+});
 
 async function audit(req: { session: { adminId?: string; adminEmail?: string } }, action: string, documentId: string, diff: Record<string, unknown>) {
   await AuditLog.create({ actorId: req.session.adminId, actorEmail: req.session.adminEmail ?? "", action, collectionName: "course_lessons", documentId, diff });
 }
 
+/** Xoá file video khi không còn bài nào dùng (một buổi đã chia thành nhiều bài thì các bài dùng chung một file). */
 async function removeVideoFile(name: string) {
-  if (name) await fs.rm(path.join(env.courseVideoDir, path.basename(name)), { force: true });
+  if (!name || (await CourseLesson.countDocuments({ videoFile: name }))) return;
+  await fs.rm(path.join(env.courseVideoDir, path.basename(name)), { force: true });
+  await CourseTranscript.deleteMany({ sourceKey: `file:${path.basename(name)}` });
+}
+
+function checkLessonId(id: string) {
+  if (!ID_PATTERN.test(id)) throw new AppError(400, "ID không hợp lệ.", "invalid_id");
 }
 
 const partPath = (uploadId: string) => path.join(env.courseVideoDir, `${uploadId}.part`);
@@ -174,6 +191,91 @@ adminCourseLessonRouter.post(
     const { ids } = parseBody(reorderSchema, req.body);
     await Promise.all(ids.map((id, index) => CourseLesson.updateOne({ _id: id }, { order: index + 1 })));
     res.json({ ok: true });
+  }),
+);
+
+/** Tiến độ tách đoạn tự động của bài (null = chưa chạy, hoặc máy chủ đã khởi động lại). */
+adminCourseLessonRouter.get(
+  "/:id/auto-split",
+  asyncHandler(async (req, res) => {
+    checkLessonId(req.params.id);
+    const lesson = await CourseLesson.findById(req.params.id).lean<CourseLessonDoc>();
+    if (!lesson) throw new AppError(404, "Không tìm thấy bài giảng.", "not_found");
+    const transcript = await cachedTranscript(transcriptKey(lesson));
+    res.json({ job: getSplitJob(req.params.id), range: lessonRange(lesson), transcriptDuration: transcript?.durationSeconds ?? 0, hasTranscript: Boolean(transcript) });
+  }),
+);
+
+adminCourseLessonRouter.post(
+  "/:id/auto-split",
+  asyncHandler(async (req, res) => {
+    checkLessonId(req.params.id);
+    const lesson = await CourseLesson.findById(req.params.id).lean<CourseLessonDoc>();
+    if (!lesson) throw new AppError(404, "Không tìm thấy bài giảng.", "not_found");
+    const job = await startSplitJob(lesson);
+    await audit(req, "lesson.autosplit", req.params.id, { course: lesson.courseSlug, title: lesson.title });
+    res.status(202).json({ job });
+  }),
+);
+
+/**
+ * Thay một bài bằng nhiều đoạn theo mốc quản trị đã duyệt. Mỗi đoạn phát một khoảng của cùng video: file tải lên ghi
+ * startSeconds/endSeconds (dùng chung file, không cắt file), link YouTube ghi &start=&end= vào link.
+ */
+adminCourseLessonRouter.post(
+  "/:id/split",
+  asyncHandler(async (req, res) => {
+    checkLessonId(req.params.id);
+    const { section, chapters } = parseBody(splitSchema, req.body);
+    const lesson = await CourseLesson.findById(req.params.id).lean<CourseLessonDoc>();
+    if (!lesson) throw new AppError(404, "Không tìm thấy bài giảng.", "not_found");
+    const youtube = lesson.videoFile ? null : youtubeClip(lesson.videoUrl);
+    if (!lesson.videoFile && !youtube) throw new AppError(422, "Chỉ chia được bài là file tải lên hoặc link YouTube.", "split_unsupported");
+
+    const range = lessonRange(lesson);
+    const fileEnd = range.to || (await cachedTranscript(transcriptKey(lesson)))?.durationSeconds || 0;
+    chapters.forEach((chapter, index) => {
+      const previous = chapters[index - 1];
+      if (previous && chapter.start <= previous.start) throw new AppError(422, `Đoạn ${index + 1} phải bắt đầu sau đoạn ${index}.`, "split_order");
+      if (chapter.start < range.from || (fileEnd && chapter.start >= fileEnd)) {
+        throw new AppError(422, `Đoạn ${index + 1} (${formatClock(chapter.start)}) nằm ngoài video của bài này.`, "split_range");
+      }
+    });
+
+    /** Điểm dừng của đoạn cuối giữ đúng điểm dừng của bài gốc (0 = tới hết video). */
+    const lastEnd = lesson.videoFile ? lesson.endSeconds ?? 0 : (youtube?.end ?? 0);
+    const created: CourseLessonDoc[] = [];
+    for (const [index, chapter] of chapters.entries()) {
+      const end = chapters[index + 1]?.start ?? lastEnd;
+      const stop = end || fileEnd;
+      const doc = await CourseLesson.create({
+        courseSlug: lesson.courseSlug,
+        section,
+        title: chapter.title,
+        description: "",
+        kind: chapter.kind,
+        status: lesson.status,
+        isPreview: lesson.isPreview,
+        durationSeconds: stop > chapter.start ? stop - chapter.start : 0,
+        order: lesson.order,
+        ...(lesson.videoFile
+          ? { videoFile: lesson.videoFile, videoUrl: "", startSeconds: chapter.start, endSeconds: end }
+          : { videoFile: "", videoUrl: youtubeClipUrl(youtube!.id, chapter.start, end), startSeconds: 0, endSeconds: 0 }),
+      });
+      created.push(doc.toObject() as CourseLessonDoc);
+    }
+    await CourseLesson.findByIdAndDelete(lesson._id);
+
+    // Đánh lại thứ tự cả khóa: các đoạn mới nằm đúng chỗ bài gốc.
+    const siblings = await CourseLesson.find({ courseSlug: lesson.courseSlug }).sort({ order: 1, createdAt: 1 }).lean<CourseLessonDoc[]>();
+    const createdIds = new Set(created.map((item) => String(item._id)));
+    const others = siblings.filter((item) => !createdIds.has(String(item._id)));
+    const position = others.findIndex((item) => item.order > lesson.order);
+    const ordered = position === -1 ? [...others, ...created] : [...others.slice(0, position), ...created, ...others.slice(position)];
+    await Promise.all(ordered.map((item, index) => (item.order === index + 1 ? null : CourseLesson.updateOne({ _id: item._id }, { order: index + 1 }))));
+
+    await audit(req, "lesson.split", String(lesson._id), { course: lesson.courseSlug, title: lesson.title, parts: chapters.length });
+    res.json({ items: created.length });
   }),
 );
 

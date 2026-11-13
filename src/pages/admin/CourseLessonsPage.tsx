@@ -1,12 +1,12 @@
-import { useRef, useState, type ChangeEvent, type FormEvent } from "react";
+import { useEffect, useRef, useState, type ChangeEvent, type FormEvent } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { AlertTriangle, ArrowDown, ArrowUp, ExternalLink, Info, KeyRound, Link2, Loader2, Pencil, Play, Trash2, Upload, Video, X } from "lucide-react";
+import { AlertTriangle, ArrowDown, ArrowUp, CheckCircle2, ExternalLink, Info, KeyRound, Link2, Loader2, Pencil, Play, Scissors, Sparkles, Trash2, Upload, Video, X } from "lucide-react";
 import { Link } from "react-router-dom";
 import { api, errorMessage } from "../../api/client";
 import { isDiscussionTitle, lessonTitleFromFilename, readVideoDuration, uploadCourseVideo } from "../../admin/courseVideoUpload";
 import { ConfirmDialog } from "../../components/admin/ConfirmDialog";
 import { useToast } from "../../components/ui/Toast";
-import { formatLessonDuration, lessonVideoFromUrl } from "../../../shared/course-video";
+import { formatChapterText, formatClock, formatLessonDuration, lessonVideoFromUrl, parseChapterText, parseClock, youtubeClip, type Chapter } from "../../../shared/course-video";
 
 type Lesson = {
   _id: string;
@@ -18,10 +18,25 @@ type Lesson = {
   videoFile: string;
   videoUrl: string;
   durationSeconds: number;
+  startSeconds?: number;
+  endSeconds?: number;
   isPreview: boolean;
   order: number;
   status: "published" | "draft";
 };
+
+type SplitJob = { state: "running" | "done" | "error"; step: string; startedAt: string; finishedAt?: string; chapters?: Chapter[]; error?: string };
+type SplitInfo = { job: SplitJob | null; range: { from: number; to: number }; transcriptDuration: number; hasTranscript: boolean };
+
+/** Bài là file tải lên hoặc link YouTube thì chia được thành nhiều đoạn (mỗi đoạn phát một khoảng của cùng video). */
+const canSplit = (lesson: Lesson) => Boolean(lesson.videoFile || youtubeClip(lesson.videoUrl));
+
+/** Khoảng phát của bài, để ghi cạnh tên: "0:10:22 – 0:18:47". */
+function clipLabel(lesson: Lesson) {
+  const clip = lesson.videoFile ? { start: lesson.startSeconds ?? 0, end: lesson.endSeconds ?? 0 } : youtubeClip(lesson.videoUrl);
+  if (!clip || (!clip.start && !clip.end)) return "";
+  return `${formatClock(clip.start)} – ${clip.end ? formatClock(clip.end) : "hết"}`;
+}
 
 type UploadItem = { name: string; progress: number; state: "waiting" | "uploading" | "done" | "error"; error?: string };
 
@@ -40,6 +55,7 @@ export function CourseLessonsPage() {
   const [linkUrl, setLinkUrl] = useState("");
   const [linkError, setLinkError] = useState("");
   const [editing, setEditing] = useState<Lesson | null>(null);
+  const [splitting, setSplitting] = useState<Lesson | null>(null);
   const [pendingDelete, setPendingDelete] = useState<Lesson | null>(null);
   const fileInput = useRef<HTMLInputElement>(null);
 
@@ -152,6 +168,7 @@ export function CourseLessonsPage() {
       <div className="admin-banner admin-banner--info">
         <Info aria-hidden="true" />
         Chọn được nhiều file cùng lúc; tên bài lấy theo tên file, thứ tự theo số đầu tên file (VD: “03 - Bốn nhóm số.mp4”). Nên dùng MP4 (H.264). File tải lên không public: chỉ phát cho người đã nhập đúng mã khóa học.
+        Tải cả buổi học dài lên cũng được: bấm nút kéo cắt <Scissors aria-hidden="true" style={{ width: 14, height: 14, verticalAlign: "-2px" }} /> ở bài đó để tự tách thành các đoạn 10–15 phút theo nội dung.
       </div>
 
       <div className="admin-card">
@@ -265,7 +282,7 @@ export function CourseLessonsPage() {
                     <td>
                       <span className="relation-cell">
                         <span className="relation-cell__label">{lesson.title}</span>
-                        <span className="relation-cell__sub">{[lesson.section, lesson.videoFile ? "File tải lên" : "Link ngoài"].filter(Boolean).join(" · ")}</span>
+                        <span className="relation-cell__sub">{[lesson.section, lesson.videoFile ? "File tải lên" : "Link ngoài", clipLabel(lesson)].filter(Boolean).join(" · ")}</span>
                       </span>
                     </td>
                     <td>{KIND_LABEL[lesson.kind]}</td>
@@ -283,9 +300,21 @@ export function CourseLessonsPage() {
                           <ArrowDown aria-hidden="true" />
                         </button>
                         {lesson.videoFile ? (
-                          <a className="table-action" href={`/api/khoa-hoc/video/${lesson._id}`} target="_blank" rel="noreferrer" title="Xem thử video" aria-label="Xem thử video">
+                          <a
+                            className="table-action"
+                            href={`/api/khoa-hoc/video/${lesson._id}${lesson.startSeconds || lesson.endSeconds ? `#t=${lesson.startSeconds ?? 0}${lesson.endSeconds ? `,${lesson.endSeconds}` : ""}` : ""}`}
+                            target="_blank"
+                            rel="noreferrer"
+                            title="Xem thử video"
+                            aria-label="Xem thử video"
+                          >
                             <Play aria-hidden="true" />
                           </a>
+                        ) : null}
+                        {canSplit(lesson) ? (
+                          <button type="button" className="table-action" title="Tách thành nhiều đoạn" aria-label="Tách thành nhiều đoạn" onClick={() => setSplitting(lesson)}>
+                            <Scissors aria-hidden="true" />
+                          </button>
                         ) : null}
                         <button type="button" className="table-action" title="Sửa" aria-label="Sửa" onClick={() => setEditing(lesson)}>
                           <Pencil aria-hidden="true" />
@@ -304,11 +333,22 @@ export function CourseLessonsPage() {
       </div>
 
       {editing ? <LessonDialog key={editing._id} lesson={editing} onClose={() => setEditing(null)} onSaved={refresh} /> : null}
+      {splitting ? <SplitDialog key={splitting._id} lesson={splitting} onClose={() => setSplitting(null)} onSplit={refresh} /> : null}
 
       <ConfirmDialog
         open={Boolean(pendingDelete)}
         title="Xoá bài giảng này?"
-        description={pendingDelete ? `“${pendingDelete.title}” sẽ biến mất khỏi trang học${pendingDelete.videoFile ? " và file video bị xoá khỏi máy chủ" : ""}.` : ""}
+        description={
+          pendingDelete
+            ? `“${pendingDelete.title}” sẽ biến mất khỏi trang học${
+                !pendingDelete.videoFile
+                  ? ""
+                  : lessons.some((lesson) => lesson._id !== pendingDelete._id && lesson.videoFile === pendingDelete.videoFile)
+                    ? " (file video giữ lại vì các đoạn khác của buổi học vẫn dùng)"
+                    : " và file video bị xoá khỏi máy chủ"
+              }.`
+            : ""
+        }
         confirmLabel="Xoá bài"
         onCancel={() => setPendingDelete(null)}
         onConfirm={async () => {
@@ -328,10 +368,24 @@ function LessonDialog({ lesson, onClose, onSaved }: { lesson: Lesson; onClose: (
   const [status, setStatus] = useState(lesson.status);
   const [isPreview, setIsPreview] = useState(lesson.isPreview);
   const [videoUrl, setVideoUrl] = useState(lesson.videoUrl);
+  const [startText, setStartText] = useState(formatClock(lesson.startSeconds ?? 0));
+  const [endText, setEndText] = useState(lesson.endSeconds ? formatClock(lesson.endSeconds) : "");
   const [error, setError] = useState("");
 
+  /** File tải lên: khoảng phát chỉnh được; thời lượng tính lại khi có điểm dừng. */
+  const clip = () => {
+    if (!lesson.videoFile) return {};
+    const startSeconds = parseClock(startText || "0");
+    const endSeconds = endText.trim() ? parseClock(endText) : 0;
+    if (startSeconds === null || endSeconds === null) throw new Error("Thời điểm phải có dạng 0:12:40.");
+    if (endSeconds && endSeconds <= startSeconds) throw new Error("Điểm dừng phải sau điểm bắt đầu.");
+    const fileEnd = lesson.endSeconds ? 0 : (lesson.startSeconds ?? 0) + lesson.durationSeconds;
+    const stop = endSeconds || fileEnd;
+    return { startSeconds, endSeconds, ...(stop > startSeconds ? { durationSeconds: stop - startSeconds } : {}) };
+  };
+
   const save = useMutation({
-    mutationFn: () => api.patch(`/api/admin/course-lessons/${lesson._id}`, { title: title.trim(), section: section.trim(), description: description.trim(), kind, status, isPreview, videoUrl: videoUrl.trim() }),
+    mutationFn: () => api.patch(`/api/admin/course-lessons/${lesson._id}`, { title: title.trim(), section: section.trim(), description: description.trim(), kind, status, isPreview, videoUrl: videoUrl.trim(), ...clip() }),
     onSuccess: async () => {
       toast.success("Đã lưu", title.trim());
       await onSaved();
@@ -343,6 +397,11 @@ function LessonDialog({ lesson, onClose, onSaved }: { lesson: Lesson; onClose: (
   const submit = (event: FormEvent) => {
     event.preventDefault();
     if (title.trim().length < 2) return setError("Vui lòng nhập tên bài.");
+    try {
+      clip();
+    } catch (caught) {
+      return setError(errorMessage(caught));
+    }
     setError("");
     save.mutate();
   };
@@ -391,7 +450,22 @@ function LessonDialog({ lesson, onClose, onSaved }: { lesson: Lesson; onClose: (
               </select>
             </span>
           </div>
-          {lesson.videoFile ? null : (
+          {lesson.videoFile ? (
+            <>
+              <div className="field">
+                <label className="field__label" htmlFor="lesson-start">Phát từ</label>
+                <span className="field__control">
+                  <input id="lesson-start" value={startText} maxLength={10} placeholder="0:00:00" onChange={(event) => setStartText(event.target.value)} />
+                </span>
+              </div>
+              <div className="field">
+                <label className="field__label" htmlFor="lesson-end">Dừng ở</label>
+                <span className="field__control">
+                  <input id="lesson-end" value={endText} maxLength={10} placeholder="Hết video" onChange={(event) => setEndText(event.target.value)} />
+                </span>
+              </div>
+            </>
+          ) : (
             <div className="field field--wide admin-form__cell--wide">
               <label className="field__label" htmlFor="lesson-url">Link video</label>
               <span className="field__control">
@@ -401,7 +475,7 @@ function LessonDialog({ lesson, onClose, onSaved }: { lesson: Lesson; onClose: (
           )}
           <div className="field field--wide admin-form__cell--wide">
             <label className="field__label" htmlFor="lesson-description">Mô tả ngắn</label>
-            <span className="field__control">
+            <span className="field__control field__control--textarea">
               <textarea id="lesson-description" rows={3} value={description} maxLength={2000} onChange={(event) => setDescription(event.target.value)} />
             </span>
           </div>
@@ -422,6 +496,177 @@ function LessonDialog({ lesson, onClose, onSaved }: { lesson: Lesson; onClose: (
           <button type="submit" className="btn btn--primary btn--sm" disabled={save.isPending}>
             {save.isPending ? <Loader2 className="spin" aria-hidden="true" /> : null}
             Lưu thay đổi
+          </button>
+        </footer>
+      </form>
+    </div>
+  );
+}
+
+const SPLIT_PLACEHOLDER = `0:00:00 | Làm quen lớp, giới thiệu nội dung buổi học
+0:12:40 | Cách tính chỉ số đường đời và ví dụ
+0:25:10 | Thảo luận: học viên đối chiếu lá số của mình`;
+
+/**
+ * Chia một bài (cả buổi học) thành nhiều đoạn. AI gợi ý mốc + tên đoạn vào ô bên dưới; quản trị sửa lại tuỳ ý (hoặc tự gõ mốc)
+ * rồi mới áp dụng. Áp dụng không cắt file: mỗi đoạn phát một khoảng của cùng video.
+ */
+function SplitDialog({ lesson, onClose, onSplit }: { lesson: Lesson; onClose: () => void; onSplit: () => Promise<unknown> }) {
+  const toast = useToast();
+  const queryClient = useQueryClient();
+  const [section, setSection] = useState(lesson.section || lesson.title);
+  const [text, setText] = useState("");
+  const [error, setError] = useState("");
+  const filledFrom = useRef("");
+  const infoKey = ["admin", "course-lessons", "auto-split", lesson._id];
+
+  const info = useQuery({
+    queryKey: infoKey,
+    queryFn: () => api.get<SplitInfo>(`/api/admin/course-lessons/${lesson._id}/auto-split`),
+    refetchInterval: (query) => (query.state.data?.job?.state === "running" ? 3000 : false),
+  });
+  const job = info.data?.job ?? null;
+  const range = { from: info.data?.range.from ?? 0, to: info.data?.range.to || info.data?.transcriptDuration || 0 };
+  const suggestion = job?.state === "done" && job.chapters?.length ? job.chapters : null;
+
+  // Gợi ý xong (kể cả khi quản trị đóng hộp thoại rồi mở lại): điền vào ô mốc nếu ô đang trống.
+  useEffect(() => {
+    if (!suggestion || !job?.finishedAt || filledFrom.current === job.finishedAt) return;
+    filledFrom.current = job.finishedAt;
+    setText((current) => (current.trim() ? current : formatChapterText(suggestion)));
+  }, [suggestion, job?.finishedAt]);
+
+  const start = useMutation({
+    mutationFn: () => api.post<{ job: SplitJob }>(`/api/admin/course-lessons/${lesson._id}/auto-split`, {}),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: infoKey }),
+    onError: (caught) => toast.error("Chưa tự tách được", errorMessage(caught)),
+  });
+
+  const parsed = parseChapterText(text, range);
+  const apply = useMutation({
+    mutationFn: () => api.post(`/api/admin/course-lessons/${lesson._id}/split`, { section: section.trim(), chapters: parsed.chapters }),
+    onSuccess: async () => {
+      toast.success("Đã chia bài", `“${lesson.title}” đã thành ${parsed.chapters.length} đoạn trên trang học.`);
+      await onSplit();
+      onClose();
+    },
+    onError: (caught) => setError(errorMessage(caught)),
+  });
+
+  const submit = (event: FormEvent) => {
+    event.preventDefault();
+    if (parsed.errors.length) return setError(parsed.errors[0]);
+    if (parsed.chapters.length < 2) return setError("Cần ít nhất 2 dòng mốc để chia bài.");
+    setError("");
+    apply.mutate();
+  };
+
+  const running = job?.state === "running" || start.isPending;
+  const length = range.to ? formatLessonDuration(range.to - range.from) : "";
+
+  return (
+    <div className="modal-backdrop" role="dialog" aria-modal="true" aria-label={`Tách bài ${lesson.title}`} onClick={onClose}>
+      <form className="confirm-dialog ebook-detail lesson-split" onSubmit={submit} onClick={(event) => event.stopPropagation()}>
+        <header>
+          <Scissors aria-hidden="true" />
+          <div>
+            <h2>Tách thành nhiều đoạn</h2>
+            <p>
+              {lesson.title}
+              {length ? ` · ${length}` : ""}
+            </p>
+          </div>
+          <button type="button" onClick={onClose} aria-label="Đóng">
+            <X aria-hidden="true" />
+          </button>
+        </header>
+
+        <section className="lesson-split__auto">
+          <div>
+            <strong>Tự tách bằng AI</strong>
+            <p>AI nghe lời giảng, chia đoạn 10–15 phút ở chỗ chuyển nội dung, đặt tên và tách riêng phần thảo luận. Mất khoảng 3–6 phút; đóng cửa sổ này cũng không sao, mở lại sẽ thấy kết quả.</p>
+          </div>
+          <button type="button" className="btn btn--primary btn--sm" disabled={running} onClick={() => start.mutate()}>
+            {running ? <Loader2 className="spin" aria-hidden="true" /> : <Sparkles aria-hidden="true" />}
+            {running ? "Đang tách…" : suggestion ? "Tách lại" : "Tự tách đoạn"}
+          </button>
+          {job?.state === "running" ? (
+            <p className="lesson-split__status" role="status">
+              <Loader2 className="spin" aria-hidden="true" /> {job.step}
+            </p>
+          ) : job?.state === "error" ? (
+            <p className="admin-error lesson-split__status" role="alert">
+              <AlertTriangle aria-hidden="true" /> {job.error}
+            </p>
+          ) : suggestion ? (
+            <p className="lesson-split__status lesson-split__status--done" role="status">
+              <CheckCircle2 aria-hidden="true" /> AI gợi ý {suggestion.length} đoạn.
+              {text.trim() && text.trim() !== formatChapterText(suggestion) ? (
+                <button type="button" className="btn btn--secondary btn--sm" onClick={() => setText(formatChapterText(suggestion))}>
+                  Dùng gợi ý này
+                </button>
+              ) : null}
+            </p>
+          ) : null}
+        </section>
+
+        <div className="field">
+          <label className="field__label" htmlFor="split-text">Mốc chia đoạn — mỗi dòng: thời điểm bắt đầu | tên đoạn</label>
+          <span className="field__control field__control--textarea">
+            <textarea id="split-text" rows={10} value={text} placeholder={SPLIT_PLACEHOLDER} spellCheck={false} onChange={(event) => setText(event.target.value)} />
+          </span>
+          <p className="field__hint">Sửa tên, thêm hay bớt dòng tuỳ ý trước khi áp dụng. Tên bắt đầu bằng “Thảo luận” được đánh dấu là phần thảo luận. Có thể tự gõ mốc mà không dùng AI.</p>
+        </div>
+        <div className="field">
+          <label className="field__label" htmlFor="split-section">Thuộc phần</label>
+          <span className="field__control">
+            <input id="split-section" value={section} maxLength={160} onChange={(event) => setSection(event.target.value)} />
+          </span>
+          <p className="field__hint">Các đoạn mới hiện thành một nhóm dưới tên này (VD: “Ngày 1”).</p>
+        </div>
+
+        {parsed.chapters.length ? (
+          <div className="admin-table-wrap lesson-split__preview">
+            <table className="admin-table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Bắt đầu</th>
+                  <th>Dài</th>
+                  <th>Tên đoạn</th>
+                  <th>Loại</th>
+                </tr>
+              </thead>
+              <tbody>
+                {parsed.chapters.map((chapter, index) => {
+                  const next = parsed.chapters[index + 1]?.start ?? range.to;
+                  return (
+                    <tr key={`${chapter.start}-${index}`}>
+                      <td>{index + 1}</td>
+                      <td>{formatClock(chapter.start)}</td>
+                      <td>{next > chapter.start ? formatLessonDuration(next - chapter.start) : "—"}</td>
+                      <td>{chapter.title}</td>
+                      <td>{KIND_LABEL[chapter.kind]}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        ) : null}
+
+        {error || parsed.errors.length ? (
+          <p className="admin-error" role="alert">
+            <AlertTriangle aria-hidden="true" /> {error || parsed.errors[0]}
+          </p>
+        ) : null}
+        <footer>
+          <button type="button" className="btn btn--secondary btn--sm" onClick={onClose}>
+            Đóng
+          </button>
+          <button type="submit" className="btn btn--primary btn--sm" disabled={apply.isPending || running || parsed.chapters.length < 2 || parsed.errors.length > 0}>
+            {apply.isPending ? <Loader2 className="spin" aria-hidden="true" /> : <Scissors aria-hidden="true" />}
+            {parsed.chapters.length >= 2 ? `Thay bài này bằng ${parsed.chapters.length} đoạn` : "Chia bài"}
           </button>
         </footer>
       </form>

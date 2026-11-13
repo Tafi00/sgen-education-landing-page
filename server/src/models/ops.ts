@@ -134,9 +134,22 @@ export const CourseLesson = new Model<CourseLessonDoc>({
     videoFile: { kind: "text" },
     videoUrl: { kind: "text" },
     durationSeconds: { kind: "int" },
+    startSeconds: { kind: "int" },
+    endSeconds: { kind: "int" },
     isPreview: { kind: "bool" },
     order: { kind: "int" },
     status: { kind: "text" },
+  },
+});
+
+/** Lời giảng chép từ video, khoá theo nguồn (`file:<tên file>` hoặc `youtube:<mã video>`) để tách lại không phải chép lại. */
+export const CourseTranscript = new Model<CourseTranscriptDoc>({
+  table: "course_transcripts",
+  fields: {
+    sourceKey: { kind: "text" },
+    provider: { kind: "text" },
+    segments: { kind: "json" },
+    durationSeconds: { kind: "int" },
   },
 });
 
@@ -305,6 +318,9 @@ export type CourseLessonDoc = Doc & {
   /** Link YouTube / Vimeo / Bunny hoặc file .mp4 ngoài, dùng khi không tải file lên máy chủ. */
   videoUrl: string;
   durationSeconds: number;
+  /** File tải lên chỉ phát khoảng [startSeconds, endSeconds) (giây; endSeconds 0 = tới hết). Nhiều bài dùng chung một file. */
+  startSeconds: number;
+  endSeconds: number;
   /** Bài học thử: xem được không cần mã. */
   isPreview: boolean;
   order: number;
@@ -327,6 +343,18 @@ export type CustomerDoc = Doc & {
   source: "lookup" | "ebook";
   /** Mã ebook (tài khoản) thực hiện lần đầu. */
   codeId: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export type TranscriptSegment = { start: number; end: number; text: string };
+
+export type CourseTranscriptDoc = Doc & {
+  sourceKey: string;
+  /** `openai` (Whisper) hoặc `youtube` (phụ đề tự động). */
+  provider: string;
+  segments: TranscriptSegment[];
+  durationSeconds: number;
   createdAt: Date;
   updatedAt: Date;
 };

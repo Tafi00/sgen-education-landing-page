@@ -530,3 +530,22 @@ FROM (VALUES
 WHERE EXISTS (SELECT 1 FROM "courses" WHERE "slug" = 'than-so-hoc-can-ban')
   AND NOT EXISTS (SELECT 1 FROM "course_lessons" WHERE "courseSlug" = 'than-so-hoc-can-ban')
   AND NOT EXISTS (SELECT 1 FROM "audit_logs" WHERE "collectionName" = 'course_lessons');
+
+-- 13/11/2026: tách một video dài thành nhiều bài ngay ở trang quản trị. Bài là file tải lên phát khoảng [startSeconds, endSeconds)
+-- của file (0 = tới hết), nhiều bài dùng chung một file; link YouTube vẫn ghi khoảng ngay trong link (&start=&end=).
+ALTER TABLE "course_lessons" ADD COLUMN IF NOT EXISTS "startSeconds" integer NOT NULL DEFAULT 0;
+ALTER TABLE "course_lessons" ADD COLUMN IF NOT EXISTS "endSeconds" integer NOT NULL DEFAULT 0;
+
+-- Lời giảng chép từ video (Whisper cho file tải lên, phụ đề tự động cho YouTube), giữ lại để tách lại không tốn phí chép lời.
+CREATE TABLE IF NOT EXISTS "course_transcripts" (
+  "_id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  "sourceKey" text NOT NULL UNIQUE,
+  "provider" text NOT NULL DEFAULT '',
+  "segments" jsonb NOT NULL DEFAULT '[]'::jsonb,
+  "durationSeconds" integer NOT NULL DEFAULT 0,
+  "createdAt" timestamptz NOT NULL DEFAULT now(),
+  "updatedAt" timestamptz NOT NULL DEFAULT now()
+);
+
+-- Khoá API dịch vụ ngoài, mã hoá như khoá Resend: OpenAI chép lời video, Anthropic chia đoạn và đặt tên bài.
+ALTER TABLE "site_settings" ADD COLUMN IF NOT EXISTS "integrations" jsonb NOT NULL DEFAULT '{}'::jsonb;

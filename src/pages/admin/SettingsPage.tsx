@@ -37,11 +37,14 @@ type AdminSettings = {
   payment: { bankName: string; bankBin: string; accountNumber: string; accountName: string; transferNote: string };
   featureFlags: { memberLogin: boolean; vipPurchase: boolean; simTool: boolean; quizTools: boolean };
   legal: { disclaimer: string; refundPolicy: string };
+  integrations: { openaiApiKeyMasked: string; anthropicApiKeyMasked: string; hasOpenaiApiKey: boolean; hasAnthropicApiKey: boolean };
 };
+
+type AiKey = "openai" | "anthropic";
 
 type NotificationTestResult = { channel: string; status: string; target: string; error: string };
 
-type TabKey = "brand" | "contact" | "socials" | "seo" | "payment" | "notification" | "features" | "legal";
+type TabKey = "brand" | "contact" | "socials" | "seo" | "payment" | "notification" | "ai" | "features" | "legal";
 
 const TABS: { key: TabKey; label: string }[] = [
   { key: "brand", label: "Thông tin thương hiệu" },
@@ -50,6 +53,7 @@ const TABS: { key: TabKey; label: string }[] = [
   { key: "seo", label: "SEO" },
   { key: "payment", label: "Thanh toán" },
   { key: "notification", label: "Thông báo" },
+  { key: "ai", label: "Tích hợp AI" },
   { key: "features", label: "Tính năng" },
   { key: "legal", label: "Pháp lý" },
 ];
@@ -77,6 +81,47 @@ function CheckboxField({
   );
 }
 
+/** Ô khoá bí mật: chỉ hiện dạng che; nhập giá trị mới để thay, bỏ trống để giữ, hoặc đánh dấu xoá khi lưu. */
+function SecretField({
+  label,
+  masked,
+  configured,
+  draft,
+  clearing,
+  onDraft,
+  onClear,
+}: {
+  label: string;
+  masked: string;
+  configured: boolean;
+  draft: string;
+  clearing: boolean;
+  onDraft: (value: string) => void;
+  onClear: (clear: boolean) => void;
+}) {
+  return (
+    <div className="field field--wide">
+      <span className="field__label">{label}</span>
+      <p className="admin-hint">
+        <strong>{configured ? masked : "Chưa cấu hình"}</strong>
+      </p>
+      <TextField label="Giá trị mới" type="password" autoComplete="new-password" placeholder="Bỏ trống để giữ nguyên" value={draft} onChange={(e) => onDraft(e.target.value)} wide />
+      {clearing ? (
+        <p className="admin-error">
+          Khoá sẽ bị xoá khi lưu.{" "}
+          <button type="button" className="button button--ghost" onClick={() => onClear(false)}>
+            <RotateCcw aria-hidden="true" /> Hoàn tác
+          </button>
+        </p>
+      ) : configured ? (
+        <button type="button" className="button button--danger" onClick={() => onClear(true)}>
+          <Eraser aria-hidden="true" /> Xoá {label}
+        </button>
+      ) : null}
+    </div>
+  );
+}
+
 function SettingsSection({ title, children }: { title: string; children: ReactNode }) {
   return (
     <div className="admin-card">
@@ -96,6 +141,8 @@ export function SettingsPage() {
   const [telegramTokenDraft, setTelegramTokenDraft] = useState("");
   const [clearResendKey, setClearResendKey] = useState(false);
   const [clearTelegramToken, setClearTelegramToken] = useState(false);
+  const [aiDrafts, setAiDrafts] = useState<Record<AiKey, string>>({ openai: "", anthropic: "" });
+  const [aiClear, setAiClear] = useState<Record<AiKey, boolean>>({ openai: false, anthropic: false });
   const [testChannel, setTestChannel] = useState<"resend" | "telegram" | "both">("both");
   const [testResults, setTestResults] = useState<NotificationTestResult[] | null>(null);
 
@@ -142,7 +189,13 @@ export function SettingsPage() {
     else if (resendKeyDraft.trim()) notification.resendApiKey = resendKeyDraft.trim();
     if (clearTelegramToken) notification.clearTelegramBotToken = true;
     else if (telegramTokenDraft.trim()) notification.telegramBotToken = telegramTokenDraft.trim();
+    const integrations: Record<string, unknown> = {};
+    if (aiClear.openai) integrations.clearOpenaiApiKey = true;
+    else if (aiDrafts.openai.trim()) integrations.openaiApiKey = aiDrafts.openai.trim();
+    if (aiClear.anthropic) integrations.clearAnthropicApiKey = true;
+    else if (aiDrafts.anthropic.trim()) integrations.anthropicApiKey = aiDrafts.anthropic.trim();
     return {
+      integrations,
       brand: current.brand,
       contact: current.contact,
       socials: current.socials,
@@ -163,6 +216,8 @@ export function SettingsPage() {
       setTelegramTokenDraft("");
       setClearResendKey(false);
       setClearTelegramToken(false);
+      setAiDrafts({ openai: "", anthropic: "" });
+      setAiClear({ openai: false, anthropic: false });
       queryClient.setQueryData(["admin", "settings"], result);
       toast.success("Đã lưu cài đặt", "Thay đổi đã được áp dụng cho website.");
     },
@@ -187,6 +242,8 @@ export function SettingsPage() {
     setTelegramTokenDraft("");
     setClearResendKey(false);
     setClearTelegramToken(false);
+    setAiDrafts({ openai: "", anthropic: "" });
+    setAiClear({ openai: false, anthropic: false });
     setDirty(false);
   };
 
@@ -234,6 +291,60 @@ export function SettingsPage() {
           </button>
         ))}
       </div>
+
+      {activeTab === "ai" ? (
+        <div className="admin-card">
+          <h2>Tách đoạn video bài giảng tự động</h2>
+          <p className="muted">
+            Ở Bài giảng video, nút kéo cắt trên mỗi bài sẽ chép lời giảng rồi chia buổi học thành các đoạn 10–15 phút theo nội dung. Cần khoá API của hai dịch vụ dưới đây
+            (trả theo lượng dùng, nạp tiền trước trên trang của từng hãng). Khoá được mã hoá khi lưu và chỉ hiện dạng che.
+          </p>
+          <ul className="muted">
+            <li>
+              <strong>OpenAI (Whisper)</strong> chép lời giảng của video tải lên máy chủ: khoảng 0,006 USD mỗi phút video (buổi 1,5 giờ ≈ 0,55 USD). Lấy khoá ở platform.openai.com → API keys.
+              Video là link YouTube thì không cần khoá này (dùng phụ đề tự động của YouTube).
+            </li>
+            <li>
+              <strong>Anthropic (Claude)</strong> đọc lời giảng, chia đoạn, đặt tên và tách riêng phần thảo luận: khoảng 0,3–0,5 USD mỗi buổi học. Lấy khoá ở console.anthropic.com → API keys.
+            </li>
+          </ul>
+          <p className="muted">Lời giảng đã chép được lưu lại nên bấm tách lại chỉ tốn phần Claude.</p>
+          <div className="admin-form__grid">
+            <SecretField
+              label="Khoá OpenAI"
+              masked={form.integrations.openaiApiKeyMasked}
+              configured={form.integrations.hasOpenaiApiKey}
+              draft={aiDrafts.openai}
+              clearing={aiClear.openai}
+              onDraft={(value) => {
+                setAiDrafts((current) => ({ ...current, openai: value }));
+                setDirty(true);
+              }}
+              onClear={(clear) => {
+                setAiClear((current) => ({ ...current, openai: clear }));
+                setAiDrafts((current) => ({ ...current, openai: "" }));
+                setDirty(true);
+              }}
+            />
+            <SecretField
+              label="Khoá Anthropic"
+              masked={form.integrations.anthropicApiKeyMasked}
+              configured={form.integrations.hasAnthropicApiKey}
+              draft={aiDrafts.anthropic}
+              clearing={aiClear.anthropic}
+              onDraft={(value) => {
+                setAiDrafts((current) => ({ ...current, anthropic: value }));
+                setDirty(true);
+              }}
+              onClear={(clear) => {
+                setAiClear((current) => ({ ...current, anthropic: clear }));
+                setAiDrafts((current) => ({ ...current, anthropic: "" }));
+                setDirty(true);
+              }}
+            />
+          </div>
+        </div>
+      ) : null}
 
       {activeTab === "brand" ? (
         <SettingsSection title="Thông tin thương hiệu">

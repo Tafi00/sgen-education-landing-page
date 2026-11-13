@@ -14,6 +14,10 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV PORT=3000
 ENV UPLOAD_DIR=/app/uploads
+# ffmpeg tách âm thanh khỏi video bài giảng để chép lời và tự chia đoạn (Quản trị → Bài giảng video → Tách đoạn).
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends ffmpeg \
+  && rm -rf /var/lib/apt/lists/*
 COPY package.json package-lock.json ./
 RUN npm ci --omit=dev && npm cache clean --force
 COPY --from=build /app/dist ./dist

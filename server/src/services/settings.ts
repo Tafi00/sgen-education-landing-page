@@ -32,6 +32,16 @@ export function readNotificationSecrets(doc: SiteSettingShape): NotificationSecr
   };
 }
 
+export type IntegrationSecrets = { openaiApiKey: string; anthropicApiKey: string };
+
+export function readIntegrationSecrets(doc: SiteSettingShape): IntegrationSecrets {
+  const integrations = doc.integrations ?? { openaiApiKeyEnc: "", anthropicApiKeyEnc: "" };
+  return {
+    openaiApiKey: decryptSecret(String(integrations.openaiApiKeyEnc ?? "")),
+    anthropicApiKey: decryptSecret(String(integrations.anthropicApiKeyEnc ?? "")),
+  };
+}
+
 /** Payload cho admin: secret luôn ở dạng mask, kèm cờ cho biết đã cấu hình hay chưa. */
 export function toAdminSettings(doc: SiteSettingDoc) {
   const plain = doc.toObject();
@@ -41,8 +51,15 @@ export function toAdminSettings(doc: SiteSettingDoc) {
   const telegramEnc = String(notification.telegramBotTokenEnc ?? "");
   delete notification.resendApiKeyEnc;
   delete notification.telegramBotTokenEnc;
+  const keys = readIntegrationSecrets(doc);
   return {
     ...plain,
+    integrations: {
+      openaiApiKeyMasked: maskSecret(keys.openaiApiKey),
+      anthropicApiKeyMasked: maskSecret(keys.anthropicApiKey),
+      hasOpenaiApiKey: keys.openaiApiKey.length > 0,
+      hasAnthropicApiKey: keys.anthropicApiKey.length > 0,
+    },
     notification: {
       ...notification,
       resendApiKeyMasked: maskSecret(secrets.resendApiKey),

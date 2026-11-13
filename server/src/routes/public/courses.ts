@@ -1,7 +1,7 @@
 import { Router, type Request } from "express";
 import { z } from "zod";
 import { ebookCodeState, formatEbookCode, isCoursePlan } from "../../../../shared/ebook.js";
-import { lessonVideoFromUrl } from "../../../../shared/course-video.js";
+import { lessonVideoFromUrl, type LessonVideoSource } from "../../../../shared/course-video.js";
 import { env } from "../../env.js";
 import { asyncHandler, AppError } from "../../middleware/errors.js";
 import { authLimiter } from "../../middleware/rateLimit.js";
@@ -32,8 +32,14 @@ async function courseAccess(req: Request, slug: string) {
   return usable.find((doc) => doc.courseSlug === slug) ?? null;
 }
 
-function lessonSource(lesson: CourseLessonDoc) {
-  if (lesson.videoFile) return { type: "video" as const, url: `/api/khoa-hoc/video/${lesson._id}` };
+/** Bài là một đoạn của file (buổi học đã chia): `#t=` để trình duyệt tua tới đầu đoạn, trình phát dừng ở `end`. */
+function lessonSource(lesson: CourseLessonDoc): LessonVideoSource | null {
+  if (lesson.videoFile) {
+    const start = lesson.startSeconds ?? 0;
+    const end = lesson.endSeconds > start ? lesson.endSeconds : 0;
+    const fragment = start || end ? `#t=${start}${end ? `,${end}` : ""}` : "";
+    return { type: "video", url: `/api/khoa-hoc/video/${lesson._id}${fragment}`, ...(start ? { start } : {}), ...(end ? { end } : {}) };
+  }
   return lesson.videoUrl ? lessonVideoFromUrl(lesson.videoUrl) : null;
 }
 

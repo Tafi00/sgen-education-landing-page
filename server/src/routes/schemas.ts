@@ -202,6 +202,14 @@ export const notificationSettingsSchema = z.object({
   clearTelegramBotToken: z.boolean().optional(),
 });
 
+/** Khoá API dịch vụ ngoài: bỏ trống là giữ khoá cũ, cờ clear* để xoá hẳn. */
+export const integrationSettingsSchema = z.object({
+  openaiApiKey: z.string().trim().max(300).optional(),
+  anthropicApiKey: z.string().trim().max(300).optional(),
+  clearOpenaiApiKey: z.boolean().optional(),
+  clearAnthropicApiKey: z.boolean().optional(),
+});
+
 export const contactSettingsSchema = z.object({
   company: z.string().max(200).optional(),
   phone: z.string().max(40).optional(),
@@ -254,6 +262,7 @@ export const settingsUpdateSchema = z.object({
   socials: z.record(z.string().max(500)).optional(),
   seo: seoSettingsSchema.optional(),
   notification: notificationSettingsSchema.optional(),
+  integrations: integrationSettingsSchema.optional(),
   payment: paymentSettingsSchema.optional(),
   featureFlags: featureFlagSchema.optional(),
   legal: legalSettingsSchema.optional(),

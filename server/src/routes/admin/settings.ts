@@ -50,6 +50,13 @@ adminSettingsRouter.patch(
       if (clearTelegramBotToken) settings.set("notification.telegramBotTokenEnc", "");
       else if (telegramBotToken) settings.set("notification.telegramBotTokenEnc", encryptSecret(telegramBotToken));
     }
+    if (parsed.integrations) {
+      const { openaiApiKey, anthropicApiKey, clearOpenaiApiKey, clearAnthropicApiKey } = parsed.integrations;
+      if (clearOpenaiApiKey) settings.set("integrations.openaiApiKeyEnc", "");
+      else if (openaiApiKey) settings.set("integrations.openaiApiKeyEnc", encryptSecret(openaiApiKey));
+      if (clearAnthropicApiKey) settings.set("integrations.anthropicApiKeyEnc", "");
+      else if (anthropicApiKey) settings.set("integrations.anthropicApiKeyEnc", encryptSecret(anthropicApiKey));
+    }
     await settings.save();
     const admin = req.session.adminId;
     await AuditLog.create({
