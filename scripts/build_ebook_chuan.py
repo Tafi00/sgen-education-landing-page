@@ -13,8 +13,8 @@ Cách chạy (cần PyMuPDF và Pillow):
 
     python3 scripts/build_ebook_chuan.py <bản-chuẩn.pdf>
 
-Trang luận giải theo con số chỉ có các con số của hồ sơ mẫu (Elon Reeve Musk); khi khách gửi thêm bộ trang gốc của các
-con số khác thì thêm vào `PAGES` và bảng `DESIGNED_VALUE_PAGES` trong `numerologyFullPdf.ts`.
+Bản chuẩn chỉ có trang luận giải cho các con số của hồ sơ mẫu (Elon Reeve Musk); trang của mọi con số còn lại tách từ
+bộ trang gốc `pdf_full` bằng `build_ebook_trang_goc.py` (dùng lại các hàm ở đây).
 """
 
 import io

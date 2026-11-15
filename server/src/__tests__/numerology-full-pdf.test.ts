@@ -6,15 +6,16 @@ import { PDFArray, PDFDocument, PDFName, PDFRawStream, type PDFFont, type PDFPag
 import { beforeAll, describe, expect, it } from "vitest";
 import { calculateFullNumerologyReport } from "../../../shared/numerology";
 import { buildEbookPdf } from "../services/ebookPdf";
-import { NUMEROLOGY_CONTENT, PINNACLE_CONTENT } from "../services/numerologyContent";
+import { NUMEROLOGY_CONTENT } from "../services/numerologyContent";
 import { METRIC_TITLES, metricValueBlock, metricValues, type MetricKey } from "../services/numerologyFullContent";
 import {
-  DESIGNED_PINNACLE_PAGES,
-  DESIGNED_VALUE_PAGES,
+  INTRO_PAGES,
+  VALUE_PAGE_INDEX_FILE,
   decodeContents,
-  designedPage,
+  originalValuePage,
   stripTemplateSource,
   type TemplateStrip,
+  type ValuePageIndex,
 } from "../services/numerologyFullPdf";
 
 const ASSET_DIR = path.resolve(process.cwd(), "assets/numerology-pdf");
@@ -22,8 +23,10 @@ const FOOTER_PREFIX = "https:/www.Thansohuongnghiep.com - Hotline : 0903.891.839
 
 let footerFont: PDFFont;
 let bodyFont: PDFFont;
+let valuePages: ValuePageIndex;
 
 beforeAll(async () => {
+  valuePages = JSON.parse(await readFile(VALUE_PAGE_INDEX_FILE, "utf8"));
   const doc = await PDFDocument.create();
   // @ts-expect-error fontkit types mismatch pdf-lib's bundled Fontkit interface but is runtime-compatible
   doc.registerFontkit(fontkit);
@@ -85,26 +88,54 @@ describe("ebook bản đầy đủ", () => {
     expect(pageOperators(doc.getPage(2)).includes(encoded(bodyFont, pad(summaryIndex)))).toBe(true);
   }, 60_000);
 
-  it("hồ sơ mẫu Elon Reeve Musk ra đúng 76 trang như bảng chuẩn, mọi trang luận giải đều là trang thiết kế gốc", async () => {
+  it("hồ sơ mẫu Elon Reeve Musk ra đúng 76 trang như bảng chuẩn, trang luận giải là đúng trang của bản chuẩn", async () => {
     const { report, doc } = await buildFull("Elon Reeve Musk", "1971-06-28");
     expect(doc.getPageCount()).toBe(76);
-    for (const [key, pages] of Object.entries(DESIGNED_VALUE_PAGES) as Array<[MetricKey, Record<string, string>]>) {
-      for (const value of metricValues(report, key)) expect(designedPage(pages, NUMEROLOGY_CONTENT[key], value), `${key} ${value}`).toBeTruthy();
-    }
-    report.lifePathChart.pinnacles.forEach((node, index) => {
-      expect(designedPage(DESIGNED_PINNACLE_PAGES[index], { byValue: PINNACLE_CONTENT[`dinh${index + 1}` as "dinh1"] }, node.value), `đỉnh ${index + 1}`).toBeTruthy();
-    });
+    const pages = Object.entries(INTRO_PAGES)
+      .filter(([key]) => key !== "debts")
+      .flatMap(([key, slug]) => metricValues(report, key).map((value) => originalValuePage(valuePages, slug, value)));
+    const pinnacles = report.lifePathChart.pinnacles.map((node, index) => originalValuePage(valuePages, `dinh-${index + 1}`, node.value));
+    // Tên tệp tách từ bảng chuẩn 76 trang (28/10/2026); Tương tác 19/1 dùng trang số 1 như bảng chuẩn in.
+    expect([...pages, ...pinnacles]).toEqual([
+      "noi-tam-2", "tiem-thuc-7", "logic-8", "cam-xuc-7", "truc-giac-9", "trai-nghiem-6", "so-lap-1", "so-lap-7", "thai-do-7",
+      "tuong-tac-1", "can-bang-9", "bai-hoc-nghiep-7", "bai-hoc-nghiep-8", "nam-ca-nhan-8", "ngay-sinh-1", "truong-thanh-1",
+      "ket-noi-noi-tam-tuong-tac-1", "ket-noi-su-menh-duong-doi-4", "dinh-1-7", "dinh-2-1", "dinh-3-8", "dinh-4-6",
+    ]);
   }, 60_000);
 
-  it("trang thiết kế gốc khớp theo nội dung luận giải, có đủ tệp trong assets/numerology-pdf/chuan", async () => {
-    const interaction = DESIGNED_VALUE_PAGES.interaction;
-    // Tương tác 19/1 dùng chung lời luận với 1 nên dùng chung trang gốc (bản chuẩn in trang số 1 cho hồ sơ 19/1).
-    expect(designedPage(interaction, NUMEROLOGY_CONTENT.interaction, "19/1")).toBe("tuong-tac-1");
-    expect(designedPage(interaction, NUMEROLOGY_CONTENT.interaction, "1")).toBe("tuong-tac-1");
-    expect(designedPage(interaction, NUMEROLOGY_CONTENT.interaction, "2")).toBeUndefined();
-    expect(designedPage(DESIGNED_VALUE_PAGES.soul, NUMEROLOGY_CONTENT.soul, "11/2")).toBeUndefined();
-    const slugs = [...Object.values(DESIGNED_VALUE_PAGES), ...DESIGNED_PINNACLE_PAGES].flatMap((pages) => Object.values(pages!));
-    for (const slug of slugs) await expect(access(path.join(ASSET_DIR, "chuan", `${slug}.pdf`)), slug).resolves.toBeUndefined();
+  it("mọi con số web tính ra đều có trang gốc của phần mềm (trừ Tiềm thức 1–2 bộ gốc không có)", () => {
+    const missing = new Set<string>();
+    const names = ["PHẠM BÁ NHA", "LÊ HOÀNG MINH KHÔI", "LÝ LY", "NGUYỄN THỊ MINH KHAI", "ELON REEVE MUSK", "TRẦN ANH"];
+    for (const [nameIndex, name] of names.entries()) {
+      // Mỗi tên một dải ngày sinh khác nhau để quét đủ các con số (gồm 11/2, 22/4 và nợ nghiệp 13/14/16/19).
+      for (let day = 0; day < 800; day += 1) {
+        const birth = new Date(Date.UTC(1950 + nameIndex * 9, 0, 1 + day * 3)).toISOString().slice(0, 10);
+        const report = calculateFullNumerologyReport(name, birth, 2026);
+        for (const [key, slug] of Object.entries(INTRO_PAGES)) {
+          if (key === "debts") continue;
+          for (const value of metricValues(report, key)) {
+            if (key === "subconscious" && Number(value) < 3) continue;
+            if (!originalValuePage(valuePages, slug, value)) missing.add(`${key} ${value}`);
+          }
+        }
+        report.lifePathChart.pinnacles.forEach((node, index) => {
+          if (!originalValuePage(valuePages, `dinh-${index + 1}`, node.value)) missing.add(`đỉnh ${index + 1} ${node.value}`);
+        });
+      }
+    }
+    expect([...missing]).toEqual([]);
+  });
+
+  it("bảng trang theo con số tra theo số đầu, có đủ tệp trong assets/numerology-pdf/chuan", async () => {
+    expect(originalValuePage(valuePages, "noi-tam", "11/2")).toBe("noi-tam-11");
+    expect(originalValuePage(valuePages, "noi-tam", "22/4")).toBe("noi-tam-22");
+    expect(originalValuePage(valuePages, "tuong-tac", "19/1")).toBe(originalValuePage(valuePages, "tuong-tac", "1"));
+    expect(originalValuePage(valuePages, "ket-noi-noi-tam-tuong-tac", "0")).toBe("ket-noi-noi-tam-tuong-tac-0");
+    expect(originalValuePage(valuePages, "tiem-thuc", "2")).toBeUndefined();
+    expect(originalValuePage(valuePages, undefined, "2")).toBeUndefined();
+    const files = new Set(Object.values(valuePages).flatMap((pages) => Object.values(pages)));
+    expect(files.size).toBeGreaterThan(150);
+    for (const slug of files) await expect(access(path.join(ASSET_DIR, "chuan", `${slug}.pdf`)), slug).resolves.toBeUndefined();
   });
 
   it("mọi trang mẫu bỏ được chân trang cũ và cặp xoáy góc theo template-strip.json", async () => {

@@ -32,13 +32,11 @@ import {
   type RGB,
 } from "pdf-lib";
 import type { NumerologyFullReport } from "../../../shared/numerology.js";
-import { NUMEROLOGY_CONTENT, PINNACLE_CONTENT, type MetricContent } from "./numerologyContent.js";
 import {
   METRIC_TITLES,
   metricValueBlock,
   metricValues,
   pinnacleBlock,
-  valueParagraphs,
   type ContentBlock,
   type MetricKey,
 } from "./numerologyFullContent.js";
@@ -62,9 +60,11 @@ import {
  * - Trang cố định (chương, phần, giới thiệu chỉ số, nợ nghiệp, biểu đồ, Ikigai, kết luận…) chép nguyên trang thiết kế
  *   của bản chuẩn (`assets/numerology-pdf/chuan/`, tách bằng `scripts/build_ebook_chuan.py`); bìa, thư ngỏ, Sứ mệnh,
  *   Đường đời, Đam mê và trang tổng hợp dùng bộ mẫu cũ (giống hệt bản chuẩn).
- * - Trang luận giải theo con số dùng trang thiết kế gốc khi có (`DESIGNED_VALUE_PAGES` — hiện chỉ các con số của hồ sơ
- *   mẫu); con số chưa có trang gốc thì dựng bằng pdf-lib trên khung trang trí tách từ bộ mẫu (`full/`): tiêu đề xanh kèm
- *   hoa văn, huy hiệu vàng mang con số, tiêu đề đỏ, thân chữ Faustina. Chỉ số nhiều con số: mỗi số một trang như bản chuẩn.
+ * - Trang luận giải theo con số là nguyên trang thiết kế của phần mềm gốc (ảnh minh hoạ riêng từng số), tách từ bộ
+ *   `pdf_full` khách gửi 15/11/2026 bằng `scripts/build_ebook_trang_goc.py`; bảng tra ở `chuan/trang-theo-so.json`.
+ *   Chỉ khi bộ gốc không có trang (Tiềm thức 1–2, không có số lặp/bài học nghiệp) mới dựng bằng pdf-lib trên khung trang
+ *   trí tách từ bộ mẫu (`full/`): tiêu đề xanh kèm hoa văn, huy hiệu vàng mang con số, tiêu đề đỏ, thân chữ Faustina.
+ *   Chỉ số nhiều con số: mỗi số một trang như bản chuẩn.
  * - Số trang ở chân trang luôn bằng vị trí thật (bìa = 0). Trang mẫu được bỏ chân trang cũ và cặp xoáy góc (bộ mẫu cũ:
  *   danh sách khối lệnh ở `full/template-strip.json`; trang chuẩn: đã bỏ sẵn khi tách) rồi dùng chung khung xoáy + vẽ lại
  *   chân trang; Mục lục được sửa số khi một mục bị đẩy trang (chỉ số có nhiều con số).
@@ -117,6 +117,7 @@ type Ctx = {
   flower: PDFImage;
   divider: PDFImage;
   strip: Record<string, TemplateStrip>;
+  valuePages: ValuePageIndex;
   /** Vị trí trang của từng mục (đã chốt sau khi dàn trang) — dùng cho Mục lục, trang chương và hộp "xem trang …". */
   anchors: Map<string, number>;
   fontKeys: WeakMap<PDFPage, Map<PDFFont, PDFName>>;
@@ -580,8 +581,11 @@ const EMPTY_DETAIL: Partial<Record<MetricKey, string>> = {
   missing: "Họ tên của bạn có đủ các con số từ 1 đến 9, nên bạn không có bài học nghiệp cần bồi đắp.",
 };
 
-/** Trang giới thiệu chỉ số của bản chuẩn (ảnh minh hoạ + ý nghĩa chỉ số), trong `chuan/`. */
-const INTRO_PAGES: Partial<Record<MetricKey, string>> = {
+/**
+ * Trang giới thiệu chỉ số của bản chuẩn (ảnh minh hoạ + ý nghĩa chỉ số), trong `chuan/`. Tên này cũng là khóa của chỉ số
+ * trong bảng trang theo con số (`trang-theo-so.json`).
+ */
+export const INTRO_PAGES: Partial<Record<MetricKey, string>> = {
   soul: "noi-tam",
   subconscious: "tiem-thuc",
   logic: "logic",
@@ -602,38 +606,23 @@ const INTRO_PAGES: Partial<Record<MetricKey, string>> = {
 };
 
 /**
- * Trang luận giải theo con số có thiết kế gốc (ảnh minh hoạ riêng), trong `chuan/`: chỉ số → con số mẫu → tệp. Hiện chỉ có
- * các con số của hồ sơ mẫu Elon Reeve Musk; con số khác dùng trang dựng cho tới khi có thêm trang gốc.
+ * Trang luận giải theo con số của phần mềm gốc, trong `chuan/`: tên chỉ số (`noi-tam`, `dinh-1`…) → con số → tệp.
+ * Sinh bởi `scripts/build_ebook_trang_goc.py` từ bộ `pdf_full`; trang của số nợ nghiệp/số chủ đạo giống hệt trang căn số
+ * thì trỏ chung một tệp.
  */
-export const DESIGNED_VALUE_PAGES: Partial<Record<MetricKey, Record<string, string>>> = {
-  soul: { "2": "noi-tam-2" },
-  subconscious: { "7": "tiem-thuc-7" },
-  logic: { "8": "logic-8" },
-  emotion: { "7": "cam-xuc-7" },
-  intuition: { "9": "truc-giac-9" },
-  experience: { "6": "trai-nghiem-6" },
-  repeated: { "1": "so-lap-1", "7": "so-lap-7" },
-  attitude: { "7": "thai-do-7" },
-  interaction: { "1": "tuong-tac-1" },
-  balance: { "9": "can-bang-9" },
-  missing: { "7": "bai-hoc-nghiep-7", "8": "bai-hoc-nghiep-8" },
-  personalYear: { "8": "nam-ca-nhan-8" },
-  birthNumber: { "1": "ngay-sinh-1" },
-  maturity: { "1": "truong-thanh-1" },
-  soulInteraction: { "1": "ket-noi-noi-tam-tuong-tac-1" },
-  destinyLifePath: { "4": "ket-noi-su-menh-duong-doi-4" },
-};
-/** Như trên cho bốn đỉnh của biểu đồ chặng đường đời (Đỉnh 1…4). */
-export const DESIGNED_PINNACLE_PAGES: Array<Record<string, string>> = [{ "7": "dinh-1-7" }, { "1": "dinh-2-1" }, { "8": "dinh-3-8" }, { "6": "dinh-4-6" }];
+export type ValuePageIndex = Record<string, Record<string, string>>;
+
+export const VALUE_PAGE_INDEX_FILE = path.join(ASSET_DIR, "chuan", "trang-theo-so.json");
 
 /**
- * Tệp trang gốc cho một con số: trang mẫu khớp khi cùng nội dung luận giải (vd. Tương tác 19/1 dùng chung lời luận
- * với 1, đúng như bản chuẩn in trang số 1 cho hồ sơ 19/1).
+ * Tệp trang gốc cho một con số. Phần mềm gốc đặt tên theo số đầu của con số ("13/4" → `_0013`, "11/2" → `_0011`); nếu bộ
+ * gốc thiếu số đó thì dùng trang căn số, giống cách lấy lời luận giải (`valueParagraphs`).
  */
-export function designedPage(pages: Record<string, string> | undefined, content: MetricContent | undefined, value: string) {
-  const own = valueParagraphs(value, content).join("\n");
-  if (!own) return undefined;
-  return Object.entries(pages ?? {}).find(([sample]) => valueParagraphs(sample, content).join("\n") === own)?.[1];
+export function originalValuePage(index: ValuePageIndex, slug: string | undefined, value: string) {
+  const pages = slug ? index[slug] : undefined;
+  if (!pages || !value) return undefined;
+  const parts = value.split("/");
+  return pages[parts[0]] ?? pages[parts.at(-1)!];
 }
 
 /** Trang của bản chuẩn (đã bỏ sẵn chân trang và xoáy góc). */
@@ -669,8 +658,8 @@ function valuePages(ctx: Ctx, key: MetricKey, values = metricValues(ctx.report, 
     return flowPages(ctx, { title: titleOf(key) }, [{ kind: "heading", text: (EMPTY_TEXT[key] ?? METRIC_TITLES[key]).toUpperCase() }, { kind: "para", text: EMPTY_DETAIL[key] ?? "" }]);
   }
   return values.flatMap((value): PageSpec[] => {
-    const designed = designedPage(DESIGNED_VALUE_PAGES[key], NUMEROLOGY_CONTENT[key], value);
-    if (designed) return [chuan(designed)];
+    const original = originalValuePage(ctx.valuePages, INTRO_PAGES[key], value);
+    if (original) return [chuan(original)];
     const block = metricValueBlock(key, value);
     if (!block.paragraphs.length) block.paragraphs.push(missingContentText(ctx.report, key, value));
     return flowPages(ctx, { title: titleOf(key), badge: { text: value, shape: METRIC_SHAPES[key] ?? "seal" } }, contentItems(block));
@@ -682,8 +671,8 @@ const metricPages = (ctx: Ctx, key: MetricKey): PageSpec[] => [chuan(INTRO_PAGES
 
 /** Trang luận giải một đỉnh (Đỉnh 1…4) của biểu đồ chặng đường đời. */
 function pinnaclePages(ctx: Ctx, index: 0 | 1 | 2 | 3, value: string): PageSpec[] {
-  const designed = designedPage(DESIGNED_PINNACLE_PAGES[index], { byValue: PINNACLE_CONTENT[`dinh${index + 1}` as "dinh1"] }, value);
-  if (designed) return [chuan(designed)];
+  const original = originalValuePage(ctx.valuePages, `dinh-${index + 1}`, value);
+  if (original) return [chuan(original)];
   return flowPages(ctx, { title: [`ĐỈNH ${index + 1}`], badge: { text: value, shape: "circle" } }, contentItems(pinnacleBlock(index, value)));
 }
 
@@ -732,9 +721,10 @@ function planPages(ctx: Ctx): PageSpec[] {
   push({ kind: "template", anchor: "passion", file: "dam-me/DamMe_000.pdf" });
   const passion = firstPassion(report);
   push({ kind: "template", file: `dam-me/DamMe_00${numerator(passion)}.pdf` });
-  // Trang Đam mê của bộ mẫu chỉ có một con số; các con số Đam mê còn lại có thêm trang luận giải.
-  const morePassion = metricValues(report, "passion").filter((value) => value !== passion);
-  if (morePassion.length) push(...valuePages(ctx, "passion", morePassion));
+  // Đam mê nhiều con số: mỗi số thêm một trang gốc như số đầu.
+  for (const value of metricValues(report, "passion").filter((item) => item !== passion)) {
+    push({ kind: "template", file: `dam-me/DamMe_00${numerator(value)}.pdf` });
+  }
 
   // Biểu đồ chặng đường đời + 4 đỉnh, biểu đồ Ikigai + 3 tổ hợp (Tâm trí, Tư duy kinh doanh, Sáng tạo)
   push(chuan("chang-duong-doi", "pinnacles"));
@@ -762,13 +752,14 @@ export async function buildFullNumerologyPdf(report: NumerologyFullReport, optio
   const out = await PDFDocument.create();
   // @ts-expect-error fontkit types mismatch pdf-lib's bundled Fontkit interface but is runtime-compatible
   out.registerFontkit(fontkit);
-  const [semiBytes, boldItalicBytes, frameBytes, flowerBytes, dividerBytes, stripJson] = await Promise.all([
+  const [semiBytes, boldItalicBytes, frameBytes, flowerBytes, dividerBytes, stripJson, valuePagesJson] = await Promise.all([
     readFile(path.join(ASSET_DIR, "fonts/Faustina-SemiBold.ttf")),
     readFile(path.join(ASSET_DIR, "fonts/Faustina-BoldItalic.ttf")),
     readFile(path.join(FULL_DIR, "frame.pdf")),
     readFile(path.join(FULL_DIR, "flower.png")),
     readFile(path.join(FULL_DIR, "divider.png")),
     readFile(path.join(FULL_DIR, "template-strip.json"), "utf8"),
+    readFile(VALUE_PAGE_INDEX_FILE, "utf8"),
   ]);
   const [frame] = await out.embedPdf(frameBytes, [0]);
   const ctx: Ctx = {
@@ -782,6 +773,7 @@ export async function buildFullNumerologyPdf(report: NumerologyFullReport, optio
     flower: await out.embedPng(flowerBytes),
     divider: await out.embedPng(dividerBytes),
     strip: JSON.parse(stripJson),
+    valuePages: JSON.parse(valuePagesJson),
     anchors: new Map(),
     fontKeys: new WeakMap(),
   };
