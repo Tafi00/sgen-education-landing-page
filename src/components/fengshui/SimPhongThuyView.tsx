@@ -27,6 +27,7 @@ import { StudentLock, StudentStatus, useStudentAccess } from "../ui/StudentAcces
 
 /** Lời kêu gọi trên thanh liên hệ dính đáy màn hình, hiện khi đã có kết quả luận sim. */
 const SIM_EXPERT_CALLOUT = "Liên hệ Chuyên Gia để được luận giải Chuyên Sâu Miễn Phí";
+const BIRTH_REQUIRED_MESSAGE = "Vui lòng nhập ngày sinh của người dùng số: lá quẻ Lục Hào lập theo ngày, tháng sinh.";
 
 interface SimPhongThuyViewProps {
   initialPhone?: string;
@@ -118,6 +119,7 @@ export default function SimPhongThuyView({
   });
 
   const phoneInputRef = useRef<HTMLInputElement>(null);
+  const dayInputRef = useRef<HTMLInputElement>(null);
   const resultRef = useRef<HTMLDivElement>(null);
   const didSubmitRef = useRef(false);
 
@@ -130,8 +132,12 @@ export default function SimPhongThuyView({
     return isValidSimDigits(normalizeVietnamesePhone(submittedQuery.phone));
   }, [submittedQuery.phone]);
 
+  // Lá quẻ Lục Hào lập theo ngày giờ sinh của người dùng số (Vượng Suy, Trường Sinh ngày/tháng tính theo ngày, tháng
+  // sinh) nên phải có ngày sinh mới luận; trước đây bỏ trống thì máy lặng lẽ dùng một ngày mặc định.
+  const canAnalyze = hasValidPhone && Boolean(submittedQuery.birthDate);
+
   const analysis = useMemo<{ result: SimAnalysisResult | null; error: string }>(() => {
-    if (!hasValidPhone) return { result: null, error: "" };
+    if (!canAnalyze) return { result: null, error: "" };
     try {
       return { result: analyzeSimPhongThuy(submittedQuery), error: "" };
     } catch (error) {
@@ -140,11 +146,11 @@ export default function SimPhongThuyView({
         error: error instanceof Error ? error.message : "Không thể lập kết quả với dữ liệu đã nhập.",
       };
     }
-  }, [submittedQuery, hasValidPhone]);
+  }, [submittedQuery, canAnalyze]);
   const submittedQueryKey = useMemo(() => JSON.stringify(submittedQuery), [submittedQuery]);
 
   useEffect(() => {
-    if (!hasValidPhone || !analysis.result) return;
+    if (!canAnalyze || !analysis.result) return;
 
     const [y, m, d] = submittedQuery.birthDate.split("-");
     const params = new URLSearchParams({
@@ -181,10 +187,10 @@ export default function SimPhongThuyView({
       });
 
     return () => controller.abort();
-  }, [analysis.result, hasValidPhone, submittedQuery, submittedQueryKey]);
+  }, [analysis.result, canAnalyze, submittedQuery, submittedQueryKey]);
 
   const syncedForCurrentQuery = syncedAnalysis.key === submittedQueryKey;
-  const isSyncing = hasValidPhone && analysis.result
+  const isSyncing = canAnalyze && analysis.result
     ? !syncedForCurrentQuery
     : false;
   const result = syncedForCurrentQuery && syncedAnalysis.result
@@ -284,6 +290,12 @@ export default function SimPhongThuyView({
       if (!isValidSimDigits(normalizedPhone)) phoneInputRef.current?.focus();
       return;
     }
+    if (!formattedDate) {
+      const partial = [day, month, year].some((value) => value.trim());
+      setFormError(partial ? "Vui lòng nhập đủ ngày, tháng, năm sinh." : BIRTH_REQUIRED_MESSAGE);
+      dayInputRef.current?.focus();
+      return;
+    }
 
     setFormError("");
     setPhone(normalizedPhone);
@@ -375,7 +387,9 @@ export default function SimPhongThuyView({
                 <span>Ngày</span>
                 <input
                   id="sim-birth-day"
+                  ref={dayInputRef}
                   name="birth-day"
+                  aria-required="true"
                   type="number"
                   inputMode="numeric"
                   className="skd-sim-input skd-input-day"
@@ -522,11 +536,16 @@ export default function SimPhongThuyView({
             </div>
           </fieldset>
 
-          {(formError || analysis.error) && (
+          {(formError || analysis.error) ? (
             <p id="sim-form-error" className="skd-sim-form-error" role="alert">
               {formError || analysis.error}
             </p>
-          )}
+          ) : hasValidPhone && !submittedQuery.birthDate ? (
+            // Mở từ đường dẫn chỉ có số (?so=…): nhắc nhập ngày sinh thay vì luận theo ngày mặc định.
+            <p id="sim-form-error" className="skd-sim-form-error" role="status">
+              {BIRTH_REQUIRED_MESSAGE}
+            </p>
+          ) : null}
 
           <button type="submit" className="skd-sim-submit-btn" aria-label="Xem phong thủy sim">
             <Search size={18} />
@@ -536,7 +555,7 @@ export default function SimPhongThuyView({
       </div>
 
       {/* RESULT OR WELCOME SECTION */}
-      {hasValidPhone && isSyncing ? (
+      {canAnalyze && isSyncing ? (
         <div className="skd-result-loading" role="status" aria-live="polite">
           <span className="skd-result-loading-mark" aria-hidden="true">易</span>
           <div>
@@ -544,7 +563,7 @@ export default function SimPhongThuyView({
             <span>Kiểm tra quẻ, Bát Tự và các chỉ số liên quan.</span>
           </div>
         </div>
-      ) : !hasValidPhone || !result ? (
+      ) : !canAnalyze || !result ? (
         <div className="skd-welcome-card">
           <header className="skd-welcome-head">
             <span>Phương pháp</span>

@@ -4124,3 +4124,145 @@
   margin: 0 0 2.5rem;
   scroll-margin-top: 94px;
 }
+
+/*
+ * LÁ QUẺ LỤC HÀO VỪA MÀN HÌNH (khách 17/11/2026: "trình bày giống simkinhdich.com, xem trên điện thoại không phải vuốt").
+ * Bảng không còn bề rộng tối thiểu: cột chia theo phần trăm, cỡ chữ co theo bề ngang khung (cqi), tên dài xuống dòng.
+ */
+.skd-lh-table-wrap.is-fit {
+  container-type: inline-size;
+  overflow: visible;
+  touch-action: auto;
+}
+
+.skd-lh-table.is-fit {
+  min-width: 0;
+  table-layout: fixed;
+  font-size: clamp(7.5px, 2.45cqi, 13.5px);
+}
+
+/* Bảng 1 có 11 cột: chữ nhỏ hơn một chút để mỗi hào nằm trên một dòng ở điện thoại 375px. */
+.skd-lh-table.is-fit.is-dense {
+  font-size: clamp(7.5px, 2.3cqi, 13px);
+}
+
+.skd-lh-table.is-fit th,
+.skd-lh-table.is-fit td {
+  padding: 0.55em 0.06em;
+  line-height: 1.25;
+  white-space: normal;
+}
+
+/* Tiêu đề cột giữ trên một dòng (không ngắt "P.Thần" giữa chữ). */
+.skd-lh-table.is-fit thead tr:not(.skd-lh-table-group-row) th {
+  font-size: 0.92em;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
+.skd-lh-table.is-fit .skd-lh-table-group-row th {
+  padding: 0.6em 0.3em;
+  font-size: 1.08em;
+}
+
+.skd-lh-table.is-fit thead tr:not(.skd-lh-table-group-row) th:first-child,
+.skd-lh-table.is-fit tbody td:first-child {
+  position: static;
+  box-shadow: none;
+}
+
+.skd-lh-table.is-fit .skd-lh-row-moving td:first-child {
+  box-shadow: inset 0.25em 0 #3325b6;
+}
+
+.skd-lh-table.is-fit .skd-lh-the-tag,
+.skd-lh-table.is-fit .skd-lh-ung-tag {
+  min-width: 0;
+  padding: 0 0.18em;
+  font-size: 0.92em;
+  line-height: 1.15;
+}
+
+/* Hai bảng là hai nửa quẻ chủ | quẻ biến: vạch ngăn đậm giữa hai nửa. */
+.skd-lh-table.is-fit .skd-lh-table-group-row th + th,
+.skd-lh-table.is-fit .skd-lh-split {
+  border-left: 2px solid #b79bd0;
+}
+
+.skd-lh-table.is-fit .skd-lh-table-group-row th + th {
+  border-left-color: rgba(255, 255, 255, 0.35);
+}
+
+.skd-lh-mini-hao {
+  display: inline-flex;
+  gap: 0.35em;
+  width: 2.2em;
+  height: 0.5em;
+  vertical-align: middle;
+}
+
+.skd-lh-mini-hao i {
+  flex: 1;
+  border-radius: 1px;
+  background: #2d2238;
+}
+
+.skd-lh-mini-hao.is-yang {
+  gap: 0;
+}
+
+.skd-lh-mini-hao.is-moving i {
+  background: #c62f1d;
+}
+
+.skd-lh-table-legend {
+  margin: 0.5rem 0.15rem 0;
+  color: #6f5f80;
+  font-size: 0.7rem;
+  line-height: 1.5;
+}
+
+.skd-lh-table-heading small::before {
+  content: none;
+}
+
+@media (max-width: 520px) {
+  /* Lá quẻ ít khoảng trắng hơn để bảng được rộng nhất có thể. */
+  .skd-lh-data-details-body {
+    padding: 0.6rem 0.2rem;
+  }
+
+  .skd-lh-meta-item:nth-child(1),
+  .skd-lh-meta-item:nth-child(2) {
+    grid-column: span 6;
+  }
+
+  .skd-lh-meta-item:nth-child(n + 4) {
+    grid-column: span 4;
+  }
+
+  .skd-lh-meta-item {
+    padding: 0.55rem 0.6rem;
+  }
+
+  .skd-lh-meta-item > span {
+    font-size: 0.66rem;
+  }
+
+  .skd-lh-meta-item > strong {
+    font-size: 0.76rem;
+  }
+
+  .skd-lh-table-heading {
+    flex-direction: row;
+    align-items: flex-end;
+  }
+
+  .skd-lh-table-heading small {
+    padding: 0;
+    border: 0;
+    background: none;
+    text-align: right;
+    white-space: normal;
+  }
+}

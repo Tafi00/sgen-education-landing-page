@@ -1,6 +1,32 @@
 import "../../styles/sim-phong-thuy.css";
 import type { SimLucHaoData } from "../../../shared/sim/sim-phong-thuy-engine";
 
+/** Tên giai đoạn Trường Sinh / Quý Thần viết tắt cho vừa bảng trên điện thoại (chú giải ở dưới bảng). */
+const STAGE_SHORT: Record<string, string> = {
+  "Trường Sinh": "T.Sinh",
+  "Mộc Dục": "M.Dục",
+  "Quan Đới": "Q.Đới",
+  "Lâm Quan": "L.Quan",
+  "Đế Vượng": "Đ.Vượng",
+  "Quý Nhân": "Q.Nhân",
+};
+const shortStage = (value: string) => (!value || value === "—" ? "-" : STAGE_SHORT[value] ?? value);
+
+/** Vạch hào nhỏ trong bảng: dương một vạch liền, âm hai vạch; hào động màu son. */
+function HaoMark({ position, isYang, moving }: { position: number; isYang: boolean; moving?: boolean }) {
+  return (
+    <span
+      className={`skd-lh-mini-hao ${isYang ? "is-yang" : "is-yin"}${moving ? " is-moving" : ""}`}
+      role="img"
+      aria-label={`Hào ${position} ${isYang ? "dương" : "âm"}${moving ? ", động" : ""}`}
+      title={`Hào ${position}`}
+    >
+      <i />
+      <i />
+    </span>
+  );
+}
+
 /**
  * Lá quẻ Lục Hào dùng chung cho Luận sim và Gieo quẻ: quẻ chủ → quẻ biến, Lục Thân, Can Chi, Lục Thú,
  * Thế/Ứng, Vượng Suy, Quý Thần, Trường Sinh. Hào 1 ở dưới cùng, hào 6 trên cùng (đọc từ dưới lên).
@@ -90,18 +116,18 @@ export function LucHaoSheet({ data, movingLine, subject = "dãy sim" }: { data: 
             </div>
           </div>
 
-          {/* META INFO */}
+          {/* META INFO — như dòng đầu lá quẻ của simkinhdich.com (khách khoanh đỏ 17/11/2026) */}
           <div className="skd-lh-meta-box">
             <div className="skd-lh-meta-item">
-              <span>Dương lịch</span>
+              <span>Thời điểm lập quẻ</span>
               <strong>{data.meta.solarDateTime}</strong>
             </div>
             <div className="skd-lh-meta-item">
-              <span>Âm lịch</span>
+              <span>Theo âm lịch</span>
               <strong>{data.meta.lunarDateTime}</strong>
             </div>
             <div className="skd-lh-meta-item is-wide">
-              <span>Tứ trụ Can Chi</span>
+              <span>Can Chi</span>
               <strong>{data.meta.fourPillarsText}</strong>
             </div>
             <div className="skd-lh-meta-item">
@@ -124,88 +150,78 @@ export function LucHaoSheet({ data, movingLine, subject = "dãy sim" }: { data: 
             <strong>{data.primary.trieu}</strong>
           </div>
 
-          {/* TABLE 1: THÂN HÀO & CAN CHI */}
+          {/* TABLE 1: THÂN HÀO & CAN CHI — vừa bề ngang màn hình, không phải vuốt (như lá quẻ simkinhdich.com) */}
           <div className="skd-lh-table-section">
             <div className="skd-lh-table-heading">
               <div>
                 <span>Chi tiết Lục Hào</span>
                 <strong>Lục Thân · Can Chi · Lục Thú</strong>
               </div>
-              <small>Vuốt ngang để xem đầy đủ</small>
+              <small>Hào 6 ở trên, hào 1 ở dưới</small>
             </div>
-            <div
-              className="skd-lh-table-wrap"
-              role="region"
-              aria-label="Bảng chi tiết Lục Thân, Can Chi và Lục Thú"
-              tabIndex={0}
-            >
-              <table className="skd-lh-table">
+            <div className="skd-lh-table-wrap is-fit">
+              <table className="skd-lh-table is-fit is-dense">
                 <caption className="skd-visually-hidden">Bảng Lục Thân, Can Chi và Lục Thú của quẻ chủ và quẻ biến</caption>
+                <colgroup>
+                  <col style={{ width: "6%" }} />
+                  <col style={{ width: "6.5%" }} />
+                  <col style={{ width: "12.5%" }} />
+                  <col style={{ width: "12.5%" }} />
+                  <col style={{ width: "9.5%" }} />
+                  <col style={{ width: "4%" }} />
+                  <col style={{ width: "12.5%" }} />
+                  <col style={{ width: "12%" }} />
+                  <col style={{ width: "14.5%" }} />
+                  <col style={{ width: "4%" }} />
+                  <col style={{ width: "6%" }} />
+                </colgroup>
                 <thead>
                   <tr className="skd-lh-table-group-row">
                     <th colSpan={6}>Quẻ chủ · {data.primary.name}</th>
                     <th colSpan={5}>Quẻ biến · {data.changed.name}</th>
                   </tr>
                   <tr>
-                  <th style={{ width: "45px" }}>Hào</th>
-                  <th style={{ width: "50px" }}>T/Ư</th>
-                  <th>Lục Thân</th>
-                  <th>Can Chi</th>
-                  <th style={{ width: "55px" }}>P.Thần</th>
-                  <th style={{ width: "45px" }}>T.K</th>
-                  <th>Lục Thân</th>
-                  <th>Can Chi</th>
-                  <th>Lục Thú</th>
-                  <th style={{ width: "45px" }}>T.K</th>
-                  <th style={{ width: "45px" }}>Hào</th>
+                    <th>Hào</th>
+                    <th>T/Ư</th>
+                    <th>Lục Thân</th>
+                    <th>Can Chi</th>
+                    <th title="Phục Thần">P.Thần</th>
+                    <th title="Tuần Không">T.K</th>
+                    <th className="skd-lh-split">Lục Thân</th>
+                    <th>Can Chi</th>
+                    <th>Lục Thú</th>
+                    <th title="Tuần Không">T.K</th>
+                    <th>Hào</th>
                   </tr>
                 </thead>
                 <tbody>
-                {rows.map(({ pLine, cLine }) => {
-                  const isMoving = pLine.isMoving;
-
-                  return (
-                    <tr key={pLine.position} className={isMoving ? "skd-lh-row-moving" : ""}>
-                      {/* Quẻ Chủ: Hào */}
-                      <td style={{ fontWeight: "700" }}>{pLine.position} {pLine.symbol}</td>
-                      {/* Quẻ Chủ: T/Ư */}
+                  {rows.map(({ pLine, cLine }) => (
+                    <tr key={pLine.position} className={pLine.isMoving ? "skd-lh-row-moving" : ""}>
+                      <td><HaoMark position={pLine.position} isYang={pLine.isYang} moving={pLine.isMoving} /></td>
                       <td>
                         {pLine.theUng === "Thế" ? (
                           <span className="skd-lh-the-tag">Thế</span>
                         ) : pLine.theUng === "Ứng" ? (
                           <span className="skd-lh-ung-tag">Ứng</span>
-                        ) : (
-                          ""
-                        )}
+                        ) : null}
                       </td>
-                      {/* Quẻ Chủ: Lục Thân */}
-                      <td style={{ fontWeight: isMoving ? "700" : "500" }}>{pLine.lucThan}</td>
-                      {/* Quẻ Chủ: Can Chi */}
-                      <td style={{ fontWeight: isMoving ? "700" : "500" }}>{pLine.canChi}</td>
-                      {/* Quẻ Chủ: P.Thần */}
-                      <td>{pLine.phucThan}</td>
-                      {/* Quẻ Chủ: T.K */}
-                      <td>{pLine.tuanKhong}</td>
-
-                      {/* Quẻ Biến: Lục Thân */}
-                      <td style={{ fontWeight: isMoving ? "700" : "500" }}>{cLine.lucThan}</td>
-                      {/* Quẻ Biến: Can Chi */}
-                      <td style={{ fontWeight: isMoving ? "700" : "500" }}>{cLine.canChi}</td>
-                      {/* Quẻ Biến: Lục Thú */}
+                      <td>{pLine.lucThan}</td>
+                      <td>{pLine.chi}-{pLine.element}</td>
+                      <td>{pLine.phucThan || "-"}</td>
+                      <td>{pLine.tuanKhong || "-"}</td>
+                      <td className="skd-lh-split">{cLine.lucThan}</td>
+                      <td>{cLine.chi}-{cLine.element}</td>
                       <td>{cLine.lucThu}</td>
-                      {/* Quẻ Biến: T.K */}
-                      <td>{cLine.tuanKhong}</td>
-                      {/* Quẻ Biến: Hào */}
-                      <td style={{ fontWeight: "700" }}>{cLine.symbol} {cLine.position}</td>
+                      <td>{cLine.tuanKhong || "-"}</td>
+                      <td><HaoMark position={cLine.position} isYang={cLine.isYang} moving={cLine.isTransformed} /></td>
                     </tr>
-                  );
-                })}
+                  ))}
                 </tbody>
               </table>
             </div>
           </div>
 
-          {/* TABLE 2: VƯỢNG TƯỚNG & TRƯỜNG SINH */}
+          {/* TABLE 2: VƯỢNG SUY · QUÝ THẦN · TRƯỜNG SINH (khách khoanh đỏ) */}
           <div className="skd-lh-table-section">
             <div className="skd-lh-table-heading">
               <div>
@@ -214,62 +230,58 @@ export function LucHaoSheet({ data, movingLine, subject = "dãy sim" }: { data: 
               </div>
               <small>Hào động được đánh dấu màu son</small>
             </div>
-            <div
-              className="skd-lh-table-wrap"
-              role="region"
-              aria-label="Bảng Vượng Suy, Quý Thần và Trường Sinh"
-              tabIndex={0}
-            >
-              <table className="skd-lh-table">
-                <caption className="skd-visually-hidden">Bảng Vượng Suy, Quý Thần và Trường Sinh của quẻ chủ và quẻ biến</caption>
+            <div className="skd-lh-table-wrap is-fit">
+              <table className="skd-lh-table is-fit">
+                <caption className="skd-visually-hidden">Bảng Vượng Suy, Quý Thần và Trường Sinh theo ngày, tháng của quẻ chủ và quẻ biến</caption>
+                <colgroup>
+                  <col style={{ width: "14%" }} />
+                  <col style={{ width: "8.5%" }} />
+                  <col style={{ width: "9%" }} />
+                  <col style={{ width: "12%" }} />
+                  <col style={{ width: "12.5%" }} />
+                  <col style={{ width: "12%" }} />
+                  <col style={{ width: "8.5%" }} />
+                  <col style={{ width: "11.5%" }} />
+                  <col style={{ width: "12%" }} />
+                </colgroup>
                 <thead>
                   <tr className="skd-lh-table-group-row">
                     <th colSpan={5}>Quẻ chủ · {data.primary.name}</th>
                     <th colSpan={4}>Quẻ biến · {data.changed.name}</th>
                   </tr>
                   <tr>
-                  <th>Hào</th>
-                  <th>V-S</th>
-                  <th>Q.Thần</th>
-                  <th>T.S-Ngày</th>
-                  <th>T.S-Tháng</th>
-                  <th>Hào</th>
-                  <th>V-S</th>
-                  <th>T.S-Ngày</th>
-                  <th>T.S-Tháng</th>
+                    <th>Hào</th>
+                    <th title="Vượng Suy">V-S</th>
+                    <th title="Quý Thần">Q.Thần</th>
+                    <th title="Trường Sinh theo ngày">T.S.Ngày</th>
+                    <th title="Trường Sinh theo tháng">T.S.Tháng</th>
+                    <th className="skd-lh-split">Hào</th>
+                    <th title="Vượng Suy">V-S</th>
+                    <th title="Trường Sinh theo ngày">T.S.Ngày</th>
+                    <th title="Trường Sinh theo tháng">T.S.Tháng</th>
                   </tr>
                 </thead>
                 <tbody>
-                {rows.map(({ pLine, cLine }) => {
-                  const isMoving = pLine.isMoving;
-
-                  return (
-                    <tr key={pLine.position} className={isMoving ? "skd-lh-row-moving" : ""}>
-                      {/* Quẻ Chủ: Hào */}
-                      <td style={{ fontWeight: isMoving ? "700" : "600" }}>{pLine.canChiFull}</td>
-                      {/* Quẻ Chủ: V-S */}
+                  {rows.map(({ pLine, cLine }) => (
+                    <tr key={pLine.position} className={pLine.isMoving ? "skd-lh-row-moving" : ""}>
+                      <td>{pLine.can} {pLine.chi}</td>
                       <td>{pLine.vuongTuong}</td>
-                      {/* Quẻ Chủ: Q.Thần */}
-                      <td>{pLine.quyThan}</td>
-                      {/* Quẻ Chủ: T.S Ngày */}
-                      <td>{pLine.tsNgay}</td>
-                      {/* Quẻ Chủ: T.S Tháng */}
-                      <td>{pLine.tsThang}</td>
-
-                      {/* Quẻ Biến: Hào */}
-                      <td style={{ fontWeight: isMoving ? "700" : "600" }}>{cLine.canChiFull}</td>
-                      {/* Quẻ Biến: V-S */}
+                      <td>{shortStage(pLine.quyThan)}</td>
+                      <td title={pLine.tsNgay}>{shortStage(pLine.tsNgay)}</td>
+                      <td title={pLine.tsThang}>{shortStage(pLine.tsThang)}</td>
+                      <td className="skd-lh-split">{cLine.can} {cLine.chi}</td>
                       <td>{cLine.vuongTuong}</td>
-                      {/* Quẻ Biến: T.S Ngày */}
-                      <td>{cLine.tsNgay}</td>
-                      {/* Quẻ Biến: T.S Tháng */}
-                      <td>{cLine.tsThang}</td>
+                      <td title={cLine.tsNgay}>{shortStage(cLine.tsNgay)}</td>
+                      <td title={cLine.tsThang}>{shortStage(cLine.tsThang)}</td>
                     </tr>
-                  );
-                })}
+                  ))}
                 </tbody>
               </table>
             </div>
+            <p className="skd-lh-table-legend">
+              T.Sinh: Trường Sinh · M.Dục: Mộc Dục · Q.Đới: Quan Đới · L.Quan: Lâm Quan · Đ.Vượng: Đế Vượng · Q.Nhân: Quý Nhân ·
+              P.Thần: Phục Thần · T.K: Tuần Không (K)
+            </p>
           </div>
     </>
   );
