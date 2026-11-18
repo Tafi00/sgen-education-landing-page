@@ -34,7 +34,7 @@ export const RESOURCES = {
     key: "courses",
     label: "khóa học",
     labelPlural: "Khóa học",
-    description: "11 khóa học theo feedback khách hàng: nội dung, học phí, đề cương và trạng thái xuất bản.",
+    description: "Các khóa học theo feedback khách hàng: nội dung, học phí, đề cương và trạng thái xuất bản.",
     endpoint: "/api/admin/courses",
     basePath: "/admin/khoa-hoc",
     defaultSort: "order",

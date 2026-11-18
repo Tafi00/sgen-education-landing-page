@@ -9,6 +9,7 @@ const programYinHome = "/assets/programs/program-yin-home-v2.webp";
 import { Reveal } from "../ui/Reveal";
 import { SectionHeading } from "../ui/SectionHeading";
 import { ButtonLink } from "../ui/Button";
+import { useCourseCount } from "../../api/hooks";
 
 const programs = [
   { image: programNumerology, title: "Thần số học", description: "Khám phá bản thân, các chỉ số và bản đồ cuộc đời." },
@@ -20,6 +21,7 @@ const programs = [
 ];
 
 export function ProgramsSection() {
+  const courseCount = useCourseCount();
   return (
     <section
       id="chuong-trinh"
@@ -51,7 +53,7 @@ export function ProgramsSection() {
 
         <Reveal className="programs-section__cta" delay={120}>
           <ButtonLink variant="primary" to="/khoa-hoc">
-            Xem tất cả 11 khóa học <ArrowRight aria-hidden="true" />
+            Xem tất cả {courseCount} khóa học <ArrowRight aria-hidden="true" />
           </ButtonLink>
         </Reveal>
       </div>

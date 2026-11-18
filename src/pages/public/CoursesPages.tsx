@@ -1,7 +1,7 @@
 /**
  * Trang khóa học công khai.
  *
- * - `CoursesListPage` (`/khoa-hoc`): danh sách 11 khóa kèm tìm kiếm, lọc cấp độ,
+ * - `CoursesListPage` (`/khoa-hoc`): danh sách khóa học (số khóa theo CMS) kèm tìm kiếm, lọc cấp độ,
  *   lọc nhóm, sắp xếp và phân trang. Toàn bộ trạng thái nằm trên URL
  *   (`?q=&level=&category=&sort=&page=`) để chia sẻ và quay lại đều giữ nguyên.
  * - `CourseDetailPage` (`/khoa-hoc/:slug`): chi tiết khóa và form đăng ký tư vấn
@@ -35,7 +35,7 @@ import {
   X,
 } from "lucide-react";
 import { api, errorMessage } from "../../api/client";
-import { useCourse, useCourses, useSiteSettings } from "../../api/hooks";
+import { useCourse, useCourseCount, useCourses, useSiteSettings } from "../../api/hooks";
 import { COURSE_CATEGORY_NAMES, type DefaultCourse } from "../../data/defaults/types";
 import { BlockRenderer } from "../../components/content/BlockRenderer";
 import { FieldShell, TextareaField, TextField } from "../../components/form/Field";
@@ -217,6 +217,8 @@ function CourseCard({ course }: { course: DefaultCourse }) {
 
 export function CoursesListPage() {
   const [params, setParams] = useSearchParams();
+  // Số khóa trên tiêu đề lấy theo danh sách đang xuất bản (khách: "11 KHÓA HỌC" → 22 khóa, 18/11/2026).
+  const courseCount = useCourseCount();
   const q = params.get("q") ?? "";
   const level = params.get("level") ?? "";
   const category = params.get("category") ?? "";
@@ -268,7 +270,7 @@ export function CoursesListPage() {
       <PageHero
         eyebrow="Khóa học SGEN"
         eyebrowIcon={GraduationCap}
-        title="11 khóa học"
+        title={`${courseCount} khóa học`}
         accent="từ nền tảng đến ứng dụng"
         description="Khám phá Thần số học, Sinh trắc vân tay, Kinh Dịch, Tứ trụ và các chuyên đề phong thủy. Chọn lĩnh vực bạn muốn học để xem nội dung từng khóa."
         actions={<ButtonRow><ButtonAnchor variant="primary" href="#danh-sach-khoa-hoc">Xem danh sách khóa học <ArrowRight aria-hidden="true" /></ButtonAnchor></ButtonRow>}
@@ -276,7 +278,7 @@ export function CoursesListPage() {
 
       <section className="page-light-section ux-course-list catalog-content" id="danh-sach-khoa-hoc" style={{ "--page-light-bg": "none" } as CSSProperties}>
         <div className="container">
-          <SectionHeading eyebrow="Danh mục đào tạo" title="Chọn khóa học phù hợp" description="Toàn bộ 11 chuyên đề theo đúng danh mục đào tạo của SGEN." />
+          <SectionHeading eyebrow="Danh mục đào tạo" title="Chọn khóa học phù hợp" description={`Toàn bộ ${courseCount} chuyên đề theo đúng danh mục đào tạo của SGEN.`} />
           <form
             className="course-toolbar"
             role="search"

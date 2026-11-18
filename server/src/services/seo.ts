@@ -21,7 +21,7 @@ const STATIC_TITLES: Record<string, { title: string; description: string; noinde
   "/cong-cu-phong-thuy/gieo-que-kinh-dich": { title: "Gieo quẻ Kinh Dịch", description: "Lập quẻ theo ba đồng xu, luận quẻ chủ - quẻ biến và hào động cho việc đang suy xét." },
   "/cong-cu-phong-thuy/tu-tru-bat-tu": { title: "Phân tích Tứ Trụ Bát Tự", description: "Lập lá số bốn trụ, xét vượng suy Nhật chủ, ngũ hành và đại vận." },
   "/cong-cu-phong-thuy/xem-ngay": { title: "Xem ngày tốt xấu", description: "Tra cứu ngày tốt xấu, giờ hoàng đạo, tiết khí và đối chiếu tuổi theo lịch pháp Việt Nam." },
-  "/khoa-hoc": { title: "Khóa học SGEN Education", description: "11 khóa học từ nền tảng đến chuyên sâu: Thần số học, Kinh Dịch, Tứ Trụ, phong thủy ứng dụng." },
+  "/khoa-hoc": { title: "Khóa học SGEN Education", description: "22 khóa học từ nền tảng đến chuyên sâu: Thần số học, Kinh Dịch, Tứ Trụ, phong thủy ứng dụng." },
   "/free-tools": { title: "Free tools — công cụ miễn phí", description: "Kho công cụ tra cứu miễn phí của SGEN: chỉ số Thần số học, mũi tên, biểu đồ ngày sinh, phong thủy." },
   "/blog": { title: "Blog SGEN Education", description: "Kiến thức Thần số học, DISC/MBTI, phong thủy và ứng dụng thực tiễn." },
   "/blog/kien-thuc": { title: "Kiến thức", description: "Tổng hợp bài viết kiến thức nền tảng theo từng chuyên mục." },

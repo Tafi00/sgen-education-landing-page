@@ -24,7 +24,7 @@ import {
   UserRound,
 } from "lucide-react";
 import { api, errorMessage } from "../../api/client";
-import { usePage, useSiteSettings } from "../../api/hooks";
+import { useCourseCount, usePage, useSiteSettings } from "../../api/hooks";
 import { BlockRenderer } from "../../components/content/BlockRenderer";
 import { FieldShell, TextareaField, TextField } from "../../components/form/Field";
 import { useToast } from "../../components/ui/Toast";
@@ -160,6 +160,7 @@ export function AboutValuesPage() {
 }
 
 export function ContactPage() {
+  const courseCount = useCourseCount();
   const { page } = usePage("lien-he");
   const { settings } = useSiteSettings();
   const toast = useToast();
@@ -400,7 +401,7 @@ export function ContactPage() {
                 </Link>
               }
             >
-              <p>Xem 11 chuyên đề theo cấp độ và nhóm chuyên môn để chọn lớp phù hợp.</p>
+              <p>Xem {courseCount} chuyên đề theo cấp độ và nhóm chuyên môn để chọn lớp phù hợp.</p>
             </FeatureCard>
             <FeatureCard
               title="Dịch vụ"

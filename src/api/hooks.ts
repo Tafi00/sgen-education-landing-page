@@ -195,6 +195,14 @@ export function useNavCourses() {
   return { courses: query.data?.items ?? [] };
 }
 
+/** Số khóa đang xuất bản (cùng nguồn với menu); chưa tải xong thì dùng số khách báo 18/11/2026. */
+export const COURSE_COUNT_FALLBACK = 22;
+
+export function useCourseCount() {
+  const { courses } = useNavCourses();
+  return courses.length || COURSE_COUNT_FALLBACK;
+}
+
 export function useServices() {
   const query = useQuery({
     queryKey: ["services"],
