@@ -1274,11 +1274,15 @@ export function getVuongTuong(lineElement: "Kim" | "Mộc" | "Thủy" | "Hỏa" 
   return "Tù";
 }
 
+/**
+ * Vòng Trường Sinh của hào trong Lục Hào. Thổ ký sinh theo Thủy (Trường Sinh tại Thân) như phép Bốc Dịch và trang
+ * đối chiếu simkinhdich.com mà khách dùng (17/11/2026): hào Thổ ngày Ngọ là Thai, tháng Dậu là Mộc Dục.
+ */
 export function getTruongSinh(lineElement: "Kim" | "Mộc" | "Thủy" | "Hỏa" | "Thổ", targetBranch: string): string {
   const TS_TABLE: Record<string, string[]> = {
     Mộc: ["Hợi", "Tý", "Sửu", "Dần", "Mão", "Thìn", "Tị", "Ngọ", "Mùi", "Thân", "Dậu", "Tuất"],
     Hỏa: ["Dần", "Mão", "Thìn", "Tị", "Ngọ", "Mùi", "Thân", "Dậu", "Tuất", "Hợi", "Tý", "Sửu"],
-    Thổ: ["Dần", "Mão", "Thìn", "Tị", "Ngọ", "Mùi", "Thân", "Dậu", "Tuất", "Hợi", "Tý", "Sửu"],
+    Thổ: ["Thân", "Dậu", "Tuất", "Hợi", "Tý", "Sửu", "Dần", "Mão", "Thìn", "Tị", "Ngọ", "Mùi"],
     Kim: ["Tị", "Ngọ", "Mùi", "Thân", "Dậu", "Tuất", "Hợi", "Tý", "Sửu", "Dần", "Mão", "Thìn"],
     Thủy: ["Thân", "Dậu", "Tuất", "Hợi", "Tý", "Sửu", "Dần", "Mão", "Thìn", "Tị", "Ngọ", "Mùi"],
   };
@@ -1664,10 +1668,20 @@ export interface LucHaoSheetInput {
   /** Ngày dương lịch YYYY-MM-DD và giờ HH:mm lập quẻ, dùng an Lục Thú, Vượng Suy, Quý Thần, Trường Sinh. */
   solarDate: string;
   time: string;
+  /** `false` khi người dùng không nhập giờ (giờ chỉ là giá trị mặc định): dòng Can Chi bỏ trụ giờ. */
+  timeKnown?: boolean;
 }
 
+/** Tên hành của Địa Chi, viết như lá quẻ ("Ngọ-Hỏa"). */
+const branchWithElement = (branch: string) => `${branch}-${BRANCH_ELEMENTS[branch] ?? ""}`;
+
+const formatDmy = (isoDate: string) => {
+  const [year, month, day] = isoDate.split("-");
+  return `${day}/${month}/${year}`;
+};
+
 /** An lá quẻ Lục Hào cho quẻ chủ và quẻ biến. Dùng cho luận sim và Gieo quẻ. */
-export function buildLucHaoSheet({ lines, movingLines, solarDate, time }: LucHaoSheetInput): SimLucHaoData {
+export function buildLucHaoSheet({ lines, movingLines, solarDate, time, timeKnown = true }: LucHaoSheetInput): SimLucHaoData {
   const solarDateStr = solarDate;
   const birthTimeStr = time;
   const fourPillars = getFourPillars(solarDateStr, birthTimeStr, 105.833, 7, "civil");
@@ -1714,6 +1728,17 @@ export function buildLucHaoSheet({ lines, movingLines, solarDate, time }: LucHao
     Thổ: { Thổ: "Huynh Đệ", Kim: "Tử Tôn", Thủy: "Thê Tài", Mộc: "Quan Quỷ", Hỏa: "Phụ Mẫu" },
   };
 
+  // Tuần Không theo ngày lập quẻ: hào mang Chi rơi vào hai Chi không vong được đánh "K".
+  const tuanKhong = getTuanKhong(dayStem, dayBranch);
+  // Phục Thần: Lục Thân vắng mặt trong quẻ chủ thì lấy từ quẻ Thuần của cung, đặt dưới hào cùng vị trí ("Phụ-Tý").
+  const palaceTrigram = Number(Object.entries(TRI).find(([, info]) => info[0] === pPalace.palace)?.[0] ?? 1);
+  const pureLines = [...(NA_GIAP_TRIGRAM_LOWER[palaceTrigram] ?? []), ...(NA_GIAP_TRIGRAM_UPPER[palaceTrigram] ?? [])];
+  const presentRelatives = new Set(pLinesNaGiap.map((ng) => LUC_THAN[pPalace.element]?.[BRANCH_ELEMENTS[ng.chi] || "Thủy"]));
+  const phucThan = pureLines.map((ng) => {
+    const rel = LUC_THAN[pPalace.element]?.[BRANCH_ELEMENTS[ng.chi] || "Thủy"];
+    return rel && !presentRelatives.has(rel) ? `${rel.split(" ")[0]}-${ng.chi}` : "";
+  });
+
   const primaryLines = r.allLines.map((val, idx) => {
     const pos = idx + 1;
     const isYang = val === 1;
@@ -1739,8 +1764,8 @@ export function buildLucHaoSheet({ lines, movingLines, solarDate, time }: LucHao
       relative: rel,
       lucThan: rel,
       canChi: `${ng.can} ${ng.chi} (${el})`,
-      phucThan: "—",
-      tuanKhong: "—",
+      phucThan: phucThan[idx] ?? "",
+      tuanKhong: tuanKhong.includes(ng.chi) ? "K" : "",
       canChiFull,
       lucThu: lucThuList[idx] || "Thanh Long",
       theUng,
@@ -1757,7 +1782,8 @@ export function buildLucHaoSheet({ lines, movingLines, solarDate, time }: LucHao
     const isTransformed = movingLines.includes(pos);
     const ng = bLinesNaGiap[idx] || { can: "Giáp", chi: "Tý" };
     const el = BRANCH_ELEMENTS[ng.chi] || "Thủy";
-    const rel = LUC_THAN[bPalace.element]?.[el] || "Huynh Đệ";
+    // Quẻ biến vẫn xét Lục Thân theo ngũ hành cung của quẻ CHỦ (khách báo sai 17/11/2026, khớp simkinhdich.com).
+    const rel = LUC_THAN[pPalace.element]?.[el] || "Huynh Đệ";
     const canChiFull = `${rel} ${ng.can} ${ng.chi} (${el})`;
     const vt = getVuongTuong(el, monthBranch);
     const tsN = getTruongSinh(el, dayBranch);
@@ -1774,8 +1800,8 @@ export function buildLucHaoSheet({ lines, movingLines, solarDate, time }: LucHao
       relative: rel,
       lucThan: rel,
       canChi: `${ng.can} ${ng.chi} (${el})`,
-      phucThan: "—",
-      tuanKhong: "—",
+      phucThan: "",
+      tuanKhong: tuanKhong.includes(ng.chi) ? "K" : "",
       lucThu: lucThuList[idx] || "Thanh Long",
       canChiFull,
       vuongTuong: vt,
@@ -1784,14 +1810,25 @@ export function buildLucHaoSheet({ lines, movingLines, solarDate, time }: LucHao
     };
   });
 
+  const [yearPillar, monthPillar, dayPillar, hourPillar] = fourPillars.pillars;
+  const lunarDay = `${lunarDate.day}/${lunarDate.month}/${lunarDate.year}${lunarDate.leap ? " (nhuận)" : ""}`;
+  const canChiParts = [
+    timeKnown ? `giờ ${hourPillar?.stem} ${hourPillar?.branch}` : "",
+    `ngày ${dayPillar?.stem} ${dayPillar?.branch}`,
+    `tháng ${monthPillar?.stem} ${monthPillar?.branch}`,
+    `năm ${yearPillar?.stem} ${yearPillar?.branch}`,
+  ].filter(Boolean);
+
   return {
     meta: {
-      solarDateTime: `${solarDateStr} ${birthTimeStr}`,
-      lunarDateTime: `${lunarDate.day}/${lunarDate.month}/${lunarDate.year}${lunarDate.leap ? " (nhuận)" : ""}`,
-      fourPillarsText: `${fourPillars.pillars[0]?.stem} ${fourPillars.pillars[0]?.branch} · ${fourPillars.pillars[1]?.stem} ${fourPillars.pillars[1]?.branch} · ${fourPillars.pillars[2]?.stem} ${fourPillars.pillars[2]?.branch} · ${fourPillars.pillars[3]?.stem} ${fourPillars.pillars[3]?.branch}`,
+      // Như dòng đầu lá quẻ của simkinhdich.com: "5/10/2002 08:00 · Âm lịch: giờ Thìn, 29/8/2002 ·
+      // Can Chi: giờ Nhâm Thìn, ngày Bính Ngọ, tháng Kỷ Dậu, năm Nhâm Ngọ · Nhật thần Ngọ-Hỏa · Nguyệt lệnh Dậu-Kim".
+      solarDateTime: timeKnown ? `${formatDmy(solarDateStr)} ${birthTimeStr}` : formatDmy(solarDateStr),
+      lunarDateTime: timeKnown ? `giờ ${hourPillar?.branch}, ${lunarDay}` : lunarDay,
+      fourPillarsText: canChiParts.join(", "),
       solarTerm: getSolarTerm(solarDateStr),
-      nhatThan: `${dayStem} ${dayBranch}`,
-      nguyetLenh: `${fourPillars.pillars[1]?.stem} ${monthBranch}`,
+      nhatThan: branchWithElement(dayBranch),
+      nguyetLenh: branchWithElement(monthBranch),
     },
     primary: {
       number: r.hexNum,
@@ -1871,7 +1908,14 @@ export function analyzeSimPhongThuy(input: SimAnalysisInput): SimAnalysisResult 
 
   // 8. Lá quẻ Lục Hào (dùng chung với công cụ Gieo quẻ)
   const dayBranch = fourPillars.pillars[2]?.branch || "Dần";
-  const lucHaoData = buildLucHaoSheet({ lines: r.allLines, movingLines: [r.haoDong], solarDate: solarDateStr, time: birthTimeStr });
+  // Sim: lập quẻ theo ngày giờ sinh của người dùng số (Trường Sinh ngày/tháng theo ngày, tháng sinh).
+  const lucHaoData = buildLucHaoSheet({
+    lines: r.allLines,
+    movingLines: [r.haoDong],
+    solarDate: solarDateStr,
+    time: birthTimeStr,
+    timeKnown: Boolean(input.birthTime && isValidTimeString(input.birthTime)),
+  });
 
   const lunarDate = getLunarDate(solarDateStr);
   const baziBalance = getElementBalance(fourPillars.pillars);

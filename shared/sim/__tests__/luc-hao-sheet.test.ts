@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildLucHaoSheet } from "../sim-phong-thuy-engine";
+import { analyzeSimPhongThuy, buildLucHaoSheet } from "../sim-phong-thuy-engine";
 import { getHexagram } from "../../menh-thu/metaphysics";
 
 describe("lá quẻ Lục Hào dùng chung cho Gieo quẻ", () => {
@@ -32,5 +32,27 @@ describe("lá quẻ Lục Hào dùng chung cho Gieo quẻ", () => {
     }
     expect(sheet.primary.lines.filter((line) => line.theUng === "Thế")).toHaveLength(1);
     expect(sheet.primary.lines.filter((line) => line.theUng === "Ứng")).toHaveLength(1);
+  });
+
+  it("khớp lá quẻ simkinhdich.com khách gửi: sim 0363881131, sinh 5/10/2002 08:00 (Lôi Thủy Giải → Địa Thủy Sư)", () => {
+    const { lucHaoData: sheet } = analyzeSimPhongThuy({ phone: "0363881131", birthDate: "2002-10-05", birthTime: "08:00", gender: "Nam", calendarType: "solar" });
+    expect(sheet.primary.name).toBe("Lôi Thủy Giải");
+    expect(sheet.changed.name).toBe("Địa Thủy Sư");
+    expect(sheet.meta.fourPillarsText).toBe("giờ Nhâm Thìn, ngày Bính Ngọ, tháng Kỷ Dậu, năm Nhâm Ngọ");
+    expect([sheet.meta.nhatThan, sheet.meta.nguyetLenh]).toEqual(["Ngọ-Hỏa", "Dậu-Kim"]);
+    // Hào 6 → 1. Quẻ biến xét Lục Thân theo cung quẻ chủ (Chấn - Mộc).
+    const top = <T,>(lines: T[]) => [...lines].reverse();
+    expect(top(sheet.changed.lines).map((l) => l.lucThan)).toEqual(["Quan Quỷ", "Phụ Mẫu", "Thê Tài", "Tử Tôn", "Thê Tài", "Huynh Đệ"]);
+    expect(top(sheet.primary.lines).map((l) => [l.vuongTuong, l.tsNgay, l.tsThang])).toEqual([
+      ["Hưu", "Thai", "Mộc Dục"], ["Vượng", "Mộc Dục", "Đế Vượng"], ["Tù", "Đế Vượng", "Tử"],
+      ["Tù", "Đế Vượng", "Tử"], ["Hưu", "Thai", "Mộc Dục"], ["Tử", "Tử", "Thai"],
+    ]);
+    expect(top(sheet.changed.lines).map((l) => [l.vuongTuong, l.tsNgay, l.tsThang])).toEqual([
+      ["Vượng", "Mộc Dục", "Đế Vượng"], ["Tướng", "Thai", "Mộc Dục"], ["Hưu", "Thai", "Mộc Dục"],
+      ["Tù", "Đế Vượng", "Tử"], ["Hưu", "Thai", "Mộc Dục"], ["Tử", "Tử", "Thai"],
+    ]);
+    // Phục thần Phụ Mẫu Tý dưới hào 1; Tuần Không ngày Bính Ngọ là Dần, Mão.
+    expect(top(sheet.primary.lines).map((l) => l.phucThan)).toEqual(["", "", "", "", "", "Phụ-Tý"]);
+    expect(top(sheet.primary.lines).map((l) => l.tuanKhong)).toEqual(["", "", "", "", "", "K"]);
   });
 });
